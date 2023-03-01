@@ -1,0 +1,323 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>基本資料表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>定修計畫</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+
+  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="LoadingPage">
+
+    <div>
+      <tr>
+        <td style="width:inherit;">
+          <button
+            nz-button
+            *ngIf="!isRunFCP"
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            [nzSize]="'large'"
+            (click)="onSunmit()"
+          >
+          <span nz-icon nzType="save" nzTheme="outline"></span>
+            確認
+          </button>
+          <button
+            nz-button
+            *ngIf="isRunFCP"
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue;"
+            nzType="primary"
+            [nzSize]="'large'"
+            [disabled] = "true"
+            (click)="onSunmit()"
+          >
+          <span nz-icon nzType="save" nzTheme="outline"></span>
+            確認
+          </button>
+
+          <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+
+        </td>
+        <td></td>
+        <td style="text-align:right;width:50%">
+          &nbsp;&nbsp;
+          <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+          <button
+            nz-button
+            [ngClass]="{FCPdisable: isRunFCP, FCPenable: !isRunFCP}"
+            nzType="primary"
+            [disabled]="isRunFCP"
+            (click)="Upload()"
+          ><span nz-icon nzType="upload" nzTheme="outline"></span>
+          E X C E L 匯入
+          </button>
+          &nbsp;&nbsp;
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+            nzType="primary"
+            (click)="convertToExcel()"
+          ><span nz-icon nzType="download" nzTheme="outline"></span>
+            下載當月資料
+          </button>
+
+
+        </td>
+      </tr>
+  </div>
+
+
+
+
+
+
+
+  <p></p>
+  <tr>
+    <div class="column">
+      <div class="column-left">
+
+        <div class="resize-bar"></div>
+        <div class="resize-line"></div>
+        <div class="resize-save">
+
+              <td style="vertical-align: top;">
+                <tr>
+                  <td style="width:inherit;" colspan = "2">
+                    <nz-card style="width:100%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="站別">
+                      <ng-container *ngIf="SHOP_splitList">
+                        <div style="border-bottom: 1px solid rgb(233, 233, 233);">
+                          <label nz-checkbox [(ngModel)]="allChecked_shop" (ngModelChange)="updateAllChecked_shop()" [nzIndeterminate]="indeterminate_shop">
+                            Check all
+                          </label>
+                        </div>
+                        <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickShopCode($event)">
+                          <tr *ngFor = "let item of SHOP_splitList; let i = index;">
+                            <td style="width: 80px;" *ngFor = "let item1 of SHOP_splitList[i];">
+                              <label nz-checkbox [ngModel]="item1.checked" (ngModelChange)="updateSingleChecked_shop()" [nzValue]="item1.value">{{item1.value}}</label></td>
+                          </tr>
+                        </nz-checkbox-wrapper>
+                      </ng-container>
+                    </nz-card>
+                  </td>
+                </tr>
+
+
+                <tr>
+                  <td style="width:inherit;" colspan = "2">
+                    <nz-card style="width:100%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="機台">
+                      <ng-container *ngIf="EQUIP_splitList">
+                        <div *ngIf="EQUIP_splitList.length != 0" style="border-bottom: 1px solid rgb(233, 233, 233);">
+                          <label nz-checkbox [(ngModel)]="allChecked" (ngModelChange)="updateAllChecked()" [nzIndeterminate]="indeterminate">
+                            Check all
+                          </label>
+                        </div>
+
+                        <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickEquipCode($event)">
+                          <tr *ngFor = "let item of EQUIP_splitList; let i = index;">
+                            <td style="width: 80px;" *ngFor = "let item1 of EQUIP_splitList[i];">
+                              <label nz-checkbox [ngModel]="item1.checked" (ngModelChange)="updateSingleChecked()" [nzValue]="item1.value">{{item1.value}}</label></td>
+                          </tr>
+                        </nz-checkbox-wrapper>
+                      </ng-container>
+                    </nz-card>
+                  </td>
+                </tr>
+
+                <p></p><p></p>
+                <tr style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: rgb(255, 255, 255);">
+                  <td style="width:inherit; height:45px;">
+                    <label style="font-size: 18px; font-weight: bold; color: rgb(71, 132, 223);">&nbsp;&nbsp;停機時間：</label>
+                    <nz-time-picker [(ngModel)]="time_S" nzFormat="HH:mm"
+                          [nzMinuteStep]="10" nzPlaceHolder="停機時間(起)" (click) = "checktimer()"></nz-time-picker>
+                      &nbsp;&nbsp;<label style="font-size: 14px; font-weight: bold;">-</label>&nbsp;&nbsp;
+                      <nz-time-picker [(ngModel)]="time_E" nzFormat="HH:mm"
+                          [nzMinuteStep]="10" nzPlaceHolder="停機時間(迄)" (click) = "checktimer()"></nz-time-picker>
+                  </td>
+                </tr>
+
+
+                <p></p><p></p>
+                <tr style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: rgb(255, 255, 255);">
+                  <td style="width:inherit; height:45px; ">
+                    <label style="font-size: 18px; font-weight: bold; color: rgb(71, 132, 223);">&nbsp;&nbsp;停機模式：</label>
+                    <nz-radio-group [(ngModel)]="MODEL_TYPE" nzButtonStyle="solid">
+                      <label nz-radio-button nzValue="週保">週保</label>
+                      <label nz-radio-button nzValue="計畫性停機">計畫性停機</label>
+                      <label nz-radio-button nzValue="調機">調機</label>
+                      <label nz-radio-button nzValue="定修">定修</label>
+                    </nz-radio-group>
+                  </td>
+                </tr>
+
+              </td>
+        </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+
+      </div>
+
+      <div class="column-right">
+        <td>
+          <tr>
+            <td style="width:inherit;">
+              <nz-card style="width:100%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: rgba(255, 255, 255, 0.74);">
+                  目前已挑選日期：<label *ngFor="let item of pickCalendar; let i = index;"><nz-tag [nzColor]="'volcano'" nzMode="closeable" (nzOnClose)="onClose($event, i)">{{item}}</nz-tag></label>
+              </nz-card>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="width:inherit;">
+              <nz-card style="width:100%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: rgb(255, 255, 255);">
+
+                  <nz-calendar [(ngModel)]="selectedValue" [nzFullscreen]="true" (click)="selectChange(selectedValue)">
+
+                    <ul *nzDateCell="let date" class="events">
+
+                      <ng-container [ngSwitch]="dateFormat(date,2)">
+
+                        <ng-container style="background-color: rgb(47, 113, 81);" *ngFor="let item of CalendarList">
+                            <ng-container *ngSwitchCase="item.S_DATE">
+                                <p (click)="getDtl(item);" [class]='item.MODEL_TYPE'>{{item.MODEL_TYPE}}</p>
+                            </ng-container>
+                        </ng-container>
+
+                      </ng-container>
+
+                    </ul>
+
+                  </nz-calendar>
+
+              </nz-card>
+            </td>
+          </tr>
+        </td>
+      </div>
+
+
+    </div>
+  </tr>
+
+  </nz-spin>
+</nz-content>
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleDtl"
+  [nzTitle]="modalTitle"
+  [nzContent]="modalContent"
+  [nzFooter]="modalFooter"
+  [nzWidth]="1000"
+  (nzOnCancel)="Cdtl_Cancel()"
+>
+  <ng-template #modalTitle>Calendar 明細</ng-template>
+  <ng-template #modalContent>
+    <div>
+      <nz-table
+        #DtlTable
+        [nzData]="CalendarDtlList"
+        [nzFrontPagination]="nzPagination"
+        [nzShowPagination]="nzPagination"
+        [nzScroll]="{ y: '600px' }"
+        >
+        <thead>
+          <tr>
+            <th style="width: 145px; text-align:center; background-color: #eee">開始時間</th>
+            <th style="width: 145px; text-align:center; background-color: #eee">結束時間</th>
+            <th style="width: 80px; text-align:center; background-color: #eee">站別</th>
+            <th style="width: 80px; text-align:center; background-color: #eee">機台</th>
+            <th style="width: 80px; text-align:center; background-color: #eee">停機模式</th>
+            <th style="width: 120px; text-align:center; background-color: #eee">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of DtlTable.data; let i = index">
+            <ng-container *ngIf="!EditMode[i]; else editModeTD">
+              <td style="width: 145px; text-align:center;">{{dateFormat(data.START_TIME, 1)}}</td>
+              <td style="width: 145px; text-align:center;">{{dateFormat(data.END_TIME, 1)}}</td>
+              <td style="width: 80px; text-align:center;">{{data.SCH_SHOP_CODE}}</td>
+              <td style="width: 70px; text-align:center;">{{data.EQUIP_CODE}}</td>
+              <td style="width: 100px; text-align:center;">{{data.MODEL_TYPE}}</td>
+              <td style="width: 120px; text-align:center;">
+                <a *ngIf="!isRunFCP" (click)="upd_dtlRow(i, data)">編輯</a>
+                <a *ngIf="isRunFCP" disabled="true" (click)="upd_dtlRow(i, data)">編輯</a>&nbsp;
+                <a *ngIf="!isRunFCP" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
+                <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
+              </td>
+            </ng-container>
+
+            <ng-template #editModeTD>
+              <td style="width: 145px; text-align:center;">
+                <input type="text" nz-input [(ngModel)]="data.START_TIME" />
+              </td>
+              <td style="width: 145px; text-align:center;">
+                <input type="text" nz-input [(ngModel)]="data.END_TIME" />
+              </td>
+              <td style="width: 80px; text-align:center;">
+                <nz-select style="max-width: 200px; width: 100%;" [(ngModel)]="data.SCH_SHOP_CODE" (click)="getSHOP_CODEList()">
+                  <nz-option *ngFor="let p of SHOP_CODEList" [nzValue]="p.SHOP_CODE" [nzLabel]="p.SHOP_CODE"></nz-option>
+                </nz-select>
+              </td>
+              <td style="width: 70px; text-align:center;">
+                <nz-select style="max-width: 200px; width: 100%;" [(ngModel)]="data.EQUIP_CODE" (click)="getEQUIP_CODEList(data.SCH_SHOP_CODE)">
+                  <nz-option *ngFor="let p of EQUIP_CODEList" [nzValue]="p.EQUIP_CODE" [nzLabel]="p.EQUIP_CODE"></nz-option>
+                </nz-select>
+              </td>
+              <td style="width: 100px; text-align:center;">
+                <nz-select style="max-width: 150px; width: 100%;" [(ngModel)]="data.MODEL_TYPE">
+                  <nz-option nzValue="週保" nzLabel="週保"></nz-option>
+                  <nz-option nzValue="計畫性停機" nzLabel="計畫性停機"></nz-option>
+                  <nz-option nzValue="調機" nzLabel="調機"></nz-option>
+                  <nz-option nzValue="定修" nzLabel="定修"></nz-option>
+                </nz-select>
+              </td>
+              <td style="width: 120px; text-align:center;">
+                <a (click)="save_dtlRow(i, data)">確認</a>&nbsp;
+                <a (click)="cancel_dtlRow(i, data)">取消</a>
+              </td>
+            </ng-template>
+
+          </tr>
+
+        </tbody>
+
+      </nz-table>
+    </div>
+  </ng-template>
+
+  <ng-template #modalFooter>
+    <button nz-button nzType="primary" (click)="Cdtl_Cancel()">關閉</button>
+  </ng-template>
+
+</nz-modal>
+
+
+
+<nz-modal
+  [(nzVisible)]="isErrorMsg"
+  [nzTitle]="errTitle"
+  [nzContent]="errContent"
+  [nzFooter]="errFooter"
+  [nzWidth]="800"
+  (nzOnCancel)="ERR_Cancel()"
+>
+  <ng-template #errTitle>Excel匯入錯誤訊息</ng-template>
+  <ng-template #errContent>
+    <div>
+
+      <tr *ngFor = "let item of errorTXT; let i = index;">
+        <td style="width: 100%; font-size: large; font-weight: bold;" *ngFor = "let item of errorTXT[i];">第 {{item.row}} 列，錯誤：{{item.msg}} </td>
+      </tr>
+    </div>
+
+  </ng-template>
+  <ng-template #errFooter>
+    <button nz-button nzType="primary" (click)="ERR_Cancel()">關閉</button>
+  </ng-template>
+
+</nz-modal>
+
+
+

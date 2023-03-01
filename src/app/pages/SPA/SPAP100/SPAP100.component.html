@@ -1,0 +1,260 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>銷售預估與原料需求</nz-breadcrumb-item>
+    <nz-breadcrumb-item>銷售計劃與配置</nz-breadcrumb-item>
+    <nz-breadcrumb-item>基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+          業務每月預估量
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <div style="background: #eee">
+
+          <!-- 單筆新增功能 -->
+          <button id="singleAdd" nz-button (click)="addRow()" class="AddButton" role="button">
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+          </button>
+          &nbsp;
+
+          <!-- 匯入EXCEL功能 -->
+          <button id="bacthAdd" nz-button role="button" class="ImportButton" onclick="document.getElementById('importExcel').click();" >
+            <span nz-icon nzType="upload" nzTheme="outline"></span>
+            匯入
+          </button>
+          <input style="display:none;" type="file" name="file" id="importExcel" required (change)="handleImport($event)"
+          accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          &nbsp;
+
+          <!-- 匯出EXCEL功能 -->
+          <button id="download" nz-button (click)="exportToExcel()" class="ExportButton" role="button">
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            匯出
+          </button>
+          &nbsp;
+
+          <!-- 加載圖示 -->
+          <div id="loadingStatus" class="hidden">
+            <b>執行中...</b>
+            <div class="loading"></div>
+          </div>
+
+        </div>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table #RowTable1 nzBordered [nzData]="SPA100ListOfDisplayData" [nzPageSize]="20" [nzScroll]="{ y: '1400px' }" class="table" style="border:3px #cccccc solid;" cellpadding="10" border='1'>
+            <thead>
+              <!-- 篩選 & 升降冪功能 -->
+              <tr>
+                <!-- 1.廠區別 -->
+                <!-- <th nzCustomFilter [nzSortFn]="listOfColumn.plantCode.compare" [nzSortPriority]="listOfColumn.plantCode.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                  <font size="3.5"><b>產區別</b></font>
+                  <nz-filter-trigger [(nzVisible)]="visible1" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu1">
+                    <span nz-icon nzType="search"></span>
+                  </nz-filter-trigger>
+                </th> -->
+                <!-- 2.預估接單月 -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.forecastReceiveDate.compare" [nzSortPriority]="listOfColumn.forecastReceiveDate.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                  <font size="3.5"><b>預估接單月</b></font>
+                  <nz-filter-trigger [(nzVisible)]="visible2" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu2">
+                    <span nz-icon nzType="search"></span>
+                  </nz-filter-trigger>
+                </th>
+                <!-- 3.客戶名稱 -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.custAbbr.compare" [nzSortPriority]="listOfColumn.custAbbr.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>客戶名稱</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible3" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu3">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <!-- 4.產品別 -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.productType.compare" [nzSortPriority]="listOfColumn.productType.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>產品別</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible4" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu4">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <!-- 5.上旬量(1-5) -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.stage1Amount.compare" [nzSortPriority]="listOfColumn.stage1Amount.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>上旬量(1-5)</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible4" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu5">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <!-- 6.中旬量(6-15) -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.stage2Amount.compare" [nzSortPriority]="listOfColumn.stage2Amount.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>中旬量(6-15)</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible4" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu6">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <!-- 7.下旬量(16-25) -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.stage3Amount.compare" [nzSortPriority]="listOfColumn.stage3Amount.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>下旬量(16-25)</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible6" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu7">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <!-- 8.月底旬量(26-月底) -->
+                <th nzCustomFilter [nzSortFn]="listOfColumn.stage4Amount.compare" [nzSortPriority]="listOfColumn.stage4Amount.priority"
+                style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                <font size="3.5"><b>月底旬量(26-月底)</b></font>
+                <nz-filter-trigger [(nzVisible)]="visible7" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu8">
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+                </th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"><font size="4.5"><b>Action</b></font></th>
+              </tr>
+            </thead>
+            <!-- 表格主體 -->
+            <tbody>
+              <tr *ngFor="let data of RowTable1.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache1[data.id].edit; else editTemplate1">
+                  <!-- <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.plantCode }}</font></td> -->
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.forecastReceiveDate }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.custAbbr }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.productType }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.stage1Amount }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.stage2Amount }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.stage3Amount }}</font></td>
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;"><font size="3">{{ data.stage4Amount }}</font></td>
+                  <!-- 修改/刪除功能 -->
+                  <td style="text-align:center; padding: 0px; height: 10px; width: 50px;">
+                    <a id="revise" (click)="editRow(data.id, 1)">
+                      <span nz-icon nzType="edit" nzTheme="outline"></span>
+                      修改
+                    </a>|
+                    <a id="delete" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)">
+                      <span nz-icon nzType="delete" nzTheme="outline"></span>
+                      刪除
+                    </a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <!-- <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.plantCode" />
+                  </td> -->
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.forecastReceiveDate" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.custAbbr" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.productType" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.stage1Amount" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.stage2Amount" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.stage3Amount" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="請輸入" [(ngModel)]="editCache1[data.id].data.stage4Amount" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit(data.id, 1)">
+                      <span nz-icon nzType="save" nzTheme="outline"></span>
+                      確認
+                    </a>|
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 1)">
+                      <span nz-icon nzType="close" nzTheme="outline"></span>
+                      取消
+                    </a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+
+          <!-- <nz-dropdown-menu #menu1="nzDropdownMenu"> -->
+            <!-- <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchplantCode(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div> -->
+          <!-- </nz-dropdown-menu> -->
+          <nz-dropdown-menu #menu2="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchforecastReceiveDate(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu3="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchcustAbbr(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu4="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchproductType(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu5="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchstage1Amount(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu6="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchstage2Amount(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu7="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchstage3Amount(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu8="nzDropdownMenu">
+            <div class="ant-table-filter-dropdown">
+              <div class="search-box">
+                <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue" />
+                <button nz-button nzSize="small" nzType="primary" (click)="searchstage4Amount(searchValue)" class="search-button">Search</button>
+                <button nz-button nzSize="small" (click)="reset()">Reset</button>
+              </div>
+            </div>
+          </nz-dropdown-menu>
+        </div>
+      </div>
+  
+  
+  
+  </nz-content>
+  

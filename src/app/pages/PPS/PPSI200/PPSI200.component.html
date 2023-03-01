@@ -1,0 +1,465 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>基本資料表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>系統設定</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+
+    <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'">
+      <nz-tab nzTitle="combine資料設定" (nzClick)="changeTab(1)">
+        <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <nz-collapse style="background-color: aliceblue;">
+          <nz-collapse-panel
+          *ngFor="let panel of panels"
+          [nzHeader]="panel.name"
+          [nzActive]="panel.active"
+          [nzDisabled]="panel.disabled"
+          >
+
+          <button
+            nz-button
+            *ngIf="!isRunFCP"
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            (click)="insertTab1()"
+          >
+          <span nz-icon nzType="save" nzTheme="outline"></span>
+          確認
+          </button>
+          <button
+            nz-button
+            *ngIf="isRunFCP"
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue;"
+            nzType="primary"
+            [nzSize]="'large'"
+            [disabled] = "true"
+            (click)="insertTab1()"
+          >
+          <span nz-icon nzType="save" nzTheme="outline"></span>
+          確認
+          </button>
+          <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+          <p></p><p></p>
+
+          <tr>
+            <td style = "width: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;combin條件</td>
+            <td style = "width: 300px;">
+              <nz-select [nzDropdownMatchSelectWidth]="false"  style="margin-left: 5px; max-width: 150px; width: 100%;" nzPlaceHolder = "combin條件" [(ngModel)]="COLUMN_NAME" (click)="getRequierList()">
+                <nz-option *ngFor="let s of COLUMN_NAMEList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+              </nz-select>
+            </td>
+          </tr><p></p><p></p>
+          <tr>
+            <td style="width:inherit;" colspan = "2">
+              <nz-card style="width:90%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="站別">
+                <ng-container *ngIf="SHOP_splitList">
+                  <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickShopCode($event)">
+                    <tr *ngFor = "let item of SHOP_splitList; let i = index;">
+                      <td style="width: 80px;" *ngFor = "let item1 of SHOP_splitList[i];">
+                        <label nz-checkbox nzValue="{{item1}}" >{{item1}}</label></td>
+                    </tr>
+                  </nz-checkbox-wrapper>
+                </ng-container>
+              </nz-card>
+            </td>
+            <td style="width:inherit;" colspan = "2">
+              <nz-card style="width:450px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="機台">
+                <ng-container *ngIf="EQUIP_splitList">
+                  <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickEquipCode($event)">
+                    <tr *ngFor = "let item of EQUIP_splitList; let i = index;">
+                      <td style="width: 80px;" *ngFor = "let item1 of EQUIP_splitList[i];"><label nz-checkbox [ngModel]="item1.checked" [nzValue]="item1.value">{{item1.value}}</label></td>
+                    </tr>
+                  </nz-checkbox-wrapper>
+                </ng-container>
+              </nz-card>
+            </td>
+          </tr>
+
+          </nz-collapse-panel>
+        </nz-collapse>
+        <p></p>
+          <div nz-col [nzSpan]="8">
+            <nz-table #RowTable1 nzBordered [nzData]="FCPTB26List" [nzPageSize]="50" [nzScroll]="{ y: '300px' }">
+              <thead>
+                <tr style="width: 80%;">
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">站別</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">機台</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">combin條件</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of RowTable1.data;let i = index" class="editable-row" style="width: 80%">
+                  <ng-container *ngIf="!editCache1[data.id].edit; else editTemplate1">
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.SCH_SHOP_CODE_1 }}</td>
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.MACHINE }}</td>
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.COLUMN_COMMENT }}</td>
+                    <td style="text-align:center; padding: 0px; height: 60px; width: 80px;">
+                      <a *ngIf="!isRunFCP"  (click)="editRow(data.id, 1)">修改</a>
+                      <a *ngIf="isRunFCP" disabled="true" (click)="editRow(data.id, 1)">修改</a>&nbsp;&nbsp;
+                      <a *ngIf="!isRunFCP" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)">刪除</a>
+                      <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)" >刪除</a>
+                    </td>
+                  </ng-container>
+                  <ng-template #editTemplate1>
+                    <td>
+                      <nz-select style="max-width: 120px; width: 100%;" nzPlaceHolder = "選擇站別" [(ngModel)]="editCache1[data.id].data.SCH_SHOP_CODE_1" (click)= "getPickerShopData(data.id)">
+                        <nz-option *ngFor="let p of ShopList" [nzValue]="p" [nzLabel]="p"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <nz-select style="max-width: 200px; width: 100%;" nzPlaceHolder = "選擇機台"  [(ngModel)]="editCache1[data.id].data.MACHINE" (click)="getPickerMachineData(data.SCH_SHOP_CODE_1, data.id)">
+                        <nz-option *ngFor="let md of MachineList" [nzValue]="md" [nzLabel]="md"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <nz-select [nzDropdownMatchSelectWidth]="false"  style="margin-left: 5px; max-width: 150px; width: 100%;" nzPlaceHolder = "combin條件" [(ngModel)]="editCache1[data.id].data.COLUMN_NAME" (click)="getRequierList()">
+                        <nz-option *ngFor="let s of COLUMN_NAMEList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <a (click)="saveEdit(data.id, 1)">確認</a>&nbsp;&nbsp;
+                      <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 1)">取消</a>
+                    </td>
+                  </ng-template>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+      </nz-tab>
+
+
+<!-- 20221028-暫不實作
+      <nz-tab nzTitle="combine站別設定" (nzClick)="changeTab(2)">
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="8">
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+              nzType="primary"
+              [nzSize]="'large'"
+              (click)="onUpdate()"
+            >
+            <span nz-icon nzType="save" nzTheme="outline"></span>s
+            確認
+            </button> <p></p><p></p>
+
+            <nz-table #editRowTable nzBordered [nzData]="FCPTB27List" [nzPageSize]="50" [nzScroll]="{ y: '300px' }">
+              <thead>
+                <tr style="width: 80%;">
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:50px;"></th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">群組序號</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">站別順序</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of editRowTable.data;let i = index" class="editable-row" style="width: 80%">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 50px;">
+                    {{ i + 1 }}
+                  </td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">
+                    <div class="editable-cell" (click)="startEdit(data.id)" *ngIf="editId !== data.id; else editTpl">
+                      <nz-select style="max-width: 120px; width: 100%;" nzPlaceHolder = "選擇站別" [(ngModel)]="data.SCH_SHOP_CODE" (click)= "getPickerShopData(i)" (blur)="stopEdit(data.id, 1)">
+                        <nz-option *ngFor="let p of ShopList" [nzValue]="p" [nzLabel]="p"></nz-option>
+                      </nz-select>
+                    </div>
+                    <ng-template #editTpl>
+                      {{ data.SCH_SHOP_CODE }}
+                    </ng-template>
+                  </td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">
+                    <div class="editable-cell" (click)="startEdit(data.id, 2)">
+                      <nz-select style="max-width: 120px; width: 100%;" nzPlaceHolder = "選擇站別" [(ngModel)]="data.NEXT_SCH_SHOP_CODE" (click)= "getPickerShopData(i)" (blur)="stopEdit(data.id, 2)">
+                        <nz-option *ngFor="let p of ShopList" [nzValue]="p" [nzLabel]="p"></nz-option>
+                      </nz-select>
+                    </div>
+                    <ng-template #editTpl>
+                      <input type="text" nz-input [(ngModel)]="data.NEXT_SCH_SHOP_CODE" />
+                    </ng-template>
+                  </td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 80px;">
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 2)">刪除</a>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+
+          <div nz-col [nzSpan]="4"></div>
+        </div>
+      </nz-tab> -->
+
+
+
+      <nz-tab nzTitle="站別管數設定" (nzClick)="changeTab(3)">
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="8">
+            <nz-table #RowTable nzBordered [nzData]="FCPTB28List" [nzPageSize]="20" [nzScroll]="{ y: '300px' }">
+              <thead>
+                <tr style="width: 80%;">
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">站別</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">管數</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row" style="width: 80%">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.SCH_SHOP_CODE }}
+                  </td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.QUANTITY }}
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+      </nz-tab>
+
+      <nz-tab nzTitle="星期起始設定" (nzClick)="changeTab(4)">    <!-- TODO: 自動新增+刪除 -->
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="14">
+            <nz-collapse style="background-color: aliceblue;">
+              <nz-collapse-panel
+              *ngFor="let panel of setAddDatePanels"
+              [nzHeader]="panel.name"
+              [nzActive]="panel.active"
+              [nzDisabled]="panel.disabled"
+              >
+              <table>
+                <tr>
+                  <td>設定區間</td>
+                  <td>
+
+                    <nz-month-picker style="width: 110px;"
+                      [(ngModel)]="startDateForAdd"
+                      nzPlaceHolder="開始年月"
+                      ></nz-month-picker>
+                      ~
+                      <nz-month-picker style="width: 110px;"
+                      nzPlaceHolder="結束年月"
+                      [(ngModel)]="endDateForAdd"
+                      ></nz-month-picker>
+                  </td>
+                  <td>&nbsp;&nbsp;設定星期</td>
+                  <td>
+                    <nz-select style="width: 100px; margin-left:10px;"
+                        [(ngModel)]="weekDayValueForAdd"
+                        (ngModelChange)="weekDayChange($event)"
+                      >
+                        <nz-option *ngFor="let option1 of weekDayList"
+                          [nzValue]="option1"
+                          [nzLabel]="option1.label"
+                        ></nz-option>
+                      </nz-select>
+                  </td>
+                  <td>
+                    &nbsp;&nbsp;
+                    <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab4()"
+                    >
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    確認
+                    </button>
+                  </td>
+                </tr>
+              </table>
+
+
+              </nz-collapse-panel>
+            </nz-collapse>
+
+          <p></p>
+          <div>
+            <nz-table #editSetWeekTable nzBordered  *ngIf="weekData.length > 0 "  [nzData]="weekData"   >
+              <thead>
+                <tr>
+                  <th nzWidth="10px" style="text-align:center;background-color: #eee;">年-月</th>
+                  <th nzWidth="10px" style="text-align:center;background-color: #eee;">星期</th>
+                  <th nzWidth="2px" style="text-align:center;background-color: #eee;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of editSetWeekTable.data ; index as i" >
+                  <td style="text-align:center;">
+                    {{item.month}}
+                  </td>
+                  <td style="text-align:center;">
+                    <ng-container *ngIf="!item.editStatus; else weekInputTpl">
+                      {{ item.week_name }}
+                    </ng-container>
+                    <ng-template #weekInputTpl>
+                      <nz-select
+                        [nzDisabled]="item.disabledFlag"
+                        style="width: 90px;text-align: center;"
+                        [compareWith]="compareWeekFn"
+                        [(ngModel)]="selectOptionWeekDay"
+                        (ngModelChange)="selectWeekChange($event)"
+
+                        nzPlaceHolder="Choose"
+                      >
+                        <nz-option
+
+                           *ngFor="let option of weekDayList2"
+                           [nzValue]="option"
+                           [nzLabel]="option.label"></nz-option>
+                    </nz-select>
+                    </ng-template>
+                  </td>
+
+                  <td style="text-align:center;">
+                    <div class="editable-row-operations">
+                      <ng-container *ngIf="!item.editStatus; else saveTpl">
+                        <a
+                          [attr.disabled] = " item.disabledFlag ? true : null "
+                           (click)="weekEditFunc(item.ID,i)">修改</a>
+                      </ng-container>
+                      <ng-template #saveTpl>
+                        <a
+                        [attr.disabled] = " item.disabledFlag ? true : null "
+                          (click)="weekSaveEdit(item.ID,i)">確認</a>
+
+                        <a  style="margin-left: 15px;"
+                          nz-popconfirm
+                          [attr.disabled] = " item.disabledFlag ? true : null "
+                          nzPopconfirmTitle="Sure to cancel?"
+                          (nzOnConfirm)="weekCancelEdit(item.id,i)">取消</a>
+                      </ng-template>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+
+        </div>
+      </nz-tab>
+
+
+
+      <nz-tab nzTitle="FCP結果保留設定" (nzClick)="changeTab(5)">
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="14">
+            <nz-collapse style="background-color: aliceblue;">
+              <nz-collapse-panel
+              *ngFor="let panel of setTab5AddDatePanels"
+              [nzHeader]="panel.name"
+              [nzActive]="panel.active"
+              [nzDisabled]="panel.disabled"
+              >
+              <table>
+                <tr>
+                  <td>設定年月</td>
+                  <td>
+
+                    <nz-month-picker style="width: 110px;"
+                      [(ngModel)]="tab5DateOf_YYYYMM_ForAdd"
+                      nzPlaceHolder="年月"
+                      (ngModelChange)="FCP_YYYYMMChange($event)"
+                      ></nz-month-picker>
+
+                  </td>
+                  <td>&nbsp;&nbsp;設定日期</td>
+                  <td>
+                    <nz-select style="width: 140px; margin-left:10px;"
+                        nzMode="multiple"
+                        [(ngModel)]="tab5DateOf_DD_ForAdd"
+                        (ngModelChange)="FCPDayChange($event)"
+                      >
+                        <nz-option *ngFor="let option1 of DayOfMonthList"
+                          [nzValue]="option1"
+                          [nzLabel]="option1.label"
+                        ></nz-option>
+                      </nz-select>
+                  </td>
+                  <td>
+                    &nbsp;&nbsp;
+                    <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab5()"
+                    >
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    確認
+                    </button>
+                  </td>
+                </tr>
+              </table>
+
+
+              </nz-collapse-panel>
+            </nz-collapse>
+
+          <p></p>
+          <div>
+            <nz-table #editSetFCPRSTable nzBordered
+                      *ngIf="FCPRSData.length > 0 "
+                      [nzData]="FCPRSData"   >
+              <thead>
+                <tr style="width: 80%;">
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">年-月-日</th>
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">狀態</th>
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item1 of editSetFCPRSTable.data ; index as i" >
+                  <td style="text-align:center;">
+                    {{item1.setDate}}
+                  </td>
+                  <td style="text-align:center;">
+
+                    <ng-container *ngIf="!item1.editStatus; else statusInputTpl">
+                      {{ item1.STATUS }}
+                    </ng-container>
+                    <ng-template #statusInputTpl>
+                      <nz-switch [(ngModel)]="tab5Switch"
+                                 nzCheckedChildren="啟用"
+                                 nzUnCheckedChildren="停用"></nz-switch>
+                    </ng-template>
+                  </td>
+
+                  <td style="text-align:center;">
+                    <div class="editable-row-operations">
+                      <ng-container *ngIf="!item1.editStatus; else saveTp2">
+                        <a
+                          [attr.disabled] = " item1.disabledFlag ? true : null "
+                           (click)="statusEditFunc(item1.id,i)">修改</a>
+
+                        <a style="margin-left: 15px;"
+                           nz-popconfirm
+                           [attr.disabled] = " item1.disabledFlag ? true : null "
+                           nzPopconfirmTitle="Sure to delete?"
+                           (nzOnConfirm)="deleteRow(item1.id, 5)">刪除</a>
+                      </ng-container>
+                      <ng-template #saveTp2>
+                        <a
+                        [attr.disabled] = " item1.disabledFlag ? true : null "
+                          (click)="statusSaveEdit(item1.id, i)">確認</a>
+
+                        <a  style="margin-left: 15px;"
+                          nz-popconfirm
+                          [attr.disabled] = " item1.disabledFlag ? true : null "
+                          nzPopconfirmTitle="Sure to cancel?"
+                          (nzOnConfirm)="statusCancelEdit(item1.id,i)">取消</a>
+                      </ng-template>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+          </div>
+        </div>
+      </nz-tab>
+
+    </nz-tabset>
+
+</nz-content>

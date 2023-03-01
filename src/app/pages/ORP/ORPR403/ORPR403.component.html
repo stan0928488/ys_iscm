@@ -1,0 +1,121 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>訂單即時回應</nz-breadcrumb-item>
+    <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+    <nz-breadcrumb-item>鋼捲每日出貨負荷表</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div style="float: right;">
+    <span>查詢區間 :</span>
+    <nz-range-picker [(ngModel)]="date" style="margin-left: 10px;" (ngModelChange)="onDateChange($event)"></nz-range-picker>
+    <button nz-button nzType="primary" style="margin: 10px;"  (click)="search()">歷史資料查詢</button>
+    <button nz-button nzType="primary" style="margin: 10px;" (click)="exportExcel()">匯出 Excel </button>
+  </div>
+
+  <!-- 客戶鋼種廠內鋼種對應表 -->
+      <div id="tab_1" style="background: rgb(255, 255, 255); min-height: 1100px;">
+
+        <div style="background: #eee">
+            <nz-table #basicTable [nzData]="dailyShips" [nzBordered]="true" [nzPageSize]="15" nzSize = "small" [nzWidthConfig] ="['50px', '180px', '105px', '105px', '105px', '105px', '105px', '105px', '105px', '105px','105px','105px','105px','105px','105px','105px','105px']" (nzPageIndex)="page" nzFooter="*來源: 銷貨通知單內資料(含寄庫)" [nzScroll]="{ x: '1000px' }" [nzShowPagination]="false">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>出貨日期</th>
+                  <th *ngFor="let data of basicTable.data">{{ data.date }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class = "left-header"></td>                 
+                  <td id="input-td">可供出貨量</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.availble_ship" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td></td>  
+                  <td id="input-td">原料</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.material" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td rowspan="3" class = "left-header">外銷</td>    
+                  <td id="input-td">高雄港-當日到貨</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.kaohsiung_onday" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">高雄港-壓板</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.kaohsiung_platen" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">台中港</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.taichung_forout" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  
+                  <td colspan="2" class = "left-header" nzAlign = "center">預估外銷可出貨量</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true" [(ngModel)]="data.expect_export_sales" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td rowspan="10" class = "left-header" nzWidth="20px">內銷</td> 
+                  <td id="input-td">中部(預叫車)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.domestic_chou_noniscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-當日到貨(預叫車)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.domestic_NS_onday_noniscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-壓板(預叫車)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.domestic_NS_platen_noniscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">客戶追加</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input  [(ngModel)]="data.customer_add" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">中部*</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_chou_iscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-當日到貨*</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_NS_onday_iscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-壓板*</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_NS_platen_iscm" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">中部(餘量)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_chou_remain" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-當日到貨(餘量)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_NS_onday_remain" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true' /></td>
+                </tr>
+                <tr>
+                  <td id="input-td">北南部-壓板(餘量)</td>
+                  <td *ngFor="let data of basicTable.data; let i=index" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.domestic_NS_platen_remain" (ngModelChange)="onChangeForOut(((basicTable.nzPageIndex - 1) * basicTable.nzPageSize) + i)" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td colspan="2" class = "left-header" nzAlign = "center">預估內銷出貨量</td>
+                  <td *ngFor="let data of basicTable.data" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.expect_domestic_sales" nzSize = 'small' nzBorderless = 'true'/></td>
+                </tr>
+                <tr>
+                  <td colspan="2" class = "left-header" nzAlign = "center">合計出貨量</td>
+                  <td *ngFor="let data of basicTable.data" id="input-td"><input nz-input [disabled]="true"  [(ngModel)]="data.all_sales" nzSize = 'small' nzBorderless = 'true'/></td>
+                  
+                </tr>
+              </tbody>
+            </nz-table> 
+          </div>
+          <div style = "float:right;">
+            <button nz-button nzType="primary" style="margin: 10px;" (click)="MESDownload()">MES 資料下載 </button>
+            <button nz-button nzType="primary" style="margin: 10px;" (click)="save()">資料儲存更新 </button>
+            
+          </div> 
+      </div>
+    <!-- 客戶鋼種廠內鋼種對應表 -->
+
+  
+
+</nz-content>
+
+

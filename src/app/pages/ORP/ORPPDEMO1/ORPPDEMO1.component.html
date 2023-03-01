@@ -1,0 +1,109 @@
+<div nz-row style="margin:15px 15px;">
+  <div nz-col nzSpan="6">
+    合約 :<input nz-input style="width:200px;" placeholder="請輸入合約號"  [(ngModel)]="postData.data.ctNo" />
+  </div>
+  <div nz-col nzSpan="6">
+    <button nz-button  nzType="primary" (click)="comitData()">查詢</button>
+    <button style="margin-left:10px;" nz-button  nzType="primary" (click)="handleApplyDeliveryModalCancel()">申請提領</button>
+  </div>
+  <div nz-col nzSpan="6"></div>
+  <div nz-col nzSpan="6" style="text-align: right;">
+    <button nz-button  nzType="primary" (click)="comitCreditData()">信用狀</button>
+  </div>
+</div>
+
+<nz-table #basicTable [nzData]="table.listOfData">
+  <thead>
+    <tr>
+      <ng-container *ngFor="let item of table.header">
+        <th [class]="item.bgcolor">{{item.lable}}</th>
+      </ng-container>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td>
+        <label [nzDisabled]="true" nz-checkbox [(ngModel)]="checked"></label> 
+       </td>
+     <td>{{data.ziliaoDate}}</td>
+     <td>{{data.tihuoNo}}</td>
+     <td>{{data.gangJuanNo}}</td>
+     <td>{{data.heyueNo}}</td>
+     <td>{{data.orderNo}}</td>
+     <td>{{data.gangJuanNo}}</td>
+     <td>{{data.tilingStatus}}</td>
+     <td>{{data.tilingType}}</td>
+     
+     <td>{{data.coilType}}</td>
+     <td>{{data.biaomian}}</td>
+     <td>{{data.status}}</td>
+     <td>{{data.gangjuanType}}</td>
+     <td>{{data.specification}}</td>
+     <!-- <td>{{data.level}}</td>
+     <td>{{data.orderThickness}}</td>
+     <td>{{data.orderWidth}}</td>
+     <td>{{data.thicknessUpper}}</td>
+     <td>{{data.thicknessLower}}</td>
+     <td>{{data.realThickness}}</td>
+     <td>{{data.realWidth}}</td>
+     <td>{{data.realLong}}</td>
+     <td>{{data.jingzong}}</td>
+     <td>{{data.maozong}}</td> -->
+     <td>{{data.deliveryLocation}}</td>
+     <td>{{data.deliveryAddress}}</td>
+     <td>{{data.preDeliveryDate}}</td>
+     <td>{{data.deliveryPlanDate}}</td>
+     <td>{{data.remark}}</td>
+    </tr>
+  </tbody>
+</nz-table>
+
+
+
+<nz-modal nzWidth = "700"  [(nzVisible)]="isCreditVisible" nzTitle="信用狀" (nzOnCancel)="handleCreditModalCancel()">
+  <div *nzModalContent  >
+    <nz-table #basicTable1 [nzData]="creditTable.listOfData">
+      <thead>
+        <tr>
+          <ng-container *ngFor="let item of creditTable.header">
+            <th>{{item.lable}}</th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable1.data">
+         <td>{{data.currentDate}}</td>
+         <td>{{data.cstName}}</td>
+         <td>{{data.handleDate}}</td>
+         <td>{{data.handleBank}}</td>
+         <td>{{data.handleBranch}}</td>
+         <td>{{data.creditNo}}</td>
+         <td>{{data.billingDate}}</td>
+         <td>{{data.creditAmount}}</td>
+         <td>{{data.billAmount}}</td>
+         <td>{{data.discountAmount}}</td>
+         <td>{{data.remainingAmount}}</td>
+         <td>{{data.expiryDate}}</td>
+         <td>{{data.remark}}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCreditModalCancel()">關閉</button>
+  </div>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isApplyDeliveryModalVisible" nzTitle="發送提貨申請" (nzOnCancel)="handleApplyDeliveryModalCancel()">
+  <div *nzModalContent>
+    <p><label>送貨地點 -> </label> 運錩(大寮廠)</p>
+    <p><label>送貨地址-> </label> 高雄市大寮區華西路12號</p>
+    <p><label>送貨日期-> </label> 2023-03-09</p>
+  </div>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleApplyDeliveryModalCancel()">關閉</button>
+    <button nz-button nzType="primary" (click)="comitApplyData()" [nzLoading]="applyLoading">確認</button>
+  </div>
+</nz-modal>
+
+

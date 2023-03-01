@@ -1,0 +1,74 @@
+<div nz-row style="background-color: white; padding: 10px 10px; margin:5px 5px;">
+  <div nz-col nzSpan="12">
+   <h5>作業交談信息</h5>
+  </div>
+  <div nz-col nzSpan="12" style="text-align: right;">
+    <button nz-button nzType="primary" (click)="editCustomer(0)">
+      <span>新增</span>
+    </button>
+  </div>
+</div>
+
+<nz-table #basicTable [nzData]="tbData">
+  <thead>
+    <tr>
+      <th *ngFor="let header of  tbHeader">{{header.label}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let data of basicTable.data ;let i = index">
+    <tr>
+      <td>{{i+1}}</td>
+      <td>{{data.talkName}}</td>
+      <td>{{data.talkCode}}</td>
+      <td>{{data.talkVersion}}</td>
+      <!-- <td *ngIf="data.talkType === '1'">一般做業</td>
+      <td *ngIf="data.talkType === '2'">特殊做業</td>
+      <td *ngIf="data.talkType === '3'">通用碼</td> -->
+      <td>{{data.talkApi}}</td>
+      <td>{{data.useStatus}}</td>
+      <!-- <td><nz-switch [ngModel]="data.useStatus === 'Y'? true : false" [nzDisabled] = "true" nzCheckedChildren="開啟" nzUnCheckedChildren="關閉"></nz-switch></td> -->
+      <!-- <td><nz-tag [nzColor]="data.delStatus === '0' ? '#2db7f5':'#f50'">{{data.delStatus === '0' ? '存在':'刪除'}}</nz-tag></td> -->
+      <td>{{data.createDate}}</td>
+      <td>
+        <nz-tag [nzColor]="'cyan'"  *ngFor="let item of data.systemCustomers">{{item.cstNickname}}</nz-tag>
+      </td>
+      <td>
+        <ng-container *ngIf="data.talkCode !== 'M00'">
+          <a (click)="handleSetCustomer(data.id)">客戶配置</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <!-- <a (click)="showDeleteConfirm(data.id)">刪除</a> -->
+          <a (click)="editCustomer(data.id)">编辑</a>
+        </ng-container>
+        <!-- <a (click)="createTplModal(data.id,tplTitle, tplContent, tplFooter)">修改</a> -->
+       
+      </td>
+    </tr>
+  </ng-container>
+
+  </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle] ="modalTitle" (nzOnCancel)="handleModalCancel()">
+  <div *nzModalContent>
+    <nz-checkbox-group [(ngModel)]="checkOptions" (ngModelChange)="changeChecked(checkOptions)"></nz-checkbox-group>
+  </div>
+  <div *nzModalFooter>
+   <button nz-button [disabled]="editBtnStatus" nzType="primary" (click)="comitSetCustomer()" [nzLoading]="isComitLoading">確認</button>
+   <button nz-button nzType="default" (click)="handleModalCancel()">關閉</button>
+  </div>
+</nz-modal>
+
+
+<nz-modal [(nzVisible)]="isEditVisible" [nzTitle] ="modalEditTitle" (nzOnCancel)="handleEditModalCancel()">
+  <div *nzModalContent>
+  </div>
+  <div *nzModalFooter>
+   <button nz-button [disabled]="editBtnStatus" nzType="primary" (click)="saveTalkSession()" [nzLoading]="isEditComitLoading">確認</button>
+   <button nz-button nzType="default" (click)="handleEditModalCancel()">關閉</button>
+  </div>
+</nz-modal>
+
+
+
+

@@ -1,0 +1,8 @@
+<nz-modal [(nzVisible)]="isVisible" nzTitle="閒置登出訊息提示" (nzOnCancel)="handleCancel()" (nzOnOk)="handleCancel()">
+
+  <ng-container *nzModalContent>
+    <p>
+      太久未進行頁面操作，即將退出系統，重新登錄！剩餘時間 {{message}} 秒
+    </p>
+  </ng-container>
+</nz-modal>

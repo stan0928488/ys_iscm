@@ -1,0 +1,209 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
+    <nz-breadcrumb-item>生產規劃執行</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+  <div style="padding:24px; background: rgb(255, 255, 255); min-height: 500px;">
+
+    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+
+    <table>
+      <tr style="height: 30px;">
+        <td style="width: 50px; text-align:right; background-color: rgb(138, 236, 230); border-bottom: 1px rgb(138, 236, 230) ridge; font-size: 14px;" colspan="2">資料與策略</td>
+        <td style="width: 120px; text-align:center; background-color: rgb(138, 236, 230);" rowspan = "2">規劃案版本：{{PLAN_EDITION}}</td>
+        <td style="width: 250px; text-align:center; background-color: rgb(138, 236, 230);" rowspan = "2">執行狀態</td>
+      </tr>
+
+      <tr style="height: 30px;">
+        <td style="width: 80px; text-align:left; background-color: rgb(138, 236, 230); border-top: 1px rgb(138, 236, 230) ridge; font-size: 14px;" colspan="2">&nbsp;&nbsp;版本</td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;開始時間與狀態</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{PLAN_STATU_NA}}</td>
+        <td style="width: 250px; vertical-align:text-top; font-size: 18px;" rowspan = "12">
+          <p></p>
+          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;生產規劃啟動： {{ PLANSTARTVER }}</p>
+          <p *ngIf = "RES_S != 'OK' && RES_S != ''">&nbsp;&nbsp;失敗：{{ RES_S }}<p>
+          <nz-progress [nzPercent]="S_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;取 MO 資料： {{ MOVER }}</p>
+          <p *ngIf = "RES_M != 'OK' && RES_M != ''">&nbsp;&nbsp;失敗：{{ RES_M }}<p>
+          <nz-progress [nzPercent]="M_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;工時計算： {{ DATAVER }}</p>
+          <p *ngIf = "RES_I != 'OK' && RES_I != ''">&nbsp;&nbsp;失敗：{{ RES_I }}<p>
+          <nz-progress [nzPercent]="I_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;ICP&FCP 計算： {{ FCPVER }}
+            <p style="font-weight: bold; color: #2638db;" *ngIf = "RES_F != 'OK' && RES_F != ''">&nbsp;&nbsp;失敗：{{ RES_F }}<p>
+            <nz-progress [nzPercent]="F_PENT"></nz-progress>
+          </p>
+
+
+        </td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;靜態資料</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{ICP_EDITION_NA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;MO</td>
+        <td style="width: 120px;" >&nbsp;&nbsp;{{MO_EDITION_NA}}</td>
+      </tr>
+      <tr>
+        <td style="width: 5px;" rowspan="9">&nbsp;&nbsp;策<br>&nbsp;&nbsp;略</td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;策略版本及名稱</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{PLANSET_EDITION}}&nbsp;-&nbsp;{{SETNAME}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;INITIAL PST</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{INITIALFLAG}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;MO平衡<br>&nbsp;&nbsp;搬移順序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{MOSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;Cell平衡排序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{CELLSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;相臨站別<br>&nbsp;&nbsp;平衡排序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{NEXTSHOPSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;機台平衡策略</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{MACHINESORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;規劃優先順序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;<a (click)="openSorting(MSEQNO)">明細</a></td>
+      </tr>
+
+    </table>
+    <p><p>
+    <label style="color: rgb(19, 168, 166); font-weight: bold;">※ 此頁面 30 秒刷新一次</label>
+
+
+
+  </nz-spin>
+
+  </div>
+</nz-content>
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSorting"
+  [nzTitle]="shopSortTitle"
+  [nzContent]="shopSortContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="handleCancel()"
+>
+
+  <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
+  <ng-template #shopSortContent>
+    <div>
+      <nz-table
+        #rowSelectionTable
+        [nzData]="ShopSortingList"
+        [nzFrontPagination]="nzPagination"
+        [nzShowPagination]="nzPagination"
+        [nzScroll]="{ y: '400px' }"
+        >
+        <thead>
+          <tr>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+            <td>{{data.SCH_SHOP_CODE}}</td>
+            <td>{{data.SORTING_SEQ}}</td>
+            <td>{{data.INTERVAL}}</td>
+            <td>{{data.REQUIREMENT}}</td>
+            <td>{{data.ISCOMBINE}}</td>
+            <td>{{data.COMBINE_RANGE}}</td>
+            <td style="text-align:center; width: 100px;;"><a (click)="openMachineSorting(data.PLANSET_EDITION, data.SCH_SHOP_CODE)">明細</a></td>
+          </tr>
+        </tbody>
+
+      </nz-table>
+    </div>
+
+  </ng-template>
+</nz-modal>
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleMachine"
+  [nzTitle]="MachineSortTitle"
+  [nzContent]="MachineSortContent"
+  [nzFooter]="null"
+  (nzOnCancel)="handleCancel_M()"
+  [nzWidth]="1000"
+>
+  <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
+  <ng-template #MachineSortContent>
+    <div>
+      <nz-table
+        #MrowSelectionTable
+        [nzData]="MachineSortingList"
+        [nzFrontPagination]="nzPagination"
+        [nzShowPagination]="nzPagination"
+        [nzScroll]="{ y: '350px' }"
+        >
+        <thead>
+          <tr>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台</th>
+            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of MrowSelectionTable.data; let i = index">
+            <td>{{data.SCH_SHOP_CODE_D2}}</td>
+            <td>{{data.MACHINE}}</td>
+            <td>{{data.SORTING_SEQ_D2}}</td>
+            <td>{{data.INTERVAL_D2}}</td>
+            <td>{{data.REQUIREMENT_D2}}</td>
+            <td>{{data.ISCOMBINE_D2}}</td>
+            <td>{{data.COMBINE_RANGE_D2}}</td>
+          </tr>
+        </tbody>
+
+      </nz-table>
+    </div>
+
+  </ng-template>
+</nz-modal>
+
+

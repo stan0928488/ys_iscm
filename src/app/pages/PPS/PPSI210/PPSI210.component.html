@@ -1,0 +1,533 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
+    <nz-breadcrumb-item>建立規劃策略</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+  <div>
+    <td style="text-align:left;width:2%;">
+      <!-- save -->
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+        nzType="primary"
+        [nzSize]="'large'"
+        (click)="onSunmit()"
+      ><span nz-icon nzType="save" nzTheme="outline"></span>
+        建立策略
+      </button>&nbsp;&nbsp;
+      <button
+        nz-button
+        *ngIf="!isRunFCP"
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+        nzType="primary"
+        [nzSize]="'large'"
+        (click)="onUpdate()"
+      >
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+        修改策略
+      </button>
+
+
+      <button
+        nz-button
+        *ngIf="isRunFCP"
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue;"
+        nzType="primary"
+        [nzSize]="'large'"
+        [disabled]="true"
+        (click)="onUpdate()"
+      >
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+        修改策略
+      </button>
+      <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，僅能新增不可修改！ </label>
+    </td>
+
+    <p></p>
+
+  </div>
+  <div style="padding:24px; background: rgb(255, 255, 255); min-height: 500px;">
+
+    <table>
+      <tr>
+        <th>版本</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <input style="width: 20%; color: darkblue;" nz-input [disabled]="true" [(ngModel)]="PLANSET_EDITION" />
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="selPlanSet()"
+          >
+            選擇現有規劃策略內容
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <th>規劃策略名稱</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="setValue">
+            <label nz-radio nzValue="A" (click) = "changeSet('A')"><label style="color:rgba(0, 0, 0, 0.553)">既有策略 </label>
+              <input style="width: 250px; color: darkblue;" [disabled]="true" nz-input [(ngModel)]="A_SETNAME" />
+            </label>
+            <label nz-radio nzValue="B" (click) = "changeSet('B')" >自訂策略
+              <input style="width: 250px;" nz-input [(ngModel)]="B_SETNAME" />
+            </label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Initial PST</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="AJValue" (click) = "changeValue('AJValue')">
+            <label nz-radio nzValue="ASAP">ASAP</label>
+            <label nz-radio nzValue="JIT">JIT</label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>MO 平衡搬移順序</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="MOValue">
+            <label nz-radio nzValue="A"><label style="color:rgba(0, 0, 0, 0.553)">offload-push</label></label>
+            <label nz-radio nzValue="B"><label style="color:rgba(0, 0, 0, 0.553)">push-offload</label></label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Cell處理順序</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="cellValue" (click) = "changeValue('cellValue')">
+            <label nz-radio nzValue="1">站別 (by routing), TB (時間近到遠), 機台 (負荷量最高)</label>
+            <label nz-radio nzValue="2">TB (時間近到遠), 站別 (by routing), 機台 (負荷量最高)</label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>相臨站別平衡策略</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="nextshopValue" (click) = "changeValue('nextshopValue')">
+            <label nz-radio nzValue="1">max-utilization-min-wip</label>
+            <label nz-radio nzValue="2">JIT</label>
+            <label nz-radio nzValue="3">Min.WIP</label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>機台平衡策略</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-radio-group [(ngModel)]="machineValue" (click) = "changeValue('machineValue')">
+            <label nz-radio nzValue="1">機台平均</label>
+            <label nz-radio nzValue="2">派工狀況</label>
+          </nz-radio-group>
+        </td>
+      </tr>
+
+      <tr>
+        <th>FCP下站合併天數</th>    <!-- 解決前後違反問題 -->
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <nz-input-number nzPlaceHolder = "天數" [(ngModel)]="FROZAN_GROUP" [nzMin]="0" [nzMax]="10000" [nzStep]="1"></nz-input-number>
+        </td>
+      </tr>
+
+      <tr>
+        <th>站別策略設定</th>
+        <td>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="addRow()"
+          >
+            Add
+          </button>
+
+          <!--
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="addLPST()"
+          >
+            帶入LPST優先順序
+          </button>
+          -->
+
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="addEPST()"
+          >
+            帶入EPST優先順序
+          </button>
+
+        </td>
+      </tr>
+    </table>
+
+    <br />
+      <nz-table #editRowTable nzBordered [nzData]="listOfData" [nzPageSize]="50" [nzScroll]="{ y: '300px' }">
+        <thead>
+          <tr>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+            <th nzWidth="25%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+            <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台規劃<br>優先順序</th>
+            <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+          </tr>
+        </thead>
+        <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+            <tr *ngFor="let data of editRowTable.data;let i = index" class="editable-row" cdkDrag>
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                {{ i + 1 }}
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-select style="max-width: 120px; width: 100%;" nzPlaceHolder = "選擇站別" [(ngModel)]="data.SHOP_CODE" (click)= "getPickerShopData(i)" (blur)="stopEdit(data.id)">
+                    <nz-option *ngFor="let p of ShopList" [nzValue]="p" [nzLabel]="p"></nz-option>
+                  </nz-select>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-select style="width: 290px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder="選擇優先順序" [nzNotFoundContent]="'請選擇順序'" (click)="provinceChange('1', data.SHOP_CODE, '　', i)" [(ngModel)]="data.SORTING" (blur)="stopEdit('')">
+                    <nz-option *ngFor="let s of SortList" [nzValue]="s" [nzLabel]="s"></nz-option>
+                  </nz-select>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-input-number style="width: 60px;"  nzPlaceHolder = "集批天數" [(ngModel)]="data.INTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('1', i, data.INTERVAL)"></nz-input-number>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-select style="max-width: 150px; width: 100%;" nzPlaceHolder = "集批條件" [(ngModel)]="data.REQUIREMENT" (click)="getRequierList('1', data.SORTING, '　', i)" (blur)="stopEdit('')">
+                    <nz-option *ngFor="let s of REQUIREList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+                  </nz-select>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-radio-group style="width: 110px;" [(ngModel)]="data.ISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('1', i, data.ISCOMBINE)">
+                    <label nz-radio-button nzValue="Y">Y</label>
+                    <label nz-radio-button nzValue="N">N</label>
+                  </nz-radio-group>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <div class="editable-cell" (click)="startEdit(data.id)">
+                  <nz-input-number  style="width: 65px;" nzPlaceHolder = "交期範圍" [(ngModel)]="data.COMBINE_RANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('1', i, data.COMBINE_RANGE)"></nz-input-number>
+                </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <button
+                  nz-button
+                  nzType="primary"
+                  class="opButton_M"
+                  (click)="setMachineSort(data.SHOP_CODE)"
+                >
+                  設定機台
+                </button>
+              </td>
+
+              <td style="text-align:center; padding: 0px; height: 60px;">
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, data.SHOP_CODE)">刪除</a>
+              </td>
+            </tr>
+        </tbody>
+      </nz-table>
+
+
+  </div>
+
+  </nz-spin>
+</nz-content>
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSetMachine"
+  [nzTitle]="machineSortSetTitle"
+  [nzContent]="machineSortSetContent"
+  [nzFooter]="machineSortSetFooter"
+  [nzWidth]="1000"
+  (nzOnCancel)="setMachinehandleCancel(dtlSHOP_CODE)"
+>
+<ng-container>
+
+  <ng-template #machineSortSetTitle>機台優先順序設定表</ng-template>
+  <ng-template #machineSortSetContent>
+  
+    <nz-table #innerTable [nzData]="listOfData_dtl" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
+          <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+          <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台</th>
+          <th nzWidth="30%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台優先順序</th>
+          <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+          <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+          <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+          <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+          <th nzWidth="11%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dtldata of innerTable.data; let j = index">
+          <td style="text-align:center; padding: 5px; height: 60px;">{{ j + 1 }}</td>
+          <td style="text-align:center; padding: 5px; height: 60px;">{{ dtlSHOP_CODE }}</td>
+          <td style="text-align:center; padding: 5px; height: 60px;">
+
+            <div class="editable-cell" (click)="startEdit_dtl(dtldata.dtlid)">
+              <nz-select style="max-width: 200px; width: 100%;" nzPlaceHolder = "選擇機台" (click)="getPickerMachineData(dtlSHOP_CODE, j, 'C')" [(ngModel)]="dtldata.dtlMACHINE" (blur)="stopEdit_dtl()">
+                <nz-option *ngFor="let md of MachineList" [nzValue]="md" [nzLabel]="md"></nz-option>
+              </nz-select>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <div class="editable-cell" (click)="startEdit_dtl(dtldata.dtlid)">
+              <nz-select style="width: 270px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder = "選擇機台優先順序" (click)="provinceChange('2', dtlSHOP_CODE, dtldata.dtlMACHINE, j)" [(ngModel)]="dtldata.dtlSORTING" (blur)="stopEdit_dtl()">
+                <nz-option *ngFor="let ms of MachineSortList" [nzValue]="ms" [nzLabel]="ms"></nz-option>
+              </nz-select>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
+              <nz-input-number nzPlaceHolder = "集批天數" [(ngModel)]="dtldata.dtlINTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('2', j, dtldata.dtlINTERVAL)"></nz-input-number>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
+              <nz-select style="width: 100px;" nzPlaceHolder = "集批條件" [(ngModel)]="dtldata.dtlREQUIREMENT" (click)="getRequierList('2', dtldata.dtlSORTING, '　', j)" (blur)="stopEdit('')">
+                <nz-option *ngFor="let s of REQUIREList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+              </nz-select>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
+              <nz-radio-group [(ngModel)]="dtldata.dtlISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('2', j, dtldata.dtlISCOMBINE)">
+                <label nz-radio-button nzValue="Y">Y</label>
+                <label nz-radio-button nzValue="N">N</label>
+              </nz-radio-group>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <div  class="editable-cell" (click)="startEdit(dtldata.dtlid)">
+              <nz-input-number nzPlaceHolder = "交期範圍" [(ngModel)]="dtldata.dtlRANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('2', j, dtldata.dtlRANGE)"></nz-input-number>
+            </div>
+          </td>
+
+          <td style="text-align:center; padding: 5px; height: 60px;">
+            <a (click)="add_dtlRow(dtlSHOP_CODE)">新增</a>&nbsp;&nbsp;
+            <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(dtlSHOP_CODE, dtldata.dtlid)">刪除</a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+
+  <ng-template #machineSortSetFooter>
+    <button nz-button nzType="primary" (click)="setMachinehandleCancel(dtlSHOP_CODE)">確定</button>
+  </ng-template>
+
+</ng-container>
+</nz-modal>
+
+
+
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSelPlanSet"
+  [nzTitle]="PlanSetTitle"
+  [nzContent]="PlanSetContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="plansethandleCancel()"
+>
+
+<ng-container>
+  <ng-template #PlanSetTitle>現有規劃策略明細表</ng-template>
+  <ng-template #PlanSetContent>
+    <nz-table #setSelectionTable [nzShowPagination]="false" [nzScroll]="{ x: '1300px', y: '350px' }" [nzData]="planSetDataList">
+      <tbody>
+      <thead>
+        <tr>
+          <th nzWidth="1%" nzLeft="0px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">點選</th>
+          <th nzWidth="3%" nzLeft="50px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">策略版本</th>
+          <th nzWidth="5%" nzLeft="195px" style="text-align:center;background-color: #eee; padding: 0px; height: 55px;">策略名稱</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Initial PST</th>
+          <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">MO<br>平衡搬移順序</th>
+          <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Cell 處理順序</th>
+          <th nzWidth="4%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">相臨站別<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別<br>策略設定</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let data of setSelectionTable.data; let i = index">
+          <td nzLeft="0px"><label nz-radio (click) = "sendchoice(data)"></label></td>
+          <td nzLeft="50px">{{data.PLANSET_EDITION}}</td>
+          <td nzLeft="195px">{{data.SETNAME}}</td>
+          <td>{{data.INITIALFLAG}}</td>
+          <td>{{data.MOSORTNA}}</td>
+          <td>{{data.CELLSORTNA}}</td>
+          <td>{{data.NEXTSHOPSORTNA}}</td>
+          <td>{{data.MACHINESORTNA}}</td>
+          <td style="text-align:center;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+
+</ng-container>
+</nz-modal>
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSorting"
+  [nzTitle]="shopSortTitle"
+  [nzContent]="shopSortContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="handleCancel()"
+>
+
+  <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
+  <ng-template #shopSortContent>
+    <div>
+      <nz-table
+        #rowSelectionTable
+        [nzData]="ShopSortingList"
+        [nzFrontPagination]="nzPagination"
+        [nzShowPagination]="nzPagination"
+        [nzScroll]="{ y: '400px' }"
+        >
+        <thead>
+          <tr>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+            <td>{{data.SCH_SHOP_CODE}}</td>
+            <td>{{data.SORTING_SEQ}}</td>
+            <td>{{data.INTERVAL}}</td>
+            <td>{{data.REQUIREMENT}}</td>
+            <td>{{data.ISCOMBINE}}</td>
+            <td>{{data.COMBINE_RANGE}}</td>
+            <td style="text-align:center; width: 100px;;"><a (click)="openMachineSorting(data.PLANSET_EDITION, data.SCH_SHOP_CODE)">明細</a></td>
+          </tr>
+        </tbody>
+
+      </nz-table>
+    </div>
+
+  </ng-template>
+</nz-modal>
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleMachine"
+  [nzTitle]="MachineSortTitle"
+  [nzContent]="MachineSortContent"
+  [nzFooter]="null"
+  (nzOnCancel)="handleCancel_M()"
+  [nzWidth]="1000"
+>
+  <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
+  <ng-template #MachineSortContent>
+    <div>
+      <nz-table
+        #MrowSelectionTable
+        [nzData]="MachineSortingList"
+        [nzFrontPagination]="nzPagination"
+        [nzShowPagination]="nzPagination"
+        [nzScroll]="{ y: '350px' }"
+        >
+        <thead>
+          <tr>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台</th>
+            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
+            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of MrowSelectionTable.data; let i = index">
+            <td>{{data.SCH_SHOP_CODE_D2}}</td>
+            <td>{{data.MACHINE}}</td>
+            <td>{{data.SORTING_SEQ_D2}}</td>
+            <td>{{data.INTERVAL_D2}}</td>
+            <td>{{data.REQUIREMENT_D2}}</td>
+            <td>{{data.ISCOMBINE_D2}}</td>
+            <td>{{data.COMBINE_RANGE_D2}}</td>
+          </tr>
+        </tbody>
+
+      </nz-table>
+    </div>
+
+  </ng-template>
+</nz-modal>
+
+

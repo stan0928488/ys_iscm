@@ -1,0 +1,224 @@
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
+import { ORPP031component } from "./pages/ORP/ORPP031/ORPP031.component";
+import { ORPP032component } from "./pages/ORP/ORPP032/ORPP032.component";
+import { ORPP029_030component } from "./pages/ORP/ORPP029_030/ORPP029_030.component";
+import { ORPP033component } from "./pages/ORP/ORPP033/ORPP033.component";
+import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
+import { ORPV101Component } from "./pages/ORP/ORPV101/ORPV101.component";
+import { ORPP100Component } from "./pages/ORP/ORPP100/ORPP100.component";
+import { ORPP101Component } from "./pages/ORP/ORPP101/ORPP101.component";
+import { ORPR102Component } from "./pages/ORP/ORPR102/ORPR102.component";
+import { ORPR403Component } from "./pages/ORP/ORPR403/ORPR403.component";
+import { ORPP040Component } from "./pages/ORP/ORPP040/ORPP040.component";
+import { ORPP041Component } from "./pages/ORP/ORPP041/ORPP041.component";
+import { ORPP042Component } from "./pages/ORP/ORPP042/ORPP042.component";
+import { ORPP043Component } from "./pages/ORP/ORPP043/ORPP043.component";
+import { ORPPDEMOComponent } from "./pages/ORP/ORPPDEMO/ORPPDEMO.component";
+import { ORPPDEMO1Component } from "./pages/ORP/ORPPDEMO1/ORPPDEMO1.component";
+
+import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
+
+
+import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
+import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
+import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
+import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
+import { PPSI203Component } from "./pages/PPS/PPSI203/PPSI203.component";
+import { PPSI204Component } from "./pages/PPS/PPSI204/PPSI204.component";
+import { PPSI205Component } from "./pages/PPS/PPSI205/PPSI205.component";
+import { PPSI210Component } from "./pages/PPS/PPSI210/PPSI210.component";
+import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
+import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
+import { PPSR300Component } from "./pages/PPS/PPSR300/PPSR300.component";
+import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
+import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
+import { PPSR310Component } from "./pages/PPS/PPSR310/PPSR310.component";
+
+
+import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
+import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
+
+
+import { LoginComponent } from "./login/login.component";
+import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.service";
+import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
+
+const routes: Routes = [
+  {
+    path: "login",
+    component: LoginComponent
+  },
+  {
+    path: "",
+    redirectTo: "/login",
+    pathMatch: "full"
+  },
+  
+  /* ORP & OIP & TRA */
+  {
+    path: "ORPInput",
+    children: [
+      { path: "", redirectTo: "/ORPInput/V101", pathMatch: "full" },   // 100開始
+      { path: "V101", component: ORPP029_030component },
+      { path: "V102", component: ORPP031component },
+      { path: "V103", component: ORPP032component },
+      { path: "V105", component: OIPP029component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "ORPPlot",
+    children: [
+      { path: "", redirectTo: "/ORPPlot/P201", pathMatch: "full" },   // 200開始
+      { path: "P201", component: ORPP033component },
+      { path: "P203", component: ORPP101Component },
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "ORPExe",
+    children: [
+      { path: "", redirectTo: "/ORPExe/E301", pathMatch: "full" },   // 300開始
+      { path: "E301", component: ORPV101Component },
+      { path: "E306", component: ORPP100Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "ORPRepo",
+    children: [
+      { path: "", redirectTo: "/ORPRepo/R401", pathMatch: "full" },   // 400開始
+      { path: "R401", component: ORPR102Component },
+      { path: "R403", component: ORPR403Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: "ORPCust",
+    children: [
+      { path: "", redirectTo: "/ORPCust/V040", pathMatch: "full" },
+      { path: "V040", component: ORPP040Component },
+      { path: "V041", component: ORPP041Component },
+      { path: "V042", component: ORPP042Component },
+      { path: "V043", component: ORPP043Component },
+      { path: "demo", component: ORPPDEMOComponent },
+      { path: "demo1", component: ORPPDEMO1Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+
+  /* PPS & MSH */
+  {
+    path: "BarData",
+    children: [   
+      { path: "", redirectTo: "/BarData/I200", pathMatch: "full" },
+      { path: "I101", component: PPSI101Component },
+      { path: "I201", component: PPSI201Component },
+      { path: "I205", component: PPSI205Component },
+      { path: "I204", component: PPSI204Component },
+      { path: "I202", component: PPSI202Component },
+      { path: "I203", component: PPSI203Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "NonBarData",
+    children: [
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "commonData",
+    children: [
+      { path: "", redirectTo: "/commonData/I200", pathMatch: "full" },
+      { path: "I200", component: PPSI200Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "FCPBarData",
+    children: [
+      { path: "", redirectTo: "/FCPBarData/P201", pathMatch: "full" },
+      { path: "P201", component: PPSI210Component },
+      { path: "P202", component: PPSI220Component },
+      { path: "P203", component: PPSI230Component },
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "FCPBarRepo",
+    children: [
+      { path: "", redirectTo: "/FCPBarRepo/R302", pathMatch: "full" },
+      { path: "R302", component: PPSR302Component },
+      { path: "R301", component: PPSR301Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "MSHInput",
+    children: [   
+      { path: "", redirectTo: "/MSHInput/I101", pathMatch: "full" },
+      // { path: "I101", component: PPSI200Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+
+  /* RMP & PAS & DCM */
+  {
+    path: "RMPInput",
+    children: [   
+      { path: "", redirectTo: "/RMP/RMPInput/I101", pathMatch: "full" },
+      // { path: "I101", component: PPSI200Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+
+  /* DCM */
+  {
+    path: "DCMInput",
+    children: [   
+      { path: "", redirectTo: "/DCM/DCMInput/I101", pathMatch: "full" },
+      // { path: "I101", component: PPSI200Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+
+  /* SPA */
+  {
+    path: "SPAInput",
+    children: [   
+      { path: "", redirectTo: "/SPA/SPAInput/I101", pathMatch: "full" },
+      { path: "I101", component: SPAP100component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "SPAPlot",
+    children: [   
+      { path: "", redirectTo: "/SPA/SPAPlot/P201", pathMatch: "full" },
+      { path: "P201", component: SPAP101component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  /* TRA */
+  {
+    path: "TRAInput",
+    children: [
+      { path: "", redirectTo: "/TRAInput/I001", pathMatch: "full" },
+      { path: "I001", component: TRAP001component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "**",
+    component: ErrorPageComponent
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  exports: [RouterModule]
+})
+export class AppRoutingModule {}

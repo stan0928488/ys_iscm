@@ -1,0 +1,159 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>基本資料表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>站別機台優先順序表</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-divider nzOrientation="left"></nz-divider>
+  <div nz-row [nzGutter]="0">
+    <div nz-col class="gutter-row"><div class="inner-box">
+      <nz-card style="width:90%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="站別">
+        <ng-container *ngIf="SHOP_splitList">
+          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickShopCode($event)">
+            <tr *ngFor = "let item of SHOP_splitList; let i = index;">
+              <td style="width: 80px;" *ngFor = "let item1 of SHOP_splitList[i];">
+                <label nz-checkbox nzValue="{{item1}}" >{{item1}}</label></td>
+            </tr>
+          </nz-checkbox-wrapper>
+        </ng-container>
+      </nz-card>
+    </div>
+    <div class="inner-box">
+      <nz-card style="width:90%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="機台">
+        <ng-container *ngIf="EQUIP_splitList">
+          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickEquipCode($event)">
+            <tr *ngFor = "let item of EQUIP_splitList; let i = index;">
+              <td style="width: 80px;" *ngFor = "let item1 of EQUIP_splitList[i];"><label nz-checkbox [ngModel]="item1.checked" [nzValue]="item1.value">{{item1.value}}</label></td>
+            </tr>
+          </nz-checkbox-wrapper>
+        </ng-container>
+      </nz-card>
+    </div></div>
+  </div>
+  <!-- buttonGroup 存放所有操作按钮组  -->
+  <div style="margin-top: 20px; ">
+    <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+    <tr>
+      <td style="width: 100px ;">
+        <button
+        nz-button
+        nzDanger
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+        nzType="primary"
+        [nzSize]="'large'"
+        (click)="onAddSunmit()"
+        [disabled] = "addBtnFg ? false : true"
+        class="submitBtnArea"
+        nzDanger
+      >
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+        新增
+      </button>
+
+      </td>
+      <td  style="width: 100px ;">
+        <button
+        nz-button
+        *ngIf="!isRunFCP"
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+        nzType="primary"
+        [nzSize]="'large'"
+        (click)="onSunmit()"
+        [disabled] = "uploadBtnFg ? false : true"
+        class="submitBtnArea"
+      >
+      <span nz-icon nzType="save" nzTheme="outline"></span>
+        確認
+      </button>
+      <td  style="width: 100px ;">
+        <button
+        nz-button
+        *ngIf="isRunFCP"
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue;"
+        nzType="primary"
+        [nzSize]="'large'"
+        (click)="onSunmit()"
+        [disabled] = "true"
+        class="submitBtnArea"
+      >
+      <span nz-icon nzType="save" nzTheme="outline"></span>
+        確認
+      </button>
+      </td>
+      <!-- <td><button (click) = "getSHOP_CODEList()">测试获取站别</button></td>
+      <td><button (click) = "getSetShopEQUIP()">获取已设定值</button></td> -->
+      <td style="text-align:right; width: 880px;font-weight: bolder;">( ↑ 表示：由小到大，由近到遠)</td>
+    </tr>
+  </div>
+
+  <p></p>
+  <!-- 挑选区域处理 -->
+  <div nz-row>
+    <div nz-col nzSpan="14">
+      <div style="width: 90%;">
+        <h2>已設定排序</h2>
+        <nz-pagination [nzPageIndex]="pageNum" [nzTotal]="totalCount" [nzPageSize] = "pageSize"  (nzPageIndexChange) = "changePage($event)"></nz-pagination>
+        <nz-list nzBordered nzSize="large"  *ngFor="let item of setData">
+          <nz-list-item style="background-color: #fff;" >
+            <span> <a nz-radio-button nzValue="default" nzType="link" (click)="editFunc(item)">編輯</a>
+
+              
+            </span>
+            <span nz-typography> <mark>{{item.sch_SHOP_CODE}} -> {{item.machine}}</mark></span>
+            <span style="margin-left: 20px ;">{{ item.sorting_CN }}</span>
+
+          </nz-list-item>
+        </nz-list>
+      </div>
+    </div>
+    <div nz-col nzSpan="10">
+      <div cdkDropListGroup>
+        <div class="example-container">
+          <h2>原始欄位</h2>
+
+          <div
+            cdkDropList
+            id="drag-one"
+            [cdkDropListData]="orginList"
+            class="example-list"
+            (cdkDropListDropped)="drop($event,1)">
+            <div class="example-box" *ngFor="let item of orginList" cdkDrag [cdkDragDisabled]="item.disabled">{{item.column_comment}}</div>
+          </div>
+        </div>
+
+        <div class="example-container">
+          <h2>挑選排序</h2>
+
+          <div
+            id="drag-one"
+            cdkDropList
+            [cdkDropListData]="pickerList"
+            class="example-list"
+            (cdkDropListDropped)="drop($event,2)"
+            >
+            <!-- <div class="example-box" *ngFor="let item of pickerList let i = index;" cdkDrag (click)="changeType(i, $event.target.innerText)">
+              {{item.column_comment}}<label *ngIf="show">{{sort}}</label><label *ngIf="!show">{{sort}}</label>
+            </div> -->
+
+            <div style="display: block" class="example-box" *ngFor="let item of pickerList let i = index" cdkDrag  (click) = "clickCurrentFunc(i,item)">
+
+              <span>{{item.column_comment}}</span>
+              <span class="selectDiv">
+               <span [ngSwitch]="item.column_sort">
+                 <!-- the same view can be shown in more than one case -->
+                 <span *ngSwitchCase="''"></span>
+                 <span *ngSwitchCase="'ASC'">↑</span>
+                 <span *ngSwitchCase="'DESC'">↓</span>
+                 <!--default case when there are no matches -->
+                 <span *ngSwitchDefault></span>
+               </span>
+
+              </span>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nz-content>

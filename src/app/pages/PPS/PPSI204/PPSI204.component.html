@@ -1,0 +1,192 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>基本資料表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>類別設定排序表</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+
+    <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'">
+      <nz-tab nzTitle="尺寸設定" (nzClick)="changeTab(1)">
+        <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        
+          <button
+            nz-button
+            *ngIf="!isRunFCP"
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            (click)="popupTab1()"
+          >
+          <span nz-icon nzType="form" nzTheme="outline"></span>新增</button>
+          
+
+          <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+          <p></p><p></p>
+
+          <tr>
+            <td style = "width: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;combin條件</td>
+            <td style = "width: 300px;">
+              <nz-select [nzDropdownMatchSelectWidth]="false"  style="margin-left: 5px; max-width: 150px; width: 100%;" nzPlaceHolder = "combin條件" [(ngModel)]="COLUMN_NAME" (click)="getRequierList()">
+                <nz-option *ngFor="let s of COLUMN_NAMEList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+              </nz-select>
+            </td>
+          </tr><p></p><p></p>
+          <tr>
+            <td style="width:inherit;" colspan = "2">
+              <nz-card style="width:90%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="站別">
+                <ng-container *ngIf="SHOP_splitList">
+                  <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickShopCode($event)">
+                    <tr *ngFor = "let item of SHOP_splitList; let i = index;">
+                      <td style="width: 80px;" *ngFor = "let item1 of SHOP_splitList[i];">
+                        <label nz-checkbox nzValue="{{item1}}" >{{item1}}</label></td>
+                    </tr>
+                  </nz-checkbox-wrapper>
+                </ng-container>
+              </nz-card>
+            </td>
+            <td style="width:inherit;" colspan = "2">
+              <nz-card style="width:450px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="機台">
+                <ng-container *ngIf="EQUIP_splitList">
+                  <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="clickEquipCode($event)">
+                    <tr *ngFor = "let item of EQUIP_splitList; let i = index;">
+                      <td style="width: 80px;" *ngFor = "let item1 of EQUIP_splitList[i];"><label nz-checkbox [ngModel]="item1.checked" [nzValue]="item1.value">{{item1.value}}</label></td>
+                    </tr>
+                  </nz-checkbox-wrapper>
+                </ng-container>
+              </nz-card>
+            </td>
+          </tr>
+
+        <p></p>
+          <div nz-col [nzSpan]="8">
+            <nz-table #RowTable1 nzBordered [nzData]="FCPTB26List" [nzPageSize]="50" [nzScroll]="{ y: '300px' }">
+              <thead>
+                <tr style="width: 80%;">
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">站別</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">機台</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">combin條件</th>
+                  <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of RowTable1.data;let i = index" class="editable-row" style="width: 80%">
+                  <ng-container *ngIf="!editCache1[data.id].edit; else editTemplate1">
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.SCH_SHOP_CODE_1 }}</td>
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.MACHINE }}</td>
+                    <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.COLUMN_COMMENT }}</td>
+                    <td style="text-align:center; padding: 0px; height: 60px; width: 80px;">
+                      <a *ngIf="!isRunFCP"  (click)="editRow(data.id, 1)">修改</a>
+                      <a *ngIf="isRunFCP" disabled="true" (click)="editRow(data.id, 1)">修改</a>&nbsp;&nbsp;
+                      <a *ngIf="!isRunFCP" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)">刪除</a>
+                      <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)" >刪除</a>
+                    </td>
+                  </ng-container>
+                  <ng-template #editTemplate1>
+                    <td>
+                      <nz-select style="max-width: 120px; width: 100%;" nzPlaceHolder = "選擇站別" [(ngModel)]="editCache1[data.id].data.SCH_SHOP_CODE_1" (click)= "getPickerShopData(data.id)">
+                        <nz-option *ngFor="let p of ShopList" [nzValue]="p" [nzLabel]="p"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <nz-select style="max-width: 200px; width: 100%;" nzPlaceHolder = "選擇機台"  [(ngModel)]="editCache1[data.id].data.MACHINE" (click)="getPickerMachineData(data.SCH_SHOP_CODE_1, data.id)">
+                        <nz-option *ngFor="let md of MachineList" [nzValue]="md" [nzLabel]="md"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <nz-select [nzDropdownMatchSelectWidth]="false"  style="margin-left: 5px; max-width: 150px; width: 100%;" nzPlaceHolder = "combin條件" [(ngModel)]="editCache1[data.id].data.COLUMN_NAME" (click)="getRequierList()">
+                        <nz-option *ngFor="let s of COLUMN_NAMEList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+                      </nz-select>
+                    </td>
+                    <td>
+                      <a (click)="saveEdit(data.id, 1)">確認</a>&nbsp;&nbsp;
+                      <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 1)">取消</a>
+                    </td>
+                  </ng-template>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+      </nz-tab>
+
+
+
+    </nz-tabset>
+
+
+
+  </nz-content>
+
+  
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleDIA"
+  [nzTitle]="diaUseTitle"
+  [nzContent]="diaUseContent"
+  [nzFooter]="diaUsefooter"
+  (nzOnCancel)="diaCancel()"
+  [nzWidth]="800"
+>
+<ng-template #diaUseTitle>新增尺寸設定順序</ng-template>
+<ng-template #diaUseContent>
+  <div>
+
+    <table>
+
+      <!-- 
+
+      <tr>
+        <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃策略版本</td>
+        <td style = "width: 600px;">&nbsp;
+          <input style="width: 22%; color: darkblue;" nz-input [disabled]="true" [(ngModel)]="PLANSET_EDITION" />
+        </td>
+      </tr>
+      <tr>
+        <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;MO 資料</td>
+        <td style = "width: 600px;">&nbsp;
+          <nz-radio-group [(ngModel)]="MODATA">
+            &nbsp;&nbsp;
+            <label nz-radio nzValue="1" (click) = "MOchange('1')" >取得新 MO 資料
+            </label>&nbsp;&nbsp;
+            <label nz-radio nzValue="2" (click) = "MOchange('2')" >歷史 MO 資料
+              <nz-select nzShowSearch nzPlaceHolder="Select his MO version" style="width: 180px;" [(ngModel)]="HISMO" (nzOpenChange) = "getMOVerList()">
+                <nz-option *ngFor="let option of listOfMOOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+              </nz-select>
+            </label>
+          </nz-radio-group>
+          <br>
+          &nbsp;
+          <nz-radio-group [(ngModel)]="LPSTDATA">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label nz-radio nzValue="1" (click) = "LPSTchange('1', 'ins')" >當月
+            </label>
+            <label style="color: chocolate;" *ngIf = "LPSTDATA === '1'" >( ~ {{ enddate }} )&nbsp;&nbsp;
+            </label>
+            <label nz-radio nzValue="2" (click) = "LPSTchange('2', 'ins')" >未來兩個月
+            </label>
+            <label style="color: chocolate;" *ngIf = "LPSTDATA === '2'" >( ~ {{ enddate }} )&nbsp;&nbsp;
+            </label>
+            <label nz-radio nzValue="3" (click) = "LPSTchange('3', 'ins')" >全部
+            </label>
+          </nz-radio-group>
+        </td>
+      </tr> -->
+
+
+      <tr>
+        <td style = "width: 110px; background-color: #FFF; font-weight: bold; border-radius: 5px;" colspan="2">
+          <label style="color: hotpink;">※ MO 每站的 LPST 如落在所選區間，則該 MO 須列入</label>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</ng-template>
+<ng-template #diaUsefooter>
+  <button nz-button nzType="default" (click)="diaCancel()">取消</button>
+  <button nz-button nzType="primary" (click)="diaOK()">確定</button>
+</ng-template>
+</nz-modal>
+

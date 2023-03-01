@@ -1,0 +1,45 @@
+  .search-box {
+    padding: 8px;
+  }
+
+  .search-box input {
+    width: 188px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .search-box button {
+    width: 90px;
+  }
+
+  .search-button {
+    margin-right: 8px;
+  }
+  
+  .editable-cell {
+    position: relative;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+
+  .editable-row:hover .editable-cell {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 4px 11px;
+  }
+  .save {
+    margin-right: 8px;
+  }
+
+  .FCPenableUpload{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #e6a3c2;border:2px blue none;
+  }
+  .FCPenable{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;
+  }
+  .FCPdisable{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue; border:2px blue none;
+  }
+  .FCPenable_btn{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+  }

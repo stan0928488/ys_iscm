@@ -1,0 +1,14 @@
+.nz-table-hide-scrollbar::-webkit-scrollbar {
+    width: 17px;
+  }
+
+  .tr-bg{
+    background-color:#EAF6F6;
+  }
+
+  .ant-table-thead>tr>th {
+    text-align: center;
+    background: #026392;
+    color: #3E4A5B;
+    padding: 0.8%;
+  }

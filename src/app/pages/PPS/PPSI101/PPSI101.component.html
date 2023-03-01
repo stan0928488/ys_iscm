@@ -1,0 +1,1626 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>基本資料表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態表維護</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
+  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'">
+    <!-- 1.鋼種分類(鈞) -->
+    <nz-tab nzTitle="鋼種分類" (nzClick)="changeTab(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+        <table>
+          <tr>
+            <td>設定鋼種</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入鋼種" [(ngModel)]="GRADE_NO" />
+            </td>
+            <td>&nbsp;&nbsp;特殊機台使用</td>
+            <td><input nz-input style="width:60%;" placeholder="特殊機台使用" [(ngModel)]="SPECIAL_EQUIP_CODE" />
+            </td>
+            <td>&nbsp;&nbsp;鋼種類別</td>
+            <td><input nz-input style="width:50%;" placeholder="鋼種類別" [(ngModel)]="GRADE_GROUP" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab1()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+        <div nz-col [nzSpan]="10">
+          <nz-table #RowTable1 nzBordered [nzData]="PPSINP01List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">鋼種</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">特殊機台使用</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">鋼種類別</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable1.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache1[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRADE_NO }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.SPECIAL_EQUIP_CODE }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.GRADE_GROUP }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache1[data.id].data.GRADE_NO" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入特殊機台使用" [(ngModel)]="editCache1[data.id].data.SPECIAL_EQUIP_CODE" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="鋼種類別" [(ngModel)]="editCache1[data.id].data.GRADE_GROUP" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-tab>
+    <!-- 2. 站別機台關聯表(雄)-->
+    <nz-tab nzTitle="站別機台關聯表" (nzClick)="changeTab(2)">
+    <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+      <table>
+        <tr>
+          <td>工廠別</td>
+          <td><input nz-input style="width:50%;" placeholder="工廠別" [(ngModel)]="PLANT" />
+          </td>
+          <td>&nbsp;&nbsp;站別代碼</td>
+          <td><input nz-input style="width:60%;" placeholder="站別代碼" [(ngModel)]="SHOP_CODE" />
+          </td>
+          <td>&nbsp;&nbsp;站別名</td>
+          <td><input nz-input style="width:50%;" placeholder="站別名" [(ngModel)]="SHOP_NAME" />
+          </td>
+          <td>&nbsp;&nbsp;機台</td>
+          <td><input nz-input style="width:50%;" placeholder="機台" [(ngModel)]="EQUIP_CODE_1" />
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;&nbsp;設備名</td>
+          <td><input nz-input style="width:50%;" placeholder="設備名" [(ngModel)]="EQUIP_NAME" />
+          </td>
+          <td>&nbsp;&nbsp;機台群組</td>
+          <td><input nz-input style="width:50%;" placeholder="機台群組" [(ngModel)]="EQUIP_GROUP" />
+          </td>
+          <td>&nbsp;&nbsp;有效碼</td>
+          <td><input nz-input style="width:50%;" placeholder="有效碼" [(ngModel)]="VALID" />
+          </td>
+          <td>
+            &nbsp;&nbsp;
+            <button
+                    nz-button
+                    style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                    nzType="primary"
+                    (click)="insertTab2()"
+            >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+            </button>
+          </td>
+        </tr>
+      </table>
+      <p></p><p></p>
+      <div nz-col [nzSpan]="30">
+        <nz-table #RowTable7 nzBordered [nzData]="PPSINP07List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+          <thead>
+          <tr>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">工廠別</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">站別代碼</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">站別</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">機台</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">設備名</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">機台群組</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">有效碼</th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of RowTable7.data;let i = index" class="editable-row">
+            <ng-container *ngIf="!editCache7[data.id].edit; else editTemplate7">
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PLANT }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.SHOP_CODE }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHOP_NAME }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CODE_1 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_NAME }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_GROUP }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.VALID }}</td>
+              <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                <a (click)="editRow(data.id, 2)">修改</a>&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 2)">刪除</a>
+              </td>
+            </ng-container>
+            <ng-template #editTemplate7>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入工廠別" [(ngModel)]="editCache7[data.id].data.PLANT" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入站別代碼" [(ngModel)]="editCache7[data.id].data.SHOP_CODE" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache7[data.id].data.SHOP_NAME" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache7[data.id].data.EQUIP_CODE_1" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入設備名" [(ngModel)]="editCache7[data.id].data.EQUIP_NAME" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="機台群組" [(ngModel)]="editCache7[data.id].data.EQUIP_GROUP" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="有效碼" [(ngModel)]="editCache7[data.id].data.VALID" />
+              </td>
+              <td>
+                <a (click)="saveEdit(data.id, 2)">確認</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 2)">取消</a>
+              </td>
+            </ng-template>
+          </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+  </nz-tab>
+    <!-- 3.設備能力(鴻) -->
+    <nz-tab nzTitle="設備能力" (nzClick)="changeTab2(1)">
+      <div  style="background: rgb(255, 255, 255); width:auto; min-height: 1200px;">
+        <table>
+          <tr>
+            <td nz-width="1%">站號</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入站號" [(ngModel)]="SHOP_CODE_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:70px;">機台群組</td>
+            <td style="width:100px;" ><input nz-input placeholder="輸入機台群組" [(ngModel)]="EQUIP_GROUP_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">機台</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">製程碼</td>
+            <td style="width:110px;" ><input nz-input placeholder="輸入製程碼" [(ngModel)]="PROCESS_CODE_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">鋼種類別</td>
+            <td style="width:100px;" ><input nz-input placeholder="輸入鋼種類別" [(ngModel)]="GRADE_GROUP_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">形狀</td>
+            <td style="width:100px;" ><input nz-input placeholder="輸入形狀" [(ngModel)]="SHAPE_TYPE_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">投入尺寸上限</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入投入尺寸上限" [(ngModel)]="INPUT_DIA_MAX_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">設備能力最小尺寸</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入設備能力最小尺寸" [(ngModel)]="CAPABILITY_DIA_MIN_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">設備能力最大尺寸</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入設備能力最大尺寸" [(ngModel)]="CAPABILITY_DIA_MAX_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">設備能力最小長度</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入設備能力最小長度" [(ngModel)]="CAPABILITY_LENGTH_MIN_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">設備能力最大長度</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入設備能力最大長度" [(ngModel)]="CAPABILITY_LENGTH_MAX_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">最佳能力最小尺寸</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入最佳能力最小尺寸" [(ngModel)]="OPTIMAL_DIA_MIN_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">最佳能力最大尺寸</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入最佳能力最大尺寸" [(ngModel)]="OPTIMAL_DIA_MAX_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">最佳能力最小長度</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入最佳能力最小長度" [(ngModel)]="OPTIMAL_LENGTH_MIN_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">最佳能力最大長度</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入最佳能力最大長度" [(ngModel)]="OPTIMAL_LENGTH_MAX_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">替代機台順位1</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入替代機台順位1" [(ngModel)]="OPTION_EQUIP_1_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">替代機台順位2</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入替代機台順位2" [(ngModel)]="OPTION_EQUIP_2_2" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">替代機台順位3</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入替代機台順位3" [(ngModel)]="OPTION_EQUIP_3_2" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab2()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table #RowTable2 nzBordered [nzData]="PPSINP02List" [nzPageSize]="20" [nzScroll]="{ x: '1800px', y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">站號</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">機台群組</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">機台</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">製程碼</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">鋼種類別</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">形狀</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">投入尺寸上限</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">設備能力最小尺寸</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">設備能力最大尺寸</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">設備能力最小長度</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">設備能力最大長度</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">最佳能力最小尺寸</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">最佳能力最大尺寸</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">最佳能力最小長度</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">最佳能力最大長度</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">替代機台順位1</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">替代機台順位2</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">替代機台順位3</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable2.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache2[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_GROUP_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.PROCESS_CODE_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.GRADE_GROUP_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHAPE_TYPE_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.INPUT_DIA_MAX_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.CAPABILITY_DIA_MIN_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.CAPABILITY_DIA_MAX_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.CAPABILITY_LENGTH_MIN_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.CAPABILITY_LENGTH_MAX_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTIMAL_DIA_MIN_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTIMAL_DIA_MAX_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTIMAL_LENGTH_MIN_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTIMAL_LENGTH_MAX_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTION_EQUIP_1_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTION_EQUIP_2_2 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OPTION_EQUIP_3_2 }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow2(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow2(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入站號" [(ngModel)]="editCache2[data.id].data.SHOP_CODE_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入機台群組" [(ngModel)]="editCache2[data.id].data.EQUIP_GROUP_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache2[data.id].data.EQUIP_CODE_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入製程碼" [(ngModel)]="editCache2[data.id].data.PROCESS_CODE_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入鋼種類別" [(ngModel)]="editCache2[data.id].data.GRADE_GROUP_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入形狀" [(ngModel)]="editCache2[data.id].data.SHAPE_TYPE_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入投入尺寸上限" [(ngModel)]="editCache2[data.id].data.INPUT_DIA_MAX_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入設備能力最小尺寸" [(ngModel)]="editCache2[data.id].data.CAPABILITY_DIA_MIN_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入設備能力最大尺寸" [(ngModel)]="editCache2[data.id].data.CAPABILITY_DIA_MAX_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入設備能力最小長度" [(ngModel)]="editCache2[data.id].data.CAPABILITY_LENGTH_MIN_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入設備能力最大長度" [(ngModel)]="editCache2[data.id].data.CAPABILITY_LENGTH_MAX_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入最佳能力最小尺寸" [(ngModel)]="editCache2[data.id].data.OPTIMAL_DIA_MIN_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入最佳能力最大尺寸" [(ngModel)]="editCache2[data.id].data.OPTIMAL_DIA_MAX_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入最佳能力最小長度" [(ngModel)]="editCache2[data.id].data.OPTIMAL_LENGTH_MIN_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入最佳能力最大長度" [(ngModel)]="editCache2[data.id].data.OPTIMAL_LENGTH_MAX_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入替代機台順位1" [(ngModel)]="editCache2[data.id].data.OPTION_EQUIP_1_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入替代機台順位2" [(ngModel)]="editCache2[data.id].data.OPTION_EQUIP_2_2" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入替代機台順位3" [(ngModel)]="editCache2[data.id].data.OPTION_EQUIP_3_2" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit2(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit2(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 4.整備 -->
+    <nz-tab nzTitle="整備時間" (nzClick)="changeTab3(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td nz-width="1%">機台</td>
+            <td style="width:90px;" ><input nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">上下料</td>
+            <td style="width:100px;" ><input nz-input placeholder="上下料時間" [(ngModel)]="LOAD_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">搬運</td>
+            <td style="width:90px;" ><input nz-input placeholder="搬運時間" [(ngModel)]="TRANSFER_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">其他整備</td>
+            <td style="width:110px;" ><input nz-input placeholder="其他整備時間" [(ngModel)]="OTHER_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">大調機</td>
+            <td style="width:100px;" ><input nz-input placeholder="大調機時間" [(ngModel)]="BIG_ADJUST_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">小調機</td>
+            <td style="width:100px;" ><input nz-input placeholder="小調機時間" [(ngModel)]="SMALL_ADJUST_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">退料</td>
+            <td style="width:90px;" ><input nz-input placeholder="退料時間" [(ngModel)]="RETURN_TIME" />
+            </td>
+            <td nz-width="1%" style="margin-left:50px;">冷卻</td>
+            <td style="width:90px;" ><input nz-input placeholder="冷卻時間" [(ngModel)]="COOLING_TIME" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab3()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table #RowTable3 nzBordered [nzData]="PPSINP03List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">機台</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">上下料</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">搬運</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">其他整備</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">大調機</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">小調機</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">退料</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">冷卻</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable3.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache3[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.LOAD_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OTHER_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BIG_ADJUST_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.RETURN_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.COOLING_TIME }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                  <a (click)="editRow3(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow3(data.id, 1)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate1>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache3[data.id].data.EQUIP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="上下料時間" [(ngModel)]="editCache3[data.id].data.LOAD_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="搬運時間" [(ngModel)]="editCache3[data.id].data.TRANSFER_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="其他整備時間" [(ngModel)]="editCache3[data.id].data.OTHER_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="大調機時間" [(ngModel)]="editCache3[data.id].data.BIG_ADJUST_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="小調機時間" [(ngModel)]="editCache3[data.id].data.SMALL_ADJUST_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="退料時間" [(ngModel)]="editCache3[data.id].data.RETURN_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="冷卻時間" [(ngModel)]="editCache3[data.id].data.COOLING_TIME" />
+                </td>
+                <td>
+                  <a (click)="saveEdit3(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit3(data.id, 1)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 5.大調機 -->
+    <nz-tab nzTitle="大調機" (nzClick)="changeTab4(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td>機台</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_4" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最小值</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入尺寸最小值" [(ngModel)]="DIA_MIN_4" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最大值</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入尺寸最大值" [(ngModel)]="DIA_MAX_4" />
+            </td>
+            <td>&nbsp;&nbsp;產出型態</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出型態" [(ngModel)]="SHAPE_TYPE_4" />
+            </td>
+            <td>&nbsp;&nbsp;大調機代碼</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入大調機代碼" [(ngModel)]="BIG_ADJUST_CODE_4" />
+            </td>
+            <td>&nbsp;&nbsp;小調機公差標準</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入小調機公差標準" [(ngModel)]="SMALL_ADJUST_TOLERANCE_4" />
+            </td>
+            <td>&nbsp;&nbsp;爐批數量</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入爐批數量" [(ngModel)]="FURANCE_BATCH_QTY_4" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab4()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+
+        <div nz-col [nzSpan]="10">
+          <nz-table #RowTable4 nzBordered [nzData]="PPSINP04List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">機台</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">產出尺寸最小值</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸最大值</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出型態</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">大調機代碼</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">小調機公差標準</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">爐批數量</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable4.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache4[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.DIA_MIN_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHAPE_TYPE_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BIG_ADJUST_CODE_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TOLERANCE_4 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FURANCE_BATCH_QTY_4 }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow4(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow4(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache4[data.id].data.EQUIP_CODE_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入尺寸最小值" [(ngModel)]="editCache4[data.id].data.DIA_MIN_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入尺寸最大值" [(ngModel)]="editCache4[data.id].data.DIA_MAX_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache4[data.id].data.SHAPE_TYPE_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入大調機代碼" [(ngModel)]="editCache4[data.id].data.BIG_ADJUST_CODE_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入小調機公差標準" [(ngModel)]="editCache4[data.id].data.SMALL_ADJUST_TOLERANCE_4" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="輸入爐批數量" [(ngModel)]="editCache4[data.id].data.FURANCE_BATCH_QTY_4" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit4(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit4(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 6.小調機 -->
+    <nz-tab nzTitle="小調機" (nzClick)="changeTab17(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+        <table>
+          <tr>
+            <td>機台</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_17" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最小值</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入尺寸最小值" [(ngModel)]="DIA_MIN_17" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最大值</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入尺寸最大值" [(ngModel)]="DIA_MAX_17" />
+            </td>
+            <td>&nbsp;&nbsp;產出型態</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出型態" [(ngModel)]="SHAPE_TYPE_17" />
+            </td>
+            <td>&nbsp;&nbsp;小調機代碼</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入小調機代碼" [(ngModel)]="SMALL_ADJUST_CODE_17" />
+            </td>
+            <td>&nbsp;&nbsp;小調機公差標準</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入小調機公差標準" [(ngModel)]="SMALL_ADJUST_TOLERANCE_17" />
+            </td>
+            <td>&nbsp;&nbsp;爐批數量</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入爐批數量" [(ngModel)]="FURANCE_BATCH_QTY_17" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab17()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table class="table17" #RowTable17 nzBordered [nzData]="PPSINP17List" [nzPageSize]="20" [nzScroll]="{y: '500px'}">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">機台</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">產出尺寸最小值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸最大值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出型態</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">小調機代碼</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">小調機公差標準</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">爐批數量</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable17.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache17[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.DIA_MIN_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHAPE_TYPE_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_CODE_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TOLERANCE_17 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FURANCE_BATCH_QTY_17 }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 200px;">
+                  <a (click)="editRow17(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow17(data.id, 1)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate1>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache17[data.id].data.EQUIP_CODE_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入尺寸最小值" [(ngModel)]="editCache17[data.id].data.DIA_MIN_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入尺寸最大值" [(ngModel)]="editCache17[data.id].data.DIA_MAX_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache17[data.id].data.SHAPE_TYPE_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入大調機代碼" [(ngModel)]="editCache17[data.id].data.SMALL_ADJUST_CODE_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入小調機公差標準" [(ngModel)]="editCache17[data.id].data.SMALL_ADJUST_TOLERANCE_17" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入爐批數量" [(ngModel)]="editCache17[data.id].data.FURANCE_BATCH_QTY_17" />
+                </td>
+                <td>
+                  <a (click)="saveEdit17(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit17(data.id, 1)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 7.線速 -->
+    <nz-tab nzTitle="線速" (nzClick)="changeTab05(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+        <table>
+          <tr>
+            <td>站號</td>
+            <td><input nz-input style="width:60%;" placeholder="站號" [(ngModel)]="SHOP_CODE_5" />
+            </td>
+            <td>&nbsp;&nbsp;機台</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_5" />
+            </td>
+            <td>&nbsp;&nbsp;產出型態</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出型態" [(ngModel)]="SHAPE_TYPE_5" />
+            </td>
+            <td>&nbsp;&nbsp;剛種類別</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入剛種類別" [(ngModel)]="GRADE_GROUP_5" />
+            </td>
+            <td>&nbsp;&nbsp;線速分類</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入線速分類" [(ngModel)]="SPEED_TYPE_5" />
+            </td>
+            <td>&nbsp;&nbsp;減面率MIN</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入減面率MIN" [(ngModel)]="REDUCTION_RATE_MIN_5" />
+            </td>
+            <td>&nbsp;&nbsp;減面率MAX</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入減面率MAX" [(ngModel)]="REDUCTION_RATE_MAX_5" /></td>
+            <td>&nbsp;&nbsp;產出最小尺寸</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出最小尺寸" [(ngModel)]="DIA_MAX_5" /></td>
+            <td>&nbsp;&nbsp;產出最大尺寸</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出最大尺寸" [(ngModel)]="DIA_MIN_5" /></td>
+            <td>&nbsp;&nbsp;線速(m/min)</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入線速" [(ngModel)]="SPEED_5" /></td>
+            <td>&nbsp;&nbsp;日產出量</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入日產出量" [(ngModel)]="EQUIP_CAP_5" /></td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab05()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table class="table05" #RowTable05 nzBordered [nzData]="PPSINP05List" [nzPageSize]="20" [nzScroll]="{y: '500px'}">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">站號</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">機台</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出型態</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">鋼種類別</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">線速分類</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">減面率MIN</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">減面率MAX</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">產出尺寸最小值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸最大值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px">線速(公尺/分)</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px">日產出量</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable05.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache05[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHAPE_TYPE_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.GRADE_GROUP_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SPEED_TYPE_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.REDUCTION_RATE_MIN_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.REDUCTION_RATE_MAX_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SPEED_5 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CAP_5 }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 200px;">
+                  <a (click)="editRow05(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow05(data.id, 1)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate1>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache05[data.id].data.SHOP_CODE_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache05[data.id].data.EQUIP_CODE_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache05[data.id].data.SHAPE_TYPE_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入鋼種分類" [(ngModel)]="editCache05[data.id].data.GRADE_GROUP_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入線速分類" [(ngModel)]="editCache05[data.id].data.SPEED_TYPE_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入減面率MIN" [(ngModel)]="editCache05[data.id].data.REDUCTION_RATE_MIN_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入減面率MAX" [(ngModel)]="editCache05[data.id].data.REDUCTION_RATE_MAX_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入尺寸最小值" [(ngModel)]="editCache05[data.id].data.DIA_MIN_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入尺寸最大值" [(ngModel)]="editCache05[data.id].data.DIA_MAX_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入線速" [(ngModel)]="editCache05[data.id].data.SPEED_5" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入日產出量" [(ngModel)]="editCache05[data.id].data.EQUIP_CAP_5" />
+                </td>
+                <td>
+                  <a (click)="saveEdit05(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit05(data.id, 1)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 8.非線速 -->
+    <nz-tab nzTitle="非線速" (nzClick)="changeTab8(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td>站號</td>
+            <td><input nz-input style="width:60%;" placeholder="站號" [(ngModel)]="SHOP_CODE_8" />
+            </td>
+            <td>&nbsp;&nbsp;機台</td>
+            <td><input nz-input style="width:60%;" placeholder="機台" [(ngModel)]="EQUIP_CODE_8" />
+            </td>
+            <td>&nbsp;&nbsp;產出形狀</td>
+            <td><input nz-input style="width:50%;" placeholder="產出形狀" [(ngModel)]="SHAPE_TYPE_8" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最小值</td>
+            <td><input nz-input style="width:50%;" placeholder="產出尺寸最小值" [(ngModel)]="DIA_MIN_8" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸最大值</td>
+            <td><input nz-input style="width:50%;" placeholder="產出尺寸最大值" [(ngModel)]="DIA_MAX_8" />
+            </td>
+            <td>&nbsp;&nbsp;加工時間</td>
+            <td><input nz-input style="width:50%;" placeholder="加工時間" [(ngModel)]="MINS_8" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab8()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+
+        <div nz-col [nzSpan]="90">
+          <nz-table #RowTable8 nzBordered [nzData]="PPSINP08List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">站號</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">機台</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出形狀</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸最小值</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸最大值</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">加工時間</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable8.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache8[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_8 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_8 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHAPE_TYPE_8 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN_8 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_8 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.MINS_8 }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow8(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow8(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache8[data.id].data.SHOP_CODE_8" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="機台" [(ngModel)]="editCache8[data.id].data.EQUIP_CODE_8" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="產出形狀" [(ngModel)]="editCache8[data.id].data.SHAPE_TYPE_8" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="產出尺寸最小值" [(ngModel)]="editCache8[data.id].data.DIA_MIN_8" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="產出尺寸最大值" [(ngModel)]="editCache8[data.id].data.DIA_MAX_8" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="加工時間" [(ngModel)]="editCache8[data.id].data.MINS_8" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit8(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit8(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 9.退火爐工時 -->
+    <nz-tab nzTitle="退火爐工時" (nzClick)="changeTab9(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td>站號</td>
+            <td><input nz-input style="width:60%;" placeholder="站號" [(ngModel)]="SHOP_CODE_9" />
+            </td>
+            <td>&nbsp;&nbsp;機台</td>
+            <td><input nz-input style="width:60%;" placeholder="機台" [(ngModel)]="EQUIP_CODE_9" />
+            </td>
+            <td>&nbsp;&nbsp;作業代碼</td>
+            <td><input nz-input style="width:50%;" placeholder="作業代碼" [(ngModel)]="OP_CODE_9" />
+            </td>
+            <td>&nbsp;&nbsp;溫度</td>
+            <td><input nz-input style="width:50%;" placeholder="溫度" [(ngModel)]="TEMPERATURE_9" />
+            </td>
+            <td>&nbsp;&nbsp;頻率</td>
+            <td><input nz-input style="width:50%;" placeholder="頻率" [(ngModel)]="FREQUENCY_9" />
+            </td>
+            <td>&nbsp;&nbsp;每噸花時間</td>
+            <td><input nz-input style="width:50%;" placeholder="每噸花時間" [(ngModel)]="STEEL_GRADE_MIN_9" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab9()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+
+        <div nz-col [nzSpan]="90">
+          <nz-table #RowTable9 nzBordered [nzData]="PPSINP09List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">站號</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">機台</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">作業代碼</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">溫度</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">頻率</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">每噸花時間</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable9.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache9[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_9 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_9 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE_9 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TEMPERATURE_9 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FREQUENCY_9 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.STEEL_GRADE_MIN_9 }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow9(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow9(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache9[data.id].data.SHOP_CODE_9" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="機台" [(ngModel)]="editCache9[data.id].data.EQUIP_CODE_9" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="作業代碼" [(ngModel)]="editCache9[data.id].data.OP_CODE_9" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="溫度" [(ngModel)]="editCache9[data.id].data.TEMPERATURE_9" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="頻率" [(ngModel)]="editCache9[data.id].data.FREQUENCY_9" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="每噸花時間" [(ngModel)]="editCache9[data.id].data.STEEL_GRADE_MIN_9" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit9(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit9(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-tab>
+    <!-- 10.其他站別工時 -->
+    <nz-tab nzTitle="其他站別工時" (nzClick)="changeTab10(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td>站號</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入站號" [(ngModel)]="SHOP_CODE_10" />
+            </td>
+            <td>&nbsp;&nbsp;機台碼</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台碼" [(ngModel)]="EQUIP_CODE_10" />
+            </td>
+            <td>&nbsp;&nbsp;鋼種</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入鋼種" [(ngModel)]="GRADE_NO_10" />
+            </td>
+            <td>&nbsp;&nbsp;長度最小值</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入長度最小值" [(ngModel)]="LENGTH_MIN_10" />
+            </td>
+            <td>&nbsp;&nbsp;長度最大值</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入長度最大值" [(ngModel)]="LENGTH_MAX_10" />
+            </td>
+            <td>&nbsp;&nbsp;最小尺寸</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入最小尺寸" [(ngModel)]="DIA_MIN_10" />
+            </td>
+            <td>&nbsp;&nbsp;最大尺寸</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入最大尺寸" [(ngModel)]="DIA_MAX_10" />
+            </td>
+            <td>&nbsp;&nbsp;總時間</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入總時間" [(ngModel)]="TOTAL_TIMES_10" />
+            </td>
+            <td>&nbsp;&nbsp;浸酸時間</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入浸酸時間" [(ngModel)]="PICKLING_TIMES_10" />
+            </td>
+            <td>&nbsp;&nbsp;清洗時間</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入清洗時間" [(ngModel)]="WASHING_TIMES_10" />
+            </td>
+            <td>&nbsp;&nbsp;瀝乾時間</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入瀝乾時間" [(ngModel)]="DRAINING_TIMES_10" />
+            </td>
+            <td>&nbsp;&nbsp;投入上限值</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入投入上限值" [(ngModel)]="BATCH_CNT_10" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="insertTab10()"
+              >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              確認
+              </button>
+            </td>
+          </tr>
+        </table>
+      <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table #RowTable10 nzBordered [nzData]="PPSINP10List" [nzPageSize]="20" [nzScroll]="{ x: '1400px', y: '500px' }">
+            <thead>
+              <tr>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">站號</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">機台碼</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">鋼種</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">長度-最小值(mm)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">長度-最大值(mm)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">尺寸最小</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">尺寸最大</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">總時間(分/批)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">浸酸時間(分/批)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">清洗時間(分/批)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">瀝乾時間(分/批)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">投入上限值(捆/批)</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable10.data;let i = index" class="editable-row">
+                <ng-container *ngIf="!editCache10[data.id].edit; else editTemplate1">
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.GRADE_NO_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.LENGTH_MIN_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.LENGTH_MAX_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TOTAL_TIMES_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.PICKLING_TIMES_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WASHING_TIMES_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DRAINING_TIMES_10 }}</td>
+                  <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BATCH_CNT_10 }}</td>
+                  <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                    <a (click)="editRow10(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow10(data.id, 1)">刪除</a>
+                  </td>
+                </ng-container>
+                <ng-template #editTemplate1>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache10[data.id].data.SHOP_CODE_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="機台碼" [(ngModel)]="editCache10[data.id].data.EQUIP_CODE_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="鋼種" [(ngModel)]="editCache10[data.id].data.GRADE_NO_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="長度-最小值(mm)" [(ngModel)]="editCache10[data.id].data.LENGTH_MIN_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="長度-最大值(mm)" [(ngModel)]="editCache10[data.id].data.LENGTH_MAX_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="尺寸最小" [(ngModel)]="editCache10[data.id].data.DIA_MIN_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="尺寸最大" [(ngModel)]="editCache10[data.id].data.DIA_MAX_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="總時間(分/批)" [(ngModel)]="editCache10[data.id].data.TOTAL_TIMES_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="浸酸時間(分/批)" [(ngModel)]="editCache10[data.id].data.PICKLING_TIMES_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="清洗時間(分/批)" [(ngModel)]="editCache10[data.id].data.WASHING_TIMES_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="瀝乾時間(分/批)" [(ngModel)]="editCache10[data.id].data.DRAINING_TIMES_10" />
+                  </td>
+                  <td>
+                    <input nz-width="20%" nz-input placeholder="投入上限值(捆/批)" [(ngModel)]="editCache10[data.id].data.BATCH_CNT_10" />
+                  </td>
+                  <td>
+                    <a (click)="saveEdit10(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit10(data.id, 1)">取消</a>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+    <!-- 11.研磨道次(雄) -->
+    <nz-tab nzTitle="研磨道次" (nzClick)="changeTab(13)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+        <table>
+          <tr>
+            <td>鋼種類別</td>
+            <td><input nz-input style="width:50%;" placeholder="鋼種類別" [(ngModel)]="GRADE_NO_13" />
+            </td>
+            <td>產出型態</td>
+            <td>
+              <input nz-input style="width:50%;" placeholder="產出型態" [(ngModel)]="OUT_TYPE" />
+            </td>
+          </tr>
+          <tr>
+            <td>產出成品尺寸最小值</td>
+            <td><input nz-input style="width:50%;" placeholder="產出成品尺寸最小值" [(ngModel)]="DIA_MIN" />
+            </td>
+            <td>產出成品尺寸最大值</td>
+            <td><input nz-input style="width:50%;" placeholder="產出成品尺寸最大值" [(ngModel)]="DIA_MAX" />
+            </td>
+            <td>&nbsp;&nbsp;研磨道次</td>
+            <td><input nz-input style="width:50%;" placeholder="研磨道次" [(ngModel)]="GRINDING_PASS" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;每刀研磨尺寸</td>
+            <td><input nz-input style="width:50%;" placeholder="每刀研磨尺寸" [(ngModel)]="GRINDING_SIZE" />
+            </td>
+            <td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab13()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="30">
+          <nz-table #RowTable13 nzBordered [nzData]="PPSINP13List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">鋼種類別</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">產出型態</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出成品尺寸最小值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出成品尺寸最大值</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">研磨道次</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">每刀研磨尺寸</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable13.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache13[data.id].edit; else editTemplate13">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRADE_NO_13 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.OUT_TYPE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DIA_MAX }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_PASS }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_SIZE }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                  <a (click)="editRow(data.id, 13)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 13)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate13>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache13[data.id].data.GRADE_NO_13" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="產出型態" [(ngModel)]="editCache13[data.id].data.OUT_TYPE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="產出成品尺寸最小值" [(ngModel)]="editCache13[data.id].data.DIA_MIN" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="產出成品尺寸最大值" [(ngModel)]="editCache13[data.id].data.DIA_MAX" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="研磨道次" [(ngModel)]="editCache13[data.id].data.GRINDING_PASS" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="每刀研磨尺寸" [(ngModel)]="editCache13[data.id].data.GRINDING_SIZE" />
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.id, 13)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 13)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-tab>
+    <!-- 12.Campaign限制(雄) -->
+    <nz-tab nzTitle="Campaign限制" (nzClick)="changeTab(16)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+        <table>
+          <tr>
+            <td>&nbsp;&nbsp;站別</td>
+            <td><input nz-input style="width:50%;" placeholder="站別" [(ngModel)]="SHOP_CODE_SCHE" />
+            </td>
+            <td>&nbsp;&nbsp;機台</td>
+            <td><input nz-input style="width:50%;" placeholder="機台" [(ngModel)]="CHOOSE_EQUIP_CODE" />
+            </td>
+            <td>&nbsp;&nbsp;Campaign ID</td>
+            <td><input nz-input style="width:50%;" placeholder="Campaign ID" [(ngModel)]="COMPAIGN_ID" />
+            </td>
+            <td>&nbsp;&nbsp;欄位</td>
+            <td><input nz-input style="width:50%;" placeholder="欄位" [(ngModel)]="PARAMETER_COL" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;條件</td>
+            <td><input nz-input style="width:50%;" placeholder="條件" [(ngModel)]="PARAMETER_CONDITION" />
+            </td>
+            <td>&nbsp;&nbsp;參數</td>
+            <td><input nz-input style="width:50%;" placeholder="參數" [(ngModel)]="PARAMETER_NAME" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸MIN</td>
+            <td><input nz-input style="width:50%;" placeholder="產出尺寸MIN" [(ngModel)]="TURN_DIA_MAX_MIN" />
+            </td>
+            <td>&nbsp;&nbsp;產出尺寸MAX</td>
+            <td><input nz-input style="width:50%;" placeholder="產出尺寸MAX" [(ngModel)]="TURN_DIA_MAX_MAX" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;抽數別</td>
+            <td><input nz-input style="width:50%;" placeholder="抽數別" [(ngModel)]="SCHE_TYPE" />
+            </td>
+            <td>&nbsp;&nbsp;交期區間MIN</td>
+            <td><input nz-input style="width:50%;" placeholder="交期區間MIN" [(ngModel)]="DATA_DELIVERY_RANGE_MIN" />
+            </td>
+            <td>&nbsp;&nbsp;交期區間MAX</td>
+            <td><input nz-input style="width:50%;" placeholder="交期區間MAX" [(ngModel)]="DATA_DELIVERY_RANGE_MAX" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;生產日期 起</td>
+            <td><input nz-input style="width:50%;" placeholder="生產日期 起" [(ngModel)]="START_TIME" />
+            </td>
+            <td>&nbsp;&nbsp;生產日期 訖</td>
+            <td><input nz-input style="width:50%;" placeholder="生產日期 訖" [(ngModel)]="END_TIME" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab16()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="30">
+          <nz-table #RowTable16 nzBordered [nzData]="PPSINP16List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">站別</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">機台</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">Campaign ID</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">欄位</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">條件</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">參數</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸MIN</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出尺寸MAX</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">抽數別</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">交期區間MIN</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">交期區間MAX</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">生產日期 起</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">生產日期 訖</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable16.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache16[data.id].edit; else editTemplate16">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_SCHE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.CHOOSE_EQUIP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.COMPAIGN_ID }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PARAMETER_COL }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PARAMETER_CONDITION }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PARAMETER_NAME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.TURN_DIA_MAX_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.TURN_DIA_MAX_MAX }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SCHE_TYPE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MAX }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.START_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.END_TIME }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                  <a (click)="editRow(data.id, 16)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 16)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate16>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="站別" [(ngModel)]="editCache16[data.id].data.SHOP_CODE_SCHE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="機台" [(ngModel)]="editCache16[data.id].data.CHOOSE_EQUIP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="Campaign ID" [(ngModel)]="editCache16[data.id].data.COMPAIGN_ID" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="欄位" [(ngModel)]="editCache16[data.id].data.PARAMETER_COL" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="條件" [(ngModel)]="editCache16[data.id].data.PARAMETER_CONDITION" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="參數" [(ngModel)]="editCache16[data.id].data.PARAMETER_NAME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="產出尺寸MIN" [(ngModel)]="editCache16[data.id].data.TURN_DIA_MAX_MIN" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="產出尺寸MAX" [(ngModel)]="editCache16[data.id].data.TURN_DIA_MAX_MAX" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="抽數別" [(ngModel)]="editCache16[data.id].data.SCHE_TYPE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="交期區間MIN" [(ngModel)]="editCache16[data.id].data.DATA_DELIVERY_RANGE_MIN" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="交期區間MAX" [(ngModel)]="editCache16[data.id].data.DATA_DELIVERY_RANGE_MAX" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="生產日期 起" [(ngModel)]="editCache16[data.id].data.START_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="生產日期 訖" [(ngModel)]="editCache16[data.id].data.END_TIME" />
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.id, 16)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 16)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-tab>
+    <!-- 13.清洗站設備能力表 -->
+    <nz-tab nzTitle="清洗站設備能力表" (nzClick)="changeTab20(1)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+        <table>
+          <tr>
+            <td>機台</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_20" />
+            </td>
+            <td>&nbsp;&nbsp;產品種類</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入產品種類" [(ngModel)]="KIND_TYPE_20" />
+            </td>
+            <td>&nbsp;&nbsp;產出型態</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出型態" [(ngModel)]="OUTPUT_SHAPE_20" />
+            </td>
+            <td>&nbsp;&nbsp;製程碼</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入製程碼" [(ngModel)]="PROCESS_CODE_20" />
+            </td>
+            <td>&nbsp;&nbsp;FINAL_製程</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入FINAL_製程" [(ngModel)]="FINAL_PROCESS_20" />
+            </td>
+            <td>&nbsp;&nbsp;抽數別</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入抽數別" [(ngModel)]="SCHE_TYPE_20" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab20()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p>
+
+        <div nz-col [nzSpan]="25">
+          <nz-table #RowTable20 nzBordered [nzData]="PPSINP20List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+            <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px">機台</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px">產品種類</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">產出型態</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">製程碼</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">FINAL_製程</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px">抽數別</th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable20.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache20[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE_20 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.KIND_TYPE_20 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OUTPUT_SHAPE_20 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.PROCESS_CODE_20 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FINAL_PROCESS_20 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SCHE_TYPE_20 }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                  <a (click)="editRow20(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow20(data.id, 1)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate1>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache20[data.id].data.EQUIP_CODE_20" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入產品種類" [(ngModel)]="editCache20[data.id].data.KIND_TYPE_20" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache20[data.id].data.OUTPUT_SHAPE_20" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入製程碼" [(ngModel)]="editCache20[data.id].data.PROCESS_CODE_20" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入FINAL_製程" [(ngModel)]="editCache20[data.id].data.FINAL_PROCESS_20" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入抽數別" [(ngModel)]="editCache20[data.id].data.SCHE_TYPE_20" />
+                </td>
+                <td>
+                  <a (click)="saveEdit20(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit20(data.id, 1)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+
+    <!-- 14.產率設定表 -->
+    <nz-tab nzTitle="產率設定" (nzClick)="changeTab(14)">
+      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+<!-- 
+        <table>
+          <tr>
+            <td>機台</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_20" />
+            </td>
+            <td>&nbsp;&nbsp;產品種類</td>
+            <td><input nz-input style="width:60%;" placeholder="輸入產品種類" [(ngModel)]="KIND_TYPE_20" />
+            </td>
+            <td>&nbsp;&nbsp;產出型態</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入產出型態" [(ngModel)]="OUTPUT_SHAPE_20" />
+            </td>
+            <td>&nbsp;&nbsp;製程碼</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入製程碼" [(ngModel)]="PROCESS_CODE_20" />
+            </td>
+            <td>&nbsp;&nbsp;FINAL_製程</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入FINAL_製程" [(ngModel)]="FINAL_PROCESS_20" />
+            </td>
+            <td>&nbsp;&nbsp;抽數別</td>
+            <td><input nz-input style="width:50%;" placeholder="輸入抽數別" [(ngModel)]="SCHE_TYPE_20" />
+            </td>
+            <td>
+              &nbsp;&nbsp;
+              <button
+                      nz-button
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                      nzType="primary"
+                      (click)="insertTab20()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                確認
+              </button>
+            </td>
+          </tr>
+        </table>
+        <p></p><p></p> -->
+
+        <div nz-col [nzSpan]="8">
+          <nz-table #RowTable14 nzBordered [nzData]="tbppsm012List" [nzPageSize]="15" [nzScroll]="{ y: '650px' }">
+            <thead>
+            <tr>
+              <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
+              <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機群</th>
+              <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">設定類型</th>
+              <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">設定值</th>
+              <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of RowTable14.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache14[data.id].edit; else editTemplate14">
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.SCH_SHOP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.EQUIP_GROUP }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.YIELD_TYPE }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.YIELD_VALUE }}</td>
+                <td style="text-align:center; padding: 0px; height: 40px;">
+                  <a (click)="editRow(data.id, 14)">修改</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate14>
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.SCH_SHOP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px;">{{ data.EQUIP_GROUP }}</td>
+                <td>
+                  <nz-select placeholder="設定類型" [(ngModel)]="editCache14[data.id].data.YIELD_TYPE" (ngModelChange)="changeYieldType(data.id, $event)">
+                    <nz-option nzValue="尺寸" nzLabel="尺寸"></nz-option>
+                    <nz-option nzValue="長度" nzLabel="長度"></nz-option>
+                    <nz-option nzValue="定值" nzLabel="定值"></nz-option>
+                    <nz-option nzValue="-" nzLabel="　-　"></nz-option>
+                  </nz-select>
+                </td>
+                <td>
+                  <nz-input-number [disabled]="showYieldValue" placeholder="輸入產出型態" [(ngModel)]="editCache14[data.id].data.YIELD_VALUE" [nzMin]="0" [nzMax]="100" [nzStep]="1"></nz-input-number>
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.id, 14)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 14)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+
+    </nz-tab>
+
+
+
+  </nz-tabset>
+</nz-content>

@@ -1,0 +1,52 @@
+
+
+<div nz-row style="background-color: white; padding: 10px 10px; margin:5px 5px;">
+  <div nz-col nzSpan="12">
+   <h5>客戶信息</h5>
+  </div>
+  <div nz-col nzSpan="12" style="text-align: right;">
+    <!-- <button nz-button nzType="primary">
+      <span>新增</span>
+    </button> -->
+  </div>
+</div>
+
+<nz-table #basicTable [nzData]="tbData">
+  <thead>
+    <tr>
+      <th *ngFor="let header of  tbHeader">{{header.label}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let data of basicTable.data ;let i = index">
+    <tr>
+      <td>{{i+1}}</td>
+      <td>{{data.cstCode}}</td>
+      <td>{{data.cstName}}</td>
+      <td>{{data.cstNickname}}</td>
+      <!-- <td>{{data.cstNameEn}}</td>
+      <td>{{data.cstAddress}}</td>
+      
+      <td>{{data.cstType === '1' ? '內部' :'外部'}}</td> -->
+      <td>{{data.cstEmail}}</td>
+      <td>{{data.cstUser}}</td>
+
+      <td>{{data.cstPhone}}</td>
+      <!-- <td>{{data.cstLandline}}</td> -->
+      <!-- <td>{{data.cstAuthCode}}</td> -->
+      <td>{{data.serviceStatus === 'O' ? 'OUT SERVICE' : 'READY'}}</td>
+      <td>
+        <a
+        nz-popconfirm
+        [nzPopconfirmTitle]="data.serviceStatus === 'O' ? '確定開啟作業交談服務嗎？':'確定關閉作業交談服務嗎?'"
+        nzPopconfirmPlacement="bottom"
+        (nzOnConfirm)="changeStatusBtn(data.id)"
+        (nzOnCancel)="cancelConfirm()">{{data.serviceStatus === 'O' ? '開啟' : '關閉'}}</a>
+        <!-- <nz-divider nzType="vertical"></nz-divider>
+        <a>刪除</a> -->
+      </td>
+    </tr>
+  </ng-container>
+
+  </tbody>
+</nz-table>
