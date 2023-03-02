@@ -185,8 +185,13 @@
                         </a>
                       </li>
                       <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I201']">
+                          站別機台優先順序表
+                        </a>
+                      </li>
+                      <li nz-menu-item>
                         <a [routerLink]="['/BarData/I205']">
-                          站別機台排序表
+                          特殊站優先順序表
                         </a>
                       </li>
                       <li nz-menu-item>
@@ -290,17 +295,32 @@
           <li nz-submenu nzTitle="工廠排程" nzIcon="schedule">
             <ul>
               
-              <li nz-submenu nzTitle="基本資料" nzIcon="file-text">
+              <li nz-submenu nzTitle="排序設定" nzIcon="file-text">
                 <ul>
                   <li nz-menu-item>
-                    <a [routerLink]="['/MSHInput/I101']">
-                      靜態表維護
+                    <a [routerLink]="['/MSHSet/I001']">
+                      管理人員設定排序
+                    </a>
+                  </li>
+                  
+                  <li nz-menu-item>
+                    <a [routerLink]="['/MSHSet/I002']">
+                      業務人員設定排序
                     </a>
                   </li>
                 </ul>
               </li>
 
-
+              <li nz-submenu nzTitle="排程設定" nzIcon="file-text">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/MSHPlan/P001']">
+                      直棒排程設定
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              
             </ul>
           </li>
 

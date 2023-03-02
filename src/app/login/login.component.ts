@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit {
           this.cookieService.setCookie("USERNAME", username, 2);
           this.cookieService.setCookie("plantCode", plantCode, 2);
           this.authService.emitAuthState();
-          this.router.navigateByUrl("/FCPBarData/P201");
+          this.router.navigateByUrl("/FCPBarData/P202");
           this.isLogining = false;
           // window.location.reload();
         } else {

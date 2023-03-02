@@ -157,10 +157,17 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: "MSHInput",
+    path: "MSHSet",
     children: [   
-      { path: "", redirectTo: "/MSHInput/I101", pathMatch: "full" },
-      // { path: "I101", component: PPSI200Component }
+      { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
+      { path: "", redirectTo: "/MSHSet/I002", pathMatch: "full" }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "MSHPlan",
+    children: [   
+      { path: "", redirectTo: "/MSHPlan/P001", pathMatch: "full" }
     ],
     canActivate: [AuthGuard]
   },
