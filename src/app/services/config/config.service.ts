@@ -11,21 +11,36 @@ export class ConfigService {
   APIURL: string = "";
 
   constructor(private http: HttpClient) {
-    this.setAPIURL();
+    //this.setAPIURL();
   }
 
-  setAPIURL() {
+  setAPIURL(flag?:string) {
     // let APIBODY = "/YSiSCM";    // 未來移植完成的新專案包
     
-    let APIBODY = "/pps/rest";       // 先連到舊的後台
+    let APIBODY = "";       // 先連到舊的後台
+    let APIBODY_OLD = "/pps/rest";       // 先連到舊的後台
+    let APIBODY_NEW = "/coil";       // 先連到舊的後台
+
 
     let hostName = window.location.hostname;
     let host = window.location.host;
+    if(flag === "1") {
+      APIBODY = APIBODY_NEW
+    } else {
+      APIBODY = APIBODY_OLD
+    }
 
     switch (hostName) {
 
       case "localhost":
-        this.APIURL = `http://${hostName}:8080${APIBODY}`;
+        if(flag === "1") { 
+          //var urlHost = "ys-webapt1.walsin.com"
+          this.APIURL = `http://${hostName}:8080${APIBODY}`;
+        } else {
+          var urlHost = "ys-webapt1.walsin.com"
+          this.APIURL = `http://${urlHost}:8080${APIBODY}`;
+        }
+        
         break;
       case "apptst.walsin.com":
         this.APIURL = `http://${hostName}:8083${APIBODY}`;
@@ -47,7 +62,8 @@ export class ConfigService {
     }
   }
 
-  getAPIURL() {
+  getAPIURL(flag?:string) {
+    this.setAPIURL(flag)
     return this.APIURL;
   }
 }
