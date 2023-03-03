@@ -1,3 +1,34 @@
-<p>
-  MSHI002 works!
-</p>
+<div style="margin:15px 15px;">
+ 
+  <div nz-row>
+    <nz-collapse style="width: 100%;" nzAccordion>
+      <nz-collapse-panel [nzHeader]="panels1.name" [nzActive]="panels1.active">
+        <p> <nz-radio-group [(ngModel)]="selectShopCode" nzButtonStyle="solid" (ngModelChange)="selectShopCodeFunc()">
+          <label *ngFor="let item of shopCodeList" nz-radio-button [nzValue]="item.value">{{item.label}}</label>
+        </nz-radio-group></p>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+    <nz-collapse style="width: 100%;" nzAccordion>
+      <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
+        <p>
+          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+            <div nz-row>
+              <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList"><label nz-checkbox [nzValue]="item2.value" [ngModel]="item2.checked">{{item2.label}}</label></div>
+              
+            </div>
+          </nz-checkbox-wrapper>
+        </p>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </div>
+  <div nz-row>
+    <div nz-col [nzSpan]="24">
+      <nz-card nzTitle="站别">
+        <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
+          <div class="example-box" *ngFor="let timePeriod of timePeriods" cdkDrag>{{timePeriod}}</div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+</div>
