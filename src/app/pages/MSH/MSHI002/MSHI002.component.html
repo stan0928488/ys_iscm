@@ -14,21 +14,37 @@
         <p>
           <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
             <div nz-row>
-              <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList"><label nz-checkbox [nzValue]="item2.value" [ngModel]="item2.checked">{{item2.label}}</label></div>
+              <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
               
             </div>
           </nz-checkbox-wrapper>
         </p>
       </nz-collapse-panel>
     </nz-collapse>
-  </div>
-  <div nz-row>
-    <div nz-col [nzSpan]="24">
-      <nz-card nzTitle="站别">
-        <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
-          <div class="example-box" *ngFor="let timePeriod of timePeriods" cdkDrag>{{timePeriod}}</div>
+
+    <nz-collapse style="width: 100%;" nzAccordion [nzExpandIconPosition]="expandIconPosition1">
+      <nz-collapse-panel [nzHeader]="panels3.name" [nzActive]="panels3.active"  [nzExtra]="extraTpl">
+        <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)" >
+          <div class="example-box" *ngFor="let item3 of selectAllColumList ; let index = index" cdkDrag  (click) = "clickCurrentFunc(index,item3)">
+            <span>{{index + 1}}-{{item3.columLabel}}</span>
+            <span class="selectDiv">
+             <span [ngSwitch]="item3.isGroup">
+               <!-- the same view can be shown in more than one case -->
+               <span *ngSwitchCase="0">[GROUP]</span>
+               <span *ngSwitchCase="1">[NOGROUP]</span>
+               <!--default case when there are no matches -->
+               <span *ngSwitchDefault></span>
+             </span>
+             </span>
         </div>
-      </nz-card>
-    </div>
+        </div>
+      </nz-collapse-panel>
+    </nz-collapse>
+
   </div>
+  <ng-template #extraTpl>
+    <!-- You can use stopPropagation if you don't want the panel to toggle -->
+    <!-- <span nz-icon nzType="setting" (click)="saveBtn()">保存</span> -->
+    <button nz-button [disabled]="!edited" nzType="primary" (click)="saveBtn($event)" nzValue="small">保存</button>
+  </ng-template>
 </div>

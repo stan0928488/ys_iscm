@@ -6,7 +6,8 @@ interface shopCodesItem {
   shopCode:string;
   columLabel:string;
   columValue:string;
-  columSort:string;
+  isNumber: number;
+  columSort:number;
   category:string;
   remark:string;
 }
@@ -77,6 +78,7 @@ export class MSHI001Component implements OnInit {
         shopCode:'',
         columLabel:item.label,
         columValue:item.value,
+        isNumber:item.isNumber,
         columSort: index + 1,
         category:'A',
         remark:''

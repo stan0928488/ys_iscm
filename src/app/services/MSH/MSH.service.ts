@@ -37,8 +37,8 @@ export class MSHService {
   }
 //獲取User設定序列
 getSetColumByUser(_param:any){
-  let queryUrl = this.APIURL + "/msh/MSHI002/getSetColumData";
-  return this.http.get(queryUrl,_param);
+  let queryUrl = this.APIURL + "/msh/MSHI002/getSetColumData/"+_param;
+  return this.http.get(queryUrl);
 }
 
 //管理員保存 msh/MSHI001/saveShopColum
@@ -47,10 +47,16 @@ saveDataByAdmin(_param) {
   return this.http.post(queryUrl,_param);
 }
 
+//User保存 msh/MSHI001/saveShopColum
+saveDataByUser(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHI002/saveShopColum";
+  return this.http.post(queryUrl,_param);
+}
 
-
-  
-
-
+//获取ADMIN针对User的数据
+getSetColumByAdminForUser(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHI002/getSetColumForUser/"+_param;
+  return this.http.get(queryUrl,_param);
+}
 
 }
