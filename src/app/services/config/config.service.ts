@@ -25,16 +25,14 @@ export class ConfigService {
     let hostName = window.location.hostname;
     let host = window.location.host;
     if(flag === "1") {
-      APIBODY = APIBODY_NEW
+      APIBODY = APIBODY_NEW ;
     } else {
-      APIBODY = APIBODY_OLD
+      APIBODY = APIBODY_OLD ;
     }
 
     switch (hostName) {
-
       case "localhost":
         if(flag === "1") { 
-          //var urlHost = "ys-webapt1.walsin.com"
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
         } else {
           var urlHost = "ys-webapt1.walsin.com"
