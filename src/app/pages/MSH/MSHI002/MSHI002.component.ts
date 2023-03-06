@@ -152,7 +152,7 @@ saveDataByAdmin(){
     this.mshService.getSetColumByAdminForUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
-      console.log("獲取管理員設定排序:" + this.shopCodeList) ;
+      //console.log("獲取管理員設定排序:" + this.shopCodeList) ;
       //獲取User設定
       this.getSetColumByUser();
     })

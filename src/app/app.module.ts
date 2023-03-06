@@ -64,6 +64,7 @@ import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
 import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
+import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 
 registerLocaleData(zh);
 
@@ -115,7 +116,8 @@ registerLocaleData(zh);
     InactivityTimerComponent
     ,
     MSHI001Component,
-    MSHI002Component
+    MSHI002Component,
+    MSHP001Component
    ],
   imports: [
     BrowserModule,

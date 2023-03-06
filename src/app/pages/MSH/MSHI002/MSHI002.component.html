@@ -30,8 +30,8 @@
             <span class="selectDiv">
              <span [ngSwitch]="item3.isGroup">
                <!-- the same view can be shown in more than one case -->
-               <span *ngSwitchCase="0">[GROUP]</span>
-               <span *ngSwitchCase="1">[NOGROUP]</span>
+               <span *ngSwitchCase="0">[NOGROUP]</span>
+               <span *ngSwitchCase="1">[GROUP]</span>
                <!--default case when there are no matches -->
                <span *ngSwitchDefault></span>
              </span>

@@ -59,4 +59,10 @@ getSetColumByAdminForUser(_param) {
   return this.http.get(queryUrl,_param);
 }
 
+//獲取已分群數據
+getSetColumGroupData(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getSetColumGroupData/"+_param;
+  return this.http.get(queryUrl,_param);
+}
+
 }
