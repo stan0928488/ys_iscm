@@ -19,7 +19,7 @@ export class ConfigService {
     
     let APIBODY = "";       // 先連到舊的後台
     let APIBODY_OLD = "/pps/rest";       // 先連到舊的後台
-    let APIBODY_NEW = "/coil";       // 先連到舊的後台
+    let APIBODY_NEW = "/iSCM";       // 改連到新的後台
 
 
     let hostName = window.location.hostname;
@@ -32,12 +32,12 @@ export class ConfigService {
 
     switch (hostName) {
       case "localhost":
-        if(flag === "1") { 
+        // if(flag === "1") { 
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        } else {
-          var urlHost = "ys-webapt1.walsin.com"
-          this.APIURL = `http://${urlHost}:8080${APIBODY}`;
-        }
+        // } else {
+        //   var urlHost = "ys-webapt1.walsin.com"
+        //   this.APIURL = `http://${urlHost}:8080${APIBODY}`;
+        // }
         
         break;
       case "apptst.walsin.com":
