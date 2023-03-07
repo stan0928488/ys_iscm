@@ -1,0 +1,42 @@
+<div style="margin:15px 15px;">
+  <div nz-row>
+    <nz-collapse style="width: 100%;" nzAccordion>
+      <nz-collapse-panel [nzHeader]="panels1.name" [nzActive]="panels1.active">
+        <p> <nz-radio-group [(ngModel)]="selectShopCode" nzButtonStyle="solid" (ngModelChange)="selectShopCodeFunc()">
+          <label *ngFor="let item of shopCodeList" nz-radio-button [nzValue]="item.value">{{item.label}}</label>
+        </nz-radio-group></p>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+
+    <nz-collapse style="width: 100%;" nzAccordion>
+      <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
+        <p>
+          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+            <div nz-row>
+              <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
+              
+            </div>
+          </nz-checkbox-wrapper>
+        </p>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+    </div>
+
+  <!---table数据区-->
+  <nz-table style="margin-top:10px;" #basicTable [nzData]="tbData">
+    <thead>
+      <tr>
+        <th *ngFor = "let item of allColumList">{{item.columLabel}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+      
+      </tr>
+    </tbody>
+  </nz-table>
+
+
+</div>

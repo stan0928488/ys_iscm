@@ -40,6 +40,16 @@ export class ConfigService {
         // }
         
         break;
+        case "10.106.200.96":
+          if(flag === "1") { 
+            //var urlHost = "ys-webapt1.walsin.com"
+            this.APIURL = `http://${hostName}:8080${APIBODY}`;
+          } else {
+            var urlHost = "ys-webapt1.walsin.com"
+            this.APIURL = `http://${urlHost}:8080${APIBODY}`;
+          }
+          
+          break;
       case "apptst.walsin.com":
         this.APIURL = `http://${hostName}:8083${APIBODY}`;
         break;

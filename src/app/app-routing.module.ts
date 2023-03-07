@@ -39,6 +39,9 @@ import { PPSR310Component } from "./pages/PPS/PPSR310/PPSR310.component";
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
 import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
+import { MSHI001Component } from "./pages/MSH/MSHI001/MSHI001.component";
+import { MSHI002Component } from "./pages/MSH/MSHI002/MSHI002.component";
+import { MSHP001Component } from "./pages/MSH/MSHP001/MSHP001.component";
 
 import { LoginComponent } from "./login/login.component";
 import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.service";
@@ -160,14 +163,16 @@ const routes: Routes = [
     path: "MSHSet",
     children: [   
       { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
-      { path: "", redirectTo: "/MSHSet/I002", pathMatch: "full" }
+      { path: "I001", component: MSHI001Component },
+      { path: "I002", component: MSHI002Component }
     ],
     canActivate: [AuthGuard]
   },
   {
     path: "MSHPlan",
     children: [   
-      { path: "", redirectTo: "/MSHPlan/P001", pathMatch: "full" }
+      { path: "", redirectTo: "/MSHPlan/P001", pathMatch: "full" },
+      {path:'P001',component:MSHP001Component}
     ],
     canActivate: [AuthGuard]
   },
