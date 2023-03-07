@@ -25,6 +25,18 @@
     </div>
 
   <!---table数据区-->
+  <nz-table style="margin-top:10px;" #basicTable [nzData]="tbData">
+    <thead>
+      <tr>
+        <th *ngFor = "let item of allColumList">{{item.columLabel}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+      
+      </tr>
+    </tbody>
+  </nz-table>
 
 
 </div>

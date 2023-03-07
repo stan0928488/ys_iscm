@@ -86,7 +86,8 @@ export class MSHI002Component implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     this.edited = true ;
-    moveItemInArray(this.timePeriods, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.selectAllColumList, event.previousIndex, event.currentIndex);
+    console.log
   }
 
   saveBtn(event) {

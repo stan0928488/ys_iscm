@@ -11,11 +11,13 @@ import {NzMessageService} from "ng-zorro-antd/message";
 export class MSHP001Component implements OnInit {
   selectShopCode = "334" ;
   shopCodeList:any = [] ;
-  //可以挑選欄位
+  //可展示欄位
   allColumList:any = [] ;
  //可以分群的數據
   groupColumList :any = [] ;
   //
+  //table数据
+  tbData :any = [] ;
 
   panels1:any = {
     active: true,
@@ -30,23 +32,25 @@ export class MSHP001Component implements OnInit {
 
   ngOnInit() {
     this.getShopCodes() ;
+    this.getSetColumByUser() ;
   }
 
   log(value: string[]): void {
     console.log("checked:"+JSON.stringify(this.selectShopCode) );
-    //this.getSetColumGroupData();
+    this.getSetColumGroupData();
 
   }
   getSetColumGroupData(){
     this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.groupColumList = result.data ;
+      this.getSetColumByUser() ;
     })
   }
 
 
-  getSetColumByAdminForUser(){
-    this.mshService.getSetColumByAdminForUser(this.selectShopCode).subscribe(res=>{
+  getSetColumByUser(){
+    this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
       
