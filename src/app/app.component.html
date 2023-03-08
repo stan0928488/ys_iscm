@@ -167,74 +167,66 @@
       </li>
       -->
       
+
+
+      <!-- 先關閉，待其他模塊執行後再打開 
       <li nz-submenu nzTitle="供給規劃" nzIcon="project">
         <ul>
-
+-->
           <!-- 生產計畫 PPS -->
           <li nz-submenu nzTitle="生產計畫" nzIcon="fund-view">
             <ul>
             
-                <li nz-submenu nzTitle="基本資料" nzIcon="file-text">
+                <li nz-submenu nzTitle="靜態基本資料" nzIcon="file-text">
                 <ul>
                     
-                    <li nz-submenu nzTitle="直棒" nzIcon="fund-view">
+                    <li nz-submenu nzTitle="通用表" nzIcon="appstore">
                     <ul>
                       <li nz-menu-item>
                         <a [routerLink]="['/BarData/I101']">
-                          靜態表維護
+                          鋼種分類
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/BarData/I201']">
-                          站別機台優先順序表
+                        <a [routerLink]="['/BarData/I101']">
+                          站別機台關聯表
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/BarData/I205']">
-                          特殊站優先順序表
+                        <a [routerLink]="['/BarData/I101']">
+                          設備能力
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/BarData/I202']">
-                          定修計畫
+                        <a [routerLink]="['/BarData/I101']">
+                          整備時間
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/BarData/I203']">
-                          最早可投產時間調整
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-
-                  <li nz-submenu nzTitle="非直棒" nzIcon="fund-view">
-                    <ul>
-                      <li nz-menu-item>
-                        <a [routerLink]="['/NonBarData/I101']">
-                          靜態表維護
+                        <a [routerLink]="['/BarData/I101']">
+                          大調機
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/NonBarData/I201']">
-                          站別機台優先順序表
+                        <a [routerLink]="['/BarData/I101']">
+                          小調機
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/NonBarData/I205']">
-                          特殊站優先順序表
+                        <a [routerLink]="['/BarData/I101']">
+                          線速
                         </a>
                       </li>
                       <li nz-menu-item>
-                        <a [routerLink]="['/NonBarData/I202']">
-                          定修計畫
+                        <a [routerLink]="['/BarData/I101']">
+                          非線速
                         </a>
                       </li>
-                      
-                    </ul>
-                  </li>
-                  
-                  <li nz-submenu nzTitle="共用基本資料" nzIcon="appstore">
-                    <ul>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I101']">
+                          產率設定
+                        </a>
+                      </li>
                       <li nz-menu-item>
                         <a [routerLink]="['/commonData/I200']">
                           系統設定
@@ -243,12 +235,65 @@
                     </ul>
                   </li>
 
+                  <li nz-submenu nzTitle="非通用" nzIcon="appstore">
+                    <ul>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/NonBarData/I101']">
+                          直棒退火爐工時
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/NonBarData/I201']">
+                          直棒研磨道次
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/NonBarData/I205']">
+                          直棒桶槽式工時
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/NonBarData/I202']">
+                          直棒清洗站設備能力
+                        </a>
+                      </li>
+                      
+                    </ul>
+                  </li>
+                  
+
                 </ul>
               </li>
 
 
               <li nz-submenu nzTitle="規劃策略" nzIcon="code">
                 <ul>
+
+                  <li nz-submenu nzTitle="策略基礎設定">
+                    <ul>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I202']">
+                          定修計畫
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I203']">
+                          Campaign 限制
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I203']">
+                          最早可投產時間調整
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/BarData/I201']">
+                          站別機台優先順序表
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
                   <li nz-menu-item>
                     <a [routerLink]="['/FCPBarData/P201']">
                       建立規劃策略
@@ -264,11 +309,6 @@
                       生產規劃執行
                     </a>
                   </li>
-                  <!-- <li nz-menu-item>
-                    <a [routerLink]="['/FCPBarRepo/P204']">
-                      結果指標彙總
-                    </a>
-                  </li> -->
                 </ul>
               </li>
       
@@ -324,9 +364,11 @@
             </ul>
           </li>
 
+          
+      <!-- 先關閉，待其他模塊執行後再打開 
         </ul>
       </li>
-
+ -->
 
       
       <!-- 原料需求與規劃 RMP/PAS -->
@@ -351,9 +393,9 @@
             </ul>
           </li>
           -->
-          <!-- 需求偕同管理 DCM -->
+          <!-- 需求協同管理 DCM -->
             <!--
-          <li nz-submenu nzTitle="需求偕同管理" nzIcon="team">
+          <li nz-submenu nzTitle="需求協同管理" nzIcon="team">
             <ul>
               
               <li nz-submenu nzTitle="基本資料" nzIcon="file-text">
