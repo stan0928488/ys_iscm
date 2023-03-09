@@ -66,6 +66,9 @@ import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 
+
+import { AgGridModule } from "ag-grid-angular";
+
 registerLocaleData(zh);
 
 
@@ -129,6 +132,7 @@ registerLocaleData(zh);
     DragDropModule,
     ZorroCompomentModule,
     NgxJsonViewerModule,
+    AgGridModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
