@@ -22,10 +22,20 @@
       </nz-collapse-panel>
     </nz-collapse>
 
+
+    <nz-collapse style="width: 100%;" nzAccordion>
+      <nz-collapse-panel  [nzHeader]="panels3.name" [nzActive]="panels3.active">
+        <p>
+          <button nz-button nzType="primary" (click)="TEST()">BUTTON</button>
+        </p>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+
     </div>
 
   <!---table数据区-->
-  <nz-table style="margin-top:10px;" #basicTable [nzData]="tbData">
+  <!-- <nz-table style="margin-top:10px;" #basicTable [nzData]="tbData">
     <thead>
       <tr>
         <th *ngFor = "let item of allColumList">{{item.columLabel}}</th>
@@ -36,7 +46,39 @@
       
       </tr>
     </tbody>
-  </nz-table>
+  </nz-table> -->
+  <div nz-row>
+    <ag-grid-angular
+    style="width: 100% ; min-height:800px; overflow: scroll"
+    class="ag-theme-alpine"
+    [rowDragManaged]="true"
+    [gridOptions]="gridOptions"
+    [rowDragMultiRow]="true"
+    [rowSelection]="rowSelection"
+    [animateRows]="true"
+    [rowData]="rowData"
+    [columnDefs]="columnDefs">
+    [getRowId]="getRowId"
+    (cellClicked)="onCellClicked($event)"
+   
+    </ag-grid-angular>
+  </div>
+
+  <nz-modal [(nzVisible)]="modalTableVisible" nzTitle="Custom Modal Title" (nzOnCancel)="handleChangeModal()">
+    <div *nzModalContent>
+      <p>Modal Content</p>
+      <p>Modal Content</p>
+      <p>Modal Content</p>
+      <p>Modal Content</p>
+      <p>Modal Content</p>
+    </div>
+    <div *nzModalFooter>
+      <span>Modal Footer:</span>
+      <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
+      <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Custom Submit</button>
+    </div>
+  </nz-modal>
+
 
 
 </div>
