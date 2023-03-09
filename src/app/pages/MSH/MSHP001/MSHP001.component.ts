@@ -96,6 +96,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
     /**modal显示明细数据 */
     modalTableVisible = false ;
+    isConfirmLoading = false ;
 
   constructor(private mshService:MSHService,private nzMessageService:NzMessageService) {
     this.gridOptions = {
@@ -120,6 +121,10 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
+  }
+
+  handleOk(){
+    this.isConfirmLoading = true ;
   }
   
 
