@@ -26,7 +26,9 @@
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels3.name" [nzActive]="panels3.active">
         <p>
-          <button nz-button nzType="primary" (click)="TEST()">BUTTON</button>
+          <nz-date-picker [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)"></nz-date-picker>
+          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)"></nz-date-picker>
+          <button nz-button nzType="primary" (click)="queryBtn()">確定</button>
         </p>
       </nz-collapse-panel>
     </nz-collapse>
@@ -75,7 +77,7 @@
     <div *nzModalFooter>
       <span>Modal Footer:</span>
       <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
-      <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">Custom Submit</button>
+      <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button>
     </div>
   </nz-modal>
 

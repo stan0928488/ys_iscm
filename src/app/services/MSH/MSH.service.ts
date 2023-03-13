@@ -64,5 +64,10 @@ getSetColumGroupData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/getSetColumGroupData/"+_param;
   return this.http.get(queryUrl,_param);
 }
+//獲取User配置並下載數據
+getTableData(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getTableData";
+  return this.http.post(queryUrl,_param);
+}
 
 }

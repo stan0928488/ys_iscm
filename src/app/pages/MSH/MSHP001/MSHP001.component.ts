@@ -10,6 +10,8 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   RowDragMoveEvent,
   GridOptions
 } from 'ag-grid-community';
+import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
+import * as moment from 'moment';
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -23,43 +25,15 @@ export class MSHP001Component implements OnInit {
   public gridOptions: GridOptions;
 
   columnDefs: ColDef[] = [
-    { field: 'Row ID' ,valueGetter: 'node.id',rowDrag: true },
-    { field: 'id' },
-    { field: 'make' },
-    { field: 'model' },
-    { field: 'price' }
+   
 ];
 
 rowData = [
-    {id:'C1', make: 'Toyota', model: 'Celica', price: 35000 },
-    {id:'C2', make: 'Ford', model: 'Mondeo', price: 32000 },
-    {id:'C3', make: 'Porsche', model: 'Boxster', price: 72000 },
-    {id:'C4', make: 'Toyota', model: 'Celica', price: 35000 },
-    {id:'C5', make: 'Ford', model: 'Mondeo', price: 32000 },
-    {id:'C6', make: 'Porsche', model: 'Boxster', price: 72000 },
-    {id:'C7', make: 'Toyota', model: 'Celica', price: 35000 },
-    {id:'C8', make: 'Ford', model: 'Mondeo', price: 32000 },
-    {id:'C9', make: 'Porsche', model: 'Boxster', price: 72000 },
-    {id:'C10', make: 'Toyota', model: 'Celica', price: 35000 },
-    {id:'C11', make: 'Ford', model: 'Mondeo', price: 32000 },
-    {id:'C12', make: 'Porsche', model: 'Boxster', price: 72000 },
-    {id:'C13', make: 'Toyota', model: 'Celica', price: 35000 }
+    
 ];
 
 rowData1 = [
-  {id:'C1111', make: 'Toyota', model: 'Celica', price: 35000 },
-  {id:'C1112', make: 'Ford', model: 'Mondeo', price: 32000 },
-  {id:'C1113', make: 'Porsche', model: 'Boxster', price: 72000 },
-  {id:'C1114', make: 'Toyota', model: 'Celica', price: 35000 },
-  {id:'C1115', make: 'Ford', model: 'Mondeo', price: 32000 },
-  {id:'C1116', make: 'Porsche', model: 'Boxster', price: 72000 },
-  {id:'C1117', make: 'Toyota', model: 'Celica', price: 35000 },
-  {id:'C1118', make: 'Ford', model: 'Mondeo', price: 32000 },
-  {id:'C1119', make: 'Porsche', model: 'Boxster', price: 72000 },
-  {id:'C11110', make: 'Toyota', model: 'Celica', price: 35000 },
-  {id:'C11111', make: 'Ford', model: 'Mondeo', price: 32000 },
-  {id:'C11112', make: 'Porsche', model: 'Boxster', price: 72000 },
-  {id:'C11113', make: 'Toyota', model: 'Celica', price: 35000 }
+ 
 ];
 
 onCellClicked(value:any){
@@ -68,7 +42,7 @@ onCellClicked(value:any){
 
 
 public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
-
+  date:Date[];
   selectShopCode = "334" ;
   shopCodeList:any = [] ;
   //可展示欄位
@@ -98,11 +72,20 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     modalTableVisible = false ;
     isConfirmLoading = false ;
 
+    dateFormat = 'yyyy-MM-dd';
+    mdateFormat = 'yyyy-MM-DD';
+    searchV0 = {
+      shopCode :'334' ,
+      startDate : '',
+      endDate:''
+    }
+
   constructor(private mshService:MSHService,private nzMessageService:NzMessageService) {
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
       //rowData: this.rowData,
+    //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEnd(event);},
       onGridReady(event) {
         console.log("onGridReady:" + event.api.setRowData(this.rowData))
@@ -115,10 +98,23 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   ngOnInit() {
    /// this.gridApi.setSuppressRowDrag(true) ;
     this.getShopCodes() ;
-    this.getSetColumByUser() ;
+    //this.getSetColumByUser() ;
+    
+    
+    this.searchV0.startDate = moment().format(this.mdateFormat) ;
+    this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
+    //this.getTableData();
   }
   public rowSelection: 'single' | 'multiple' = 'multiple';
 
+  onChangeStartDate(result): void {
+    console.log('onChange: ', result);
+   
+  }
+  onChangeEndDate(result): void {
+    console.log('onChange: ', result);
+   
+  }
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
   }
@@ -128,23 +124,39 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   }
   
 
-
-  TEST(){
-    console.log(JSON.stringify(this.rowData)) ;
+  queryBtn(){
+    this.searchV0.shopCode = this.selectShopCode ;
+    console.log(JSON.stringify(this.searchV0)) ;
     this.rowData = this.rowData1 ;
+    this.getTableData();
 
   }
 
   log(value: string[]): void {
+    this.searchV0.shopCode = this.selectShopCode ;
     console.log("checked:"+JSON.stringify(this.selectShopCode) );
     this.getSetColumGroupData();
+  }
+  getTableData() {
+    this.searchV0.shopCode = this.selectShopCode ;
+    this.mshService.getTableData(this.searchV0).subscribe(res=>{
+      let result:any = res ;
+      this.rowData = result.data ;
+    })
 
   }
+
+
   getSetColumGroupData(){
     this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.groupColumList = result.data ;
-      this.getSetColumByUser() ;
+      if(result.code !== 200) {
+        this.nzMessageService.error(result.message)
+      } else {
+        this.getSetColumByUser() ;
+      }
+     
     })
   }
 
@@ -153,6 +165,21 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
+      
+      this.columnDefs = [] ;
+      this.allColumList.forEach((item,index,array) => {
+        if(index == 0) {
+          let itemTemp = {headerName:item.columLabel,field:item.columValue,rowDrag: true,resizable:true,width:100 }
+          this.columnDefs.push(itemTemp);
+        } else { 
+          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:100 }
+          this.columnDefs.push(itemTemp);
+        }
+        
+      });
+      console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
+
+      this.getTableData()
       
     })
   }
@@ -168,6 +195,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
    //挑選站別
    selectShopCodeFunc(){
     console.log("checked:"+JSON.stringify(this.selectShopCode) );
+    this.searchV0.shopCode = this.selectShopCode ;
     this.getSetColumGroupData();
   }
 
