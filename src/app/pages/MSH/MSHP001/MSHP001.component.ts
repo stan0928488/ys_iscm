@@ -12,6 +12,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import * as moment from 'moment';
+import { ExcelService } from 'src/app/services/common/excel.service';
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -60,7 +61,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   panels2:any = 
     {
       active: true,
-      name: '可分群欄位',
+      name: '可分群欄位(暫時不可用)',
     };
     panels3:any = 
     {
@@ -80,7 +81,20 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       endDate:''
     }
 
-  constructor(private mshService:MSHService,private nzMessageService:NzMessageService) {
+    //isSpinning
+    isLoading = false
+    //导出数据
+    export = {
+      title : "exportData",
+      header: [] ,
+      data:[],
+    }
+
+  constructor( 
+    private mshService:MSHService,
+    private nzMessageService:NzMessageService,
+    private excelService: ExcelService,
+    ) {
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
@@ -132,16 +146,48 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
   }
 
+  exportBtn(){
+    this.isLoading = true ;
+    console.log(this.export.data.length)
+    this.excelService.exportAsExcelFile(this.export.data, this.export.title,this.export.header);
+    this.isLoading = false ;
+  }
+
   log(value: string[]): void {
     this.searchV0.shopCode = this.selectShopCode ;
     console.log("checked:"+JSON.stringify(this.selectShopCode) );
     this.getSetColumGroupData();
   }
   getTableData() {
+    this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
+      this.isLoading = false ;
       let result:any = res ;
+      //獲取所有結果
+      console.log("result:" + JSON.stringify(result) )
+      if(result.code === 200) {
       this.rowData = result.data ;
+      let rowDataTemp = [] ;
+      //重新修改
+     // if(this.rowData.length > 0 ) {
+        this.rowData.forEach((item1,index1,array1)=>{
+          let rowDataObjectTemp = {} ;
+          this.columnDefs.forEach((item2,index2,array2)=>{
+            if(index1 === 0 ) {
+              console.log(item2.field)
+            }
+
+            rowDataObjectTemp[item2.field] = item1[item2.field] ;
+          })
+          rowDataTemp.push(rowDataObjectTemp) ;
+        })
+        this.rowData = rowDataTemp ;
+    //  }
+      } else {
+        this.nzMessageService.error(result.message) ;
+      }
+      this.export.data = this.rowData ;
     })
 
   }
@@ -160,23 +206,30 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     })
   }
 
-
+///User設定的欄位
   getSetColumByUser(){
     this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
       
       this.columnDefs = [] ;
+      let exportHeader = [] ;
+      let index1 = {headerName:'序號',field:'id',rowDrag: true,resizable:true,width:100 }
+      exportHeader.push("序號")
+      this.columnDefs.push(index1);
       this.allColumList.forEach((item,index,array) => {
+        //放入导出头部
+        exportHeader.push(item.columLabel) ;
         if(index == 0) {
-          let itemTemp = {headerName:item.columLabel,field:item.columValue,rowDrag: true,resizable:true,width:100 }
+          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
           this.columnDefs.push(itemTemp);
         } else { 
-          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:100 }
+          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
           this.columnDefs.push(itemTemp);
         }
         
       });
+      this.export.header = exportHeader ;
       console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
 
       this.getTableData()
