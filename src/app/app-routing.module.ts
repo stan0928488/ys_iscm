@@ -21,6 +21,14 @@ import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
 
 import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
+import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
+import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
+import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
+import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
+import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
+import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
+import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
+import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -30,10 +38,8 @@ import { PPSI205Component } from "./pages/PPS/PPSI205/PPSI205.component";
 import { PPSI210Component } from "./pages/PPS/PPSI210/PPSI210.component";
 import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
 import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
-import { PPSR300Component } from "./pages/PPS/PPSR300/PPSR300.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
-import { PPSR310Component } from "./pages/PPS/PPSR310/PPSR310.component";
 
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -114,15 +120,28 @@ const routes: Routes = [
 
   /* PPS & MSH */
   {
+    path: "commonData",
+    children: [   
+      { path: "", redirectTo: "/commonData/I101", pathMatch: "full" },
+      { path: "I101", component: PPSI101Component },
+      { path: "I102", component: PPSI102Component },
+      { path: "I103", component: PPSI103Component },
+      { path: "I104", component: PPSI104Component },
+      { path: "I105", component: PPSI105Component },
+      { path: "I106", component: PPSI106Component },
+      { path: "I107", component: PPSI107Component },
+      { path: "I108", component: PPSI108Component },
+      { path: "I109", component: PPSI109Component },
+      { path: "I200", component: PPSI200Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
     path: "BarData",
     children: [   
-      { path: "", redirectTo: "/BarData/I200", pathMatch: "full" },
+      { path: "", redirectTo: "/BarData/I205", pathMatch: "full" },
       { path: "I101", component: PPSI101Component },
-      { path: "I201", component: PPSI201Component },
-      { path: "I205", component: PPSI205Component },
-      { path: "I204", component: PPSI204Component },
-      { path: "I202", component: PPSI202Component },
-      { path: "I203", component: PPSI203Component }
+      { path: "I205", component: PPSI205Component }
     ],
     canActivate: [AuthGuard]
   },
@@ -133,10 +152,13 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: "commonData",
+    path: "PlanSet",
     children: [
-      { path: "", redirectTo: "/commonData/I200", pathMatch: "full" },
-      { path: "I200", component: PPSI200Component }
+      { path: "", redirectTo: "/PlanSet/I202", pathMatch: "full" },
+      { path: "I202", component: PPSI202Component },
+      { path: "I204", component: PPSI204Component },
+      { path: "I203", component: PPSI203Component },
+      { path: "I201", component: PPSI201Component }
     ],
     canActivate: [AuthGuard]
   },

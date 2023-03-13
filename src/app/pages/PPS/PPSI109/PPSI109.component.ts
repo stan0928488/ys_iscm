@@ -190,12 +190,12 @@ interface ItemData14 {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @Component({
-  selector: "app-PPSI204",
-  templateUrl: "./PPSI204.component.html",
-  styleUrls: ["./PPSI204.component.scss"],
+  selector: "app-PPSI109",
+  templateUrl: "./PPSI109.component.html",
+  styleUrls: ["./PPSI109.component.scss"],
   providers:[NzMessageService]
 })
-export class PPSI204Component implements AfterViewInit {
+export class PPSI109Component implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag

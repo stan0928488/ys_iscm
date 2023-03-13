@@ -1068,81 +1068,81 @@ export class PPSService {
 
 
 
-  //Get getSaleAreaListData 訂單-交期彙總表
-  getSaleAreaListData() {
-    let queryUrl = this.APIURL + "/FCP/R300/SaleAreaList";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getSaleAreaListData 訂單-交期彙總表
+  // getSaleAreaListData() {
+  //   let queryUrl = this.APIURL + "/FCP/R300/SaleAreaList";
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
 
-  //Get getVerList
-  getVerList() {
-    let queryUrl = this.APIURL + "/FCP/R300/VerList";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getVerList
+  // getVerList() {
+  //   let queryUrl = this.APIURL + "/FCP/R300/VerList";
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get getMOVerList
-  getMOVerList(_ver) {
-    let queryUrl = this.APIURL + `/FCP/R300/getMOVerList/${_ver}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getMOVerList
+  // getMOVerList(_ver) {
+  //   let queryUrl = this.APIURL + `/FCP/R300/getMOVerList/${_ver}`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get getTBDate
-  getTBDate() {
-    let queryUrl = this.APIURL + "/FCP/R300/TBDate";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getTBDate
+  // getTBDate() {
+  //   let queryUrl = this.APIURL + "/FCP/R300/TBDate";
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get TSalWeightData
-  getTSalWeightData() {
-    let queryUrl = this.APIURL + "/FCP/R300/TSalWeight";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get TSalWeightData
+  // getTSalWeightData() {
+  //   let queryUrl = this.APIURL + "/FCP/R300/TSalWeight";
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get DSalWeightData 交期彙總表資料
-  getDSalWeightData(_rule, _ver, _MOver) {
-    let queryUrl = this.APIURL + `/FCP/R300/DSalWeight/${_rule}/${_ver}/${_MOver}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get DSalWeightData 交期彙總表資料
+  // getDSalWeightData(_rule, _ver, _MOver) {
+  //   let queryUrl = this.APIURL + `/FCP/R300/DSalWeight/${_rule}/${_ver}/${_MOver}`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get FCP Result
-  getFCPResDtlData(_date1, _date2, _date3, _date4, _flag, _rule, _ver, _MOver) {
-    let queryUrl = this.APIURL + `/FCP/R300/FCPResDtlData/${_date1}/${_date2}/${_date3}/${_date4}/${_flag}/${_rule}/${_ver}/${_MOver}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get FCP Result
+  // getFCPResDtlData(_date1, _date2, _date3, _date4, _flag, _rule, _ver, _MOver) {
+  //   let queryUrl = this.APIURL + `/FCP/R300/FCPResDtlData/${_date1}/${_date2}/${_date3}/${_date4}/${_flag}/${_rule}/${_ver}/${_MOver}`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get getTB_SCHSHOPCODE Result
-  getTB_SCHSHOPCODE(_order, _item, _ver, _stp, _MOver ) {
-    let queryUrl = this.APIURL + `/FCP/R300/getTB_SCHSHOPCODE/${_order}/${_item}/${_ver}/${_stp}/${_MOver}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getTB_SCHSHOPCODE Result
+  // getTB_SCHSHOPCODE(_order, _item, _ver, _stp, _MOver ) {
+  //   let queryUrl = this.APIURL + `/FCP/R300/getTB_SCHSHOPCODE/${_order}/${_item}/${_ver}/${_stp}/${_MOver}`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get getDelayOrder Result
-  getDelayOrder(_rule, _ver, _MOver) {
-    let queryUrl = this.APIURL + `/FCP/R300/getDelayOrder/${_rule}/${_ver}/${_MOver}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get getDelayOrder Result
+  // getDelayOrder(_rule, _ver, _MOver) {
+  //   let queryUrl = this.APIURL + `/FCP/R300/getDelayOrder/${_rule}/${_ver}/${_MOver}`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
-  //Get FCP Result
-  getFCPResData() {
-    let queryUrl = this.APIURL + "/FCP/R300/FCPResult";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // //Get FCP Result
+  // getFCPResData() {
+  //   let queryUrl = this.APIURL + "/FCP/R300/FCPResult";
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
 
-  getUploadURL() {
-    return this.APIURL + "/FCP/R300/UPLOAD";
-  }
+  // getUploadURL() {
+  //   return this.APIURL + "/FCP/R300/UPLOAD";
+  // }
 
   // http://localhost:8080/pps/rest/FCP/Summary?startDate=2019-03-01&endtDate=2019-04-01
   //Get Summary

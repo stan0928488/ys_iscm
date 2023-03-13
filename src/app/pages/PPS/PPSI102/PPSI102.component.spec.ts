@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PPSR310Component } from './PPSR310.component';
+import { PPSI102Component } from './PPSI102.component';
 
-describe('ProductCurComponent', () => {
-  let component: PPSR310Component;
-  let fixture: ComponentFixture<PPSR310Component>;
+describe('PPSI102Component', () => {
+  let component: PPSI102Component;
+  let fixture: ComponentFixture<PPSI102Component>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PPSR310Component ]
+      declarations: [ PPSI102Component ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PPSR310Component);
+    fixture = TestBed.createComponent(PPSI102Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
