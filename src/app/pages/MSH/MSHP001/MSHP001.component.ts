@@ -166,6 +166,8 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       let result:any = res ;
       //獲取所有結果
       console.log("result:" + JSON.stringify(result) )
+      //清空欄位跟數據
+      this.rowData = [] ;
       if(result.code === 200) {
       this.rowData = result.data ;
       let rowDataTemp = [] ;
@@ -214,21 +216,25 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       
       this.columnDefs = [] ;
       let exportHeader = [] ;
-      let index1 = {headerName:'序號',field:'id',rowDrag: true,resizable:true,width:100 }
-      exportHeader.push("序號")
-      this.columnDefs.push(index1);
-      this.allColumList.forEach((item,index,array) => {
-        //放入导出头部
-        exportHeader.push(item.columLabel) ;
-        if(index == 0) {
-          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
-          this.columnDefs.push(itemTemp);
-        } else { 
-          let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
-          this.columnDefs.push(itemTemp);
-        }
-        
-      });
+     
+      if(this.allColumList.length > 0) {
+        let index1 = {headerName:'序號',field:'id',rowDrag: true,resizable:true,width:100 }
+        exportHeader.push("序號")
+        this.columnDefs.push(index1);
+        this.allColumList.forEach((item,index,array) => {
+          //放入导出头部
+          exportHeader.push(item.columLabel) ;
+          if(index == 0) {
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
+            this.columnDefs.push(itemTemp);
+          } else { 
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
+            this.columnDefs.push(itemTemp);
+          }
+          
+        });
+      }
+
       this.export.header = exportHeader ;
       console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
 
