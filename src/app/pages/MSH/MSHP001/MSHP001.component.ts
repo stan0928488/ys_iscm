@@ -8,6 +8,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   RowDragEnterEvent,
   RowDragLeaveEvent,
   RowDragMoveEvent,
+  RowDoubleClickedEvent,
   GridOptions
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
@@ -50,6 +51,9 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   allColumList:any = [] ;
  //可以分群的數據
   groupColumList :any = [] ;
+  //可以分群的數組
+  groupArray = [] ;
+
   //
   //table数据
   tbData :any = [] ;
@@ -89,7 +93,10 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       header: [] ,
       data:[],
     }
-
+  //內部Table 
+  rowSelectData = [] ;
+  //保存原始排程
+  originalData = [] ;
   constructor( 
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
@@ -100,7 +107,11 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       animateRows: true, 
       //rowData: this.rowData,
     //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
+      onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
+        this.doubleClick(event) ;
+      } ,
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEnd(event);},
+
       onGridReady(event) {
         console.log("onGridReady:" + event.api.setRowData(this.rowData))
       },
@@ -119,8 +130,22 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //this.getTableData();
   }
-  public rowSelection: 'single' | 'multiple' = 'multiple';
+  //初始化數據
+  initData(){
+    //可分組欄位
+    this.groupArray = [] ;
 
+
+  }
+
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  doubleClick(row){
+    this.rowSelectData = [] ;
+    this.rowSelectData.push(row.data)
+     console.log(row.data )
+     this.modalTableVisible = true ;
+
+  }
   onChangeStartDate(result): void {
     console.log('onChange: ', result);
    
@@ -152,11 +177,14 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.excelService.exportAsExcelFile(this.export.data, this.export.title,this.export.header);
     this.isLoading = false ;
   }
-
-  log(value: string[]): void {
+  //選擇分組
+  checkedChange(value: string[]): void {
     this.searchV0.shopCode = this.selectShopCode ;
-    console.log("checked:"+JSON.stringify(this.selectShopCode) );
-    this.getSetColumGroupData();
+    this.groupArray = value ;
+    console.log("開始調用分組")
+   // console.log("group colum select :" + JSON.stringify(this.groupColumList))
+    // console.log("checked:"+JSON.stringify(this.selectShopCode) );
+    // this.getSetColumGroupData();
   }
   getTableData() {
     this.isLoading = true ;
@@ -194,7 +222,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
   }
 
-
+//獲取站別分群配置
   getSetColumGroupData(){
     this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
@@ -283,4 +311,12 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     var rowNeedsToMove = movingNode !== overNode;
     console.log("event:" + event)
   }
+
+  formateGroupRow(){
+    console.log("checkedChange:" + JSON.stringify(this.rowData))
+
+  
+
+  }
+
 }
