@@ -182,6 +182,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.searchV0.shopCode = this.selectShopCode ;
     this.groupArray = value ;
     console.log("開始調用分組")
+    this.formateGroupRow() ;
    // console.log("group colum select :" + JSON.stringify(this.groupColumList))
     // console.log("checked:"+JSON.stringify(this.selectShopCode) );
     // this.getSetColumGroupData();
@@ -189,6 +190,8 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   getTableData() {
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
+    //初始化原始数据
+    this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
       this.isLoading = false ;
       let result:any = res ;
@@ -213,6 +216,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
           rowDataTemp.push(rowDataObjectTemp) ;
         })
         this.rowData = rowDataTemp ;
+        this.originalData = [...this.rowData] ;
     //  }
       } else {
         this.nzMessageService.error(result.message) ;
@@ -312,8 +316,20 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     console.log("event:" + event)
   }
 
+  //恢复数据进行处理
+  recoverData(){
+
+  }
+
   formateGroupRow(){
     console.log("checkedChange:" + JSON.stringify(this.rowData))
+    //前一條數據
+    let preGroupString = "" ;
+    //遍歷原始數據
+    this.originalData.forEach((item,index,array)=>{
+      //
+
+    })
 
   
 
