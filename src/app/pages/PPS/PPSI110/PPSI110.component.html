@@ -1,0 +1,63 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li><a href="#/commonData/I101">鋼種分類</a></li>
+            <li><a href="#/commonData/I102">站別機台關聯表</a></li>
+            <li><a href="#/commonData/I103">設備能力</a></li>
+            <li><a href="#/commonData/I104">整備時間</a></li>
+            <li><a href="#/commonData/I105">大調機</a></li>
+            <li><a href="#/commonData/I106">小調機</a></li>
+            <li><a href="#/commonData/I107">線速</a></li>
+            <li><a href="#/commonData/I108">非線速</a></li>
+            <li><a href="#/commonData/I109">產率設定</a></li>
+            <li class="active"><a href="#/commonData/I110"><label style="color:blue">產能維護</label></a></li>
+            <li><a href="#/commonData/I111">combine資料設定</a></li>
+            <li><a href="#/commonData/I200">系統設定</a></li>
+        </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+        直棒
+      </a>
+      <div style="background: rgb(255, 255, 255); min-height: 600px;">
+        <div nz-col [nzSpan]="8">
+          <nz-table #RowTable nzBordered [nzData]="FCPTB28List" [nzPageSize]="20" [nzScroll]="{ y: '300px' }">
+            <thead>
+              <tr style="width: 80%;">
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">站別</th>
+                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">管數</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row" style="width: 80%">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.SCH_SHOP_CODE }}
+                </td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 80px;">{{ data.QUANTITY }}
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </nz-tab>
+
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['../I110_NonBar']">
+        非直棒
+      </a>
+    </nz-tab>
+  </nz-tabset>
+
+
+</nz-content>
+

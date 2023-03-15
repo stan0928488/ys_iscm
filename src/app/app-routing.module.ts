@@ -29,6 +29,8 @@ import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
+import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
+import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -132,6 +134,8 @@ const routes: Routes = [
       { path: "I107", component: PPSI107Component },
       { path: "I108", component: PPSI108Component },
       { path: "I109", component: PPSI109Component },
+      { path: "I110", component: PPSI110Component },
+      { path: "I111", component: PPSI111Component },
       { path: "I200", component: PPSI200Component }
     ],
     canActivate: [AuthGuard]
