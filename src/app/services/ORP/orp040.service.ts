@@ -14,7 +14,7 @@ export interface TalkSessionItems{
   previous:string;
   next:string;
   services:string;
-  tsiError:string;
+  tsiServicePath:string;
   useStatus:string,
   delStatus:string,
   createUser:string,
@@ -33,7 +33,7 @@ export class Orp040Service {
   };
   APIURL: string = "";
   constructor(private http: HttpClient, private configService: ConfigService) {
-    this.APIURL = this.configService.getAPIURL();
+    this.APIURL = this.configService.getAPIURL("1");
   }
 
   getCustomerList(){

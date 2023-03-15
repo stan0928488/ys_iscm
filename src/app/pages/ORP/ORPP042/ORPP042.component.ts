@@ -34,7 +34,7 @@ saveTalkSessionItem: Partial<TalkSessionItems> = {
   previous:'', //上個交談
   next:'', //下個交談
   services:'', //服務
-  tsiError:'', //錯誤碼
+  tsiServicePath:'', //錯誤碼
 };
 
 constructor(private dataService : Orp040Service ,
@@ -183,7 +183,7 @@ ngOnInit() {
     previous:'', //上個交談
     next:'', //下個交談
     services:'', //服務
-    tsiError:null || '', //錯誤碼
+    tsiServicePath: '', //錯誤碼
     logUUID: '' ,//作业唯一标识
     useStatus:'',
     delStatus:'',
