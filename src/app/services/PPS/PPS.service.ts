@@ -254,36 +254,40 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
    //Get getPPSINP07List
-  getPPSINP07List() {
+  getPPSINP07List(_type) {
     console.log("api service getPPSINP07List")
-    let queryUrl = this.APIURL + "/FCP/I107/getPPSINP07List";
-    console.log(queryUrl);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/getPPSINP07List`;
     return this.http.get(queryUrl);
   }
 
-  // I107 insertI107Tab1Save
-  insertI107Tab1Save(_data) {
+  // I107 insertI107Save
+  insertI107Save(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I107/insertI107Tab1Save`;
-    console.log(queryUrl);
-    console.log(body);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/insertI107Save`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I107 updateI107Tab1Save修改存檔
-  updateI107Tab1Save(_data) {
+  // I107 updateI107Save 修改存檔
+  updateI107Save(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I107/updateI107Tab1Save`;
-    console.log(queryUrl);
-    console.log(body);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/updateI107Save`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I107 delI107Tab1Data 刪除資料
-  delI107Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I107/delI107Tab1Data/${_ID}`;
+  // I107 delI107Data 刪除資料
+  delI107Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/delI107Data/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
+
   // 8.非線速
   //Get getPPSINP08List 取得08tab data
   getPPSINP08List() {
