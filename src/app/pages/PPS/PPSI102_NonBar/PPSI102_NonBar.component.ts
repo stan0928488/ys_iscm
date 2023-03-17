@@ -11,25 +11,29 @@ import * as _ from "lodash";
 interface ItemData7 {
   id: string;
   tab1ID: number;
-  BALANCE_RULE: string;
-  EQUIP_CODE_1: string;
-  EQUIP_GROUP: string;
-  EQUIP_NAME: string;
-  ORDER_SEQ: string;
+  PLANT_CODE: string;
   PLANT: string;
   SHOP_CODE: string;
   SHOP_NAME: string;
+  EQUIP_CODE: string;
+  EQUIP_NAME: string;
+  EQUIP_GROUP: string;
+  BALANCE_RULE: string;
+  ORDER_SEQ: string;
+  WT_TYPE: string;
   VALID: string;
+  wtTypeName: string;
+  validName: string;
 }
 
 
 @Component({
-  selector: "app-PPSI102",
-  templateUrl: "./PPSI102.component.html",
-  styleUrls: ["./PPSI102.component.scss"],
+  selector: "app-PPSI102_NonBar",
+  templateUrl: "./PPSI102_NonBar.component.html",
+  styleUrls: ["./PPSI102_NonBar.component.scss"],
   providers:[NzMessageService]
 })
-export class PPSI102Component implements AfterViewInit {
+export class PPSI102_NonBarComponent implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -38,12 +42,13 @@ export class PPSI102Component implements AfterViewInit {
 
 
   // 站別機台關聯表
-  PLANT = "直棒";
+  PLANT = "精整";
   SHOP_CODE;
   SHOP_NAME;
-  EQUIP_CODE_1;
+  EQUIP_CODE;
   EQUIP_NAME;
   EQUIP_GROUP;
+  WT_TYPE;
   VALID = "Y";
   isVisibleShop = false;
   searchPlantValue = '';
@@ -53,6 +58,7 @@ export class PPSI102Component implements AfterViewInit {
   searchEquipNameValue = '';
   searchEquipGroupValue = '';
   searchValidValue = '';
+  searchWtTypeValue = '';
 
 
   constructor(
@@ -80,7 +86,7 @@ export class PPSI102Component implements AfterViewInit {
   getPPSINP07List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP07List('1').subscribe(res => {
+    this.PPSService.getPPSINP07List('2').subscribe(res => {
       console.log("getPPSINP07List success");
       this.PPSINP07List_tmp = res;
 
@@ -89,15 +95,19 @@ export class PPSI102Component implements AfterViewInit {
         data.push({
           id: `${i}`,
           tab1ID: this.PPSINP07List_tmp[i].ID,
-          BALANCE_RULE: this.PPSINP07List_tmp[i].BALANCE_RULE,
-          EQUIP_CODE_1: this.PPSINP07List_tmp[i].EQUIP_CODE,
-          EQUIP_GROUP: this.PPSINP07List_tmp[i].EQUIP_GROUP,
-          EQUIP_NAME: this.PPSINP07List_tmp[i].EQUIP_NAME,
-          ORDER_SEQ: this.PPSINP07List_tmp[i].ORDER_SEQ,
+          PLANT_CODE: this.PPSINP07List_tmp[i].PLANT_CODE,
           PLANT: this.PPSINP07List_tmp[i].PLANT,
           SHOP_CODE: this.PPSINP07List_tmp[i].SHOP_CODE,
           SHOP_NAME: this.PPSINP07List_tmp[i].SHOP_NAME,
+          EQUIP_CODE: this.PPSINP07List_tmp[i].EQUIP_CODE,
+          EQUIP_NAME: this.PPSINP07List_tmp[i].EQUIP_NAME,
+          EQUIP_GROUP: this.PPSINP07List_tmp[i].EQUIP_GROUP,
+          BALANCE_RULE: this.PPSINP07List_tmp[i].BALANCE_RULE,
+          ORDER_SEQ: this.PPSINP07List_tmp[i].ORDER_SEQ,
+          WT_TYPE: this.PPSINP07List_tmp[i].WT_TYPE,
           VALID: this.PPSINP07List_tmp[i].VALID,
+          wtTypeName: this.PPSINP07List_tmp[i].wtTypeName,
+          validName: this.PPSINP07List_tmp[i].validName
         });
       }
       this.PPSINP07List = data;
@@ -119,13 +129,13 @@ export class PPSI102Component implements AfterViewInit {
     } else if (this.SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別代碼」不可為空");
       return;
-    } else if (this.EQUIP_CODE_1 === undefined) {
+    } else if (this.EQUIP_CODE === undefined) {
       myObj.message.create("error", "「機台」不可為空");
       return;
     } else if (this.VALID === undefined) {
       myObj.message.create("error", "「有效碼」不可為空");
       return;
-    } else {
+    }else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
@@ -176,7 +186,7 @@ export class PPSI102Component implements AfterViewInit {
     } else if (this.editCache7[id].data.SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別代碼」不可為空");
       return;
-    } else if (this.editCache7[id].data.EQUIP_CODE_1 === undefined) {
+    } else if (this.editCache7[id].data.EQUIP_CODE === undefined) {
       myObj.message.create("error", "「機台」不可為空");
       return;
     } else if (this.editCache7[id].data.VALID === undefined) {
@@ -214,28 +224,29 @@ export class PPSI102Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        BALANCE_RULE: "",
+        PLANT_CODE : this.PLANT_CODE,
         PLANT : this.PLANT,
         SHOP_CODE : this.SHOP_CODE,
         SHOP_NAME : this.SHOP_NAME,
-        EQUIP_CODE : this.EQUIP_CODE_1,
+        EQUIP_CODE : this.EQUIP_CODE,
         EQUIP_NAME : this.EQUIP_NAME,
         EQUIP_GROUP: this.EQUIP_GROUP,
         VALID: this.VALID,
-        ORDER_SEQ: "",
-        // DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        WT_TYPE: this.WT_TYPE,
+        BALANCE_RULE: "",
+        ORDER_SEQ: ""
       })
 
-      myObj.PPSService.insertI107Save('1', obj).subscribe(res => {
+      myObj.PPSService.insertI107Save('2', obj).subscribe(res => {
         console.log(res)
         if(res[0].MSG === "Y") {
-          this.PLANT = undefined;
           this.SHOP_CODE = undefined;
           this.SHOP_NAME = undefined;
-          this.EQUIP_CODE_1 = undefined;
+          this.EQUIP_CODE = undefined;
           this.EQUIP_NAME = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
+          this.WT_TYPE = undefined;
           this.getPPSINP07List();
           this.sucessMSG("新增成功", ``);
         } else {
@@ -249,6 +260,24 @@ export class PPSI102Component implements AfterViewInit {
     });
   }
 
+  wttypeChange(_id) {
+    let newType = this.editCache7[_id].data.WT_TYPE;
+    if(newType === '1') {
+      this.editCache7[_id].data.wtTypeName = "線速";
+    } else if(newType === '2') {
+      this.editCache7[_id].data.wtTypeName = "非線速";
+    } else {
+      this.editCache7[_id].data.wtTypeName = "-";
+    }
+  }
+  validChange(_id) {
+    let newType = this.editCache7[_id].data.VALID;
+    if(newType === 'Y') {
+      this.editCache7[_id].data.validName = "有效";
+    } else {
+      this.editCache7[_id].data.validName = "無效";
+    }
+  }
 
   // 修改資料
   updateSave(_id) {
@@ -258,29 +287,32 @@ export class PPSI102Component implements AfterViewInit {
       let obj = {};
       _.extend(obj, {
         ID : this.editCache7[_id].data.tab1ID,
-        BALANCE_RULE: "",
-        ORDER_SEQ: "",
+        PLANT_CODE : this.editCache7[_id].data.PLANT_CODE,
         PLANT : this.editCache7[_id].data.PLANT,
         SHOP_CODE : this.editCache7[_id].data.SHOP_CODE,
         SHOP_NAME : this.editCache7[_id].data.SHOP_NAME,
-        EQUIP_CODE : this.editCache7[_id].data.EQUIP_CODE_1,
+        EQUIP_CODE : this.editCache7[_id].data.EQUIP_CODE,
         EQUIP_NAME : this.editCache7[_id].data.EQUIP_NAME,
         EQUIP_GROUP : this.editCache7[_id].data.EQUIP_GROUP,
-        VALID : this.editCache7[_id].data.VALID
+        VALID : this.editCache7[_id].data.VALID,
+        WT_TYPE : this.editCache7[_id].data.WT_TYPE,
+        BALANCE_RULE: "",
+        ORDER_SEQ: ""
       })
 
-      myObj.PPSService.updateI107Save('1', obj).subscribe(res => {
+      myObj.PPSService.updateI107Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.PLANT = undefined;
           this.SHOP_CODE = undefined;
           this.SHOP_NAME = undefined;
-          this.EQUIP_CODE_1 = undefined;
+          this.EQUIP_CODE = undefined;
           this.EQUIP_NAME = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
+          this.WT_TYPE = undefined;
+          console.log(this.PPSINP07List)
+          console.log(this.editCache7)
 
           this.sucessMSG("修改成功", ``);
-
           const index = this.PPSINP07List.findIndex(item => item.id === _id);
           Object.assign(this.PPSINP07List[index], this.editCache7[_id].data);
           this.editCache7[_id].edit = false;
@@ -301,16 +333,8 @@ export class PPSI102Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let _ID = this.editCache7[_id].data.tab1ID;
-      myObj.PPSService.delI107Data('1', _ID).subscribe(res => {
+      myObj.PPSService.delI107Data('2', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.PLANT = undefined;
-          this.SHOP_CODE = undefined;
-          this.SHOP_NAME = undefined;
-          this.EQUIP_CODE_1 = undefined;
-          this.EQUIP_NAME = undefined;
-          this.EQUIP_GROUP = undefined;
-          this.VALID = undefined;
-
           this.sucessMSG("刪除成功", ``);
           this.getPPSINP07List();
         }
@@ -394,11 +418,11 @@ export class PPSI102Component implements AfterViewInit {
 
   // 資料過濾---站別機台關聯表 --> 機台
   searchByEquipCode1() :void {
-    this.ppsInp07ListFilter("EQUIP_CODE_1", this.searchEquipCode1Value);
+    this.ppsInp07ListFilter("EQUIP_CODE", this.searchEquipCode1Value);
   }
   resetByEquipCode1() :void {
     this.searchEquipCode1Value = '';
-    this.ppsInp07ListFilter("EQUIP_CODE_1", this.searchEquipCode1Value);
+    this.ppsInp07ListFilter("EQUIP_CODE", this.searchEquipCode1Value);
   }
 
   // 資料過濾---站別機台關聯表 --> 設備名
@@ -419,6 +443,15 @@ export class PPSI102Component implements AfterViewInit {
     this.ppsInp07ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
   }
 
+  // 資料過濾---站別機台關聯表 --> 工時計算分類
+  searchByWtType() : void {
+    this.ppsInp07ListFilter("WT_TYPE", this.searchWtTypeValue);
+  }
+  resetByWtType() : void {
+    this.searchWtTypeValue = '';
+    this.ppsInp07ListFilter("WT_TYPE", this.searchWtTypeValue);
+  }
+
   // 資料過濾---站別機台關聯表 --> 有效碼
   searchByValid() : void {
     this.ppsInp07ListFilter("VALID", this.searchValidValue);
@@ -428,5 +461,6 @@ export class PPSI102Component implements AfterViewInit {
     this.ppsInp07ListFilter("VALID", this.searchValidValue);
   }
 
+  
 
 }

@@ -26,8 +26,13 @@
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+      <a *nzTabLink nz-tab-link [routerLink]="['../I102']">
         直棒
+      </a>
+    </nz-tab>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+        非直棒
       </a>
 
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
@@ -68,7 +73,7 @@
               </nz-filter-trigger>
               </th>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >站別名稱
+              >站別
               <nz-filter-trigger 
               [nzActive]="searchShopNameValue.length > 0" 
               [nzDropdownMenu]="shopNameMenu">
@@ -84,7 +89,7 @@
               </nz-filter-trigger>
               </th>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"
-              >機台名稱
+              >設備名
               <nz-filter-trigger 
               [nzActive]="searchEquipNameValue.length > 0" 
               [nzDropdownMenu]="equipNameMenu">
@@ -96,6 +101,14 @@
               <nz-filter-trigger 
               [nzActive]="searchEquipGroupValue.length > 0" 
               [nzDropdownMenu]="equipGroupMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"
+              >工時計算分類
+              <nz-filter-trigger 
+              [nzActive]="searchWtTypeValue.length > 0" 
+              [nzDropdownMenu]="WtTypeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
@@ -116,36 +129,49 @@
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PLANT }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.SHOP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHOP_NAME }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CODE_1 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_NAME }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_GROUP }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.VALID }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.wtTypeName }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.validName }}</td>
                 <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
                   <a (click)="editRow(data.id)">修改</a>&nbsp;
                   <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
                 </td>
               </ng-container>
               <ng-template #editTemplate7>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PLANT }}</td>
+                <td>
+                  <nz-select [(ngModel)]="editCache7[data.id].data.PLANT">
+                    <nz-option nzValue="精整" nzLabel="精整" ></nz-option>
+                    <nz-option nzValue="軋鋼" nzLabel="軋鋼" ></nz-option>
+                  </nz-select>
+                </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="輸入站別代碼" [(ngModel)]="editCache7[data.id].data.SHOP_CODE" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="輸入站名稱" [(ngModel)]="editCache7[data.id].data.SHOP_NAME" />
+                  <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache7[data.id].data.SHOP_NAME" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache7[data.id].data.EQUIP_CODE_1" />
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache7[data.id].data.EQUIP_CODE" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機台名稱" [(ngModel)]="editCache7[data.id].data.EQUIP_NAME" />
+                  <input nz-width="20%" nz-input placeholder="輸入設備名" [(ngModel)]="editCache7[data.id].data.EQUIP_NAME" />
                 </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="機台群組" [(ngModel)]="editCache7[data.id].data.EQUIP_GROUP" />
                 </td>
                 <td>
-                  <nz-select [(ngModel)]="editCache7[data.id].data.VALID">
-                    <nz-option nzValue="Y" nzLabel="Y" ></nz-option>
-                    <nz-option nzValue="X" nzLabel="X" ></nz-option>
+                  <nz-select [(ngModel)]="editCache7[data.id].data.WT_TYPE" nzPlaceHolder="工時計算分類" (ngModelChange)="wttypeChange(data.id)">
+                    <nz-option nzValue="" nzLabel="-"></nz-option>
+                    <nz-option nzValue="1" nzLabel="線速"></nz-option>
+                    <nz-option nzValue="2" nzLabel="非線速"></nz-option>
+                  </nz-select>
+                </td>
+                <td>
+                  <nz-select [(ngModel)]="editCache7[data.id].data.VALID" (ngModelChange)="validChange(data.id)">
+                    <nz-option nzValue="Y" nzLabel="有效"></nz-option>
+                    <nz-option nzValue="X" nzLabel="無效"></nz-option>
                   </nz-select>
                 </td>
                 <td>
@@ -158,12 +184,6 @@
           </nz-table>
         </div>
       </div>
-    </nz-tab>
-
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I102_NonBar']">
-        非直棒
-      </a>
     </nz-tab>
   </nz-tabset>
 
@@ -187,7 +207,8 @@
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;工廠別</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <nz-select [(ngModel)]="PLANT">
-              <nz-option nzValue="直棒" nzLabel="直棒" ></nz-option>
+              <nz-option nzValue="精整" nzLabel="精整" ></nz-option>
+              <nz-option nzValue="軋鋼" nzLabel="軋鋼" ></nz-option>
             </nz-select>
           </td>
         </tr>
@@ -200,23 +221,23 @@
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別名稱</td>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別名</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="站別名稱" [(ngModel)]="SHOP_NAME" />
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="站別名" [(ngModel)]="SHOP_NAME" />
           </td>
         </tr>
 
         <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="機台" [(ngModel)]="EQUIP_CODE_1" />
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="機台" [(ngModel)]="EQUIP_CODE" />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台名稱</td>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設備名</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="機台名稱" [(ngModel)]="EQUIP_NAME" />
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="設備名" [(ngModel)]="EQUIP_NAME" />
           </td>
         </tr>
 
@@ -228,11 +249,21 @@
         </tr>
 
         <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;工時計算分類</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <nz-select [(ngModel)]="WT_TYPE">
+              <nz-option nzValue="1" nzLabel="線速" ></nz-option>
+              <nz-option nzValue="2" nzLabel="非線速" ></nz-option>
+            </nz-select>
+          </td>
+        </tr>
+
+        <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;有效碼</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;            
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
             <nz-select [(ngModel)]="VALID">
-              <nz-option nzValue="Y" nzLabel="Y" ></nz-option>
-              <nz-option nzValue="X" nzLabel="X" ></nz-option>
+              <nz-option nzValue="Y" nzLabel="有效" ></nz-option>
+              <nz-option nzValue="X" nzLabel="無效" ></nz-option>
             </nz-select>
           </td>
         </tr>
@@ -305,6 +336,16 @@
       <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipGroup()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipGroup()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #WtTypeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchWtTypeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByWtType()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByWtType()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>

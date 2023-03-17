@@ -43,6 +43,7 @@ import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
 import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
 import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
+import { PPSI102_NonBarComponent } from "./pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component";
 import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
@@ -108,6 +109,7 @@ registerLocaleData(zh);
 
     PPSI101Component,
     PPSI102Component,
+    PPSI102_NonBarComponent,
     PPSI103Component,
     PPSI104Component,
     PPSI105Component,

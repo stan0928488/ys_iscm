@@ -622,7 +622,7 @@ export class PPSI101Component implements AfterViewInit {
   getPPSINP07List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP07List().subscribe(res => {
+    this.PPSService.getPPSINP07List('1').subscribe(res => {
       console.log("getPPSINP07List success");
       this.PPSINP07List_tmp = res;
 

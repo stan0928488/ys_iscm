@@ -22,6 +22,7 @@ import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
 import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
 import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
+import { PPSI102_NonBarComponent } from "./pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component";
 import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
@@ -127,6 +128,7 @@ const routes: Routes = [
       { path: "", redirectTo: "/commonData/I101", pathMatch: "full" },
       { path: "I101", component: PPSI101Component },
       { path: "I102", component: PPSI102Component },
+      { path: "I102_NonBar", component: PPSI102_NonBarComponent },
       { path: "I103", component: PPSI103Component },
       { path: "I104", component: PPSI104Component },
       { path: "I105", component: PPSI105Component },
