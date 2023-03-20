@@ -1,0 +1,443 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li><a href="#/singleData/I120">直棒退火爐工時</a></li>
+            <li><a href="#/singleData/I121">直棒研磨道次</a></li>
+            <li class="active"><a href="#/singleData/I122"><label style="color:blue">直棒桶槽式工時</label></a></li>
+            <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
+            <li><a href="#/singleData/I124">直棒特殊站優先順序表</a></li>
+            <li><a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a></li>
+        </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+
+    <table>
+
+      <tr>
+        <td>
+          <button
+          nz-button
+          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+          nzType="primary"
+          [nzSize]="'large'"
+          (click)="openOtherShopInput()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+          </button>
+        </td>
+      </tr>
+
+    </table>
+  <p></p><p></p>
+
+    <div nz-col [nzSpan]="25">
+      <nz-table #RowTable10 nzBordered [nzData]="displayPPSINP10List" [nzPageSize]="20" [nzScroll]="{ x: '1400px', y: '500px' }">
+        <thead>
+          <tr>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+            >站號
+            <nz-filter-trigger 
+            [nzActive]="searchShopCode10Value.length > 0" 
+            [nzDropdownMenu]="shopCode10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
+            >機台碼
+            <nz-filter-trigger 
+            [nzActive]="searchEquipCode10Value.length > 0" 
+            [nzDropdownMenu]="equipCode10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >鋼種
+            <nz-filter-trigger 
+            [nzActive]="searchGradeNo10Value.length > 0" 
+            [nzDropdownMenu]="gradeNo10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >長度-最小值(mm)
+            <nz-filter-trigger 
+            [nzActive]="searchLengthMin10Value.length > 0" 
+            [nzDropdownMenu]="lengthMin10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >長度-最大值(mm)
+            <nz-filter-trigger 
+            [nzActive]="searchLengthMax10Value.length > 0" 
+            [nzDropdownMenu]="lengthMax10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >尺寸最小
+            <nz-filter-trigger 
+            [nzActive]="searchDiaMin10Value.length > 0" 
+            [nzDropdownMenu]="diaMin10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >尺寸最大
+            <nz-filter-trigger 
+            [nzActive]="searchDiaMax10Value.length > 0" 
+            [nzDropdownMenu]="diaMax10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >總時間(分/批)
+            <nz-filter-trigger 
+            [nzActive]="searchTotalTimes10Value.length > 0" 
+            [nzDropdownMenu]="totalTimes10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >浸酸時間(分/批)
+            <nz-filter-trigger 
+            [nzActive]="searchPicklingTimes10Value.length > 0" 
+            [nzDropdownMenu]="picklingTimes10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >清洗時間(分/批)
+            <nz-filter-trigger 
+            [nzActive]="searchWashingTimes10Value.length > 0" 
+            [nzDropdownMenu]="washingTimes10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >瀝乾時間(分/批)
+            <nz-filter-trigger 
+            [nzActive]="searchDrainingTimes10Value.length > 0" 
+            [nzDropdownMenu]="drainingTimes10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >投入上限值(捆/批)
+            <nz-filter-trigger 
+            [nzActive]="searchBatchCnt10Value.length > 0" 
+            [nzDropdownMenu]="batchCnt10Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of RowTable10.data;let i = index" class="editable-row">
+            <ng-container *ngIf="!editCache10[data.id].edit; else editTemplate1">
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.GRADE_NO_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.LENGTH_MIN_10 | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.LENGTH_MAX_10 | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN_10 | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_10 | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TOTAL_TIMES_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.PICKLING_TIMES_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WASHING_TIMES_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DRAINING_TIMES_10 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BATCH_CNT_10 | number }}</td>
+              <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
+              </td>
+            </ng-container>
+            <ng-template #editTemplate1>
+              <td>
+                <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache10[data.id].data.SHOP_CODE_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="機台碼" [(ngModel)]="editCache10[data.id].data.EQUIP_CODE_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="鋼種" [(ngModel)]="editCache10[data.id].data.GRADE_NO_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="長度-最小值(mm)" [(ngModel)]="editCache10[data.id].data.LENGTH_MIN_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="長度-最大值(mm)" [(ngModel)]="editCache10[data.id].data.LENGTH_MAX_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="尺寸最小" [(ngModel)]="editCache10[data.id].data.DIA_MIN_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="尺寸最大" [(ngModel)]="editCache10[data.id].data.DIA_MAX_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="總時間(分/批)" [(ngModel)]="editCache10[data.id].data.TOTAL_TIMES_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="浸酸時間(分/批)" [(ngModel)]="editCache10[data.id].data.PICKLING_TIMES_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="清洗時間(分/批)" [(ngModel)]="editCache10[data.id].data.WASHING_TIMES_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="瀝乾時間(分/批)" [(ngModel)]="editCache10[data.id].data.DRAINING_TIMES_10" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="投入上限值(捆/批)" [(ngModel)]="editCache10[data.id].data.BATCH_CNT_10" />
+              </td>
+              <td>
+                <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
+              </td>
+            </ng-template>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+  
+</nz-content>
+
+
+
+
+<!-- 桶槽式清洗(其他站別)工時新增 -->
+<nz-modal
+  [(nzVisible)]="isVisibleOtherShop"
+  [nzWidth]="800"
+  [nzContent]="otherShopInputContent"
+  [nzFooter]="otherShopInputFooter"
+  (nzOnCancel)="cancelOtherShopInput()">
+
+  <ng-template #otherShopInputContent>
+    <div>
+      <table style="border-collapse: separate;">
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站號</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入站號" [(ngModel)]="SHOP_CODE_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台碼</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機台碼" [(ngModel)]="EQUIP_CODE_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼種</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入鋼種" [(ngModel)]="GRADE_NO_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;長度最小值</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入長度最小值" [(ngModel)]="LENGTH_MIN_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;長度最大值</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入長度最大值" [(ngModel)]="LENGTH_MAX_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;最小尺寸</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入最小尺寸" [(ngModel)]="DIA_MIN_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;最大尺寸</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入最大尺寸" [(ngModel)]="DIA_MAX_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;總時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入總時間" [(ngModel)]="TOTAL_TIMES_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;浸酸時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入浸酸時間" [(ngModel)]="PICKLING_TIMES_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;清洗時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入清洗時間" [(ngModel)]="WASHING_TIMES_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;瀝乾時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入瀝乾時間" [(ngModel)]="DRAINING_TIMES_10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;投入上限值</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入投入上限值" [(ngModel)]="BATCH_CNT_10" />
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    
+  </ng-template>
+
+  <ng-template #otherShopInputFooter>
+    <button nz-button nzType="default" (click)="cancelOtherShopInput()">取消新增</button>
+    <button nz-button nzType="primary" (click)="insertTab()">確定</button>
+  </ng-template>
+
+</nz-modal>
+
+<nz-dropdown-menu #shopCode10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchShopCode10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByShopCode10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByShopCode10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #equipCode10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchEquipCode10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipCode10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByEquipCode10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #gradeNo10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchGradeNo10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByGradeNo10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByGradeNo10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #lengthMin10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchLengthMin10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByLengthMin10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByLengthMin10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #lengthMax10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchLengthMax10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByLengthMax10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByLengthMax10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #diaMin10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDiaMin10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMin10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDiaMin10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #diaMax10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDiaMax10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMax10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDiaMax10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #totalTimes10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchTotalTimes10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByTotalTimes10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByTotalTimes10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #picklingTimes10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchPicklingTimes10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByPicklingTimes10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByPicklingTimes10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #washingTimes10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchWashingTimes10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByWashingTimes10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByWashingTimes10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #drainingTimes10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDrainingTimes10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDrainingTimes10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDrainingTimes10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #batchCnt10Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchBatchCnt10Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByBatchCnt10()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByBatchCnt10()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

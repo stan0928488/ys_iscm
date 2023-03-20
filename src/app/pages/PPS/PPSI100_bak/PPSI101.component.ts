@@ -2766,7 +2766,7 @@ export class PPSI101Component implements AfterViewInit {
           // DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
         })
 
-        myObj.PPSService.insertI107Tab1Save(obj).subscribe(res => {
+        myObj.PPSService.insertI107Save('1', obj).subscribe(res => {
           console.log(res)
           if(res[0].MSG === "Y") {
             this.PLANT = undefined;
@@ -3377,7 +3377,7 @@ export class PPSI101Component implements AfterViewInit {
           // DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
         })
 
-        myObj.PPSService.updateI107Tab1Save(obj).subscribe(res => {
+        myObj.PPSService.updateI107Save('1', obj).subscribe(res => {
           if(res[0].MSG === "Y") {
             this.PLANT = undefined;
             this.SHOP_CODE = undefined;
@@ -3990,7 +3990,7 @@ export class PPSI101Component implements AfterViewInit {
       let myObj = this;
       return new Promise((resolve, reject) => {
         let _ID = this.editCache7[_id].data.tab1ID;
-        myObj.PPSService.delI107Tab1Data(_ID).subscribe(res => {
+        myObj.PPSService.delI107Data('1',_ID).subscribe(res => {
           if(res[0].MSG === "Y") {
             this.PLANT = undefined;
             this.SHOP_CODE = undefined;

@@ -32,6 +32,10 @@ import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
+import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
+import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
+import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
+import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -143,17 +147,15 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: "BarData",
+    path: "singleData",
     children: [   
-      { path: "", redirectTo: "/BarData/I205", pathMatch: "full" },
+      { path: "", redirectTo: "/singleData/I124", pathMatch: "full" },
       { path: "I101", component: PPSI101Component },
-      { path: "I205", component: PPSI205Component }
-    ],
-    canActivate: [AuthGuard]
-  },
-  {
-    path: "NonBarData",
-    children: [
+      { path: "I120", component: PPSI120Component },
+      { path: "I121", component: PPSI121Component },
+      { path: "I122", component: PPSI122Component },
+      { path: "I123", component: PPSI123Component },
+      { path: "I124", component: PPSI205Component }
     ],
     canActivate: [AuthGuard]
   },
