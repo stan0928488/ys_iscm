@@ -94,7 +94,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     isLoading = false
     //导出数据
     export = {
-      title : "exportData",
+      title : "EXPORTDATA",
       header: [] ,
       data:[],
     }
@@ -220,8 +220,8 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
   exportBtn(){
     this.isLoading = true ;
-    console.log(this.export.data.length)
-    this.excelService.exportAsExcelFile(this.export.data, this.export.title,this.export.header);
+    let tableName = this.export.title + "_" + this.selectShopCode  ;
+    this.excelService.exportAsExcelFile(this.export.data, tableName,this.export.header);
     this.isLoading = false ;
   }
   //選擇分組
@@ -442,28 +442,39 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
                 if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
                   let newStr = preGroupObject[key] + ',' + item[key] ;
                   preGroupObject[key] = newStr
+                 /*
+                  if(item[key] !== null) {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
+                    preGroupObject[key] = newStr
+                  } else {
+                    preGroupObject[key] = preGroupObject[key]
+                  }
+                  */
+                 
                //   console.log("非分群 非數字：" + key + ":" + newStr) ;
                 } else {
                //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
-                  preGroupObject[key] += item[key]
+                  //preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2)
+                  preGroupObject[key] +=  item[key];  
+                 
                 }
 
               }
             })
             //如果跟上一條數據相等
             if(index === originalDataTemp.length - 1) {
-              rowDataTemp.push(preGroupObject) ;
+              rowDataTemp.push(this.pushDataBeforeFormat(preGroupObject)) ;
             }
 
           } else {
             //如果分组不相等 b保存上一次的數據
-            rowDataTemp.push(preGroupObject) ;
+            rowDataTemp.push(this.pushDataBeforeFormat(preGroupObject)) ;
             //講當前值賦給上一個對象
             preGroupObject = item ;
             preGroupString = currentGroupString ;
              //如果跟上一條數據相等
              if(index === originalDataTemp.length -1) {
-              rowDataTemp.push(preGroupObject) ;
+              rowDataTemp.push(this.pushDataBeforeFormat(preGroupObject)) ;
             }
           }
 
@@ -477,7 +488,28 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
    // console.log("this.originalData localStorage :" + localStorage.getItem("originalData") ) ;
   }
+//写入之前需要处理数据
+ pushDataBeforeFormat(preGroupObject:any) {
+  Object.keys(preGroupObject).forEach((key)=>{
+    if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
+      if(preGroupObject[key] !== null) {
+        console.log(key + " : " + preGroupObject[key])
+        let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
+        preGroupObject[key] = newStr
+      } else {
+        let newStr = preGroupObject[key]//.toString().replace("null","");
+        preGroupObject[key] = newStr
+      }
+     
+    } else {
+      if(Number(preGroupObject[key]) > 0) {
+        preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2);
+      }  
+    }
+  })
+  return preGroupObject ;
 
+ }
 
 //包含數組
   arrayContainStr(array :any[],str:string) {
