@@ -141,7 +141,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     }
     this.gridOptionsRowDataModal = {
       rowDragManaged: true, 
-      onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
+      onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
     }
      
    }
@@ -347,9 +347,9 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   }
 
 
-  /*** */
+  /***最外层表格拖拽 */
   onRowDragEnd(e: RowDragEndEvent) {
-    console.log("test")
+    console.log("最外层表格拖拽")
     var itemsToUpdate = [];
     //console.log(this.gridOptions.api.forEachNodeAfterFilterAndSort)
     this.gridOptions.api.forEachNode((rowNode,index)=>{
@@ -366,7 +366,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 
   }
 
-   /*** */
+   /***分组明细拖拽 */
    onRowDragEndModal(e: RowDragEndEvent) {
     console.log("test")
     var itemsToUpdate = [];
@@ -383,6 +383,19 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.rowData[this.selectRowIndex].id = ids ;
     this.gridOptions.api.setRowData(this.rowData)
     //console.log('onRowDragEndModal', JSON.stringify(this.rowSelectData) );
+  }
+ /**微调明细 */
+ onRowDragEndRowDataModal(e: RowDragEndEvent) {
+    console.log("微调明细test")
+    var itemsToUpdate = [];
+    this.gridOptionsRowDataModal.api.forEachNode((rowNode,index)=>{
+     // console.log("index: " + index + ",rowNode:" +JSON.stringify(rowNode.data))
+      itemsToUpdate.push(rowNode.data);
+    })
+    console.log('onRowDragEndRowDataModal:', JSON.stringify(itemsToUpdate) );
+    this.rowSortedData = [...itemsToUpdate];
+    this.gridOptionsRowDataModal.api.setRowData(this.rowSortedData)
+    console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
   }
   onRowDragMove(event: RowDragMoveEvent) {
     var movingNode = event.node;
@@ -440,8 +453,14 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
                // console.log("this.columKeyType[key]:" +this.columKeyType[key])
                 //如果不是分組欄位，數字加和，字符串拼接
                 if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
-                  let newStr = preGroupObject[key] + ',' + item[key] ;
-                  preGroupObject[key] = newStr
+                  if(key === 'id') {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
+                    preGroupObject[key] = newStr
+                  } else {
+                    let newStr =  item[key] ;
+                    preGroupObject[key] = newStr
+                  }
+                 
                  /*
                   if(item[key] !== null) {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
@@ -491,21 +510,25 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
 //写入之前需要处理数据
  pushDataBeforeFormat(preGroupObject:any) {
   Object.keys(preGroupObject).forEach((key)=>{
+    //处理不是id的栏位
+    if(key !== 'id') {
+    //当前栏位不是数字
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
+      //如果当前不为空
       if(preGroupObject[key] !== null) {
-        console.log(key + " : " + preGroupObject[key])
         let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
         preGroupObject[key] = newStr
       } else {
         let newStr = preGroupObject[key]//.toString().replace("null","");
         preGroupObject[key] = newStr
       }
-     
+     //当前栏位是数字
     } else {
       if(Number(preGroupObject[key]) > 0) {
         preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2);
       }  
     }
+  }
   })
   return preGroupObject ;
 
