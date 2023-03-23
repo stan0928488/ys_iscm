@@ -302,8 +302,8 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       this.columKeyType = {} ;
      
       if(this.allColumList.length > 0) {
-        let index1 = {headerName:'序號',field:'id',rowDrag: true,resizable:true,width:100 }
-        exportHeader.push("序號")
+        let index1 = {headerName:'編號',field:'id',rowDrag: true,resizable:true,width:50 }
+        exportHeader.push("編號")
         this.columnDefs.push(index1);
         this.columKeyType["id"] = 0 ;
         this.allColumList.forEach((item,index,array) => {
@@ -572,6 +572,11 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       })
     })
     this.modalTableRowDataVisible = true ;
+
+   }
+  //排序後的數據送入MES
+   sendSortedDataToMES(){
+    
 
    }
 
