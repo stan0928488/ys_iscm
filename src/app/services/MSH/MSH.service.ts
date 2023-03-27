@@ -70,4 +70,10 @@ getTableData(_param) {
   return this.http.post(queryUrl,_param);
 }
 
+//管理員保存 msh/MSHI001/saveShopColum
+saveSortData(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/saveSortData";
+  return this.http.post(queryUrl,_param);
+}
+
 }
