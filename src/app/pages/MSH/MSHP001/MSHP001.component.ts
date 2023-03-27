@@ -14,6 +14,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
+import { isDataSource } from '@angular/cdk/collections';
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -45,7 +46,7 @@ onCellClicked(value:any){
 }
 
 
-public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
+//public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   date:Date[];
   selectShopCode = "401" ;
   shopCodeList:any = [] ;
@@ -102,6 +103,9 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   rowSelectData = [] ;
   //保存原始排程
   originalData = [] ;
+  //保存最後一次操作數據
+  finalChangeDataIds = [] ;
+
   //編輯之後
   editFlag = false ;
 
@@ -172,13 +176,13 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.rowSelectData = [] ;
     this.selectRowIndex = row.rowIndex ;
 
-    let ids :any[] = row.data.id.split(',') ;
+    let ids :any[] = row.data.sortId.split(',') ;
     let rowTemp = [] ;
     ids.forEach((val)=>{
     //  console.log("id :" + val)
      // console.log("originalData:" + JSON.stringify(this.originalData))
       let temp = this.originalData.forEach((item,index,array)=>{
-       if(item.id === val) {
+       if(item.sortId === val) {
         rowTemp.push(item) 
        }
       })
@@ -248,7 +252,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       console.log("result:" + JSON.stringify(result) )
       //清空欄位跟數據
       this.rowData = [] ;
-      if(result.code === 200) {
+      if(result.code === 200 && result.data !== null) {
       this.rowData = result.data ;
       let rowDataTemp = [] ;
       //重新修改
@@ -259,7 +263,6 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
             if(index1 === 0 ) {
               console.log(item2.field)
             }
-
             rowDataObjectTemp[item2.field] = item1[item2.field] ;
           })
           rowDataTemp.push(rowDataObjectTemp) ;
@@ -302,10 +305,17 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
       this.columKeyType = {} ;
      
       if(this.allColumList.length > 0) {
-        let index1 = {headerName:'編號',field:'id',rowDrag: true,resizable:true,width:50 }
+        let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
-        this.columKeyType["id"] = 0 ;
+        this.columKeyType["sortId"] = 0 ;
+
+        let index2 = {headerName:'KEY',field:'ID',rowDrag: false,resizable:true,width:50, hide: true }
+        exportHeader.push("KEY")
+        this.columnDefs.push(index2);
+        //数据类型
+        this.columKeyType["sortId"] = 0 ;
+
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
@@ -373,14 +383,14 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     let ids = "" ;
     this.gridOptionsModal.api.forEachNode((rowNode,index)=>{
       if(index === 0) {
-        ids = ids + rowNode.data.id ;
+        ids = ids + rowNode.data.sortId ;
       } else {
-        ids = ids + "," + rowNode.data.id ;
+        ids = ids + "," + rowNode.data.sortId ;
       }
       itemsToUpdate.push(rowNode.data);
     })
     this.rowSelectData = itemsToUpdate;
-    this.rowData[this.selectRowIndex].id = ids ;
+    this.rowData[this.selectRowIndex].sortId = ids ;
     this.gridOptions.api.setRowData(this.rowData)
     //console.log('onRowDragEndModal', JSON.stringify(this.rowSelectData) );
   }
@@ -419,7 +429,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     let preGroupString = "" ;
     let preGroupObject = {} ;
     this.originalData = JSON.parse(localStorage.getItem("originalData"))
-   // console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
+    console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
     let originalDataTemp:any[] = [...this.originalData]
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
@@ -453,7 +463,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
                // console.log("this.columKeyType[key]:" +this.columKeyType[key])
                 //如果不是分組欄位，數字加和，字符串拼接
                 if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
-                  if(key === 'id') {
+                  if(key === 'sortId') {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
                   } else {
@@ -511,7 +521,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
  pushDataBeforeFormat(preGroupObject:any) {
   Object.keys(preGroupObject).forEach((key)=>{
     //处理不是id的栏位
-    if(key !== 'id') {
+    if(key !== 'sortId') {
     //当前栏位不是数字
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
       //如果当前不为空
@@ -566,7 +576,7 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
     this.originalData = JSON.parse(localStorage.getItem("originalData"))
     //遍歷分群數據
     this.rowData.forEach((item,index,array)=>{
-      let ids = item.id.split(',')
+      let ids = item.sortId.split(',')
       ids.forEach((val)=>{
         this.rowSortedData.push(this.originalData[val-1]) 
       })
@@ -576,8 +586,47 @@ public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
    }
   //排序後的數據送入MES
    sendSortedDataToMES(){
-    
+    this.nzMessageService.info("開發中");
+   }
+
+   saveSortedModal(flag:string){
+     //調整接收數據
+     this.finalChangeDataIds = [] ;
+     //原始數據調取
+     this.originalData = JSON.parse(localStorage.getItem("originalData"))
+     //遍歷分群數據
+     this.rowData.forEach((item,index,array)=>{
+       let ids = item.sortId.split(',')
+       ids.forEach((val)=>{
+        this.finalChangeDataIds.push(this.originalData[val-1].ID) 
+       })
+     })
+    // console.log("使用："+this.finalChangeDataIds)
+    // this.originalData = JSON.parse(localStorage.getItem("originalData")) ;
+    // console.log("使用："+this.finalChangeDataIds)
+    let _param = {ids:this.finalChangeDataIds.toString()}
+    this.mshService.saveSortData(_param).subscribe(res=>{
+      if(flag === '1') {
+
+      } else if(flag === '2') 
+      {
+        this.modalTableVisible = false ;
+
+      }else if(flag === '3'){
+        this.modalTableRowDataVisible = false ;
+      }
+      let result:any = res ;
+      this.groupColumList = result.data ;
+      if(result.code !== 200) {
+        this.nzMessageService.error(result.message)
+      } else {
+        this.getSetColumGroupData() ;
+      }
+     
+    })
 
    }
+
+
 
 }
