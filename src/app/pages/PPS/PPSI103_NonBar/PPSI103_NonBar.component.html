@@ -8,7 +8,7 @@
         <ul>
             <li><a href="#/commonData/I101">鋼種分類</a></li>
             <li><a href="#/commonData/I102">站別機台關聯表</a></li>
-            <li class="active"><a href="#/commonData/I103"><label style="color:blue">設備能力</label></a></li>
+            <li class="active"><a href="#/commonData/I103_NonBar"><label style="color:blue">設備能力</label></a></li>
             <li><a href="#/commonData/I104">整備時間</a></li>
             <li><a href="#/commonData/I105">大調機</a></li>
             <li><a href="#/commonData/I106">小調機</a></li>
@@ -27,8 +27,14 @@
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+      <a *nzTabLink nz-tab-link [routerLink]="['../I103']" style="color: gray">
         直棒
+      </a>
+    </nz-tab>
+
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color:dodgerblue">
+        非直棒
       </a>
 
       <div  style="background: rgb(255, 255, 255); width:auto; min-height: 1200px;">
@@ -291,12 +297,6 @@
           </nz-table>
         </div>
       </div>
-    </nz-tab>
-
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I103_NonBar']" style="color: gray">
-        非直棒
-      </a>
     </nz-tab>
   </nz-tabset>
 

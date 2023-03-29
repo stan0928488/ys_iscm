@@ -24,11 +24,15 @@ import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
 import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
 import { PPSI102_NonBarComponent } from "./pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component";
 import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
+import { PPSI103_NonBarComponent } from "./pages/PPS/PPSI103_NonBar/PPSI103_NonBar.component";
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
+import { PPSI104_NonBarComponent } from "./pages/PPS/PPSI104_NonBar/PPSI104_NonBar.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
 import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
+import { PPSI107_NonBarComponent } from "./pages/PPS/PPSI107_NonBar/PPSI107_NonBar.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
+import { PPSI108_NonBarComponent } from "./pages/PPS/PPSI108_NonBar/PPSI108_NonBar.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
@@ -36,6 +40,7 @@ import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
 import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
 import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
+import { PPSI130Component } from "./pages/PPS/PPSI130/PPSI130.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -134,11 +139,15 @@ const routes: Routes = [
       { path: "I102", component: PPSI102Component },
       { path: "I102_NonBar", component: PPSI102_NonBarComponent },
       { path: "I103", component: PPSI103Component },
+      { path: "I103_NonBar", component: PPSI103_NonBarComponent },
       { path: "I104", component: PPSI104Component },
+      { path: "I104_NonBar", component: PPSI104_NonBarComponent },
       { path: "I105", component: PPSI105Component },
       { path: "I106", component: PPSI106Component },
       { path: "I107", component: PPSI107Component },
+      { path: "I107_NonBar", component: PPSI107_NonBarComponent },
       { path: "I108", component: PPSI108Component },
+      { path: "I108_NonBar", component: PPSI108_NonBarComponent },
       { path: "I109", component: PPSI109Component },
       { path: "I110", component: PPSI110Component },
       { path: "I111", component: PPSI111Component },
@@ -149,13 +158,13 @@ const routes: Routes = [
   {
     path: "singleData",
     children: [   
-      { path: "", redirectTo: "/singleData/I124", pathMatch: "full" },
-      { path: "I101", component: PPSI101Component },
+      { path: "", redirectTo: "/singleData/I120", pathMatch: "full" },
       { path: "I120", component: PPSI120Component },
       { path: "I121", component: PPSI121Component },
       { path: "I122", component: PPSI122Component },
       { path: "I123", component: PPSI123Component },
-      { path: "I124", component: PPSI205Component }
+      { path: "I124", component: PPSI205Component },
+      { path: "I130", component: PPSI130Component }
     ],
     canActivate: [AuthGuard]
   },

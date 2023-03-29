@@ -34,6 +34,7 @@ export class PPSI220Component implements AfterViewInit {
   isVisibleSelPlan = false;
   isVisibleUpd = false;
   isCommon = false;
+  byUserShow = true;
 
   PlanDataList;           //規劃案清單
   PlanDataDtlList     //規劃案清單 (執行歷程)
@@ -112,12 +113,13 @@ export class PPSI220Component implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
   }
 
-
-
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPlanDataList();
     this.getRunFCPCount();
+    if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'ur10369' || this.USERNAME === 'UR11994') {
+      this.byUserShow = false;
+    }
   }
 
 
@@ -975,6 +977,37 @@ export class PPSI220Component implements AfterViewInit {
     }
   }
 
+
+
+  // 停止生產規劃
+  async stopPlan(data) {
+    console.log(JSON.stringify(data))
+    console.log(JSON.stringify(data.STARTRUN_TIME))
+    let myObj = this;
+		return new Promise((resolve, reject) => {
+			let obj = {};
+
+			_.extend(obj, {
+        STARTRUN_TIME : data.STARTRUN_TIME,
+        PLAN_EDITION : data.PLAN_EDITION,
+        USERNAME : this.USERNAME,
+        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+			})
+      // myObj.getPPSService.delPlanData(obj).subscribe(res => {
+      //   if(res[0].MSG === "Y") {
+
+      //     this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+      //     this.getPlanDataList();
+      //   }
+      // },err => {
+      //   reject('upload fail');
+      //   this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+      //   this.LoadingPage = false;
+      // })
+		})
+  }
+
+
   sleep(millisecond) {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -985,11 +1018,15 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
+  
+
+
+
   //convert to Excel and Download
   exportExcel(data) {
     var titleName = [];
     this.LoadingPage = true;
-    
+    this.isVisibleRun = false;
 		return new Promise((resolve, reject) => {
       this.getPPSService.getFCP_EDITIONexist(data).subscribe(res => {
         if(res[0].MSG === "Y") {
@@ -1402,79 +1439,79 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
-  // 啟動 ICP 執行--------暫不使用
-  async callICP (plandata, ICPparam) {
-    let myObj = this;
-    let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
+  // // 啟動 ICP 執行--------暫不使用
+  // async callICP (plandata, ICPparam) {
+  //   let myObj = this;
+  //   let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
 
-		return new Promise((resolve, reject) => {
-      myObj.getPPSService.StartICP(ICPparam).subscribe(async res => {
-        console.log("res[0].MO_Edition  : " + res)
+	// 	return new Promise((resolve, reject) => {
+  //     myObj.getPPSService.StartICP(ICPparam).subscribe(async res => {
+  //       console.log("res[0].MO_Edition  : " + res)
 
-        const list = `${plandata.PLANSET_LIST}`;
-        const FCPplan = JSON.parse(list);
-        FCPplan.mo_version = plandata.MO_EDITION;     // for FCP 版本策略--- todo
+  //       const list = `${plandata.PLANSET_LIST}`;
+  //       const FCPplan = JSON.parse(list);
+  //       FCPplan.mo_version = plandata.MO_EDITION;     // for FCP 版本策略--- todo
 
-        let obj = {};
-        _.extend(obj, {
-          UPD_FLAG : 'ICP',
-          PLAN_EDITION : plandata.PLAN_EDITION,
-          FCPList : FCPplan,
-          EDITION : plandata.MO_EDITION,           // for FCP 版本策略--- todo
-          ICP_EDITION : plandata.ICP_EDITION,           // for FCP 版本策略--- todo
-          USERNAME : 'ICPOK',
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        });
+  //       let obj = {};
+  //       _.extend(obj, {
+  //         UPD_FLAG : 'ICP',
+  //         PLAN_EDITION : plandata.PLAN_EDITION,
+  //         FCPList : FCPplan,
+  //         EDITION : plandata.MO_EDITION,           // for FCP 版本策略--- todo
+  //         ICP_EDITION : plandata.ICP_EDITION,           // for FCP 版本策略--- todo
+  //         USERNAME : 'ICPOK',
+  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+  //       });
 
-        if(res[0].msg == "Y") {
-          myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-            if(_.get(res, 'msg') == "UPDATE_OK") {
-              await this.callFCP(plandata, FCPplan);
-            }
-          },err => {
-            reject('update fail')
-          });
-        }
-      },err => {
-        reject('ICP fail')
-      });
-		});
-  }
+  //       if(res[0].msg == "Y") {
+  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
+  //           if(_.get(res, 'msg') == "UPDATE_OK") {
+  //             await this.callFCP(plandata, FCPplan);
+  //           }
+  //         },err => {
+  //           reject('update fail')
+  //         });
+  //       }
+  //     },err => {
+  //       reject('ICP fail')
+  //     });
+	// 	});
+  // }
 
 
-  // 啟動 FCP 執行--------暫不使用
-  async callFCP (plandata, FCPplan) {
-    let myObj = this;
+  // // 啟動 FCP 執行--------暫不使用
+  // async callFCP (plandata, FCPplan) {
+  //   let myObj = this;
 
-		return new Promise((resolve, reject) => {
-      myObj.getPPSService.StartFCP(plandata.INITIALFLAG, FCPplan).subscribe(async res => {
-        console.log("res[0].FCP_Edition  : " + res)
+	// 	return new Promise((resolve, reject) => {
+  //     myObj.getPPSService.StartFCP(plandata.INITIALFLAG, FCPplan).subscribe(async res => {
+  //       console.log("res[0].FCP_Edition  : " + res)
 
-        let obj = {};
-        _.extend(obj, {
-          UPD_FLAG : 'ICP',
-          PLAN_EDITION : plandata.PLAN_EDITION,                  // FCP 版本策略--- todo
-          FCPList : `{}`,
-          EDITION : plandata.FCP_EDITION,
-          ICP_EDITION : plandata.ICP_EDITION,                    // for FCP 版本策略--- todo
-          USERNAME : 'FCPOK',
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        });
+  //       let obj = {};
+  //       _.extend(obj, {
+  //         UPD_FLAG : 'ICP',
+  //         PLAN_EDITION : plandata.PLAN_EDITION,                  // FCP 版本策略--- todo
+  //         FCPList : `{}`,
+  //         EDITION : plandata.FCP_EDITION,
+  //         ICP_EDITION : plandata.ICP_EDITION,                    // for FCP 版本策略--- todo
+  //         USERNAME : 'FCPOK',
+  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+  //       });
 
-        if(res[0].msg == "Y") {
-          myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-            if(_.get(res, 'msg') == "UPDATE_OK") {
-              this.getPlanDataList();
-            }
-          },err => {
-            reject('update fail')
-          });
-        }
-      },err => {
-        reject('FCP fail')
-      });
-    });
-  }
+  //       if(res[0].msg == "Y") {
+  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
+  //           if(_.get(res, 'msg') == "UPDATE_OK") {
+  //             this.getPlanDataList();
+  //           }
+  //         },err => {
+  //           reject('update fail')
+  //         });
+  //       }
+  //     },err => {
+  //       reject('FCP fail')
+  //     });
+  //   });
+  // }
 
 
 
