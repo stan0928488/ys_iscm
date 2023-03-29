@@ -54,7 +54,7 @@
             <thead>
               <tr>
                 <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-                >站號
+                >站別
                 <nz-filter-trigger 
                 [nzActive]="searchShopCode2Value.length > 0" 
                 [nzDropdownMenu]="shopCode2Menu">
@@ -228,7 +228,7 @@
                 </ng-container>
                 <ng-template #editTemplate1>
                   <td>
-                    <input nz-width="20%" nz-input placeholder="輸入站號" [(ngModel)]="editCache2[data.id].data.SHOP_CODE_2" />
+                    <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache2[data.id].data.SHOP_CODE_2" />
                   </td>
                   <td>
                     <input nz-width="20%" nz-input placeholder="輸入機台群組" [(ngModel)]="editCache2[data.id].data.EQUIP_GROUP_2" />
@@ -317,9 +317,9 @@
       <table style="border-collapse: separate;">
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站號</td>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 60%; color: darkblue;" nz-input placeholder="輸入站號" [(ngModel)]="SHOP_CODE_2" />
+            <input style="width: 60%; color: darkblue;" nz-input placeholder="輸入站別" [(ngModel)]="SHOP_CODE_2" />
           </td>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">機台群組</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
