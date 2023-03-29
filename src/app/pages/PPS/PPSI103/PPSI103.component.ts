@@ -115,7 +115,7 @@ export class PPSI103Component implements AfterViewInit {
   getPPSINP02List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP02List().subscribe(res => {
+    this.PPSService.getPPSINP02List('1').subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP02List_tmp = res;
 
@@ -158,7 +158,7 @@ export class PPSI103Component implements AfterViewInit {
   insertTab() {
     let myObj = this;
     if (this.SHOP_CODE_2 === undefined) {
-      myObj.message.create("error", "「站號」不可為空");
+      myObj.message.create("error", "「站別」不可為空");
       return;
     } else if (this.EQUIP_GROUP_2 === undefined) {
       myObj.message.create("error", "「機台群組」不可為空")
@@ -238,7 +238,7 @@ export class PPSI103Component implements AfterViewInit {
 
     let myObj = this;
     if (this.editCache2[id].data.SHOP_CODE_2 === undefined) {
-      myObj.message.create("error", "「站號」不可為空");
+      myObj.message.create("error", "「站別」不可為空");
       return;
     } else if (this.editCache2[id].data.EQUIP_GROUP_2 === undefined) {
       myObj.message.create("error", "「機台群組」不可為空");
@@ -347,7 +347,7 @@ export class PPSI103Component implements AfterViewInit {
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
-      myObj.PPSService.insertI102Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.insertI102Tab1Save('1', obj).subscribe(res => {
 
         console.log(res)
         if(res[0].MSG === "Y") {
@@ -409,7 +409,7 @@ export class PPSI103Component implements AfterViewInit {
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
-      myObj.PPSService.updateI102Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.updateI102Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_2 = undefined;
           this.EQUIP_GROUP_2 = undefined;
@@ -448,7 +448,7 @@ export class PPSI103Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let _ID = this.editCache2[_id].data.tab2ID;
-      myObj.PPSService.delI102Tab1Data(_ID).subscribe(res => {
+      myObj.PPSService.delI102Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_2 = undefined;
           this.EQUIP_GROUP_2 = undefined;
@@ -518,7 +518,7 @@ export class PPSI103Component implements AfterViewInit {
     this.displayPPSINP02List = data;
   }
 
-  // 資料過濾---設備能力 --> 站號
+  // 資料過濾---設備能力 --> 站別
   searchByShopCode2() : void{
     this.ppsInp02ListFilter("SHOP_CODE_2", this.searchShopCode2Value);
   } 

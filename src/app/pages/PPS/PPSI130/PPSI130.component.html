@@ -1,0 +1,266 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li><a href="#/singleData/I120">直棒退火爐工時</a></li>
+            <li><a href="#/singleData/I121">直棒研磨道次</a></li>
+            <li><a href="#/singleData/I122">直棒桶槽式工時</a></li>
+            <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
+            <li><a href="#/singleData/I124">直棒特殊站優先順序表</a></li>
+            <li class="active"><a href="#/singleData/I130"><label style="color:blue">精整批次爐鋼種捲數製程碼對應表</label></a></li>
+        </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+  <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+    <table>
+      <tr>
+        <td>
+          <button
+          nz-button
+          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+          nzType="primary"
+          [nzSize]="'large'"
+          (click)="openWashInput()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+          </button>
+        </td>
+      </tr>
+    </table>
+    <p></p><p></p>
+
+    <div nz-col [nzSpan]="25">
+      <nz-table #RowTable20 nzBordered [nzData]="displayPPSINP20List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+        <thead>
+        <tr>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+          >機台
+          <nz-filter-trigger 
+          [nzActive]="searchEquipCode20Value.length > 0" 
+          [nzDropdownMenu]="equipCode20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
+          >產品種類
+          <nz-filter-trigger 
+          [nzActive]="searchKindType20Value.length > 0" 
+          [nzDropdownMenu]="kindType20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+          >產出型態
+          <nz-filter-trigger 
+          [nzActive]="searchOutputShape20Value.length > 0" 
+          [nzDropdownMenu]="outputShape20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+          >製程碼
+          <nz-filter-trigger 
+          [nzActive]="searchProcessCode20Value.length > 0" 
+          [nzDropdownMenu]="processCode20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+          >FINAL_製程
+          <nz-filter-trigger 
+          [nzActive]="searchFinalProcess20Value.length > 0" 
+          [nzDropdownMenu]="finalProcess20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+          >抽數別
+          <nz-filter-trigger 
+          [nzActive]="searchScheType20Value.length > 0" 
+          [nzDropdownMenu]="scheType20Menu">
+          <span nz-icon nzType="search"></span>
+          </nz-filter-trigger>
+          </th>
+          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of RowTable20.data;let i = index" class="editable-row">
+          <ng-container *ngIf="!editCache20[data.id].edit; else editTemplate1">
+            <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE_20 }}</td>
+            <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.KIND_TYPE_20 }}</td>
+            <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OUTPUT_SHAPE_20 }}</td>
+            <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.PROCESS_CODE_20 }}</td>
+            <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FINAL_PROCESS_20 }}</td>
+            <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SCHE_TYPE_20 }}</td>
+            <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+              <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+              <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
+            </td>
+          </ng-container>
+          <ng-template #editTemplate1>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache20[data.id].data.EQUIP_CODE_20" />
+            </td>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入產品種類" [(ngModel)]="editCache20[data.id].data.KIND_TYPE_20" />
+            </td>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache20[data.id].data.OUTPUT_SHAPE_20" />
+            </td>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入製程碼" [(ngModel)]="editCache20[data.id].data.PROCESS_CODE_20" />
+            </td>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入FINAL_製程" [(ngModel)]="editCache20[data.id].data.FINAL_PROCESS_20" />
+            </td>
+            <td>
+              <input nz-width="20%" nz-input placeholder="輸入抽數別" [(ngModel)]="editCache20[data.id].data.SCHE_TYPE_20" />
+            </td>
+            <td>
+              <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+              <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
+            </td>
+          </ng-template>
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+
+</nz-content>
+
+
+
+<!-- 清洗站設備能力表 -->
+<nz-modal
+  [(nzVisible)]="isVisibleWash"
+  [nzWidth]="800"
+  [nzContent]="washInputContent"
+  [nzFooter]="washInputFooter"
+  (nzOnCancel)="cancelWashInput()">
+
+  <ng-template #washInputContent>
+    <div>
+      <table style="border-collapse: separate;">
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_20" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;輸入產品種類</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產品種類" [(ngModel)]="KIND_TYPE_20" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出型態</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出型態" [(ngModel)]="OUTPUT_SHAPE_20" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;製程碼</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入製程碼" [(ngModel)]="PROCESS_CODE_20" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;FINAL_製程</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入FINAL_製程" [(ngModel)]="FINAL_PROCESS_20" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;抽數別</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入抽數別" [(ngModel)]="SCHE_TYPE_20" />
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    
+  </ng-template>
+
+  <ng-template #washInputFooter>
+    <button nz-button nzType="default" (click)="cancelWashInput()">取消新增</button>
+    <button nz-button nzType="primary" (click)="insertTab()">確定</button>
+  </ng-template>
+
+</nz-modal>
+
+<nz-dropdown-menu #equipCode20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchEquipCode20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipCode20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByEquipCode20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #kindType20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchKindType20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByKindType20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByKindType20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #outputShape20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchOutputShape20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByOutputShape20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByOutputShape20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #processCode20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchProcessCode20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByProcessCode20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByProcessCode20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #finalProcess20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchFinalProcess20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByFinalProcess20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByFinalProcess20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #scheType20Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchScheType20Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByScheType20()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByScheType20()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

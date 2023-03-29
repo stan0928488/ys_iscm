@@ -45,11 +45,15 @@ import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
 import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
 import { PPSI102_NonBarComponent } from "./pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component";
 import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
+import { PPSI103_NonBarComponent } from "./pages/PPS/PPSI103_NonBar/PPSI103_NonBar.component";
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
+import { PPSI104_NonBarComponent } from "./pages/PPS/PPSI104_NonBar/PPSI104_NonBar.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
 import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
+import { PPSI107_NonBarComponent } from "./pages/PPS/PPSI107_NonBar/PPSI107_NonBar.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
+import { PPSI108_NonBarComponent } from "./pages/PPS/PPSI108_NonBar/PPSI108_NonBar.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
@@ -57,6 +61,7 @@ import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
 import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
 import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
+import { PPSI130Component } from "./pages/PPS/PPSI130/PPSI130.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -115,11 +120,15 @@ registerLocaleData(zh);
     PPSI102Component,
     PPSI102_NonBarComponent,
     PPSI103Component,
+    PPSI103_NonBarComponent,
     PPSI104Component,
+    PPSI104_NonBarComponent,
     PPSI105Component,
     PPSI106Component,
     PPSI107Component,
+    PPSI107_NonBarComponent,
     PPSI108Component,
+    PPSI108_NonBarComponent,
     PPSI109Component,
     PPSI110Component,
     PPSI111Component,
@@ -127,6 +136,7 @@ registerLocaleData(zh);
     PPSI121Component,
     PPSI122Component,
     PPSI123Component,
+    PPSI130Component,
     PPSI200Component,
     PPSI201Component,
     PPSI202Component,

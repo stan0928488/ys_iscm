@@ -135,33 +135,48 @@ export class PPSService {
 
   // 2.機台能力
   //Get getPPSINP02List 取得02tab data
-  getPPSINP02List() {
-    console.log("api service getPPSINP02List")
-    let queryUrl = this.APIURL + "/FCP/I102/getPPSINP02List";
+  getPPSINP02List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/getPPSINP02List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   } 
   // I102 delI102Tab1Data 刪除資料
-  delI102Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I102/delI102Tab1Data/${_ID}`;
+  delI102Tab1Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
   // I102 insertI102Tab1Save
-  insertI102Tab1Save(_data) {
+  insertI102Tab1Save(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I102/insertI102Tab1Save`;
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
-    console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I102 updateI102Tab1Save修改存檔
-  updateI102Tab1Save(_data) {
+  updateI102Tab1Save(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I102/updateI102Tab1Save`;
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/updateSave`;
     console.log(queryUrl);
-    console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // I102 importI102Excel EXCEL匯入
+  importI102Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/importExcel`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 
 
   //Get getPPSINP03List 取得03tab data

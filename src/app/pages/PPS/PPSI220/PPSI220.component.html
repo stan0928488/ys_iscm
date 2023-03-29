@@ -108,7 +108,9 @@
 
 
               <p> {{ data.PLAN_STATU_NA}}
-                  <label *ngIf="data.PLAN_STATU === 'Plan'" style="color: rgb(48, 84, 229);"> - 執行中</label>
+                  <label *ngIf="data.PLAN_STATU === 'Plan'" style="color: rgb(48, 84, 229);"> - 執行中
+                    <button *ngIf="byUserShow" nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button>
+                    </label>
                   <label *ngIf="data.PLAN_STATU === 'Fail'" style="color: red;"> - 執行失敗</label>
               </p>
               <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">
@@ -122,7 +124,6 @@
 
               <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.PLAN_EDITION)">
                 <span nz-icon nzType="history" nzTheme="outline"></span>  歷程</label>
-
             </td>
             <td style="font-size: 11px; padding: 4px;">{{data.SCHEDULE_FLAG_NA}} <p>{{dateFormat(data.SCHEDULE_TIME, '1')}}<label *ngIf="data.SCHEDULE_TIME !== undefined"><br><label *ngIf="data.SCHEDULE_DONE !== 'Y'">(下次執行時間)</label></label></p></td>
             <td style="font-size: 11px; padding: 4px;">{{data.MO_EDITION_NA}}<p> MO 區間：{{data.LPST_FLAG_NA}} </td>
