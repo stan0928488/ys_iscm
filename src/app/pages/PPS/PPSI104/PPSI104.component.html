@@ -123,7 +123,7 @@
               <ng-container *ngIf="!editCache3[data.id].edit; else editTemplate1">
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.LOAD_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OTHER_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BIG_ADJUST_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TIME | number }}</td>

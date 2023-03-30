@@ -35,18 +35,38 @@
         非直棒
       </a>
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
-
         <table>
           <tr>
-            <td>
+            <td style="text-align:left;width:70%">
               <button
-              nz-button
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-              nzType="primary"
-              [nzSize]="'large'"
-              (click)="openPrepareInput()"
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                [nzSize]="'large'"
+                (click)="openPrepareInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
+              </button>
+            </td>
+            <td style="text-align:right;width:40%">
+              &nbsp;&nbsp;
+              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="Upload()"
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+              </button>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="convertToExcel()"
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
               </button>
             </td>
           </tr>
@@ -54,10 +74,18 @@
         <p></p><p></p>
 
         <div nz-col [nzSpan]="25">
-          <nz-table #RowTable3 nzBordered [nzData]="displayPPSINP03List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+          <nz-table #RowTable nzBordered [nzData]="displayPPSINP03List" [nzPageSize]="20" [nzScroll]="{y: '500px' }">
             <thead>
             <tr>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >站別
+              <nz-filter-trigger 
+              [nzActive]="searchShopCodeValue.length > 0" 
+              [nzDropdownMenu]="shopCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
               >機台
               <nz-filter-trigger 
               [nzActive]="searchEquipCodeValue.length > 0" 
@@ -65,109 +93,125 @@
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-              >上下料
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >機群
+              <nz-filter-trigger 
+              [nzActive]="searchEquipGroupValue.length > 0" 
+              [nzDropdownMenu]="equipGroupMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >上下料時間
               <nz-filter-trigger 
               [nzActive]="searchLoadTimeValue.length > 0" 
               [nzDropdownMenu]="loadTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >搬運
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >搬運時間
               <nz-filter-trigger 
               [nzActive]="searchTransferTimeValue.length > 0" 
               [nzDropdownMenu]="transferTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >其他整備
-              <nz-filter-trigger 
-              [nzActive]="searchOtherTimeValue.length > 0" 
-              [nzDropdownMenu]="otherTimeMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >大調機
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >大調機時間
               <nz-filter-trigger 
               [nzActive]="searchBigAdjustTimeValue.length > 0" 
               [nzDropdownMenu]="bigAdjustTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >小調機
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >小調機時間
               <nz-filter-trigger 
               [nzActive]="searchSmallAdjustTimeValue.length > 0" 
               [nzDropdownMenu]="smallAdjustTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >退料
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >退料時間
               <nz-filter-trigger 
               [nzActive]="searchReturnTimeValue.length > 0" 
               [nzDropdownMenu]="returnTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >冷卻
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >冷卻時間
               <nz-filter-trigger 
               [nzActive]="searchCoolingTimeValue.length > 0" 
               [nzDropdownMenu]="coolingTimeMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+              >其他整備時間
+              <nz-filter-trigger 
+              [nzActive]="searchOtherTimeValue.length > 0" 
+              [nzDropdownMenu]="otherTimeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let data of RowTable3.data;let i = index" class="editable-row">
-              <ng-container *ngIf="!editCache3[data.id].edit; else editTemplate1">
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.LOAD_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OTHER_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BIG_ADJUST_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.RETURN_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.COOLING_TIME | number }}</td>
-                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
-                  <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
+            <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache[data.idx].edit; else editTemplate">
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.SHOP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.EQUIP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.EQUIP_GROUP }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.LOAD_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.TRANSFER_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.BIG_ADJUST_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.SMALL_ADJUST_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.RETURN_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.COOLING_TIME | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.OTHER_TIME | number }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px;">
+                  <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.idx)">刪除</a>
                 </td>
               </ng-container>
-              <ng-template #editTemplate1>
+              <ng-template #editTemplate>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache3[data.id].data.EQUIP_CODE" />
+                  <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache[data.idx].data.SHOP_CODE" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="上下料時間" [(ngModel)]="editCache3[data.id].data.LOAD_TIME" />
+                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache[data.idx].data.EQUIP_CODE" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="搬運時間" [(ngModel)]="editCache3[data.id].data.TRANSFER_TIME" />
+                  <input nz-width="20%" nz-input placeholder="輸入機群" [(ngModel)]="editCache[data.idx].data.EQUIP_GROUP" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="其他整備時間" [(ngModel)]="editCache3[data.id].data.OTHER_TIME" />
+                  <input nz-width="20%" nz-input placeholder="上下料時間" [(ngModel)]="editCache[data.idx].data.LOAD_TIME" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="大調機時間" [(ngModel)]="editCache3[data.id].data.BIG_ADJUST_TIME" />
+                  <input nz-width="20%" nz-input placeholder="搬運時間" [(ngModel)]="editCache[data.idx].data.TRANSFER_TIME" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="小調機時間" [(ngModel)]="editCache3[data.id].data.SMALL_ADJUST_TIME" />
+                  <input nz-width="20%" nz-input placeholder="大調機時間" [(ngModel)]="editCache[data.idx].data.BIG_ADJUST_TIME" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="退料時間" [(ngModel)]="editCache3[data.id].data.RETURN_TIME" />
+                  <input nz-width="20%" nz-input placeholder="小調機時間" [(ngModel)]="editCache[data.idx].data.SMALL_ADJUST_TIME" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="冷卻時間" [(ngModel)]="editCache3[data.id].data.COOLING_TIME" />
+                  <input nz-width="20%" nz-input placeholder="退料時間" [(ngModel)]="editCache[data.idx].data.RETURN_TIME" />
                 </td>
                 <td>
-                  <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
+                  <input nz-width="20%" nz-input placeholder="冷卻時間" [(ngModel)]="editCache[data.idx].data.COOLING_TIME" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="其他整備時間" [(ngModel)]="editCache[data.idx].data.OTHER_TIME" />
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.idx)">取消</a>
                 </td>
               </ng-template>
             </tr>
@@ -186,89 +230,105 @@
 <!-- 整備時間新增 -->
 <nz-modal
   [(nzVisible)]="isVisiblePrepare"
-  [nzWidth]="800"
+  [nzWidth]="850"
+  [nzTitle]="repareTitle"
   [nzContent]="prepareInputContent"
   [nzFooter]="prepareInputFooter"
   (nzOnCancel)="cancelPrepareInput()">
 
+  <ng-template #repareTitle>新增整備時間</ng-template>
   <ng-template #prepareInputContent>
     <div>
       <table style="border-collapse: separate;">
-
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入站別" [(ngModel)]="SHOP_CODE" />
+          </td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE" />
+          </td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機群</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入機群" [(ngModel)]="EQUIP_GROUP" />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;上下料</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;上下料時間</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="上下料時間" [(ngModel)]="LOAD_TIME" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入上下料時間" [(ngModel)]="LOAD_TIME" />
+          </td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;搬運時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入搬運時間" [(ngModel)]="TRANSFER_TIME" />
+          </td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;其他整備時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入其他整備時間" [(ngModel)]="OTHER_TIME" />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;搬運</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;大調機時間</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="搬運時間" [(ngModel)]="TRANSFER_TIME" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入大調機時間" [(ngModel)]="BIG_ADJUST_TIME" />
           </td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;小調機時間</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入小調機時間" [(ngModel)]="SMALL_ADJUST_TIME" />
+          </td>
+          <td style = "width: 600px; background-color: #eee;" colspan="2"></td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;整備時間</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;退料時間</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="其他整備時間" [(ngModel)]="OTHER_TIME" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入退料時間" [(ngModel)]="RETURN_TIME" />
           </td>
-        </tr>
-
-        <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;大調機</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;冷卻時間</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="大調機時間" [(ngModel)]="BIG_ADJUST_TIME" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入冷卻時間" [(ngModel)]="COOLING_TIME" />
           </td>
-        </tr>
-
-        <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;小調機</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="小調機時間" [(ngModel)]="SMALL_ADJUST_TIME" />
-          </td>
-        </tr>
-
-        <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;退料</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="退料時間" [(ngModel)]="RETURN_TIME" />
-          </td>
-        </tr>
-
-        <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;冷卻</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="冷卻時間" [(ngModel)]="COOLING_TIME" />
-          </td>
+          <td style = "width: 600px; background-color: #eee;" colspan="2"></td>
         </tr>
 
       </table>
     </div>
-    
   </ng-template>
-
   <ng-template #prepareInputFooter>
     <button nz-button nzType="default" (click)="cancelPrepareInput()">取消新增</button>
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
-
 </nz-modal>
 
+
+<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchShopCode()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
 <nz-dropdown-menu #equipCodeMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchEquipCodeValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchEquipCode()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #equipGroupMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchEquipGroup()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByEquipGroup()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -289,16 +349,6 @@
       <input type="text" nz-input [(ngModel)]="searchTransferTimeValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByTransferTime()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByTransferTime()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #otherTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchOtherTimeValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByOtherTime()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByOtherTime()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -342,3 +392,14 @@
     </div>
   </div>
 </nz-dropdown-menu>
+
+<nz-dropdown-menu #otherTimeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchOtherTimeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByOtherTime()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByOtherTime()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
