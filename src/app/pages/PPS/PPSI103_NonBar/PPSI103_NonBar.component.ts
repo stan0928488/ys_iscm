@@ -49,7 +49,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   SHOP_CODE = '';
   STEEL_TYPE = '';
   DIA_MIN = 0;
-  DIA_MAX = 0;
+  DIA_MAX = 999;
   PACK_CODE = '';
   BEST_MACHINE = '';
   MACHINE1 = '';
@@ -91,7 +91,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
     this.SHOP_CODE = '';
     this.STEEL_TYPE = '';
     this.DIA_MIN = 0;
-    this.DIA_MAX = 0;
+    this.DIA_MAX = 999;
     this.PACK_CODE = '';
     this.BEST_MACHINE = '';
     this.MACHINE1 = '';
@@ -147,16 +147,16 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.SHOP_CODE === undefined) {
+    if (this.SHOP_CODE === "") {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.STEEL_TYPE === undefined) {
+    } else if (this.STEEL_TYPE === "") {
       myObj.message.create("error", "「鋼種」不可為空")
     } else if (this.DIA_MIN === undefined) {
       myObj.message.create("error", "「尺寸MIN」不可為空")
     } else if (this.DIA_MAX === undefined) {
       myObj.message.create("error", "「尺寸MAX」不可為空")
-    } else if (this.BEST_MACHINE === undefined) {
+    } else if (this.BEST_MACHINE === "") {
       myObj.message.create("error", "「最佳機台」不可為空")
     } else {
       this.Modal.confirm({
@@ -434,7 +434,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   // EXCEL 匯入樣版檢查
   checkTemplate(worksheet, importdata) {
     if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-        worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined) {
+        worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined || worksheet.J1 === undefined) {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -478,8 +478,8 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
         let plantCode = _data[i].廠區別.toString();
         let shopCode = _data[i].站別.toString();
         let steelType = _data[i].鋼種.toString();
-        let diaMin = _data[i].尺寸MIN.toString();
-        let diaMax = _data[i].尺寸MAX.toString();
+        let diaMin = _data[i].尺寸MIN !== undefined ? _data[i].尺寸MIN.toString() : '0';
+        let diaMax = _data[i].尺寸MAX !== undefined ? _data[i].尺寸MAX.toString() : '999';
         let bestMachine = _data[i].最佳機台.toString();
         let machine1 = _data[i].替代機台1 !== undefined ? _data[i].替代機台1.toString() : '';
         let machine2 = _data[i].替代機台2 !== undefined ? _data[i].替代機台2.toString() : '';

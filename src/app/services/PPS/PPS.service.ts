@@ -142,13 +142,6 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   } 
-  // I102 delI102Tab1Data 刪除資料
-  delI102Tab1Data(_type, _ID) {
-    let nonbarUrl = "";
-    if(_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/delData/${_ID}`;
-    return this.http.post(queryUrl, "", this.httpOptions);
-  }
   // I102 insertI102Tab1Save
   insertI102Tab1Save(_type, _data) {
     const body = JSON.stringify(_data);
@@ -167,6 +160,13 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // I102 delI102Tab1Data 刪除資料
+  delI102Tab1Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/delData/${_ID}`;
+    return this.http.post(queryUrl, "", this.httpOptions);
+  }
   // I102 importI102Excel EXCEL匯入
   importI102Excel(_type, _data) {
     const body = JSON.stringify(_data);
@@ -180,36 +180,50 @@ export class PPSService {
 
 
   //Get getPPSINP03List 取得03tab data
-  getPPSINP03List() {
-    console.log("api service getPPSINP03List")
-    let queryUrl = this.APIURL + "/FCP/I103/getPPSINP03List";
+  getPPSINP03List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/getPPSINP03List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-
+  // I103 insertSave
+  insertI103Tab1Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/insertSave`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I103 updateI103Tab1Save修改存檔
+  updateI103Tab1Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/updateSave`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   // I103 delI103Tab1Data 刪除資料
-  delI103Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I103/delI103Tab1Data/${_ID}`;
+  delI103Tab1Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
-
-  // I103 insertI103Tab1Save
-  insertI103Tab1Save(_data) {
+  // I103 importI103Excel EXCEL匯入
+  importI103Excel(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I103/insertI103Tab1Save`;
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I103 updateI103Tab1Save修改存檔
-  updateI103Tab1Save(_data) {
-    const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I103/updateI103Tab1Save`;
-    console.log(queryUrl);
-    console.log(body);
-    return this.http.post(queryUrl, body, this.httpOptions);
-  }
+  
+
   // 4.大調機
   //Get getPPSINP04List 取得04tab data
   getPPSINP04List() {
