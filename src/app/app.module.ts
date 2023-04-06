@@ -49,14 +49,19 @@ import { PPSI103_NonBarComponent } from "./pages/PPS/PPSI103_NonBar/PPSI103_NonB
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
 import { PPSI104_NonBarComponent } from "./pages/PPS/PPSI104_NonBar/PPSI104_NonBar.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
+import { PPSI105_NonBarComponent } from "./pages/PPS/PPSI105_NonBar/PPSI105_NonBar.component";
 import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
+import { PPSI106_NonBarComponent } from "./pages/PPS/PPSI106_NonBar/PPSI106_NonBar.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
 import { PPSI107_NonBarComponent } from "./pages/PPS/PPSI107_NonBar/PPSI107_NonBar.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
 import { PPSI108_NonBarComponent } from "./pages/PPS/PPSI108_NonBar/PPSI108_NonBar.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
+import { PPSI109_NonBarComponent } from "./pages/PPS/PPSI109_NonBar/PPSI109_NonBar.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
+import { PPSI110_NonBarComponent } from "./pages/PPS/PPSI110_NonBar/PPSI110_NonBar.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
+import { PPSI111_NonBarComponent } from "./pages/PPS/PPSI111_NonBar/PPSI111_NonBar.component";
 import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
 import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
@@ -124,14 +129,19 @@ registerLocaleData(zh);
     PPSI104Component,
     PPSI104_NonBarComponent,
     PPSI105Component,
+    PPSI105_NonBarComponent,
     PPSI106Component,
+    PPSI106_NonBarComponent,
     PPSI107Component,
     PPSI107_NonBarComponent,
     PPSI108Component,
     PPSI108_NonBarComponent,
     PPSI109Component,
+    PPSI109_NonBarComponent,
     PPSI110Component,
+    PPSI110_NonBarComponent,
     PPSI111Component,
+    PPSI111_NonBarComponent,
     PPSI120Component,
     PPSI121Component,
     PPSI122Component,

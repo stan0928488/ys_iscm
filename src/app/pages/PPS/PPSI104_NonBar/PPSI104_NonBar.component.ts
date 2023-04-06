@@ -372,7 +372,7 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     let titleArray = [];
     if(this.PPSINP03List.length > 0) {
       data = this.formatDataForExcel(this.PPSINP03List);
-      fileName = `非直棒設備能力`;
+      fileName = `非直棒整備時間`;
       titleArray = ['廠區別', '站別', '機台', '機群', '上下料時間', '搬運時間', '大調機時間', '小調機時間', '退料時間', '冷卻時間', '其他整備時間'];
     } else {
       this.errorMSG("匯出失敗", "非直棒整備時間目前無資料");

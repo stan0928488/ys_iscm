@@ -367,7 +367,7 @@
                 </ul>
               </li>
 
-              <li nz-submenu nzTitle="排程設定" nzIcon="file-text">
+              <li nz-submenu nzTitle="排程設定" nzIcon="setting">
                 <ul>
                   <li nz-menu-item>
                     <a [routerLink]="['/MSHPlan/P001']">
@@ -380,6 +380,32 @@
             </ul>
           </li>
 
+          <!-- 實驗室工時 LAB -->
+          <li nz-submenu nzTitle="實驗室工時" nzIcon="hourglass">
+            <ul>
+              
+              <li nz-submenu nzTitle="靜態基本資料" nzIcon="file-text">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/LABSet/I001']">
+                      靜態基本資料
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li nz-submenu nzTitle="實驗工時相關表" nzIcon="table">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/LABSet/R001']">
+                      MO擷取表
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              
+            </ul>
+          </li>
           
       <!-- 先關閉，待其他模塊執行後再打開 
         </ul>

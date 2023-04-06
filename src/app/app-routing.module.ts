@@ -28,14 +28,19 @@ import { PPSI103_NonBarComponent } from "./pages/PPS/PPSI103_NonBar/PPSI103_NonB
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
 import { PPSI104_NonBarComponent } from "./pages/PPS/PPSI104_NonBar/PPSI104_NonBar.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
+import { PPSI105_NonBarComponent } from "./pages/PPS/PPSI105_NonBar/PPSI105_NonBar.component";
 import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
+import { PPSI106_NonBarComponent } from "./pages/PPS/PPSI106_NonBar/PPSI106_NonBar.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
 import { PPSI107_NonBarComponent } from "./pages/PPS/PPSI107_NonBar/PPSI107_NonBar.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
 import { PPSI108_NonBarComponent } from "./pages/PPS/PPSI108_NonBar/PPSI108_NonBar.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
+import { PPSI109_NonBarComponent } from "./pages/PPS/PPSI109_NonBar/PPSI109_NonBar.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
+import { PPSI110_NonBarComponent } from "./pages/PPS/PPSI110_NonBar/PPSI110_NonBar.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
+import { PPSI111_NonBarComponent } from "./pages/PPS/PPSI111_NonBar/PPSI111_NonBar.component";
 import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
 import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
@@ -143,14 +148,19 @@ const routes: Routes = [
       { path: "I104", component: PPSI104Component },
       { path: "I104_NonBar", component: PPSI104_NonBarComponent },
       { path: "I105", component: PPSI105Component },
+      { path: "I105_NonBar", component: PPSI105_NonBarComponent },
       { path: "I106", component: PPSI106Component },
+      { path: "I106_NonBar", component: PPSI106_NonBarComponent },
       { path: "I107", component: PPSI107Component },
       { path: "I107_NonBar", component: PPSI107_NonBarComponent },
       { path: "I108", component: PPSI108Component },
       { path: "I108_NonBar", component: PPSI108_NonBarComponent },
       { path: "I109", component: PPSI109Component },
+      { path: "I109_NonBar", component: PPSI109_NonBarComponent },
       { path: "I110", component: PPSI110Component },
+      { path: "I110_NonBar", component: PPSI110_NonBarComponent },
       { path: "I111", component: PPSI111Component },
+      { path: "I111_NonBar", component: PPSI111_NonBarComponent },
       { path: "I200", component: PPSI200Component }
     ],
     canActivate: [AuthGuard]

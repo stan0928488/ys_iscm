@@ -62,6 +62,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   searchSteelTypeValue = '';
   searchDiaMinValue = '';
   searchDiaMaxValue = '';
+  searchPackCodeValue = '';
   searchBestMachineValue = '';
   searchMachine1Value = '';
   searchMachine2Value = '';
@@ -350,7 +351,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
     if(this.PPSINP02List.length > 0) {
       data = this.formatDataForExcel(this.PPSINP02List);
       fileName = `非直棒設備能力`;
-      titleArray = ['廠區別', '站別', '鋼種', '尺寸MIN', '尺寸MAX', '最佳機台', '替代機台1', '替代機台2', '替代機台3', '備註'];
+      titleArray = ['廠區別', '站別', '鋼種', '尺寸MIN', '尺寸MAX', '包裝碼', '最佳機台', '替代機台1', '替代機台2', '替代機台3', '備註'];
     } else {
       this.errorMSG("匯出失敗", "非直棒設備能力表目前無資料");
       return;
@@ -369,6 +370,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
         STEEL_TYPE: _.get(item, "STEEL_TYPE"),
         DIA_MIN: _.get(item, "DIA_MIN"),
         DIA_MAX: _.get(item, "DIA_MAX"),
+        PACK_CODE: _.get(item, "PACK_CODE"),
         BEST_MACHINE: _.get(item, "BEST_MACHINE"),
         MACHINE1: _.get(item, "MACHINE1"),
         MACHINE2: _.get(item, "MACHINE2"),
@@ -433,13 +435,13 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
 
   // EXCEL 匯入樣版檢查
   checkTemplate(worksheet, importdata) {
-    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-        worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined || worksheet.J1 === undefined) {
+    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined || worksheet.F1 === undefined ||
+        worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined || worksheet.J1 === undefined || worksheet.K1 === undefined) {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
-    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "鋼種" || worksheet.D1.v !== "尺寸MIN" || worksheet.E1.v !== "尺寸MAX" || 
-        worksheet.F1.v !== "最佳機台" || worksheet.G1.v !== "替代機台1" || worksheet.H1.v !== "替代機台2" || worksheet.I1.v !== "替代機台3" || worksheet.J1.v !== "備註") {
+    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "鋼種" || worksheet.D1.v !== "尺寸MIN" || worksheet.E1.v !== "尺寸MAX" ||  worksheet.F1.v !== "包裝碼" || 
+        worksheet.G1.v !== "最佳機台" || worksheet.H1.v !== "替代機台1" || worksheet.I1.v !== "替代機台2" || worksheet.J1.v !== "替代機台3" || worksheet.K1.v !== "備註") {
       this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -457,6 +459,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
       let steelType = _data[i].鋼種;
       let diaMin = _data[i].尺寸MIN;
       let diaMax = _data[i].尺寸MAX;
+      let packCode = _data[i].包裝碼;
       let bestMachine = _data[i].最佳機台;
       if(plantCode === undefined || shopCode === undefined || steelType === undefined || diaMin === undefined || diaMax === undefined || bestMachine === undefined) {
         let col = i+2;
@@ -480,13 +483,14 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
         let steelType = _data[i].鋼種.toString();
         let diaMin = _data[i].尺寸MIN !== undefined ? _data[i].尺寸MIN.toString() : '0';
         let diaMax = _data[i].尺寸MAX !== undefined ? _data[i].尺寸MAX.toString() : '999';
+        let packCode = _data[i].包裝碼 !== undefined ? _data[i].包裝碼.toString() : '';
         let bestMachine = _data[i].最佳機台.toString();
         let machine1 = _data[i].替代機台1 !== undefined ? _data[i].替代機台1.toString() : '';
         let machine2 = _data[i].替代機台2 !== undefined ? _data[i].替代機台2.toString() : '';
         let machine3 = _data[i].替代機台3 !== undefined ? _data[i].替代機台3.toString() : '';
         let comment = _data[i].備註 !== undefined ? _data[i].備註.toString() : '';
 
-        this.importdata_new.push({plantCode: plantCode, shopCode: shopCode, steelType: steelType, diaMin: diaMin, diaMax: diaMax,
+        this.importdata_new.push({plantCode: plantCode, shopCode: shopCode, steelType: steelType, diaMin: diaMin, diaMax: diaMax, packCode: packCode,
               bestMachine: bestMachine, machine1: machine1, machine2: machine2, machine3: machine3, comment: comment});
       }
 
@@ -611,6 +615,15 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   resetByDiaMax() : void{
     this.searchDiaMaxValue = '';
     this.ppsInp02ListFilter("DIA_MAX", this.searchDiaMaxValue);
+  }
+
+  // 資料過濾---設備能力 --> 包裝碼
+  searchByPackCode() : void{
+    this.ppsInp02ListFilter("PACK_CODE", this.searchPackCodeValue);
+  } 
+  resetByPackCode() : void{
+    this.searchPackCodeValue = '';
+    this.ppsInp02ListFilter("PACK_CODE", this.searchPackCodeValue);
   }
 
   // 資料過濾---設備能力 --> 最佳機台

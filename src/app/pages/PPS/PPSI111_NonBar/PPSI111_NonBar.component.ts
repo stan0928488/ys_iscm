@@ -22,12 +22,12 @@ interface ItemData {
 
 
 @Component({
-  selector: "app-PPSI110",
-  templateUrl: "./PPSI110.component.html",
-  styleUrls: ["./PPSI110.component.scss"],
+  selector: "app-PPSI111_NonBar",
+  templateUrl: "./PPSI111_NonBar.component.html",
+  styleUrls: ["./PPSI111_NonBar.component.scss"],
   providers:[NzMessageService]
 })
-export class PPSI110Component implements AfterViewInit {
+export class PPSI111_NonBarComponent implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -119,7 +119,7 @@ export class PPSI110Component implements AfterViewInit {
   getTbppsm013List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getTbppsm013List('1').subscribe(res => {
+    this.PPSService.getTbppsm013List('2').subscribe(res => {
       this.tbppsm013Tmp = res;
       const data = [];
       for (let i = 0; i < this.tbppsm013Tmp.length ; i++) {
@@ -244,7 +244,7 @@ export class PPSI110Component implements AfterViewInit {
         userName : this.userName
       })
 
-      myObj.PPSService.insertI106Save('1', obj).subscribe(res => {
+      myObj.PPSService.insertI106Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.getTbppsm013List();
@@ -277,7 +277,7 @@ export class PPSI110Component implements AfterViewInit {
         equipQuanity : this.editCache[_id].data.equipQuanity,
         userName : this.userName
       })
-      myObj.PPSService.updateI106Save('1', obj).subscribe(res => {
+      myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
@@ -301,7 +301,7 @@ export class PPSI110Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI106Data('1', id).subscribe(res => {
+      myObj.PPSService.delI106Data('2', id).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("刪除成功", ``);
@@ -323,10 +323,10 @@ export class PPSI110Component implements AfterViewInit {
     let titleArray = [];
     if(this.tbppsm013List.length > 0) {
       data = this.formatDataForExcel(this.tbppsm013List);
-      fileName = `直棒產能維護`;
+      fileName = `非直棒產能維護`;
       titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量'];
     } else {
-      this.errorMSG("匯出失敗", "直棒產能維護目前無資料");
+      this.errorMSG("匯出失敗", "非直棒產能維護目前無資料");
       return;
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
@@ -459,7 +459,7 @@ export class PPSI110Component implements AfterViewInit {
           excelData : this.importdata_new,
           userName : this.userName
         })
-        myObj.PPSService.importI106Excel('1', obj).subscribe(res => {
+        myObj.PPSService.importI106Excel('2', obj).subscribe(res => {
           if(res[0].MSG === "Y") {
             this.loading = false;
             this.LoadingPage = false;

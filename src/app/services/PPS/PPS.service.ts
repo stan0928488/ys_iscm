@@ -464,17 +464,55 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+
+  //Get getTbppsm013List 取得產能維護(管束設定)資料
+  getTbppsm013List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/getTbppsm013List`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+  // I106 insertSave
+  insertI106Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/insertSave`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I106 updateI106Save
+  updateI106Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/updateSave`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I106 delI106Data 刪除資料
+  delI106Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/delData/${_ID}`;
+    return this.http.post(queryUrl, "", this.httpOptions);
+  }
+  // I106 importI106Excel EXCEL匯入
+  importI106Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/importExcel`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+
   //Get getFCPTB26List 取得combine資料設定
   getFCPTB26List() {
     console.log("api service getFCPTB26List")
     let queryUrl = this.APIURL + "/FCP/I200/getFCPTB26List";
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
-  //Get getFCPTB28List 取得管數資料
-  getFCPTB28List() {
-    console.log("api service getFCPTB28List")
-    let queryUrl = this.APIURL + "/FCP/I200/getFCPTB28List";
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
