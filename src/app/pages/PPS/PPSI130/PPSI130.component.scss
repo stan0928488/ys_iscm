@@ -86,3 +86,13 @@ cursor: default;
 #tab-1 > ul > li.active{ border-bottom:1px solid #fff; background:rgb(228, 227, 227); font-weight: bold;}
 #tab-1 > .tab-inner1{ clear:both; color:#000; border:1px #cbfcfc solid;}
 .tab-inner{ padding:15px; height:50px;}
+
+
+//-匯入
+.ImportButton {box-shadow: 0px 10px 14px -7px #9acc85;background-color:#74ad5a; border-radius:8px; display:inline-block; cursor:pointer; color:#ffffff; font-family:Arial; font-size:20px; font-weight:bold; padding:0px 32px; text-decoration:none; text-shadow:0px 1px 0px #92b879;}
+.ImportButton:hover {background-color:#68a54b;}
+.ImportButton:active {position:relative;top:1px;}
+//-匯出
+.ExportButton {box-shadow: 0px 10px 14px -7px #caefab; background-color:#77d42a; border-radius:8px; display:inline-block; cursor:pointer; color:#306108; font-family:Arial; font-size:20px; font-weight:bold; padding:0px 32px; text-decoration:none; text-shadow:0px 1px 0px #aade7c;}
+.ExportButton:hover {background-color:#5cb811;}
+.ExportButton:active {position:relative;top:1px;} 
