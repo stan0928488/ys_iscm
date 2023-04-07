@@ -75,7 +75,7 @@ export class PPSI108Component implements AfterViewInit {
   getPPSINP08List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP08List().subscribe(res => {
+    this.PPSService.getPPSINP08List('1').subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP08List_tmp = res;
 
@@ -226,7 +226,7 @@ export class PPSI108Component implements AfterViewInit {
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
-      myObj.PPSService.insertI108Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.insertI108Save('1', obj).subscribe(res => {
 
         console.log(res)
         if(res[0].MSG === "Y") {
@@ -268,7 +268,7 @@ export class PPSI108Component implements AfterViewInit {
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
-      myObj.PPSService.updateI108Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.updateI108Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_8 = undefined;
           this.EQUIP_CODE_8 = undefined;
@@ -299,7 +299,7 @@ export class PPSI108Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let _ID = this.editCache8[_id].data.tab8ID;
-      myObj.PPSService.delI108Tab1Data(_ID).subscribe(res => {
+      myObj.PPSService.delI108Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_8 = undefined;
           this.EQUIP_CODE_8 = undefined;

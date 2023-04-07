@@ -46,7 +46,6 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
   searchEquipCodeValue = '';
   searchEquipGroupValue = '';
   searchGroupAmountValue = '';
-  searchTransferTimeValue = '';
   searchEquipQuanityValue = '';
 
   isErrorMsg = false;;
@@ -101,7 +100,6 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     this.searchEquipCodeValue = '';
     this.searchEquipGroupValue = '';
     this.searchGroupAmountValue = '';
-    this.searchTransferTimeValue = '';
     this.searchEquipQuanityValue = '';
     
     this.isErrorMsg = false;

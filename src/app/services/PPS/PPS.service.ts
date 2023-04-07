@@ -253,35 +253,49 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  // 05.小調機
+
+  // 05.線速工時
   //Get getPPSINP05List 取得05tab data
-  getPPSINP05List() {
-    console.log("api service getPPSINP05List")
-    let queryUrl = this.APIURL + "/FCP/I105/getPPSINP05List";
+  getPPSINP05List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/getPPSINP05List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-  // I105 delI105Tab1Data 刪除資料
-  delI105Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I105/delI105Tab1Data/${_ID}`;
+  // I105 insertI105Save
+  insertI105Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/insertSave`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I105 updateI105Save
+  updateI105Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/updateSave`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I105 delI105Data 刪除資料
+  delI105Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
-  // I105 insertI105Tab1Save
-  insertI105Tab1Save(_data) {
+  // I105 importI105Excel EXCEL匯入
+  importI105Excel(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I105/insertI105Tab1Save`;
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  // I105 updateI105Tab1Save修改存檔
-  updateI105Tab1Save(_data) {
-    const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I105/updateI105Tab1Save`;
-    console.log(queryUrl);
-    console.log(body);
-    return this.http.post(queryUrl, body, this.httpOptions);
-  }
+
    //Get getPPSINP07List
   getPPSINP07List(_type) {
     console.log("api service getPPSINP07List")
@@ -290,7 +304,6 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/getPPSINP07List`;
     return this.http.get(queryUrl);
   }
-
   // I107 insertI107Save
   insertI107Save(_type, _data) {
     const body = JSON.stringify(_data);
@@ -319,33 +332,45 @@ export class PPSService {
 
   // 8.非線速
   //Get getPPSINP08List 取得08tab data
-  getPPSINP08List() {
-    console.log("api service getPPSINP08List")
-    let queryUrl = this.APIURL + "/FCP/I108/getPPSINP08List";
-    console.log(queryUrl);
+  getPPSINP08List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
     return this.http.get(queryUrl);
   }
-  // I108 delI108Tab1Data 刪除資料
-  delI108Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I108/delI108Tab1Data/${_ID}`;
+  // I108 insertI108Save
+  insertI108Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I108 updateI108Save
+  updateI108Save(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // I108 delI108Data 刪除資料
+  delI108Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
-  // I108 insertI108Tab1Save
-  insertI108Tab1Save(_data) {
+  // I108 importI108Excel EXCEL匯入
+  importI108Excel(_type, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I108/insertI108Tab1Save`;
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  // I108 updateI108Tab1Save修改存檔
-  updateI108Tab1Save(_data) {
-    const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I108/updateI108Tab1Save`;
-    console.log(queryUrl);
-    console.log(body);
-    return this.http.post(queryUrl, body, this.httpOptions);
-  }
+
 
   // 9.退火爐工時
   //Get getPPSINP09List 取得09tab data

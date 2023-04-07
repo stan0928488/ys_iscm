@@ -1,29 +1,27 @@
 import { Component, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
-import {NzMessageService} from "ng-zorro-antd/message"
-import {NzModalService} from "ng-zorro-antd/modal"
-import * as moment from 'moment';
+import { ExcelService } from "src/app/services/common/excel.service";
+import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
+import {NzMessageService} from "ng-zorro-antd/message";
+import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
+import * as XLSX from 'xlsx';
 
 
-
-interface ItemData05 {
-  id: string;
-  tab5ID: number;
-  SHOP_CODE_5: string;
-  EQUIP_CODE_5: string;
-  SHAPE_TYPE_5: string;
-  GRADE_GROUP_5: string;
-  SPEED_TYPE_5: string;
-  REDUCTION_RATE_MIN_5: number;
-  REDUCTION_RATE_MAX_5: number;
-  DIA_MAX_5: number;
-  DIA_MIN_5: number;
-  SPEED_5: number;
-  EQUIP_CAP_5: number;
+interface ItemData {
+  idx: number;
+  id: number;
+  plantCode: string;
+  schShopCode: string;
+  equipCode: string;
+  equipGroup: string;
+  equipProcessCode: string;
+  diaMin: number;
+  diaMax: number;
+  wkSpeed: number;
 }
+
 
 @Component({
   selector: "app-PPSI107_NonBar",
@@ -35,130 +33,138 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
-  USERNAME;
-  PLANT_CODE;
+  userName;
+  plantCode;
 
+  // 線速工時
+  schShopCode = '';
+  equipCode = '';
+  equipGroup = '';
+  equipProcessCode = '';
+  diaMin = 0;
+  diaMax = 0;
+  wkSpeed = 0;
 
-  // 線速
-  SHOP_CODE_5;
-  EQUIP_CODE_5;
-  SHAPE_TYPE_5;
-  GRADE_GROUP_5;
-  SPEED_TYPE_5;
-  REDUCTION_RATE_MIN_5;
-  REDUCTION_RATE_MAX_5;
-  DIA_MAX_5;
-  DIA_MIN_5;
-  SPEED_5;
-  EQUIP_CAP_5;
   isVisibleSpeed = false;
-  searchShopCode5Value = '';
-  searchEquipCode5Value = '';
-  searchShapeType5Value = '';
-  searchGradeGroup5Value = '';
-  searchSpeedType5Value = '';
-  searchReductionRateMin5Value = '';
-  searchReductionRateMax5Value = '';
-  searchDiaMax5Value = '';
-  searchDiaMin5Value = '';
-  searchSpeed5Value = '';
-  searchEquipCap5Value = '';
+  searchSchShopCodeValue = '';
+  searchEquipCodeValue = '';
+  searchEquipGroupValue = '';
+  searchEquipProcessCodeValue = '';
+  searchDiaMinValue = '';
+  searchDiaMaxValue = '';
+  searchWkSpeedValue = '';
 
+  isErrorMsg = false;;
+  isERROR = false;
+  arrayBuffer:any;
+  file:File;
+  importdata = [];
+  importdata_new = [];
+  errorTXT = [];
 
   constructor(
     private PPSService: PPSService,
+    private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
   ) {
     this.i18n.setLocale(zh_TW);
-    this.USERNAME = this.cookieService.getCookie("USERNAME");
-    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.userName = this.cookieService.getCookie("USERNAME");
+    this.plantCode = this.cookieService.getCookie("plantCode");
   }
+
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
-    this.getPPSINP05List();
+    this.getRunFCPCount();
+    this.getPpsinptb05List();
   }
   
-  
-  PPSINP05List_tmp;
-  PPSINP05List: ItemData05[] = [];
-  editCache05: { [key: string]: { edit: boolean; data: ItemData05 } } = {};
-  displayPPSINP05List : ItemData05[] = [];
-  getPPSINP05List() {
-    this.loading = true;
-    let myObj = this;
-    this.PPSService.getPPSINP05List().subscribe(res => {
-      console.log("getFCPTB26List success 05");
-      this.PPSINP05List_tmp = res;
-      console.log("取得this.PPSINP05List_tmp");
-      console.log(this.PPSINP05List_tmp);
-      console.log("將撈出來的資料用迴圈放進data");
-      const data = [];
-      for (let i = 0; i < this.PPSINP05List_tmp.length ; i++) {
-        data.push({
-          id: `${i}`,
-          tab5ID: this.PPSINP05List_tmp[i].ID,
-          SHOP_CODE_5:this.PPSINP05List_tmp[i].SHOP_CODE,
-          EQUIP_CODE_5: this.PPSINP05List_tmp[i].EQUIP_CODE,
-          SHAPE_TYPE_5: this.PPSINP05List_tmp[i].SHAPE_TYPE,
-          GRADE_GROUP_5: this.PPSINP05List_tmp[i].GRADE_GROUP,
-          SPEED_TYPE_5: this.PPSINP05List_tmp[i].SPEED_TYPE,
-          REDUCTION_RATE_MIN_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MIN,
-          REDUCTION_RATE_MAX_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MAX,
-          DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
-          DIA_MIN_5: this.PPSINP05List_tmp[i].DIA_MIN,
-          SPEED_5: this.PPSINP05List_tmp[i].SPEED,
-          EQUIP_CAP_5: this.PPSINP05List_tmp[i].EQUIP_CAP
-        });
-      }
-      console.log("打印data");
-      console.log(data);
 
-      this.PPSINP05List = data;
-      this.displayPPSINP05List = this.PPSINP05List;
-      console.log("更新線速暫存區");
-      this.updateEditCache();
-      myObj.loading = false;
+  // 取得是否有正在執行的FCP
+  getRunFCPCount() {
+    let myObj = this;
+    this.PPSService.getRunFCPCount().subscribe(res => {
+      console.log("getRunFCPCount success");
+      if(res > 0) this.isRunFCP = true;
+
     });
   }
+
+  onInit() {
+    this.schShopCode = '';
+    this.equipCode = '';
+    this.equipGroup = '';
+    this.equipProcessCode = '';
+    this.diaMin = 0;
+    this.diaMax = 0;
+    this.wkSpeed = 0;
+  
+    this.LoadingPage = false;
+    this.isVisibleSpeed = false;
+    this.searchSchShopCodeValue = '';
+    this.searchEquipCodeValue = '';
+    this.searchEquipGroupValue = '';
+    this.searchEquipProcessCodeValue = '';
+    this.searchDiaMinValue = '';
+    this.searchDiaMaxValue = '';
+    this.searchWkSpeedValue = '';
+    
+    this.isErrorMsg = false;
+    this.importdata = [];
+    this.importdata_new = [];
+    this.isERROR = false;
+    this.errorTXT = [];
+  }
+
+  
+  ppsinptb05Tmp;
+  ppsinptb05List: ItemData[] = [];
+  editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
+  displayPpsinptb05List: ItemData[] = [];
+  getPpsinptb05List() {
+    this.loading = true;
+    let myObj = this;
+    this.PPSService.getPPSINP05List('2').subscribe(res => {
+      this.ppsinptb05Tmp = res;
+      const data = [];
+      for (let i = 0; i < this.ppsinptb05Tmp.length ; i++) {
+        data.push({
+          idx: `${i}`,
+          id: this.ppsinptb05Tmp[i].id,
+          plantCode: this.ppsinptb05Tmp[i].plantCode,
+          schShopCode: this.ppsinptb05Tmp[i].schShopCode,
+          equipCode: this.ppsinptb05Tmp[i].equipCode,
+          equipGroup: this.ppsinptb05Tmp[i].equipGroup,
+          equipProcessCode: this.ppsinptb05Tmp[i].equipProcessCode,
+          diaMin: this.ppsinptb05Tmp[i].diaMin,
+          diaMax: this.ppsinptb05Tmp[i].diaMax,
+          wkSpeed: this.ppsinptb05Tmp[i].wkSpeed
+        });
+      }
+      this.ppsinptb05List = data;
+      this.displayPpsinptb05List = this.ppsinptb05List;
+      this.updateEditCache();
+      console.log(this.ppsinptb05List);
+      myObj.loading = false;
+    });
+    
+  }
+
+ 
 
   // insert
   insertTab() {
     let myObj = this;
-    if (this.SHOP_CODE_5 === undefined) {
-      myObj.message.create("error", "「站號」不可為空");
+    if (this.schShopCode === "") {
+      myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.EQUIP_CODE_5 === undefined) {
-      myObj.message.create("error", "「機台」不可為空");
+    } else if (this.equipCode === "" && this.equipGroup === "") {
+      myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
-    }  else if (this.SHAPE_TYPE_5 === undefined) {
-      myObj.message.create("error", "「產出型態」不可為空");
-      return;
-    }   else if (this.GRADE_GROUP_5 === undefined) {
-      myObj.message.create("error", "「鋼種分類」不可為空");
-      return;
-    } else if (this.REDUCTION_RATE_MIN_5 === undefined) {
-      myObj.message.create("error", "「減面率最小值」不可為空");
-      return;
-    }   else if (this.REDUCTION_RATE_MAX_5 === undefined) {
-      myObj.message.create("error", "「減面率最大值」不可為空");
-      return;
-    }   else if (this.DIA_MAX_5 === undefined) {
-      myObj.message.create("error", "「產出最大尺寸」不可為空");
-      return;
-    } else if (this.DIA_MIN_5 === undefined) {
-      myObj.message.create("error", "「產出最小尺寸」不可為空");
-      return;
-    } else if (this.SPEED_5 === undefined) {
-      myObj.message.create("error", "「線速」不可為空");
-      return;
-    } else if (this.EQUIP_CAP_5 === undefined) {
-      myObj.message.create("error", "「日產出量」不可為空");
-      return;
-    }else {
+    } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
@@ -172,12 +178,12 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 
 
   // update
-  editRow(id: string): void {
-    this.editCache05[id].edit = true;
+  editRow(id: number): void {
+    this.editCache[id].edit = true;
   }
   
   // delete
-  deleteRow(id: string): void {
+  deleteRow(id: number): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
@@ -190,50 +196,25 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 
 
   // cancel
-  cancelEdit(id: string): void {
-    const index = this.PPSINP05List.findIndex(item => item.id === id);
-    this.editCache05[id] = {
-      data: { ...this.PPSINP05List[index] },
+  cancelEdit(id: number): void {
+    const index = this.ppsinptb05List.findIndex(item => item.idx === id);
+    this.editCache[id] = {
+      data: { ...this.ppsinptb05List[index] },
       edit: false
     };
   }
 
 
   // update Save
-  saveEdit(id: string): void {
-    console.log("更改線速表");
+  saveEdit(id: number): void {
     let myObj = this;
-    if (this.editCache05[id].data.SHOP_CODE_5 === undefined) {
-      myObj.message.create("error", "「線別」不可為空");
+    if (this.editCache[id].data.schShopCode === undefined) {
+      myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache05[id].data.EQUIP_CODE_5 === undefined) {
-      myObj.message.create("error", "「機台」不可為空");
+    } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
+      myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
-    }  else if (this.editCache05[id].data.SHAPE_TYPE_5 === undefined) {
-      myObj.message.create("error", "「產品型態」不可為空");
-      return;
-    }   else if (this.editCache05[id].data.GRADE_GROUP_5 === undefined) {
-      myObj.message.create("error", "「鋼種群組」不可為空");
-      return;
-    } else if (this.editCache05[id].data.REDUCTION_RATE_MIN_5 === undefined) {
-      myObj.message.create("error", "「減面率MIN」不可為空");
-      return;
-    }   else if (this.editCache05[id].data.REDUCTION_RATE_MAX_5 === undefined) {
-      myObj.message.create("error", "「減面率MAX」不可為空");
-      return;
-    }   else if (this.editCache05[id].data.DIA_MAX_5 === undefined) {
-      myObj.message.create("error", "「最大產出尺寸」不可為空");
-      return;
-    } else if (this.editCache05[id].data.DIA_MIN_5 === undefined) {
-      myObj.message.create("error", "「最小產出尺寸不可為空");
-      return;
-    } else if (this.editCache05[id].data.SPEED_5 === undefined) {
-      myObj.message.create("error", "「線速」不可為空");
-      return;
-    } else if (this.editCache05[id].data.EQUIP_CAP_5 === undefined) {
-      myObj.message.create("error", "「日產出量」不可為空");
-      return;}
-      else {
+    } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
@@ -248,8 +229,8 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 
   // update
   updateEditCache(): void {
-    this.PPSINP05List.forEach(item => {
-      this.editCache05[item.id] = {
+    this.ppsinptb05List.forEach(item => {
+      this.editCache[item.idx] = {
         edit: false,
         data: { ...item }
       };
@@ -262,47 +243,30 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
-
       let obj = {};
       _.extend(obj, {
-        SHOP_CODE:this.SHOP_CODE_5,
-        EQUIP_CODE:this.EQUIP_CODE_5,
-        SHAPE_TYPE:this.SHAPE_TYPE_5,
-        GRADE_GROUP:this.GRADE_GROUP_5,
-        SPEED_TYPE:this.SPEED_TYPE_5,
-        REDUCTION_RATE_MIN:this.REDUCTION_RATE_MIN_5,
-        REDUCTION_RATE_MAX:this.REDUCTION_RATE_MAX_5,
-        DIA_MAX:this.DIA_MAX_5,
-        DIA_MIN:this.DIA_MIN_5,
-        SPEED:this.SPEED_5,
-        EQUIP_CAP:this.EQUIP_CAP_5,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        plantCode : this.plantCode,
+        schShopCode : this.schShopCode,
+        equipCode : this.equipCode,
+        equipGroup : this.equipGroup,
+        equipProcessCode : this.equipProcessCode,
+        diaMin : this.diaMin,
+        diaMax : this.diaMax,
+        wkSpeed : this.wkSpeed,
+        userName : this.userName
       })
 
-      myObj.PPSService.insertI105Tab1Save(obj).subscribe(res => {
-        console.log(res)
+      myObj.PPSService.insertI106Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.SHOP_CODE_5 = undefined;
-          this.EQUIP_CODE_5 = undefined;
-          this.SHAPE_TYPE_5 = undefined;
-          this.GRADE_GROUP_5 = undefined;
-          this.SPEED_TYPE_5 = undefined;
-          this.REDUCTION_RATE_MIN_5 = undefined;
-          this.REDUCTION_RATE_MAX_5 = undefined;
-          this.DIA_MAX_5 = undefined;
-          this.DIA_MIN_5 = undefined;
-          this.SPEED_5 = undefined;
-          this.EQUIP_CAP_5 = undefined;
-          this.getPPSINP05List();
+          this.onInit();
+          this.getPpsinptb05List();
           this.sucessMSG("新增成功", ``);
-          this.isVisibleSpeed = false;
         } else {
           this.errorMSG("新增失敗", res[0].MSG);
         }
       },err => {
         reject('upload fail');
-        this.errorMSG("05新增失敗", "後台新增錯誤，請聯繫系統工程師");
+        this.errorMSG("新增失敗", "後台新增錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
       })
     });
@@ -316,46 +280,29 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache05[_id].data.tab5ID,
-        SHOP_CODE: this.editCache05[_id].data.SHOP_CODE_5,
-        EQUIP_CODE: this.editCache05[_id].data.EQUIP_CODE_5,
-        SHAPE_TYPE: this.editCache05[_id].data.SHAPE_TYPE_5,
-        GRADE_GROUP: this.editCache05[_id].data.GRADE_GROUP_5,
-        SPEED_TYPE: this.editCache05[_id].data.SPEED_TYPE_5,
-        REDUCTION_RATE_MIN: this.editCache05[_id].data.REDUCTION_RATE_MIN_5,
-        REDUCTION_RATE_MAX: this.editCache05[_id].data.REDUCTION_RATE_MAX_5,
-        DIA_MAX: this.editCache05[_id].data.DIA_MAX_5,
-        DIA_MIN: this.editCache05[_id].data.DIA_MIN_5,
-        SPEED: this.editCache05[_id].data.DIA_MAX_5,
-        EQUIP_CAP: this.editCache05[_id].data.DIA_MIN_5,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')})
-      
-        myObj.PPSService.updateI105Tab1Save(obj).subscribe(res => 
-        {
-          if(res[0].MSG === "Y") {
-            this.SHOP_CODE_5 = undefined;
-            this.EQUIP_CODE_5 = undefined;
-            this.SHAPE_TYPE_5 = undefined;
-            this.GRADE_GROUP_5 = undefined;
-            this.SPEED_TYPE_5 = undefined;
-            this.REDUCTION_RATE_MIN_5 = undefined;
-            this.REDUCTION_RATE_MAX_5 = undefined;
-            this.DIA_MAX_5 = undefined;
-            this.DIA_MIN_5 = undefined;
-            this.SPEED_5 = undefined;
-            this.EQUIP_CAP_5 = undefined;
-            this.getPPSINP05List();
-            this.sucessMSG("修改成功", ``);
-            const index = this.PPSINP05List.findIndex(item => item.id === _id);
-            Object.assign(this.PPSINP05List[index], this.editCache05[_id].data);
-            this.editCache05[_id].edit = false;
-          } else {
-            this.errorMSG("修改失敗", res[0].MSG);
-          }
+        id : this.editCache[_id].data.id,
+        plantCode : this.editCache[_id].data.plantCode,
+        schShopCode : this.editCache[_id].data.schShopCode,
+        equipCode : this.editCache[_id].data.equipCode,
+        equipGroup : this.editCache[_id].data.equipGroup,
+        equipProcessCode : this.editCache[_id].data.equipProcessCode,
+        diaMin : this.editCache[_id].data.diaMin,
+        diaMax : this.editCache[_id].data.diaMax,
+        wkSpeed : this.editCache[_id].data.wkSpeed,
+        userName : this.userName
+      })
+      myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
+        if(res[0].MSG === "Y") {
+          this.onInit();
+          this.sucessMSG("修改成功", ``);
+          const index = this.ppsinptb05List.findIndex(item => item.idx === _id);
+          Object.assign(this.ppsinptb05List[index], this.editCache[_id].data);
+          this.editCache[_id].edit = false;
+        } else {
+          this.errorMSG("修改失敗", res[0].MSG);
+        }
       },err => {
         reject('upload fail');
-        
         this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
       })
@@ -367,34 +314,203 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      console.log("當前線速暫存區");
-      console.log(this.editCache05);
-      console.log("_id");
-      console.log(_id);
-      console.log("BBBBBB"+this.editCache05[_id]);
-      let _ID = this.editCache05[_id].data.tab5ID;
-      myObj.PPSService.delI105Tab1Data(_ID).subscribe(res => {
+      let id = this.editCache[_id].data.id;
+      myObj.PPSService.delI106Data('2', id).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.SHOP_CODE_5 = undefined;
-          this.EQUIP_CODE_5 = undefined;
-          this. SHAPE_TYPE_5 = undefined;
-          this.GRADE_GROUP_5 = undefined;
-          this.SPEED_TYPE_5 = undefined;
-          this.REDUCTION_RATE_MIN_5 = undefined;
-          this.REDUCTION_RATE_MAX_5 = undefined;
-          this.DIA_MAX_5 = undefined;
-          this.DIA_MIN_5 = undefined;
-          this.SPEED_5 = undefined;
-          this.EQUIP_CAP_5 = undefined;
+          this.onInit();
           this.sucessMSG("刪除成功", ``);
-          this.getPPSINP05List();
+          this.getPpsinptb05List();
         }
       },err => {
         reject('upload fail');
-        this.errorMSG("線速刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
       })
     });
+  }
+
+  
+  //convert to Excel and Download
+  convertToExcel() {
+    let data;
+    let fileName;
+    let titleArray = [];
+    if(this.ppsinptb05List.length > 0) {
+      data = this.formatDataForExcel(this.ppsinptb05List);
+      fileName = `非直棒線速工時`;
+      titleArray = ['廠區別', '站別', '機台', '機群', '製程代號', '尺寸MIN', '尺寸MAX', '生產速度'];
+    } else {
+      this.errorMSG("匯出失敗", "非直棒線速工時目前無資料");
+      return;
+    }
+    this.excelService.exportAsExcelFile(data, fileName, titleArray);
+  }
+
+  formatDataForExcel(_displayData) {
+    console.log("_displayData");
+    let excelData = [];
+    for (let item of _displayData) {
+      let obj = {};
+      _.extend(obj, {
+        plantCode: _.get(item, "plantCode"),
+        schShopCode: _.get(item, "schShopCode"),
+        equipCode: _.get(item, "equipCode"),
+        equipGroup: _.get(item, "equipGroup"),
+        equipProcessCode: _.get(item, "equipProcessCode"),
+        diaMin: _.get(item, "diaMin"),
+        diaMax: _.get(item, "diaMax"),
+        wkSpeed: _.get(item, "wkSpeed")
+      });
+      excelData.push(obj);
+    }
+    console.log(excelData);
+    return excelData;
+  }
+
+
+  // excel檔名
+  incomingfile(event) {
+    this.file = event.target.files[0];
+    console.log("incomingfile e1 : " + this.file);
+    let lastname = this.file.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    }
+  }
+
+  // EXCEL 匯入
+  Upload() {
+    let value = document.getElementsByTagName('input')[0].value;
+    let lastname = this.file.name.split('.').pop();
+    console.log("incomingfile e2 : " + this.file);
+    if(value === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      this.clearFile();
+    } else if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    } else {
+      this.Excelimport();
+    }
+  }
+  // EXCEL 樣板內資料取得及檢誤
+  Excelimport() {
+    let fileReader = new FileReader();
+    this.importdata = [];
+    fileReader.onload = (e) => {
+      this.arrayBuffer = fileReader.result;
+      var data = new Uint8Array(this.arrayBuffer);
+      var arr = new Array();
+      for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+      var bstr = arr.join("");
+      var workbook = XLSX.read(bstr, {type:"binary"});
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet:any = workbook.Sheets[first_sheet_name];
+      this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
+
+      this.checkTemplate(worksheet, this.importdata);
+    }
+    fileReader.readAsArrayBuffer(this.file);
+  }
+
+
+  // EXCEL 匯入樣版檢查
+  checkTemplate(worksheet, importdata) {
+    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
+       worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined) {
+      this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+      this.clearFile();
+      return;
+    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "機台" || worksheet.D1.v !== "機群" || worksheet.E1.v !== "製程代號" ||
+              worksheet.F1.v !== "尺寸MIN" || worksheet.G1.v !== "尺寸MAX" || worksheet.H1.v !== "生產速度") {
+      this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+      this.clearFile();
+      return;
+    } else {
+      this.importExcel(importdata);
+    }
+  
+  }
+  
+  // EXCEL 資料上傳 (ppsinptb02_nonbar)
+  importExcel(_data) {
+    for(let i=0 ; i < _data.length ; i++) {
+      let plantCode = _data[i].廠區別;
+      let schShopCode = _data[i].站別;
+      let equipCode = _data[i].機台;
+      let equipGroup = _data[i].機群;
+      if(plantCode === undefined || schShopCode === undefined || (equipCode === undefined && equipGroup === undefined)) {
+        let col = i+2;
+        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+        this.isERROR = true;
+      }
+    }
+
+    if(this.isERROR) {
+      // 匯入錯誤失敗訊息提醒
+      this.clearFile();
+      this.isErrorMsg = true;
+      this.importdata_new = [];
+      this.errorMSG("匯入錯誤", this.errorTXT);
+
+    } else {
+      for(let i=0 ; i < _data.length ; i++) {
+
+        let plantCode = _data[i].廠區別.toString();
+        let schShopCode = _data[i].站別.toString();
+        let equipCode = _data[i].機台 !== undefined ? _data[i].機台.toString() : '';
+        let equipGroup = _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
+        let equipProcessCode = _data[i].製程代號 !== undefined ? _data[i].製程代號.toString() : '';
+        let diaMin = _data[i].尺寸MIN !== undefined ? _data[i].尺寸MIN.toString() : '0';
+        let diaMax = _data[i].尺寸MAX !== undefined ? _data[i].尺寸MAX.toString() : '0';
+        let wkSpeed = _data[i].生產速度 !== undefined ? _data[i].生產速度.toString() : '0';
+        this.importdata_new.push({plantCode: plantCode, schShopCode: schShopCode, equipCode: equipCode, equipGroup: equipGroup, 
+                                  equipProcessCode: equipProcessCode, diaMin: diaMin, diaMax: diaMax, wkSpeed: wkSpeed});
+      }
+
+      return new Promise((resolve, reject) => {
+        this.LoadingPage = true;
+        let myObj = this;
+        let obj = {};
+        _.extend(obj, {
+          excelData : this.importdata_new,
+          userName : this.userName
+        })
+        myObj.PPSService.importI105Excel('2', obj).subscribe(res => {
+          if(res[0].MSG === "Y") {
+            this.loading = false;
+            this.LoadingPage = false;
+
+            this.sucessMSG("EXCCEL上傳成功", "");
+            this.getPpsinptb05List();
+            this.clearFile();
+            this.onInit();
+          } else {
+            this.errorMSG("匯入錯誤", res[0].MSG);
+            this.clearFile();
+            this.importdata_new = [];
+            this.LoadingPage = false;
+          }
+        },err => {
+          reject('upload fail');
+          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+          this.importdata_new = [];
+          this.LoadingPage = false;
+        })
+      });
+    }
+  }
+  
+  // 清空資料
+  clearFile() {
+    var objFile = document.getElementsByTagName('input')[0];
+    console.log(objFile.value + "已清除");
+    objFile.value = "";
+    console.log(this.file)
+    console.log(JSON.stringify(this.file))
   }
 
 	sucessMSG(_title, _plan): void {
@@ -412,131 +528,90 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 	}
 
   //============== 新增資料之彈出視窗 =====================
-  // 新增線速之彈出視窗
+  // 新增線速工時之彈出視窗
   openSpeedInput() : void {
     this.isVisibleSpeed = true;
   }
-  //取消線速之彈出視窗
-  cancelSpeedInput() : void {
+   //取消線速工時彈出視窗
+   cancelSpeedInput() : void {
     this.isVisibleSpeed = false;
   }
 
-
 // ============= 過濾資料之menu ========================
-// 7.(資料過濾)線速
-  ppsInp05ListFilter(property:string, keyWord:string){
-
-    if(_.isEmpty(keyWord)){
-      this.displayPPSINP05List = this.PPSINP05List;
-      return;
-    }
-
+  // 4.(資料過濾)線速工時
+  ppsinptb05ListFilter(property:string, keyWord:string){
     const filterFunc = item => {
       let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
+      if (keyWord == "") {
+        return true;
+      } else {
+        return _.startsWith(propertyValue, keyWord);
+      }
     };
 
-    const data = this.PPSINP05List.filter(item => filterFunc(item));
-    this.displayPPSINP05List = data;
+    const data = this.ppsinptb05List.filter(item => filterFunc(item));
+    this.displayPpsinptb05List = data;
   }
 
-  // 資料過濾---線速 --> 站號
-  searchByShopCode5() : void {
-    this.ppsInp05ListFilter("SHOP_CODE_5", this.searchShopCode5Value);
+  // 資料過濾---線速工時 --> 站別
+  searchSchShopCode() : void{
+    this.ppsinptb05ListFilter("schShopCode", this.searchSchShopCodeValue);
   } 
-  resetByShopCode5() : void {
-    this.searchShopCode5Value = '';
-    this.ppsInp05ListFilter("SHOP_CODE_5", this.searchShopCode5Value);
+  resetBySchShopCode() : void{
+    this.searchSchShopCodeValue = '';
+    this.ppsinptb05ListFilter("schShopCode", this.searchSchShopCodeValue);
   }
 
-  // 資料過濾---線速 --> 機台
-  searchByEquipCode5() : void {
-    this.ppsInp05ListFilter("EQUIP_CODE_5", this.searchEquipCode5Value);
+  // 資料過濾---線速工時 --> 機台
+  searchEquipCode() : void{
+    this.ppsinptb05ListFilter("equipCode", this.searchEquipCodeValue);
   } 
-  resetByEquipCode5() : void {
-    this.searchEquipCode5Value = '';
-    this.ppsInp05ListFilter("EQUIP_CODE_5", this.searchEquipCode5Value);
+  resetByEquipCode() : void{
+    this.searchEquipCodeValue = '';
+    this.ppsinptb05ListFilter("equipCode", this.searchEquipCodeValue);
+  }
+  // 資料過濾---線速工時 --> 機群
+  searchEquipGroup() : void{
+    this.ppsinptb05ListFilter("equipGroup", this.searchEquipGroupValue);
+  } 
+  resetByEquipGroup() : void{
+    this.searchEquipGroupValue = '';
+    this.ppsinptb05ListFilter("equipGroup", this.searchEquipGroupValue);
+  }
+  // 資料過濾---線速工時 --> 製程代號
+  searchEquipProcessCode() : void{
+    this.ppsinptb05ListFilter("equipGroup", this.searchEquipProcessCodeValue);
+  } 
+  resetByEquipProcessCode() : void{
+    this.searchEquipProcessCodeValue = '';
+    this.ppsinptb05ListFilter("equipGroup", this.searchEquipProcessCodeValue);
   }
 
-  // 資料過濾---線速 --> 產出型態
-  searchByShapeType5() : void {
-    this.ppsInp05ListFilter("SHAPE_TYPE_5", this.searchShapeType5Value);
+  // 資料過濾---線速工時 --> 尺寸MIN
+  searchDiaMin() : void{
+    this.ppsinptb05ListFilter("diaMin", this.searchDiaMinValue);
   } 
-  resetByShapeType5() : void {
-    this.searchShapeType5Value = '';
-    this.ppsInp05ListFilter("SHAPE_TYPE_5", this.searchShapeType5Value);
+  resetByDiaMin() : void{
+    this.searchDiaMinValue = '';
+    this.ppsinptb05ListFilter("diaMin", this.searchDiaMinValue);
   }
 
-  // 資料過濾---線速 --> 鋼種種類
-  searchByGradeGroup5() : void {
-    this.ppsInp05ListFilter("GRADE_GROUP_5", this.searchGradeGroup5Value);
+  // 資料過濾---線速工時 --> 尺寸MAX
+  searchDiaMax() : void{
+    this.ppsinptb05ListFilter("diaMax", this.searchDiaMaxValue);
   } 
-  resetByGradeGroup5() : void {
-    this.searchGradeGroup5Value = '';
-    this.ppsInp05ListFilter("GRADE_GROUP_5", this.searchGradeGroup5Value);
-  }
-  
-  // 資料過濾---線速 --> 線速分類
-  searchBySpeedType5() : void {
-    this.ppsInp05ListFilter("SPEED_TYPE_5", this.searchSpeedType5Value);
-  } 
-  resetBySpeedType5() : void {
-    this.searchSpeedType5Value = '';
-    this.ppsInp05ListFilter("SPEED_TYPE_5", this.searchSpeedType5Value);
-  }
-  
-  // 資料過濾---線速 --> 減面率MIN
-  searchByReductionRateMin5() : void {
-    this.ppsInp05ListFilter("REDUCTION_RATE_MIN_5", this.searchReductionRateMin5Value);
-  } 
-  resetByReductionRateMin5() : void {
-    this.searchReductionRateMin5Value = '';
-    this.ppsInp05ListFilter("REDUCTION_RATE_MIN_5", this.searchReductionRateMin5Value);
+  resetByDiaMax() : void{
+    this.searchDiaMaxValue = '';
+    this.ppsinptb05ListFilter("diaMax", this.searchDiaMaxValue);
   }
 
-  // 資料過濾---線速 --> 減面率MAX
-  searchByReductionRateMax5() : void {
-    this.ppsInp05ListFilter("REDUCTION_RATE_MAX_5", this.searchReductionRateMax5Value);
+  // 資料過濾---線速工時 --> 生產速度
+  searchByWkSpeed() : void{
+    this.ppsinptb05ListFilter("wkSpeed", this.searchWkSpeedValue);
   } 
-  resetByReductionRateMax5() : void {
-    this.searchReductionRateMax5Value = '';
-    this.ppsInp05ListFilter("REDUCTION_RATE_MAX_5", this.searchReductionRateMax5Value);
-  }
-
-  // 資料過濾---線速 --> 產出最小尺寸
-  searchByDiaMax5() : void {
-    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
-  } 
-  resetByDiaMax5() : void {
-    this.searchDiaMax5Value = '';
-    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
-  }
-
-  // 資料過濾---線速 --> 產出最大尺寸
-  searchByDiaMin5() : void {
-    this.ppsInp05ListFilter("DIA_MIN_5", this.searchDiaMin5Value);
-  } 
-  resetByDiaMin5() : void {
-    this.searchDiaMin5Value = '';
-    this.ppsInp05ListFilter("DIA_MIN_5", this.searchDiaMin5Value);
-  }
-
-  // 資料過濾---線速 --> 線速(m/min)
-  searchBySpeed5() : void {
-    this.ppsInp05ListFilter("SPEED_5", this.searchSpeed5Value);
-  } 
-  resetBySpeed5() : void {
-    this.searchSpeed5Value = '';
-    this.ppsInp05ListFilter("SPEED_5", this.searchSpeed5Value);
-  }
-
-  // 資料過濾---線速 --> 日產出量
-  searchByEquipCap5() : void {
-    this.ppsInp05ListFilter("EQUIP_CAP_5", this.searchEquipCap5Value);
-  } 
-  resetByEquipCap5() : void {
-    this.searchEquipCap5Value = '';
-    this.ppsInp05ListFilter("EQUIP_CAP_5", this.searchEquipCap5Value);
+  resetByWkSpeed() : void{
+    this.searchWkSpeedValue = '';
+    this.ppsinptb05ListFilter("wkSpeed", this.searchWkSpeedValue);
   }
 
 
