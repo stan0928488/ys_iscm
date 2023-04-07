@@ -86,3 +86,23 @@ cursor: default;
 #tab-1 > ul > li.active{ border-bottom:1px solid #fff; background:rgb(228, 227, 227); font-weight: bold;}
 #tab-1 > .tab-inner1{ clear:both; color:#000; border:1px #cbfcfc solid;}
 .tab-inner{ padding:15px; height:50px;}
+
+
+//-匯入
+.ImportButton {
+  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+  background-color: #74ad5a;
+  border:2px blue none;
+}
+.ImportButton:hover {background-color:#68a54b;}
+.ImportButton:active {position:relative;top:1px;}
+
+
+//-匯出
+.ExportButton {
+  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+  background-color: #4CAF50;
+  border:2px blue none;
+}
+.ExportButton:hover {background-color:#5cb811;}
+.ExportButton:active {position:relative;top:1px;} 
