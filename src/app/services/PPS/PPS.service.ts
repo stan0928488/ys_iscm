@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 
 import * as _ from "lodash";
@@ -1383,6 +1383,84 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  /////////////////////////////////////////////////////////////
+// PPSI130 批次爐鋼種捲數製程碼對應表
+/////////////////////////////////////////////////////////////
+
+saveTbppsm014Data(_data) {
+  const body = JSON.stringify(_data);
+  let endpointUrl = this.APIURL + `/FCP/I130/saveI130Data`;
+  console.log("新增「批次爐鋼種捲數製程碼對應表」資料")
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  console.log(`請求API 參數:${body}`);
+  return this.http.post<any>(endpointUrl, body, this.httpOptions);
+}
+
+listTbppsm014DataByPagination(pageIndex: number, pageSize: number){
+  const httpParams = new HttpParams()
+  .set('pageIndex', pageIndex)
+  .set('pageSize', pageSize);
+  console.log("查詢「批次爐鋼種捲數製程碼對應表」資料");
+  let endpointUrl = this.APIURL + `/FCP/I130/listI130Data`;
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  console.log(`請求API 參數:pageIndex=>${pageIndex}, pageSize=>${pageSize}`);
+  return this.http.get<any>(endpointUrl, { params: httpParams });
+}
+
+
+updateTbppsm014Data(_data) {
+  const body = JSON.stringify(_data);
+  let endpointUrl = this.APIURL + `/FCP/I130/updateI130Data`;
+  console.log("更新「批次爐鋼種捲數製程碼對應表」資料")
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  console.log(`請求API 參數:${body}`);
+  return this.http.put<any>(endpointUrl, body, this.httpOptions);
+}
+
+deleteTbppsm014Data(id: number) {
+  let endpointUrl = this.APIURL + `/FCP/I130/deleteI130Data/${id}`;
+  console.log("刪除「批次爐鋼種捲數製程碼對應表」資料")
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  console.log(`請求API 參數:${id}`);
+  return this.http.delete<any>(endpointUrl);
+}
+
+searchTbppsm014ColumnDataByKeyword(column: string, keyword: string, pageIndex: number, pageSize: number) {
+  const httpParams = new HttpParams()
+    .set('columnName', column)
+    .set('keyword', keyword)
+    .set('pageIndex', pageIndex)
+    .set('pageSize', pageSize);
+    console.log("搜尋「批次爐鋼種捲數製程碼對應表」資料")
+  let endpointUrl = this.APIURL + `/FCP/I130/searchI130Data`;
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  return this.http.get<any>(endpointUrl, { params: httpParams });
+}
+
+deleteTbppsm014AllData() {
+  let endpointUrl = this.APIURL + `/FCP/I130/deleteI130AllData`;
+  console.log("刪除「批次爐鋼種捲數製程碼對應表」所有資料")
+  console.log(`請求API Endpoint Url : ${endpointUrl}`);
+  console.log(`請求API 參數 : 無`);
+  return this.http.delete<any>(endpointUrl);
+}
+
+batchSaveTbppsm014Data(_data) {
+  const body = JSON.stringify(_data);
+  let endpointUrl = this.APIURL + `/FCP/I130/batchInsertI130Data`;
+  console.log("新增「批次爐鋼種捲數製程碼對應表」資料")
+  console.log(`請求API Endpoint Url:${endpointUrl}`);
+  console.log(`請求API 參數:${body}`);
+  return this.http.post<any>(endpointUrl, body, this.httpOptions);
+}
+
+listTbppsm014AllData(){
+  console.log("查詢「批次爐鋼種捲數製程碼對應表」所有資料");
+  let endpointUrl = this.APIURL + `/FCP/I130/listI130AllData`;
+  console.log(`請求API Endpoint Url : ${endpointUrl}`);
+  console.log(`請求API 參數 : 無`);
+  return this.http.get<any>(endpointUrl);
+}
 
 
 
