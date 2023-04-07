@@ -93,6 +93,12 @@ export class PPSI130Component implements AfterViewInit {
   // 輸入欄位 -> 製程碼_一爐四捲
   processCode4pcsInput = "";
 
+
+  // 廠區別搜尋關鍵字
+  searchPlantCodeValue = "";
+  // 廠區別搜尋框是否出現
+  plantCodeFilterVisible = false;
+
   // 站別搜尋關鍵字
   searchShopCodeValue = "";
   // 站別搜尋框是否出現
@@ -128,6 +134,7 @@ export class PPSI130Component implements AfterViewInit {
   // 正在針對哪一個欄位做搜尋
   searchingColumn = "";
 
+  DB_PLANT_CODE_COLUMN_NAME = "PLANT_CODE";
   DB_SHOP_CODE_COLUMN_NAME = "SCH_SHOP_CODE";
   DB_STEEL_TYPE_COLUMN_NAME = "STEEL_TYPE";
   DB_DIA_MIN_COLUMN_NAME = "DIA_MIN";
@@ -147,7 +154,7 @@ export class PPSI130Component implements AfterViewInit {
   // 當前頁碼(第幾頁)
   currentPageIndex = 1;
   // 每頁有幾筆
-  pageSize = 2;
+  pageSize = 20;
 
   // 紀錄正在編輯中的項目id
   editingItemList : number[] = [];
@@ -192,7 +199,7 @@ export class PPSI130Component implements AfterViewInit {
       this.setupTable(response);
       this.setupUpdateEditCache();
       if(response.data.length <= 0){
-        this.sucessMSG("查無資料", ``);
+        this.sucessMSG("已無資料", ``);
         return;
       }
     }else{
@@ -492,8 +499,33 @@ export class PPSI130Component implements AfterViewInit {
 
 
 // ============= filter資料 ========================
-  searchByShopCode(isUserClick : boolean){
 
+  searchByPlantCode(isUserClick : boolean){
+    if(_.isEmpty(this.searchPlantCodeValue)){
+      this.message.create("error", "請輸入搜尋關鍵字");
+      return;
+    }
+
+    this.searchingColumn = this.DB_PLANT_CODE_COLUMN_NAME;
+    this.clearOtherSearchValue(this.DB_PLANT_CODE_COLUMN_NAME);
+    const p = this.searchTbppsm014ColumnDataByKeyWord(this.DB_PLANT_CODE_COLUMN_NAME, this.searchPlantCodeValue);
+
+    if(!isUserClick){
+      return p;
+    }
+    else{
+      this.setupTableAndEditCache(p);
+      this.plantCodeFilterVisible = false;
+    }
+  }
+  resetByPlantCode(){
+    this.searchPlantCodeValue = "";
+    this.reset();
+    this.plantCodeFilterVisible = false;
+  }
+
+
+  searchByShopCode(isUserClick : boolean){
     if(_.isEmpty(this.searchShopCodeValue)){
       this.message.create("error", "請輸入搜尋關鍵字");
       return;
@@ -511,7 +543,6 @@ export class PPSI130Component implements AfterViewInit {
       this.shopCodeFilterVisible = false;
     }
   }
-
   resetByShopCode(){
     this.searchShopCodeValue = "";
     this.reset();

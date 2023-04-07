@@ -59,6 +59,17 @@
         <nz-table #displayTbppsm014Rows nzBordered [nzFrontPagination]="false" [nzTotal]="tbppsm014DataTotal" [(nzPageIndex)]="currentPageIndex" (nzPageIndexChange)="tablePageChange()" [nzData]="displayTbppsm014List" [nzPageSize]="pageSize" [nzScroll]="{ y: '500px' }">
           <thead>
           <tr>
+
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+            >廠區別
+            <nz-filter-trigger 
+            [(nzVisible)]="plantCodeFilterVisible"
+            [nzActive]="searchPlantCodeValue.length > 0" 
+            [nzDropdownMenu]="plantCodeMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+
             <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
             >站別
             <nz-filter-trigger 
@@ -68,6 +79,7 @@
             <span nz-icon nzType="search"></span>
             </nz-filter-trigger>
             </th>
+
             <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
             >鋼種
             <nz-filter-trigger 
@@ -78,7 +90,7 @@
             </nz-filter-trigger>
             </th>
             <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >尺寸_min(含)
+            >尺寸MIN
             <nz-filter-trigger 
             [(nzVisible)]="diaMinFilterVisible"
             [nzActive]="searchDiaMinValue.length > 0" 
@@ -87,7 +99,7 @@
             </nz-filter-trigger>
             </th>
             <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >尺寸_max(含)
+            >尺寸MAX
             <nz-filter-trigger 
             [(nzVisible)]="diaMaxFilterVisible"
             [nzActive]="searchDiaMaxValue.length > 0" 
@@ -119,6 +131,7 @@
           <tbody>
           <tr *ngFor="let data of displayTbppsm014Rows.data;let i = index" class="editable-row">
             <ng-container *ngIf="!editCache[data.id].isEdit; else editTemplate">
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.plantCode }}</td>
               <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.shopCode }}</td>
               <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.steelType }}</td>
               <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.diaMin }}</td>
@@ -131,6 +144,9 @@
               </td>
             </ng-container>
             <ng-template #editTemplate>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入廠區別" [(ngModel)]="editCache[data.id].data.plantCode" />
+              </td>
               <td>
                 <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache[data.id].data.shopCode" />
               </td>
@@ -232,8 +248,18 @@
 
 </nz-modal>
 
-<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
 
+<nz-dropdown-menu #plantCodeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchPlantCodeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByPlantCode(true)" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByPlantCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
