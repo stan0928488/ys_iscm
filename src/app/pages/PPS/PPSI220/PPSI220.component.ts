@@ -961,7 +961,7 @@ export class PPSI220Component implements AfterViewInit {
             DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
           });
 
-          myObj.getPPSService.StartFullRunPlan(data.PLAN_EDITION, data.SCHEDULE_FLAG, "A").subscribe(res => {
+          myObj.getPPSService.StartFullRunPlan(data.PLAN_EDITION, data.SCHEDULE_FLAG, "A"+this.USERNAME).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
@@ -993,17 +993,17 @@ export class PPSI220Component implements AfterViewInit {
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
 			})
-      // myObj.getPPSService.delPlanData(obj).subscribe(res => {
-      //   if(res[0].MSG === "Y") {
+      myObj.getPPSService.stopPlanData(obj).subscribe(res => {
+        if(res[0].MSG === "Y") {
 
-      //     this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
-      //     this.getPlanDataList();
-      //   }
-      // },err => {
-      //   reject('upload fail');
-      //   this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
-      //   this.LoadingPage = false;
-      // })
+          this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+          this.getPlanDataList();
+        }
+      },err => {
+        reject('upload fail');
+        this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        this.LoadingPage = false;
+      })
 		})
   }
 
