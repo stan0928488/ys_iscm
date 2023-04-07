@@ -35,7 +35,14 @@
 
           <td>
               <!-- 匯入EXCEL功能 -->
-              <button id="bacthAdd" nz-button role="button" class="ImportButton" onclick="document.getElementById('importExcel').click();" >
+              <button 
+                id="bacthAdd" 
+                nz-button 
+                nzType="primary"
+                [nzSize]="'large'"
+                role="button" 
+                class="ImportButton" 
+                onclick="document.getElementById('importExcel').click();" >
                 <span nz-icon nzType="upload" nzTheme="outline"></span>
                 匯入
               </button>
@@ -45,7 +52,14 @@
 
           <td>
             <!-- 匯出EXCEL功能 -->
-            <button id="download" nz-button (click)="exportToExcel()" class="ExportButton" role="button">
+            <button 
+              id="download" 
+              nz-button
+              nzType="primary"
+              [nzSize]="'large'"
+              (click)="exportToExcel()" 
+              class="ExportButton" 
+              role="button">
               <span nz-icon nzType="download" nzTheme="outline" ></span>
               匯出
             </button>
