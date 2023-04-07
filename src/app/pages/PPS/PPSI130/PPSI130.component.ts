@@ -965,28 +965,30 @@ export class PPSI130Component implements AfterViewInit {
 
     for (let i = 1; i <= jsonExcelData.length; i++){
 
+      let rowNumberInExcel = i+1;
+
       if(_.isEmpty(String(jsonExcelData[i-1]["廠區別"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「廠區別」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「廠區別」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["站別"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「站別」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「站別」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["鋼種"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「鋼種」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「鋼種」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MIN"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「尺寸MIN」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MIN」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MAX"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「尺寸MAX」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MAX」不得為空，請修正`);
         return false;
       }
 
