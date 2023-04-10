@@ -17,9 +17,17 @@ export class MSHService {
   constructor(private http: HttpClient, private configService: ConfigService) {
     this.APIURL = this.configService.getAPIURL("1");
   }
-
+/***獲取站點 */
   getShopCodes(){
     let queryUrl = this.APIURL + "/msh/getShopCodes";
+    return this.http.get(queryUrl);
+  }
+ /**
+  * 獲取版本號
+  * @returns 
+  */
+  getFcpVerList(){
+    let queryUrl = this.APIURL + "/msh/getFcpVerList";
     return this.http.get(queryUrl);
   }
 
@@ -74,6 +82,17 @@ getTableData(_param) {
 saveSortData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/saveSortData";
   return this.http.post(queryUrl,_param);
+}
+
+//查看當前是否存在未送出的版本
+checkDataStatus(){
+  let queryUrl = this.APIURL + "/msh/MSHI002/checkDataStatus";
+  return this.http.get(queryUrl);
+}
+//鎖定版本
+lockFcpVer(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHI002/lockFcpVer/"+_param;
+  return this.http.get(queryUrl,_param);
 }
 
 }
