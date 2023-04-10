@@ -93,6 +93,12 @@ export class PPSI130Component implements AfterViewInit {
   // 輸入欄位 -> 製程碼_一爐四捲
   processCode4pcsInput = "";
 
+
+  // 廠區別搜尋關鍵字
+  searchPlantCodeValue = "";
+  // 廠區別搜尋框是否出現
+  plantCodeFilterVisible = false;
+
   // 站別搜尋關鍵字
   searchShopCodeValue = "";
   // 站別搜尋框是否出現
@@ -128,6 +134,7 @@ export class PPSI130Component implements AfterViewInit {
   // 正在針對哪一個欄位做搜尋
   searchingColumn = "";
 
+  DB_PLANT_CODE_COLUMN_NAME = "PLANT_CODE";
   DB_SHOP_CODE_COLUMN_NAME = "SCH_SHOP_CODE";
   DB_STEEL_TYPE_COLUMN_NAME = "STEEL_TYPE";
   DB_DIA_MIN_COLUMN_NAME = "DIA_MIN";
@@ -147,10 +154,13 @@ export class PPSI130Component implements AfterViewInit {
   // 當前頁碼(第幾頁)
   currentPageIndex = 1;
   // 每頁有幾筆
-  pageSize = 2;
+  pageSize = 20;
 
   // 紀錄正在編輯中的項目id
   editingItemList : number[] = [];
+
+  // 使用者匯入的Excel檔案
+  excelImportFile:File;
 
 
   constructor(
@@ -192,7 +202,7 @@ export class PPSI130Component implements AfterViewInit {
       this.setupTable(response);
       this.setupUpdateEditCache();
       if(response.data.length <= 0){
-        this.sucessMSG("查無資料", ``);
+        this.sucessMSG("已無資料", ``);
         return;
       }
     }else{
@@ -492,8 +502,33 @@ export class PPSI130Component implements AfterViewInit {
 
 
 // ============= filter資料 ========================
-  searchByShopCode(isUserClick : boolean){
 
+  searchByPlantCode(isUserClick : boolean){
+    if(_.isEmpty(this.searchPlantCodeValue)){
+      this.message.create("error", "請輸入搜尋關鍵字");
+      return;
+    }
+
+    this.searchingColumn = this.DB_PLANT_CODE_COLUMN_NAME;
+    this.clearOtherSearchValue(this.DB_PLANT_CODE_COLUMN_NAME);
+    const p = this.searchTbppsm014ColumnDataByKeyWord(this.DB_PLANT_CODE_COLUMN_NAME, this.searchPlantCodeValue);
+
+    if(!isUserClick){
+      return p;
+    }
+    else{
+      this.setupTableAndEditCache(p);
+      this.plantCodeFilterVisible = false;
+    }
+  }
+  resetByPlantCode(){
+    this.searchPlantCodeValue = "";
+    this.reset();
+    this.plantCodeFilterVisible = false;
+  }
+
+
+  searchByShopCode(isUserClick : boolean){
     if(_.isEmpty(this.searchShopCodeValue)){
       this.message.create("error", "請輸入搜尋關鍵字");
       return;
@@ -511,7 +546,6 @@ export class PPSI130Component implements AfterViewInit {
       this.shopCodeFilterVisible = false;
     }
   }
-
   resetByShopCode(){
     this.searchShopCodeValue = "";
     this.reset();
@@ -745,57 +779,69 @@ export class PPSI130Component implements AfterViewInit {
 
   }
 
-  jsonExcelData: any[] = [];
-  handleImport($event: any) {
-
-    const files = $event.target.files;
-
-    if (files.length) {
-
-      const reader = new FileReader();
-      const file = files[0];
-
-      // 文件加載完成後調用
-      reader.onload = (e: any) => {
-        this.isSpinning = true;
-
-        // 從檔案獲取原始資料
-        let data = e.target.result;
-
-        // 從原始資料獲取工作簿
-        // 兼容IE，需把type改為binary，並對data進行轉化
-        let workbook = XLSX.read(data, {
-          type: 'binary'
-        });
-
-        const sheets = workbook.SheetNames;
-
-        if (sheets.length) {
-          var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
-            defval: '' // 單元格為空的預設值
-          });
-          this.jsonExcelData = jsonData;
-
-          if(this.jsonExcelData.length != 0){
-            this.importExcel();
-          }
-          else{
-            this.errorMSG("匯入失敗", `此檔案無任何數據`);
-            this.isSpinning = false;
-          }
-
-        }
-      }
-      // 加載文件
-      reader.readAsArrayBuffer(file);
+  // excel檔名
+  incomingFile($event: any) {
+    this.excelImportFile = $event.target.files[0];
+    let lastname = this.excelImportFile.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
     }
+  }
+
+
+  jsonExcelData: any[] = [];
+  handleImport() {
+    
+    const fileValue = (<HTMLInputElement>document.getElementById("importExcel")).value;
+    if(fileValue === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "";
+      return;
+    }
+    
+    const reader = new FileReader();
+
+    // 文件加載完成後調用
+    reader.onload = (e: any) => {
+      this.isSpinning = true;
+      // 從檔案獲取原始資料
+      let data = e.target.result;
+
+      // 從原始資料獲取工作簿
+      // 兼容IE，需把type改為binary，並對data進行轉化
+      let workbook = XLSX.read(data, {
+        type: 'binary'
+      });
+
+      const sheets = workbook.SheetNames;
+
+      if (sheets.length) {
+        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
+          defval: '' // 單元格為空的預設值
+        });
+        this.jsonExcelData = jsonData;
+
+        if(this.jsonExcelData.length != 0){
+          this.importExcel();
+        }
+        else{
+          this.errorMSG("匯入失敗", `此檔案無任何數據`);
+          this.isSpinning = false;
+        }
+
+      }
+    }
+    // 加載文件
+    reader.readAsArrayBuffer(this.excelImportFile);
   }
 
   importExcel(){
 
     // 檢查欄位名稱是否都正確
     if(!this.checkExcelHeader(this.jsonExcelData[0])){
-      this.errorMSG("匯入失敗", `Header名稱有誤或有缺失Header，請修正`);
+      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
       this.isSpinning = false;
       (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
       return;
@@ -934,28 +980,30 @@ export class PPSI130Component implements AfterViewInit {
 
     for (let i = 1; i <= jsonExcelData.length; i++){
 
+      let rowNumberInExcel = i+1;
+
       if(_.isEmpty(String(jsonExcelData[i-1]["廠區別"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「廠區別」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「廠區別」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["站別"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「站別」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「站別」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["鋼種"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「鋼種」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「鋼種」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MIN"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「尺寸MIN」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MIN」不得為空，請修正`);
         return false;
       }
 
       if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MAX"]))){
-        this.errorMSG("匯入失敗", `第${i}行資料的「尺寸MAX」不得為空，請修正`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MAX」不得為空，請修正`);
         return false;
       }
 

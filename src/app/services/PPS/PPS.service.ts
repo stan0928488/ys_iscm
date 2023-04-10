@@ -401,6 +401,25 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  // I109 刪除所有資料
+  deleteI109AllData() {
+    let endpointUrl = this.APIURL + `/FCP/I109/deleteI109AllData`;
+    console.log("刪除「直棒退火爐工時」所有資料")
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 : 無`);
+    return this.http.delete<any>(endpointUrl);
+  }
+  // I109 批次新增資料
+  batchSaveI109Data(_data){
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/I109/batchInsertI109Data`;
+    console.log("批次新增「直棒退火爐工時」資料")
+    console.log(`請求API Endpoint Url:${endpointUrl}`);
+    console.log(`請求API 參數:${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
   // 10.其他站別工時
   //Get getPPSINP10List 取得10tab data
   getPPSINP10List() {
@@ -1454,7 +1473,7 @@ deleteTbppsm014AllData() {
 batchSaveTbppsm014Data(_data) {
   const body = JSON.stringify(_data);
   let endpointUrl = this.APIURL + `/FCP/I130/batchInsertI130Data`;
-  console.log("新增「批次爐鋼種捲數製程碼對應表」資料")
+  console.log("批次新增「批次爐鋼種捲數製程碼對應表」資料")
   console.log(`請求API Endpoint Url:${endpointUrl}`);
   console.log(`請求API 參數:${body}`);
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
