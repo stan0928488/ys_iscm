@@ -16,6 +16,7 @@ import { ORPP042Component } from "./pages/ORP/ORPP042/ORPP042.component";
 import { ORPP043Component } from "./pages/ORP/ORPP043/ORPP043.component";
 import { ORPPDEMOComponent } from "./pages/ORP/ORPPDEMO/ORPPDEMO.component";
 import { ORPPDEMO1Component } from "./pages/ORP/ORPPDEMO1/ORPPDEMO1.component";
+import { ORPPCHATDEMOComponent } from "./pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component";
 
 import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
@@ -120,7 +121,9 @@ const routes: Routes = [
       { path: "V042", component: ORPP042Component },
       { path: "V043", component: ORPP043Component },
       { path: "demo", component: ORPPDEMOComponent },
-      { path: "demo1", component: ORPPDEMO1Component }
+      { path: "demo1", component: ORPPDEMO1Component },
+      { path: "chatdemo", component: ORPPCHATDEMOComponent }
+
     ],
     canActivate: [AuthGuard]
   },

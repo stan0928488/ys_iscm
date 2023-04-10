@@ -36,7 +36,7 @@ import { ORPPDEMOComponent } from './pages/ORP/ORPPDEMO/ORPPDEMO.component';
 import { ORPPDEMO1Component } from './pages/ORP/ORPPDEMO1/ORPPDEMO1.component';
 import { ORPP100Component } from './pages/ORP/ORPP100/ORPP100.component';
 import { ORPP101Component } from './pages/ORP/ORPP101/ORPP101.component';
-
+import { ORPPCHATDEMOComponent } from './pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component';
 
 import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
@@ -108,7 +108,7 @@ registerLocaleData(zh);
     ORPP043Component,
     ORPPDEMOComponent,
     ORPPDEMO1Component,
-    
+    ORPPCHATDEMOComponent,
     TRAP001component,
 
     PPSI101Component,
