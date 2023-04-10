@@ -1077,6 +1077,12 @@ export class PPSService {
     let queryUrl = this.APIURL + "/FCP/I220/delPlanData";
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  //stopPlanData 
+  stopPlanData(_result) {
+    const body = JSON.stringify(_result);
+    let queryUrl = this.APIURL + "/FCP/I220/stopPlanData";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   //PublishToMES Publish 規劃案結果到 mes (FCP結果塞到MES)
   PublishToMES(_result) {
     const body = JSON.stringify(_result);
