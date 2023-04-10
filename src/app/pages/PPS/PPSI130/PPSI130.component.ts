@@ -159,6 +159,9 @@ export class PPSI130Component implements AfterViewInit {
   // 紀錄正在編輯中的項目id
   editingItemList : number[] = [];
 
+  // 使用者匯入的Excel檔案
+  excelImportFile:File;
+
 
   constructor(
     private PPSService: PPSService,
@@ -776,57 +779,69 @@ export class PPSI130Component implements AfterViewInit {
 
   }
 
-  jsonExcelData: any[] = [];
-  handleImport($event: any) {
-
-    const files = $event.target.files;
-
-    if (files.length) {
-
-      const reader = new FileReader();
-      const file = files[0];
-
-      // 文件加載完成後調用
-      reader.onload = (e: any) => {
-        this.isSpinning = true;
-
-        // 從檔案獲取原始資料
-        let data = e.target.result;
-
-        // 從原始資料獲取工作簿
-        // 兼容IE，需把type改為binary，並對data進行轉化
-        let workbook = XLSX.read(data, {
-          type: 'binary'
-        });
-
-        const sheets = workbook.SheetNames;
-
-        if (sheets.length) {
-          var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
-            defval: '' // 單元格為空的預設值
-          });
-          this.jsonExcelData = jsonData;
-
-          if(this.jsonExcelData.length != 0){
-            this.importExcel();
-          }
-          else{
-            this.errorMSG("匯入失敗", `此檔案無任何數據`);
-            this.isSpinning = false;
-          }
-
-        }
-      }
-      // 加載文件
-      reader.readAsArrayBuffer(file);
+  // excel檔名
+  incomingFile($event: any) {
+    this.excelImportFile = $event.target.files[0];
+    let lastname = this.excelImportFile.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
     }
+  }
+
+
+  jsonExcelData: any[] = [];
+  handleImport() {
+    
+    const fileValue = (<HTMLInputElement>document.getElementById("importExcel")).value;
+    if(fileValue === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "";
+      return;
+    }
+    
+    const reader = new FileReader();
+
+    // 文件加載完成後調用
+    reader.onload = (e: any) => {
+      this.isSpinning = true;
+      // 從檔案獲取原始資料
+      let data = e.target.result;
+
+      // 從原始資料獲取工作簿
+      // 兼容IE，需把type改為binary，並對data進行轉化
+      let workbook = XLSX.read(data, {
+        type: 'binary'
+      });
+
+      const sheets = workbook.SheetNames;
+
+      if (sheets.length) {
+        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
+          defval: '' // 單元格為空的預設值
+        });
+        this.jsonExcelData = jsonData;
+
+        if(this.jsonExcelData.length != 0){
+          this.importExcel();
+        }
+        else{
+          this.errorMSG("匯入失敗", `此檔案無任何數據`);
+          this.isSpinning = false;
+        }
+
+      }
+    }
+    // 加載文件
+    reader.readAsArrayBuffer(this.excelImportFile);
   }
 
   importExcel(){
 
     // 檢查欄位名稱是否都正確
     if(!this.checkExcelHeader(this.jsonExcelData[0])){
-      this.errorMSG("匯入失敗", `Header名稱有誤或有缺失Header，請修正`);
+      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
       this.isSpinning = false;
       (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
       return;
