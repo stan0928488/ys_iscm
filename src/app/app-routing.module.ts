@@ -52,6 +52,7 @@ import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
 import { PPSI203Component } from "./pages/PPS/PPSI203/PPSI203.component";
 import { PPSI204Component } from "./pages/PPS/PPSI204/PPSI204.component";
+import { PPSI204_NonBarComponent } from "./pages/PPS/PPSI204_NonBar/PPSI204_NonBar.component";
 import { PPSI205Component } from "./pages/PPS/PPSI205/PPSI205.component";
 import { PPSI210Component } from "./pages/PPS/PPSI210/PPSI210.component";
 import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
@@ -187,6 +188,7 @@ const routes: Routes = [
       { path: "", redirectTo: "/PlanSet/I202", pathMatch: "full" },
       { path: "I202", component: PPSI202Component },
       { path: "I204", component: PPSI204Component },
+      { path: "I204_NonBar", component: PPSI204_NonBarComponent },
       { path: "I203", component: PPSI203Component },
       { path: "I201", component: PPSI201Component }
     ],
