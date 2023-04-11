@@ -468,7 +468,8 @@ category = '' ;
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
-
+    this.originalData = [] ;
+    this.rowData = [] ;
   }
 
 
