@@ -1,14 +1,37 @@
 <div style="margin:15px 15px;">
   <div nz-row>
+
+  </div>
+  <div nz-row>
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel [nzHeader]="panels1.name" [nzActive]="panels1.active">
+        <p>
+          
+          <nz-select style="width:300px;"  nzPlaceHolder="請選擇版本號" [(ngModel)]="selectFcpVer"  (ngModelChange)="changeFcpVer()">
+            <ng-container  *ngFor="let item3 of fcpVerList" >
+            <nz-option *ngIf="item3.fcpLockStatus === '1'; else unlockTemplate"  [nzLabel]="item3.fcpVer + '(' +item3.fcpLockStatusLabel + ')'" [nzValue]="item3.fcpVer"></nz-option>
+            <ng-template #unlockTemplate>
+              <nz-option  [nzLabel]="item3.fcpVer" [nzValue]="item3.fcpVer"></nz-option>
+            </ng-template>
+          </ng-container>
+          </nz-select>
+          <button *ngIf="showLockBtn" style="margin-left: 20px; background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
+
+        
+      </p>
+
         <p> <nz-radio-group [(ngModel)]="selectShopCode" nzButtonStyle="solid" (ngModelChange)="selectShopCodeFunc()">
           <label *ngFor="let item of shopCodeList" nz-radio-button [nzValue]="item.value">{{item.label}}</label>
         </nz-radio-group></p>
-        <p>
+
+        <p> <nz-radio-group [(ngModel)]="selectEquipCode" nzButtonStyle="solid" (ngModelChange)="selectEquipCodeFunc()">
+          <label *ngFor="let item1 of equipCodeList" nz-radio-button [nzValue]="item1.value">{{item1.label}}</label>
+        </nz-radio-group></p>
+
+        <p *ngIf="selectFcpVerObj">
           <nz-date-picker [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
           <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)"></nz-date-picker>
-          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">確定</button>
+          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
         </p>
       </nz-collapse-panel>
@@ -17,7 +40,7 @@
 
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
-        <p>
+        <p *ngIf="selectFcpVerObj">
           <nz-checkbox-wrapper style="width: 70%;"  (nzOnChange)="checkedChange($event)">
             <div nz-row>
               <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
@@ -25,7 +48,7 @@
             </div>
           </nz-checkbox-wrapper>
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" (click)="recoverDataBtn()">恢復分群</button>
+          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" (click)="recoverDataBtn()">恢複數據</button>
           <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="dataSortedModal()">微調確認</button>
           <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')">確認</button>
 
@@ -130,6 +153,7 @@
     </div>
   </nz-modal>
 
+  
 
 
 </div>

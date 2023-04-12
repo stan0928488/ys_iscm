@@ -36,7 +36,7 @@ import { ORPPDEMOComponent } from './pages/ORP/ORPPDEMO/ORPPDEMO.component';
 import { ORPPDEMO1Component } from './pages/ORP/ORPPDEMO1/ORPPDEMO1.component';
 import { ORPP100Component } from './pages/ORP/ORPP100/ORPP100.component';
 import { ORPP101Component } from './pages/ORP/ORPP101/ORPP101.component';
-
+import { ORPPCHATDEMOComponent } from './pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component';
 
 import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
@@ -72,6 +72,7 @@ import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
 import { PPSI203Component } from "./pages/PPS/PPSI203/PPSI203.component";
 import { PPSI204Component } from "./pages/PPS/PPSI204/PPSI204.component";
+import { PPSI204_NonBarComponent } from "./pages/PPS/PPSI204_NonBar/PPSI204_NonBar.component";
 import { PPSI205Component } from "./pages/PPS/PPSI205/PPSI205.component";
 import { PPSI210Component } from "./pages/PPS/PPSI210/PPSI210.component";
 import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
@@ -118,7 +119,7 @@ registerLocaleData(zh);
     ORPP043Component,
     ORPPDEMOComponent,
     ORPPDEMO1Component,
-    
+    ORPPCHATDEMOComponent,
     TRAP001component,
 
     PPSI101Component,
@@ -152,6 +153,7 @@ registerLocaleData(zh);
     PPSI202Component,
     PPSI203Component,
     PPSI204Component,
+    PPSI204_NonBarComponent,
     PPSI205Component,
     PPSI210Component,
     PPSI220Component,

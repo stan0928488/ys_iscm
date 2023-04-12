@@ -256,7 +256,7 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
         userName : this.userName
       })
 
-      myObj.PPSService.insertI106Save('2', obj).subscribe(res => {
+      myObj.PPSService.insertI105Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.getPpsinptb05List();
@@ -291,7 +291,7 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
         wkSpeed : this.editCache[_id].data.wkSpeed,
         userName : this.userName
       })
-      myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
+      myObj.PPSService.updateI105Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
@@ -315,7 +315,7 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI106Data('2', id).subscribe(res => {
+      myObj.PPSService.delI105Data('2', id).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("刪除成功", ``);

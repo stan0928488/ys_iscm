@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MSHService } from 'src/app/services/MSH/MSH.service';
 import {NzMessageService} from "ng-zorro-antd/message";
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { ColDef, GetRowIdFunc, GetRowIdParams ,
   ColumnApi,
   GridApi,
@@ -44,18 +45,29 @@ rowData1 = [
 onCellClicked(value:any){
   console.log(value.data)
 }
+//識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
+category = '' ;
 
 
 //public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   date:Date[];
   selectShopCode = "401" ;
   shopCodeList:any = [] ;
+  //選擇機台
+  selectEquipCode = '';
+  //可选机台
+  equipCodeList = [] ;
   //可展示欄位
   allColumList:any = [] ;
  //可以分群的數據
   groupColumList :any = [] ;
   //可以分群的數組
   groupArray = [] ;
+
+  //選擇版本號
+  selectFcpVer = '';
+  selectFcpVerObj ;
+  fcpVerList = [] ;
 
   //
   //table数据
@@ -68,7 +80,7 @@ onCellClicked(value:any){
   panels2:any = 
     {
       active: true,
-      name: '可分群欄位(暫時不可用)',
+      name: '可分群欄位',
     };
     panels3:any = 
     {
@@ -87,8 +99,10 @@ onCellClicked(value:any){
     mdateFormat = 'yyyy-MM-DD';
     searchV0 = {
       shopCode :'334' ,
+      equipCode :'',
       startDate : '',
-      endDate:''
+      endDate:'',
+      fcpVer:''
     }
 
     //isSpinning
@@ -122,6 +136,7 @@ onCellClicked(value:any){
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
     private excelService: ExcelService,
+    private modal: NzModalService
     ) {
     this.gridOptions = {
       rowDragManaged: true,     
@@ -140,11 +155,13 @@ onCellClicked(value:any){
     };
 
     this.gridOptionsModal = {
+      rowDragMultiRow: true,
       rowDragManaged: true, 
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
     }
     this.gridOptionsRowDataModal = {
-      rowDragManaged: true, 
+      rowDragMultiRow:true,
+      rowDragManaged: true,
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
     }
      
@@ -154,10 +171,13 @@ onCellClicked(value:any){
    /// this.gridApi.setSuppressRowDrag(true) ;
     this.getShopCodes() ;
     //this.getSetColumByUser() ;
-    
+    this.getFcpVerList();
     
     this.searchV0.startDate = moment().format(this.mdateFormat) ;
-    this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
+    //當月月底
+    //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
+    //一個月後
+    this.searchV0.endDate = moment(new Date()).add(1, "months").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -216,6 +236,8 @@ onCellClicked(value:any){
 
   queryBtn(){
     this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
+    this.searchV0.fcpVer = this.selectFcpVer ;
     console.log(JSON.stringify(this.searchV0)) ;
     this.rowData = this.rowData1 ;
     this.getTableData();
@@ -249,7 +271,7 @@ onCellClicked(value:any){
       this.isLoading = false ;
       let result:any = res ;
       //獲取所有結果
-      console.log("result:" + JSON.stringify(result) )
+     // console.log("result:" + JSON.stringify(result) )
       //清空欄位跟數據
       this.rowData = [] ;
       if(result.code === 200 && result.data !== null) {
@@ -257,6 +279,9 @@ onCellClicked(value:any){
       let rowDataTemp = [] ;
       //重新修改
       if(this.rowData.length > 0 ) {
+        //識別來源
+        this.category = this.rowData[0].CATEGORY ;
+        console.log("當前數據來源:" + this.category)
         this.rowData.forEach((item1,index1,array1)=>{
           let rowDataObjectTemp = {} ;
           this.columnDefs.forEach((item2,index2,array2)=>{
@@ -273,6 +298,7 @@ onCellClicked(value:any){
         //console.log("this.originalData :" + JSON.stringify(this.originalData)) ;
       }
       } else {
+        this.category = '';
         this.nzMessageService.error(result.message) ;
       }
       this.export.data = this.rowData ;
@@ -334,26 +360,116 @@ onCellClicked(value:any){
       }
 
       this.export.header = exportHeader ;
-      console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
-
-      this.getTableData()
-      
+     // console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
+      if(this.selectFcpVer !== null && this.selectFcpVer !== '') {
+       // this.getTableData()
+      }
     })
   }
   getShopCodes(){
     this.mshService.getShopCodes().subscribe(res=>{
       let result:any = res ;
       this.shopCodeList = result.data ;
-      console.log(this.shopCodeList) ;
+      this.initSelectShop();
       this.getSetColumGroupData();
     })
   }
 
+  getFcpVerList(){
+    this.mshService.getFcpVerList().subscribe(res=>{
+      let result:any = res ;
+      this.fcpVerList = result.data ;
+      console.log("this.fcpVerList:" + JSON.stringify(this.fcpVerList))
+      this.inintLockBtn() ;
+    })
+  }
+  //當選擇的的版本狀態不是'1'時候，顯示鎖定的按鈕
+  inintLockBtn(){
+    if(this.selectFcpVer !== null && this.selectFcpVer !=='') {
+     this.selectFcpVerObj = this.fcpVerList.filter((item)=>{
+         return item.fcpVer === this.selectFcpVer ;
+      })[0]
+
+      if(this.selectFcpVerObj.fcpLockStatus === '0') {
+        this.showLockBtn = true ;
+      } else {
+        this.showLockBtn = false ;
+      }
+      console.log("fcp shijian " + this.selectFcpVerObj.fcpStartDate)
+      this.searchV0.startDate = moment(this.selectFcpVerObj.fcpStartDate).format('YYYY-MM-DD')
+    } else {
+      this.showLockBtn = false ;
+    }
+   
+  }
+ showLockBtn = false ;
+  changeFcpVer(){
+    console.log("select " + this.selectFcpVer) ;
+    this.inintLockBtn()
+  }
+
+  lockFcpBtn(){
+
+    this.mshService.checkDataStatus().subscribe(res=>{
+      let result:any = res ;
+      let message = result.message ;
+    this.modal.confirm({
+      nzTitle: message +'! 您確定鎖定該版本嗎?',
+      nzContent: '<b style="color: red;"></b>',
+      nzOkText: '確定',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => {
+        this.lockFcpVer(this.selectFcpVer)
+      },
+      nzCancelText: '取消',
+      nzOnCancel: () => console.log('Cancel')
+    });
+  });
+  }
+
+
+  lockFcpVer(fcpVer:any) {
+    this.mshService.lockFcpVer(fcpVer).subscribe(res=>{
+      let result:any = res ;
+      let message = result.message ;
+      this.nzMessageService.info(message);
+      this.originalData = [] ;
+      this.rowData = [] ;
+      this.getFcpVerList() ;
+     
+    });
+  }
+
+
+  initSelectShop(){
+    let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
+      return item.value === this.selectShopCode
+    })[0] 
+    this.equipCodeList = shopCodeListTemp.child ;
+    this.selectEquipCode = this.equipCodeList[0].value ;
+  }
+
    //挑選站別
    selectShopCodeFunc(){
-    console.log("checked:"+JSON.stringify(this.selectShopCode) );
+    //console.log("checked:"+JSON.stringify(this.selectShopCode) );
     this.searchV0.shopCode = this.selectShopCode ;
+    //console.log("所有站別：" + JSON.stringify(this.shopCodeList))
+    let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
+      return item.value === this.selectShopCode
+    })[0] 
+    this.equipCodeList = shopCodeListTemp.child ;
+    this.selectEquipCode = this.equipCodeList[0].value ;
+    this.originalData = [] ;
+    this.rowData = [] ;
+    //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
     this.getSetColumGroupData();
+  }
+
+  selectEquipCodeFunc(){
+    console.log("選擇站別 :" + this.selectEquipCode)
+    this.originalData = [] ;
+    this.rowData = [] ;
   }
 
 
@@ -366,14 +482,7 @@ onCellClicked(value:any){
       itemsToUpdate.push(rowNode.data);
     })
     this.rowData = itemsToUpdate;
-    console.log('onRowDragEnd', JSON.stringify(this.rowData) );
-    // this.gridOptions.api.forEachNodeAfterFilterAndSort(function (rowNode,index) {
-    // console.log(index)
-    // itemsToUpdate.push(rowNode.data);
-    // });
-    // this.rowData = itemsToUpdate;
-  //console.log('onRowDragEnd', JSON.stringify(this.rowData) );
-
+   // console.log('onRowDragEnd', JSON.stringify(this.rowData) );
   }
 
    /***分组明细拖拽 */
@@ -590,6 +699,10 @@ onCellClicked(value:any){
    }
 
    saveSortedModal(flag:string){
+     if(this.selectFcpVerObj.fcpLockStatus === '0') {
+      this.nzMessageService.error("必須是鎖定版本才能保存！") ;
+      return ;
+     }
      //調整接收數據
      this.finalChangeDataIds = [] ;
      //原始數據調取
@@ -601,11 +714,15 @@ onCellClicked(value:any){
         this.finalChangeDataIds.push(this.originalData[val-1].ID) 
        })
      })
+     let finalChangeDataTemp = [] ;
+     this.finalChangeDataIds.forEach((item,index,array)=>{
+      finalChangeDataTemp.push({id:item,sort:index + 1})
+     }) ;
     // console.log("使用："+this.finalChangeDataIds)
     // this.originalData = JSON.parse(localStorage.getItem("originalData")) ;
     // console.log("使用："+this.finalChangeDataIds)
-    let _param = {ids:this.finalChangeDataIds.toString()}
-    this.mshService.saveSortData(_param).subscribe(res=>{
+   // let _param = {ids:this.finalChangeDataIds.toString()}
+    this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
       if(flag === '1') {
 
       } else if(flag === '2') 
@@ -626,6 +743,8 @@ onCellClicked(value:any){
     })
 
    }
+
+   
 
 
 
