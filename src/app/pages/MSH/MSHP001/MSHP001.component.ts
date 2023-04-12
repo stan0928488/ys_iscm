@@ -80,7 +80,7 @@ category = '' ;
   panels2:any = 
     {
       active: true,
-      name: '可分群欄位(暫時不可用)',
+      name: '可分群欄位',
     };
     panels3:any = 
     {
@@ -362,7 +362,7 @@ category = '' ;
       this.export.header = exportHeader ;
      // console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
       if(this.selectFcpVer !== null && this.selectFcpVer !== '') {
-        this.getTableData()
+       // this.getTableData()
       }
     })
   }
@@ -463,12 +463,13 @@ category = '' ;
     this.originalData = [] ;
     this.rowData = [] ;
     //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
-   // this.getSetColumGroupData();
+    this.getSetColumGroupData();
   }
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
-
+    this.originalData = [] ;
+    this.rowData = [] ;
   }
 
 
