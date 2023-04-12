@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
+import {NzModalService} from "ng-zorro-antd/modal"
 import { map } from "rxjs/operators";
 
 import * as _ from "lodash";
@@ -15,7 +16,9 @@ export class CommonService {
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(private http: HttpClient, 
+              private configService: ConfigService,
+              private Modal: NzModalService,) {
     this.APIURL = this.configService.getAPIURL();
   }
 
@@ -71,7 +74,40 @@ export class CommonService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  checkExcelDataDuplicate(jsonExcelData : any) : boolean{
 
+    let i = 0;
+    let j = 1;
+
+    while(true){
+
+      if(i === jsonExcelData.length-1) return false;
+
+      if(j > jsonExcelData.length-1){
+        i++;
+        j = i+1;
+      }
+
+      if(i === jsonExcelData.length-1) return false;
+
+
+      if(_.isEqual(jsonExcelData[i], jsonExcelData[j])){
+        this.errorMSG("匯入失敗", `第 ${i+2} 行資料的與第 ${j+2} 行資料已重複，請修改後再匯入`);
+        return true;
+      }
+      else{
+        j++;
+      }
+
+    }
+  }
+
+  errorMSG(_title, _context): void {
+		this.Modal.error({
+			nzTitle: _title,
+			nzContent: `${_context}`
+		});
+	}
 
   
 

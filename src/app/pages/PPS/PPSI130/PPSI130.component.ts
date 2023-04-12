@@ -8,6 +8,7 @@ import {NzModalService} from "ng-zorro-antd/modal"
 import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import { CommonService } from 'src/app/services/common/common.service';
 
 class Tbppsm014 {
    id : number;
@@ -165,6 +166,7 @@ export class PPSI130Component implements AfterViewInit {
 
   constructor(
     private PPSService: PPSService,
+    private commonService : CommonService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
@@ -779,7 +781,7 @@ export class PPSI130Component implements AfterViewInit {
 
   }
 
-  // excel檔名
+  // excel檔案
   incomingFile($event: any) {
     this.excelImportFile = $event.target.files[0];
     let lastname = this.excelImportFile.name.split('.').pop();
@@ -860,14 +862,13 @@ export class PPSI130Component implements AfterViewInit {
     // 將jsonData轉成英文的key
     this.convertJsonToEnglishkey();
 
-    // 校驗Excel中的資料是否有重複
-    if(this.checkDataDuplicate()){
-      this.isSpinning = false;
-      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
-      return;
-    }
-    console.log("匯入的Excle中的資料皆無重複");
-    console.table(this.jsonExcelData);
+   // 校驗Excel中的資料是否有重複
+   if(this.commonService.checkExcelDataDuplicate(this.jsonExcelData)){
+    this.isSpinning = false;
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+    return;
+  }
+  console.log("匯入的Excle中的資料皆無重複");
 
      // 將資料全刪除，再匯入EXCEL檔內的資料
      const myThis = this;
@@ -911,13 +912,13 @@ export class PPSI130Component implements AfterViewInit {
     return new Promise(function(resolve, reject){
       myThis.PPSService.deleteTbppsm014AllData().subscribe(response => {
         if (response.success === true) {
-          resolve("刪除所有資料成功")
+          resolve("刪除所有資料成功");
         } 
         else {
-          resolve(response.success)
+          reject(response.message);
         }
       }, error =>{
-        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`)
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`);
       });
     });
   }
@@ -1011,36 +1012,6 @@ export class PPSI130Component implements AfterViewInit {
 
     return true;
 
-  }
-
-  checkDataDuplicate(){
-
-    let i = 0;
-    let j = 1;
-    while(true){
-
-
-      if(i === this.jsonExcelData.length-1) return false;
-
-      if(j > this.jsonExcelData.length-1){
-        i++;
-        j = i+1;
-      }
-
-      if(i === this.jsonExcelData.length-1) return false;
-
-      let str1 = JSON.stringify(this.jsonExcelData[i]);
-      let str2 = JSON.stringify(this.jsonExcelData[j]);
-
-      if(str1 === str2){
-        this.errorMSG("匯入失敗", `第 ${i+2} 行資料的與第 ${j+2} 行資料已重複，請修改後再匯入`);
-        return true;
-      }
-      else{
-        j++;
-      }
-
-    }
   }
 
   exportToExcel(){
