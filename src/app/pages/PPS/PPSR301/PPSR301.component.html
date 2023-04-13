@@ -5,76 +5,90 @@
     <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
     <nz-breadcrumb-item>機台負荷表</nz-breadcrumb-item>
   </nz-breadcrumb>
-  <!-- 內容  nzDisabled-->
-  <div>
-    <label>當前月份 </label>
-    <nz-month-picker
-      [(ngModel)]="date"
-      (ngModelChange)="onChange($event)"
-      nzPlaceHolder="選擇日期"
-      nzDisabled
-    ></nz-month-picker>
 
-    <nz-select
-    style="width: 200px; margin-left:50px;"
-    [compareWith]="compareFn"
-    [(ngModel)]="selectedValue"
-    (ngModelChange)="log($event)"
-    nzAllowClear
-    nzPlaceHolder="Choose"
-    nzPlaceHolder="請選擇版本號"
-  >
-    <nz-option   *ngFor="let option of optionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
-  </nz-select>
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+        直棒
+      </a>
+      <!-- 內容  nzDisabled-->
+      <div>
+        <label>當前月份 </label>
+        <nz-month-picker
+          [(ngModel)]="date"
+          (ngModelChange)="onChange($event)"
+          nzPlaceHolder="選擇日期"
+          nzDisabled
+        ></nz-month-picker>
 
-  <nz-select
-  style="width: 300px; margin-left:50px;"
-  nzMode="multiple"
-  nzPlaceHolder="請選擇站別"
-  [(ngModel)]="listOfSelectedValue"
-  >
-  <ng-container *ngFor="let option of listOfOption">
-    <nz-option [nzLabel]="option" [nzValue]="option" *ngIf="isNotSelected(option)"></nz-option>
-  </ng-container>
-  </nz-select>
+        <nz-select
+        style="width: 200px; margin-left:50px;"
+        [compareWith]="compareFn"
+        [(ngModel)]="selectedValue"
+        (ngModelChange)="log($event)"
+        nzAllowClear
+        nzPlaceHolder="Choose"
+        nzPlaceHolder="請選擇版本號"
+      >
+        <nz-option   *ngFor="let option of optionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
+      </nz-select>
 
-  <button style="margin-left:50px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);" nz-button nzType="primary"  (click) = "queryBtnFun()"  >
-    <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
-
-  <button style="margin-left:90px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);" nz-button nzType="primary"  (click) = "openComment()"  >
-    <span nz-icon nzType="read" nzTheme="outline"></span>
-    欄位說明</button>
-  </div>
-
-
-  <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
-    <nz-table  nzBordered   [nzLoading] = "tableLoading"  [nzData] = "tbodyList"  [nzShowPagination]="false"  [nzScroll]="{ x:'2500px', y: '500px' }" >
-      <thead>
-        <tr  *ngFor = " let item of  thead">
-          <ng-container *ngFor="let i of item" >
-            <th nzWidth="5%" *ngIf="i.showCell" [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  nz-popover  [nzPopoverTitle]="i.hoverTitle" [nzPopoverContent]="i.hoverContent"  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value}}</th>
-          </ng-container>
-        </tr>
-      </thead>
-      <tbody style="background-color:#fff;">
-        <ng-container *ngFor = " let item of  tbodyList let itemindex = index" >
-      <!--[class] ="itemindex%2 === 0 ? '':'tr-bg'"-->
-        <tr [class] ="itemindex%2 === 0 ? '':'tr-bg'">
-          <ng-container *ngFor="let i of item let iindex = index" >
-            <!-- <ng-container *ngIf="itemindex%2 === 0 && iindex > 2 ; else content"> -->
-            <td nzWidth="5%" *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
-            <!-- </ng-container> -->
-            <!-- <ng-template #content >
-              <td style="width: 80px;"    *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
-            </ng-template> -->
-          </ng-container>
-        </tr>
+      <nz-select
+      style="width: 300px; margin-left:50px;"
+      nzMode="multiple"
+      nzPlaceHolder="請選擇站別"
+      [(ngModel)]="listOfSelectedValue"
+      >
+      <ng-container *ngFor="let option of listOfOption">
+        <nz-option [nzLabel]="option" [nzValue]="option" *ngIf="isNotSelected(option)"></nz-option>
       </ng-container>
-      </tbody>
-    </nz-table>
+      </nz-select>
+
+      <button style="margin-left:50px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);" nz-button nzType="primary"  (click) = "queryBtnFun()"  >
+        <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
+
+      <button style="margin-left:90px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);" nz-button nzType="primary"  (click) = "openComment()"  >
+        <span nz-icon nzType="read" nzTheme="outline"></span>
+        欄位說明</button>
+      </div>
 
 
-  </div>
+      <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
+        <nz-table  nzBordered   [nzLoading] = "tableLoading"  [nzData] = "tbodyList"  [nzShowPagination]="false"  [nzScroll]="{ x:'2500px', y: '500px' }" >
+          <thead>
+            <tr  *ngFor = " let item of  thead">
+              <ng-container *ngFor="let i of item" >
+                <th nzWidth="5%" *ngIf="i.showCell" [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  nz-popover  [nzPopoverTitle]="i.hoverTitle" [nzPopoverContent]="i.hoverContent"  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value}}</th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody style="background-color:#fff;">
+            <ng-container *ngFor = " let item of  tbodyList let itemindex = index" >
+          <!--[class] ="itemindex%2 === 0 ? '':'tr-bg'"-->
+            <tr [class] ="itemindex%2 === 0 ? '':'tr-bg'">
+              <ng-container *ngFor="let i of item let iindex = index" >
+                <!-- <ng-container *ngIf="itemindex%2 === 0 && iindex > 2 ; else content"> -->
+                <td nzWidth="5%" *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
+                <!-- </ng-container> -->
+                <!-- <ng-template #content >
+                  <td style="width: 80px;"    *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
+                </ng-template> -->
+              </ng-container>
+            </tr>
+          </ng-container>
+          </tbody>
+        </nz-table>
+
+
+      </div>
+    </nz-tab>
+    
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['../R301_NonBar']" style="color: gray">
+        非直棒
+      </a>
+    </nz-tab>
+  </nz-tabset>
 </nz-content>
 
 
