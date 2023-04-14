@@ -17,6 +17,9 @@
           </nz-select>
           <button *ngIf="showLockBtn" style="margin-left: 20px; background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
 
+          <button *ngIf="!showLockBtn && selectFcpVer !=='' " style="margin-left: 30px; background-color: #FF9900; border-color: #FF9900;  color: #fff;" nz-button nzType="primary" (click)="queryFcpVerStatusBtn()">查看狀態</button>
+
+
         
       </p>
 
@@ -152,8 +155,67 @@
       <!-- <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button> -->
     </div>
   </nz-modal>
+<!---站別配置詳情-->
+<nz-modal
+nzWidth="300"
+[(nzVisible)]="shopStatusModalVisiable"
+[nzTitle]="shopStatusModalTitle"
+[nzContent]="shopStatusModalContent"
+[nzFooter]="shopStatusModalFooter"
+(nzOnCancel)="handleShopStatusModal()"
+>
+<ng-template #shopStatusModalTitle>當前版本：{{selectFcpVer}} ,配置狀況！</ng-template>
 
-  
+<ng-template #shopStatusModalContent>
+ <div>
+  <div nz-row [nzGutter]="16">
+    <div nz-col class="gutter-row" [nzSpan]="2"><div class="inner-box"><nz-tag [nzColor]="'#828282'">未配置</nz-tag></div></div>
+    <div nz-col class="gutter-row" [nzSpan]="2"><div class="inner-box"> <nz-tag [nzColor]="'#f50'">未送出</nz-tag></div></div>
+    <div nz-col class="gutter-row" [nzSpan]="2"><div class="inner-box"> <nz-tag [nzColor]="'#108ee9'">已送出</nz-tag></div></div>
+  </div>
+ </div>
+ <div>
+  <div style="background: #ECECEC;padding:30px;margin-top: 10px;">
+    <div nz-row [nzGutter]="8">
+      <div *ngFor="let data of shopCodeSaveStatusList"  nz-col [nzSpan]="3">
+        <nz-card nzTitle="{{data.shopCode}}">
+          <ng-container *ngFor="let equip of data.list"> 
+            <nz-tag style="margin-top:5px;" [nzColor]="equip.color">{{equip.equipCode}}</nz-tag>
+          </ng-container>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+ </div>
+ <div>
+  <!-- <nz-table *ngIf="shopCodeSaveStatusList" #basicTable [nzData]="shopCodeSaveStatusList">
+    <thead>
+      <tr>
+        <th>站別</th>
+        <th>機台</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{data.shopCode}}</td>
+        <td>
+          <ng-container *ngFor="let equip of data.list"> 
+            <nz-tag [nzColor]="'#108ee9'">{{equip.equipCode}}</nz-tag>
+          </ng-container>
+        </td>
+      
+      </tr>
+    </tbody>
+  </nz-table> -->
+
+ </div>
+</ng-template>
+
+<ng-template #shopStatusModalFooter>
+  <span></span>
+  <button nz-button nzType="primary" (click)="handleShopStatusModal()">關閉</button>
+</ng-template>
+</nz-modal>
 
 
 </div>
