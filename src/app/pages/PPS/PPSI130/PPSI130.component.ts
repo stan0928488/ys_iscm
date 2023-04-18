@@ -934,21 +934,18 @@ export class PPSI130Component implements AfterViewInit {
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸MAX":').join('"dixMax":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼_一爐兩捲":').join('"processCode2pcs":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼_一爐四捲":').join('"processCode4pcs":'));
-
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機台":').join('"equipCode":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機群":').join('"equipGroup":'));
     for (let i = 0; i < this.jsonExcelData.length; i++) {
 
       this.jsonExcelData[i].userCreate = this.USERNAME;
 
-      if(_.isEqual(this.jsonExcelData[i].processCode2pcs, '-') || _.isEqual(this.jsonExcelData[i].processCode2pcs, '')){
-        this.jsonExcelData[i].processCode2pcs = null;
-      }
-
+      
       if(_.isEqual(this.jsonExcelData[i].processCode4pcs, '-') || _.isEqual(this.jsonExcelData[i].processCode4pcs, '')){
         this.jsonExcelData[i].processCode4pcs = null;
       }
 
     }
-
 
   }
 
