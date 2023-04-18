@@ -230,6 +230,23 @@ const routes: Routes = [
     ],
     canActivate: [AuthGuard]
   },
+  {
+    path: "LABSet",
+    children: [   
+      { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
+      { path: "I001" }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "LABPlan",
+    children: [   
+      { path: "", redirectTo: "/LABPlan/P001", pathMatch: "full" },
+      { path:'P001' }
+    ],
+    canActivate: [AuthGuard]
+  },
+
 
   /* RMP & PAS & DCM */
   {

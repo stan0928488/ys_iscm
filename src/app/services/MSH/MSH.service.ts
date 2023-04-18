@@ -95,4 +95,10 @@ lockFcpVer(_param) {
   return this.http.get(queryUrl,_param);
 }
 
+//查看當前版次狀態
+findShopCodeSaveStatus(_param:any){
+  let queryUrl = this.APIURL + "/msh/MSHP001/findShopCodeSaveStatus/"+_param;
+  return this.http.get(queryUrl);
+}
+
 }

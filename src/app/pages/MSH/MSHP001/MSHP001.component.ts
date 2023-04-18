@@ -132,6 +132,9 @@ category = '' ;
   //双击选择 索引
   selectRowIndex = -1 ;
 
+  //所有站點機台配置狀況 
+  shopCodeSaveStatusList = [] ;
+
   constructor( 
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
@@ -743,9 +746,59 @@ category = '' ;
     })
 
    }
+  /****
+   * 查看當前版次狀態
+   */
+   queryFcpVerStatusBtn(){
+    this.shopCodeSaveStatusList = [] ;
+    this.mshService.findShopCodeSaveStatus(this.selectFcpVer).subscribe(res=>{
+      let result:any = res ;
+      //調取所有站點機台配置狀況
+      let shopCodeSaveStatusListTemp = result.data ;
+      let tempList = [] ;
+      shopCodeSaveStatusListTemp.forEach((item,value,array)=>{
+        let flag = 0 
+        let color = '#828282' //未配置
+        if(item.categorys.includes('B')) {
+          flag = 1 
+          color = '#f50' //已送出
+        } else if(item.categorys.includes('M')){
+          flag = 2
+          color = '#108ee9' //已送出
+        } else {
+          flag = 0 
+          color = '#828282' //未配置
+        }
+        item.flag = flag 
+        item.color = color 
+        tempList.push(item)
+      })
+      const groupedData = tempList
+      .map((item) => ({ ...item, categoryKey: `${item.shopCode}` }))
+      .reduce((accumulator, item) => {
+        const key = item.categoryKey;
+        if (!accumulator[key]) {
+          accumulator[key] = [];
+        }
+        accumulator[key].push(item);
+        return accumulator;
+      }, {});
+     //console.log("分群处理结果：" + JSON.stringify(groupedData)) 
+      this.shopCodeSaveStatusList = [] ;
+      Object.keys(groupedData).forEach((key)=>{
+        let obj = { shopCode:key ,list:groupedData[key] } ;
+        this.shopCodeSaveStatusList.push(obj)
+      })
+      console.log("处理结果：" + JSON.stringify(this.shopCodeSaveStatusList)) 
+      this.handleShopStatusModal() ;
+    })
+   }
 
-   
-
+   shopStatusModalVisiable = false ;
+   //站別配置詳情 handleShopStatusModal
+   handleShopStatusModal(){
+    this.shopStatusModalVisiable = !this.shopStatusModalVisiable ;
+   }
 
 
 }
