@@ -60,13 +60,14 @@ import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 
-
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
 import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
 import { MSHI001Component } from "./pages/MSH/MSHI001/MSHI001.component";
 import { MSHI002Component } from "./pages/MSH/MSHI002/MSHI002.component";
 import { MSHP001Component } from "./pages/MSH/MSHP001/MSHP001.component";
+
+import { LABI001Component } from "./pages/LAB/LABI001/LABI001.component";
 
 import { LoginComponent } from "./login/login.component";
 import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.service";
@@ -234,7 +235,7 @@ const routes: Routes = [
     path: "LABSet",
     children: [   
       { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
-      { path: "I001" }
+      { path: "I001", component:LABI001Component }
     ],
     canActivate: [AuthGuard]
   },

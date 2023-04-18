@@ -80,7 +80,6 @@ import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 
-
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -89,6 +88,8 @@ import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
+
+import { LABI001Component } from "./pages/LAB/LABI001/LABI001.component";
 
 
 import { AgGridModule } from "ag-grid-angular";
