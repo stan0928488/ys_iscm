@@ -2,19 +2,13 @@
   <nz-breadcrumb style="margin:16px 0;">
     <nz-breadcrumb-item>實驗室工時</nz-breadcrumb-item>
     <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>實驗室靜態資料</nz-breadcrumb-item>
   </nz-breadcrumb>
   
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I104']" style="color: gray">
-        直棒
-      </a>
-    </nz-tab>
-
-    <nz-tab>
       <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
-        非直棒
+        直棒
       </a>
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
         <table>
@@ -188,6 +182,12 @@
         </div>
       </div>
     </nz-tab>
+
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['./111111']" style="color: gray">
+        非直棒
+      </a>
+    </nz-tab>
   </nz-tabset>
 
 
@@ -195,7 +195,7 @@
 
 
 
-<!-- 新增靜態基本資料 -->
+<!-- 新增實驗室靜態資料 -->
 <nz-modal
   [(nzVisible)]="isVisiblePrepare"
   [nzWidth]="850"
@@ -204,7 +204,7 @@
   [nzFooter]="prepareInputFooter"
   (nzOnCancel)="cancelPrepareInput()">
 
-  <ng-template #repareTitle>新增靜態基本資料</ng-template>
+  <ng-template #repareTitle>新增實驗室靜態資料</ng-template>
   <ng-template #prepareInputContent>
     <div>
       <table style="border-collapse: separate;">

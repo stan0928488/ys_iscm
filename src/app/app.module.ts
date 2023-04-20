@@ -80,7 +80,6 @@ import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 
-
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -165,8 +164,7 @@ registerLocaleData(zh);
     
     SPAP100component,
     SPAP101component,
-    InactivityTimerComponent
-    ,
+    InactivityTimerComponent,
     MSHI001Component,
     MSHI002Component,
     MSHP001Component,
