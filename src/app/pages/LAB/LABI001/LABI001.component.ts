@@ -1,18 +1,21 @@
 import { Component, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
+import { LABService } from "src/app/services/LAB/LAB.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import * as moment from "moment";
+import { ThisReceiver } from "@angular/compiler";
 
 
 
 interface ItemData {
   idx: number;
-  ID: number;
+  id: number;
   cuso4_test: string;
   impact_test: string;
   dia_min: string;
@@ -21,9 +24,8 @@ interface ItemData {
   mechanical_properties_code: string;
   grade_no: string;
   experiment_days: string;
-  RETURN_TIME: number;
-  COOLING_TIME: number;
-  OTHER_TIME: number;
+  del_status: number;
+
 }
 
 
@@ -73,6 +75,7 @@ export class LABI001Component implements AfterViewInit {
   errorTXT = [];
   data = [];
   constructor(
+    private LABService : LABService,
     private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -129,60 +132,47 @@ export class LABI001Component implements AfterViewInit {
   
   getPPSINP03List() {
     this.loading = true;
-      this.data = [
-        {
-          "idx": 0 ,
-          "cuso4_test" :"N",
-          "impact_test" :"N",
-          "dia_min" :"0",
-          "dia_max" :"40.00",
-          "shape" :"H",
-          "mechanical_properties_code" :'-',
-          "grade_no" :'-',
-          "experiment_days":"2"
-        },
-        {
-          "idx": 1 ,
-          "cuso4_test" :"N",
-          "impact_test" :"N",
-          "dia_min" :"0",
-          "dia_max" :"40.00",
-          "shape" :"S",
-          "mechanical_properties_code" :'-',
-          "grade_no" :'-',
-          "experiment_days":"2"
-        },
-        {
-          "idx": 2 ,
-          "cuso4_test" :"N",
-          "impact_test" :"N",
-          "dia_min" :"0",
-          "dia_max" :"40.00",
-          "shape" :'-',
-          "mechanical_properties_code" :'-',
-          "grade_no" :"S303XX",
-          "experiment_days":"2"
-        },
-        {
-          "idx": 3 ,
-          "cuso4_test" :"N",
-          "impact_test" :"N",
-          "dia_min" :"0",
-          "dia_max" :"40.00",
-          "shape" :'-',
-          "mechanical_properties_code" :'-',
-          "grade_no" :"S316LC",
-          "experiment_days":"2"
-        }
-        
-        ];
 
-      
+    let myObj = this;
+
+    myObj.LABService.getLab001Data().subscribe(res => {
+
+      let result:any = res;
+      this.PPSINP03List_tmp = result.data;
+
+      const data = [];
+      for (let i = 0; i < this.PPSINP03List_tmp.length ; i++) {
+        
+        data.push({
+          idx: this.PPSINP03List_tmp[i].id,
+          id: this.PPSINP03List_tmp[i].id,
+          plant_code: this.PPSINP03List_tmp[i].plantCode,
+          cuso4_test: this.PPSINP03List_tmp[i].cuso4Test,
+          impact_test: this.PPSINP03List_tmp[i].impactTest,
+          sale_order_dia: this.PPSINP03List_tmp[i].saleOrderDia,
+          dia_min: this.PPSINP03List_tmp[i].diaMin,
+          dia_max: this.PPSINP03List_tmp[i].diaMax,
+          shape: this.PPSINP03List_tmp[i].shape,
+          mechanical_properties_code: this.PPSINP03List_tmp[i].mechanicalPropertiesCode,
+          grade_no: this.PPSINP03List_tmp[i].gradeNo,
+          experiment_days: this.PPSINP03List_tmp[i].experimentDays,
+          del_status: this.PPSINP03List_tmp[i].delStatus,
+          date_create: this.PPSINP03List_tmp[i].dateCreate == null ? null:moment(this.PPSINP03List_tmp[i].dateCreate),
+          user_create: this.PPSINP03List_tmp[i].userCreate,
+          date_update: this.PPSINP03List_tmp[i].dateUpdate == null ? null : moment(this.PPSINP03List_tmp[i].dateUpdate),
+          user_update: this.PPSINP03List_tmp[i].userUpdate
+        });
+      }
+      this.data = data;
+      this.displayPPSINP03List = this.PPSINP03List;
       this.updateEditCache();
-      console.log(this.data);
+      myObj.loading = false;
+      
+    });
+      
+      
       
   }
-
   
 
   // insert
@@ -227,9 +217,9 @@ export class LABI001Component implements AfterViewInit {
 
   // cancel
   cancelEdit(id: number): void {
-    const index = this.PPSINP03List.findIndex(item => item.idx === id);
+    const index = this.data.findIndex(item => item.idx === id);
     this.editCache[id] = {
-      data: { ...this.PPSINP03List[index] },
+      data: { ...this.data[index] },
       edit: false
     };
   }
@@ -237,33 +227,12 @@ export class LABI001Component implements AfterViewInit {
 
   // update Save
   saveEdit(id: number): void {
+
     let myObj = this;
-    /*create("error", "「站別」不可為空");
-      return;
-    } else if (this.editCache[id].data.EQUIP_CODE === undefined && this.editCache[id].data.EQUIP_GROUP === undefined) {
-      myObj.message.create("error", "「機台」和「機群」至少填一項");
-      return;
-    } else if (this.editCache[id].data.LOAD_TIME === undefined) {
-      myObj.message.create("error", "「上下料」不可為空");
-      return;
-    } else if (this.editCache[id].data.TRANSFER_TIME === undefined) {
-      myObj.message.create("error", "「搬運」不可為空");
-      return;
-    } else if (this.editCache[id].data.BIG_ADJUST_TIME === undefined) {
-      myObj.message.create("error", "「大調機」不可為空");
-      return;
-    } else if (this.editCache[id].data.SMALL_ADJUST_TIME === undefined) {
-      myObj.message.create("error", "「小調機」不可為空");
-      return;
-    } else if (this.editCache[id].data.RETURN_TIME === undefined) {
-      myObj.message.create("error", "「退料」不可為空");
-      return;
-    }  else if (this.editCache[id].data.COOLING_TIME === undefined) {
-      myObj.message.create("error", "「冷卻」不可為空");
-      return;
-    } else if (this.editCache[id].data.OTHER_TIME === undefined) {
-      myObj.message.create("error", "「其他整備」不可為空");
-      return;
+
+    if (this.editCache[id].data.experiment_days === '0') {
+      myObj.message.create("error", "「實驗天數」不可為0天");
+      return;  
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
@@ -274,7 +243,7 @@ export class LABI001Component implements AfterViewInit {
           console.log("cancel")
       });
     }
-    */
+  
   }
   
 
@@ -298,19 +267,25 @@ export class LABI001Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        CUSO4_TEST:this.CUSO4_TEST,
-        IMPACT_TEST:this.IMPACT_TEST,
-        DIA_MIN:this.DIA_MIN,
-        DIA_MAX:this.DIA_MAX,
-        SHAPE:this.SHAPE,
-        MECHANICAL_PROPERTIES_CODE:this.MECHANICAL_PROPERTIES_CODE,
-        GRADE_NO:this.GRADE_NO ,
-        EXPERIMENT_DAYS:this.EXPERIMENT_DAYS
-    
+        cuso4Test:this.CUSO4_TEST,
+        impactTest:this.IMPACT_TEST,
+        diaMin:this.DIA_MIN,
+        diaMax:this.DIA_MAX,
+        shape:this.SHAPE == ''? null:this.SHAPE,
+        mechanicalPropertiesCode:this.MECHANICAL_PROPERTIES_CODE == ''?null:this.MECHANICAL_PROPERTIES_CODE,
+        gradeNo:this.GRADE_NO==''?null:this.GRADE_NO ,
+        experimentDays:this.EXPERIMENT_DAYS,
+        userCreate: this.USERNAME,
+        dateCreate: moment(),
+        plantCode : this.PLANT_CODE,
+        delStatus : 0
       })
+      console.log(obj)
+      myObj.LABService.saveLab001Data(obj).subscribe(res => {
 
-      myObj.PPSService.insertI103Tab1Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        let result:any = res;
+
+        if(result.code === 200) {
           this.onInit();
           this.getPPSINP03List();
           this.sucessMSG("新增成功", ``);
@@ -333,27 +308,27 @@ export class LABI001Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache[_id].data.ID,
-        CUSO4_TEST : this.editCache[_id].data.cuso4_test,
-        IMPACT_TEST : this.editCache[_id].data.impact_test,
-        DIA_MIN : this.editCache[_id].data.dia_min,
-        DIA_MAX : this.editCache[_id].data.dia_max,
-        SHAPE : this.editCache[_id].data.shape,
-        MECHANICAL_PROPERTIES_CODE : this.editCache[_id].data.mechanical_properties_code,
-        GRADE_NO : this.editCache[_id].data.grade_no,
-        EXPERIMENT_DAYS : this.editCache[_id].data.experiment_days,
-        USERNAME : this.USERNAME
+        id : this.editCache[_id].data.id,
+        cuso4Test : this.editCache[_id].data.cuso4_test,
+        impactTest : this.editCache[_id].data.impact_test,
+        diaMin : this.editCache[_id].data.dia_min,
+        diaMax : this.editCache[_id].data.dia_max,
+        shape : this.editCache[_id].data.shape,
+        mechanicalPropertiesCode : this.editCache[_id].data.mechanical_properties_code,
+        gradeNo : this.editCache[_id].data.grade_no,
+        experimentDays : this.editCache[_id].data.experiment_days,
+        userUpdate: this.USERNAME,
+        dateUpdate: moment(),
+        plantCode : this.PLANT_CODE,
+        delStatus : this.editCache[_id].data.del_status
         
       })
-      myObj.PPSService.updateI103Tab1Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
-          this.onInit();
-          this.sucessMSG("修改成功", ``);
-          const index = this.PPSINP03List.findIndex(item => item.idx === _id);
-          Object.assign(this.PPSINP03List[index], this.editCache[_id].data);
-          this.editCache[_id].edit = false;
-        } else {
-          this.errorMSG("修改失敗", res[0].MSG);
+      myObj.LABService.updateLab001Data(obj).subscribe(res => {
+        let result:any = res;
+
+        if(result.code === 200){
+          this.sucessMSG("更新成功","更新成功");
+          this.getPPSINP03List();
         }
       },err => {
         reject('upload fail');
@@ -367,17 +342,37 @@ export class LABI001Component implements AfterViewInit {
   // 刪除資料
   delID(_id) {
     let myObj = this;
+    this.LoadingPage = true;
+    console.log(this.data)
+    console.log(_id)
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache[_id].data.ID;
-      myObj.PPSService.delI103Tab1Data('2', _ID).subscribe(res => {
-        if(res[0].MSG === "Y") {
-          this.onInit();
-          this.sucessMSG("刪除成功", ``);
+      let obj = {};
+      _.extend(obj, {
+        id : this.editCache[_id].data.id,
+        cuso4Test : this.editCache[_id].data.cuso4_test,
+        impactTest : this.editCache[_id].data.impact_test,
+        diaMin : this.editCache[_id].data.dia_min,
+        diaMax : this.editCache[_id].data.dia_max,
+        shape : this.editCache[_id].data.shape,
+        mechanicalPropertiesCode : this.editCache[_id].data.mechanical_properties_code,
+        gradeNo : this.editCache[_id].data.grade_no,
+        experimentDays : this.editCache[_id].data.experiment_days,
+        userUpdate: this.USERNAME,
+        dateUpdate: moment(),
+        plantCode : this.PLANT_CODE,
+        delStatus : this.editCache[_id].data.del_status
+        
+      })
+      myObj.LABService.deleteLab001Data(obj).subscribe(res => {
+        let result:any = res;
+
+        if(result.code === 200){
+          this.sucessMSG("刪除成功","刪除成功");
           this.getPPSINP03List();
         }
       },err => {
         reject('upload fail');
-        this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        this.errorMSG("修改失敗", "後台刪除錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
       })
     });
@@ -477,7 +472,7 @@ export class LABI001Component implements AfterViewInit {
 
     console.log('hello');
     if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-        worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined || worksheet.J1 === undefined || worksheet.K1 === undefined) {
+        worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined ) {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -511,23 +506,44 @@ export class LABI001Component implements AfterViewInit {
       this.errorMSG("匯入錯誤", this.errorTXT);
 
     } else {
+      
       for(let i=0 ; i < _data.length ; i++) {
 
         let cuso4Test = _data[i].硫酸銅試驗.toString();
         let impactTest = _data[i].衝擊試驗.toString();
         let diaMin = _data[i].尺寸MIN !== undefined || null? _data[i].尺寸MIN.toString() : '0';
         let diaMax = _data[i].尺寸MAX !== undefined || null? _data[i].尺寸MAX.toString() : '0';
-        let shape = _data[i].型態 !== undefined || null? _data[i].型態.toString() : '';
-        let mechanicalPropertiesCode = _data[i].機械性質碼 !== undefined || null? _data[i].機械性質碼.toString() : '';
-        let gradeNo = _data[i].鋼種 !== undefined || null ? _data[i].鋼種.toString() : '';
+        let shape = _data[i].型態 !== undefined || null? _data[i].型態.toString() : null;
+        let mechanicalPropertiesCode = _data[i].機械性質碼 !== undefined || null? _data[i].機械性質碼.toString() : null;
+        let gradeNo = _data[i].鋼種 !== undefined || null ? _data[i].鋼種.toString() : null;
         let experimentDays = _data[i].實驗天數 !== undefined || null ? _data[i].實驗天數.toString() : '0';
-      
-
+        
+        
+        var findData = this.data.some(element => 
+          element['cuso4_test'] == cuso4Test&&
+          element['impact_test'] == impactTest&&
+          element['dia_min'] == diaMin&&
+          element['dia_max'] == diaMax&&
+          element['shape'] == shape&&
+          element['mechanical_properties_code'] == mechanicalPropertiesCode&&
+          element['grade_no'] == gradeNo&&
+          element['experiment_days'] == experimentDays);
+        
+        if(findData){
+          this.errorTXT.push(`第 ` + (i +1) + `列`);
+          this.isERROR = true;
+        }
         this.importdata_new.push({cuso4Test: cuso4Test, impactTest: impactTest, diaMin: diaMin, diaMax: diaMax,
-          shape: shape, mechanicalPropertiesCode: mechanicalPropertiesCode, gradeNo: gradeNo, experimentDays: experimentDays});
+          shape: shape, mechanicalPropertiesCode: mechanicalPropertiesCode, gradeNo: gradeNo, experimentDays: experimentDays,userCreate: this.USERNAME
+        ,dateCreate: moment(),plantCode : this.PLANT_CODE,delStatus : 0});
       }
-
-      /*return new Promise((resolve, reject) => {
+        if(this.isERROR){
+          this.clearFile();
+          this.isErrorMsg = true;
+          this.importdata_new = [];
+          this.errorMSG("匯入錯誤", this.errorTXT + "，重複 請檢查");
+        }
+      return new Promise((resolve, reject) => {
         this.LoadingPage = true;
         let myObj = this;
         let obj = {};
@@ -535,17 +551,15 @@ export class LABI001Component implements AfterViewInit {
           EXCELDATA : this.importdata_new,
           USERCODE : this.USERNAME
         })
-        myObj.PPSService.importI103Excel('2', obj).subscribe(res => {
-          if(res[0].MSG === "Y") {
-            this.loading = false;
-            this.LoadingPage = false;
+        myObj.LABService.batchsaveLab001Data(this.importdata_new).subscribe(res => {
+          let result:any = res;
 
-            this.sucessMSG("EXCCEL上傳成功", "");
-            this.getPPSINP03List();
-            this.clearFile();
-            this.onInit();
-          } else {
-            this.errorMSG("匯入錯誤", res[0].MSG);
+        if(result.code === 200){
+          this.sucessMSG("EXCCEL上傳成功", "");
+          this.getPPSINP03List();
+        }
+        else {
+            this.errorMSG("匯入錯誤", "");
             this.clearFile();
             this.importdata_new = [];
             this.LoadingPage = false;
@@ -556,8 +570,9 @@ export class LABI001Component implements AfterViewInit {
           this.importdata_new = [];
           this.LoadingPage = false;
         })
+        
       });
-      */
+      
     }
   }
   
