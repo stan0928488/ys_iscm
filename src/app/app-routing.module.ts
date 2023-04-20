@@ -235,7 +235,7 @@ const routes: Routes = [
     path: "LABSet",
     children: [   
       { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
-      { path: "I001", component:LABI001Component }
+      { path: "I001", component: LABI001Component }
     ],
     canActivate: [AuthGuard]
   },

@@ -6,6 +6,8 @@ import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
 import * as moment from 'moment';
 import * as _ from "lodash";
+import * as XLSX from 'xlsx';
+import { CommonService } from "src/app/services/common/common.service";
 
 
 interface ItemData10 {
@@ -66,8 +68,12 @@ export class PPSI122Component implements AfterViewInit {
   searchDrainingTimes10Value = '';
   searchBatchCnt10Value = '';
 
+  isSpinning = false;
+  excelImportFile : File;
+
   constructor(
     private PPSService: PPSService,
+    private commonService : CommonService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
@@ -89,6 +95,7 @@ export class PPSI122Component implements AfterViewInit {
   editCache10: { [key: string]: { edit: boolean; data: ItemData10 } } = {};
   displayPPSINP10List : ItemData10[] = [];
   getPPSINP10List() {
+    this.isSpinning = true;
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP10List().subscribe(res => {
@@ -119,6 +126,7 @@ export class PPSI122Component implements AfterViewInit {
       this.updateEditCache();
       console.log(this.PPSINP10List);
       myObj.loading = false;
+      myObj.isSpinning = false;
     });
   }
 
@@ -558,6 +566,292 @@ export class PPSI122Component implements AfterViewInit {
   resetByBatchCnt10() : void {
     this.searchBatchCnt10Value = '';
     this.ppsInp10ListFilter("BATCH_CNT_10", this.searchBatchCnt10Value);
+  }
+
+//=============================================
+// Excel 匯入、匯出
+//=============================================
+
+  // excel檔案
+  incomingFile($event: any) {
+    this.excelImportFile = $event.target.files[0];
+    let lastname = this.excelImportFile.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+  }
+
+  // Excel 匯入
+  jsonExcelData: any[] = [];
+  handleImport() {
+
+    const fileValue = (<HTMLInputElement>document.getElementById("importExcel")).value;
+    if(fileValue === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "";
+      return;
+    }
+
+      const reader = new FileReader();
+   
+      // 文件加載完成後調用
+      reader.onload = (e: any) => {
+        this.isSpinning = true;
+
+        // 從檔案獲取原始資料
+        let data = e.target.result;
+
+        // 從原始資料獲取工作簿
+        // 兼容IE，需把type改為binary，並對data進行轉化
+        let workbook = XLSX.read(data, {
+          type: 'binary'
+        });
+
+        const sheets = workbook.SheetNames;
+
+        if (sheets.length) {
+          var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
+            defval: '' // 單元格為空的預設值
+          });
+          this.jsonExcelData = jsonData;
+
+          if(this.jsonExcelData.length != 0){
+            this.importExcel();
+          }
+          else{
+            this.errorMSG("匯入失敗", `此檔案無任何數據`);
+            this.isSpinning = false;
+          }
+
+        }
+      }
+      // 加載文件
+      reader.readAsArrayBuffer(this.excelImportFile);
+  }
+
+  importExcel() : void {
+
+    // 檢查欄位名稱是否都正確
+    if(!this.checkExcelHeader(this.jsonExcelData[0])){
+      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
+      this.isSpinning = false;
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+    console.log("匯入的Excle欄位名稱皆正確");
+
+    // 校驗每個Excel欄位是否都有填寫
+    if(!this.checkAllValuesNotEmpty(this.jsonExcelData)){
+      this.isSpinning = false;
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+    console.log("匯入的Excle特定的欄位都有填寫");
+
+    // 將jsonData轉成英文的key
+    this.convertJsonToEnglishKey();
+
+     // 校驗Excel中的資料是否有重複
+    if(this.commonService.checkExcelDataDuplicate(this.jsonExcelData)){
+      this.isSpinning = false;
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+    console.log("匯入的Excle中的資料皆無重複");
+
+    // 將資料全刪除，再匯入EXCEL檔內的資料
+    const myThis = this;
+    const p = this.deleteAllData();
+    p.then(deleteSuccess =>{
+      // 批次新增Excle中的資料
+      return myThis.barchInsertExcelData();
+    }).then(barchInsertSuccess =>{
+      myThis.sucessMSG(barchInsertSuccess, ``);
+      myThis.getPPSINP10List();
+    }).catch(function(error) {
+      myThis.isSpinning = false;
+      myThis.errorMSG(error, ``);
+    });
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+  }
+
+  barchInsertExcelData(){
+    const myThis = this;
+    return new Promise(function(resolve, reject){
+      myThis.PPSService.batchSaveI110Data(myThis.jsonExcelData).subscribe(response => {
+        if (response.success === true) {
+          resolve("匯入成功");
+        } 
+        else {
+          reject(response.success);
+        }
+      }, error =>{
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`);
+      });
+    });
+  }
+
+  deleteAllData(){
+    const myThis = this;
+    return new Promise(function(resolve, reject){
+      myThis.PPSService.deleteI110AllData().subscribe(response => {
+        if (response.success === true) {
+          resolve("刪除所有資料成功");
+        } 
+        else {
+          reject(response.message);
+        }
+      }, error =>{
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`);
+      });
+    });
+  }
+
+  convertJsonToEnglishKey() : void {
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"站號":').join('"SHOP_CODE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機台碼":').join('"EQUIP_CODE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"鋼種":').join('"GRADE_NO":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"長度-最小值(mm)":').join('"LENGTH_MIN":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"長度-最大值(mm)":').join('"LENGTH_MAX":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸最小":').join('"DIA_MIN":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸最大":').join('"DIA_MAX":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"總時間(分/批)":').join('"TOTAL_TIMES":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"浸酸時間(分/批)":').join('"PICKLING_TIMES":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"清洗時間(分/批)":').join('"WASHING_TIMES":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"瀝乾時間(分/批)":').join('"DRAINING_TIMES":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"投入上限值(捆/批)":').join('"BATCH_CNT":'));
+   }
+
+  checkAllValuesNotEmpty(jsonExcelData) : boolean{
+
+    for (let i = 1; i <= jsonExcelData.length; i++){
+      let rowNumberInExcel = i+1;
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["站號"])) || _.isEqual(String(jsonExcelData[i-1]["站號"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「站號」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["機台碼"])) || _.isEqual(String(jsonExcelData[i-1]["機台碼"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「機台碼」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["鋼種"])) || _.isEqual(String(jsonExcelData[i-1]["鋼種"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「鋼種」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["長度-最小值(mm)"])) || _.isEqual(String(jsonExcelData[i-1]["長度-最小值(mm)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「長度-最小值(mm)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["長度-最大值(mm)"])) || _.isEqual(String(jsonExcelData[i-1]["長度-最大值(mm)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「長度-最大值(mm)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸最小"])) || _.isEqual(String(jsonExcelData[i-1]["尺寸最小"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸最小」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸最大"])) || _.isEqual(String(jsonExcelData[i-1]["尺寸最大"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸最大」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["總時間(分/批)"])) || _.isEqual(String(jsonExcelData[i-1]["總時間(分/批)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「總時間(分/批)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["浸酸時間(分/批)"])) || _.isEqual(String(jsonExcelData[i-1]["浸酸時間(分/批)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「浸酸時間(分/批)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["清洗時間(分/批)"])) || _.isEqual(String(jsonExcelData[i-1]["清洗時間(分/批)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「清洗時間(分/批)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["瀝乾時間(分/批)"])) || _.isEqual(String(jsonExcelData[i-1]["瀝乾時間(分/批)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「瀝乾時間(分/批)」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["投入上限值(捆/批)"])) || _.isEqual(String(jsonExcelData[i-1]["投入上限值(捆/批)"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「投入上限值(捆/批)」不得為空，請修正`);
+        return false;
+      }
+    } //enf for
+
+    return true;
+
+  }
+
+  checkExcelHeader(d) : boolean{
+
+    let b1 = false;
+    let b2 = false;
+    let b3 = false;
+    let b4 = false;
+    let b5 = false;
+    let b6 = false;
+    let b7 = false;
+    let b8 = false;
+    let b9 = false;
+    let b10 = false;
+    let b11 = false;
+    let b12 = false;
+ 
+    const keys = Object.keys(d);
+    if(keys.length !== 12) return false;
+
+    keys.forEach(k =>{
+      if(k === "站號") b1 = true;
+      else if (k === "機台碼") b2 = true;
+      else if (k === "鋼種") b3 = true;
+      else if (k === "長度-最小值(mm)") b4 = true;
+      else if (k === "長度-最大值(mm)") b5 = true;
+      else if (k === "尺寸最小") b6 = true;
+      else if (k === "尺寸最大") b7 = true;
+      else if (k === "總時間(分/批)") b8 = true;
+      else if (k === "浸酸時間(分/批)") b9 = true;
+      else if (k === "清洗時間(分/批)") b10 = true;
+      else if (k === "瀝乾時間(分/批)") b11 = true;
+      else if (k === "投入上限值(捆/批)") b12 = true;
+    });
+
+    return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
+  }
+
+
+  // Excel 匯出
+  exportToExcel(){
+
+    this.isSpinning = true;
+
+    const exportJsonDataList = this.displayPPSINP10List.map(obj => {
+      return _.omit(obj, ['id', 'tab10ID']);
+    });
+
+    const firstRow = ["SHOP_CODE_10", "EQUIP_CODE_10", "GRADE_NO_10", "LENGTH_MIN_10", "LENGTH_MAX_10", "DIA_MIN_10", "DIA_MAX_10", "TOTAL_TIMES_10", "PICKLING_TIMES_10", "WASHING_TIMES_10", "DRAINING_TIMES_10", "BATCH_CNT_10"];
+    const firstRowDisplay = {SHOP_CODE_10:"站號", EQUIP_CODE_10:"機台碼", GRADE_NO_10:"鋼種", LENGTH_MIN_10:"長度-最小值(mm)", LENGTH_MAX_10:"長度-最大值(mm)", DIA_MIN_10:"尺寸最小", DIA_MAX_10:"尺寸最大", TOTAL_TIMES_10:"總時間(分/批)", PICKLING_TIMES_10:"浸酸時間(分/批)", WASHING_TIMES_10:"清洗時間(分/批)", DRAINING_TIMES_10:"瀝乾時間(分/批)", BATCH_CNT_10:"投入上限值(捆/批)"};
+    const exportData = [firstRowDisplay, ...exportJsonDataList];  
+
+    const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
+    const workBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet1");
+    XLSX.writeFileXLSX(workBook, '直棒桶槽式工時.xlsx')
+
+    this.isSpinning = false;
+    this.sucessMSG("匯出成功!", ``);
+
   }
 
 

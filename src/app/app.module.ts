@@ -89,9 +89,7 @@ import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 
-import { LABI001Component } from "./pages/LAB/LABI001/LABI001.component";
-
-
+import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
 import { AgGridModule } from "ag-grid-angular";
 
 registerLocaleData(zh);
@@ -166,11 +164,11 @@ registerLocaleData(zh);
     
     SPAP100component,
     SPAP101component,
-    InactivityTimerComponent
-    ,
+    InactivityTimerComponent,
     MSHI001Component,
     MSHI002Component,
-    MSHP001Component
+    MSHP001Component,
+    LABI001Component
    ],
   imports: [
     BrowserModule,

@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit {
       password,
       env      
     };
-
+    this.router.navigateByUrl("/FCPBarData/P202");
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
     this.commonService.casLogin(username, password, env).subscribe(res => {
@@ -128,7 +128,7 @@ export class LoginComponent implements OnInit {
       },
       err => {
         console.log("login fail err");
-        console.log(err);
+        
         this.isLogining = false;
         this.authFail = true;
       }

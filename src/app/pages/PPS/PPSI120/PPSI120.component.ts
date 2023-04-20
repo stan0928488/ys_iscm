@@ -6,6 +6,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import { CommonService } from "src/app/services/common/common.service";
 
 
 
@@ -69,9 +70,12 @@ export class PPSI120Component implements AfterViewInit {
   // 是否顯示「執行中」元件
   isSpinning = false;
 
+  excelImportFile : File;
+
 
   constructor(
     private PPSService: PPSService,
+    private commonService : CommonService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
@@ -94,6 +98,7 @@ export class PPSI120Component implements AfterViewInit {
   displayPPSINP09List : ItemData9[] = [];
   //tab9_select 
   getPPSINP09List() {
+    this.isSpinning = true;
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP09List().subscribe(res => {
@@ -127,6 +132,7 @@ export class PPSI120Component implements AfterViewInit {
       this.displayPPSINP09List = this.PPSINP09List;
       this.updateEditCache();
       myObj.loading = false;
+      myObj.isSpinning = false;
     });
   }
 
@@ -510,17 +516,31 @@ export class PPSI120Component implements AfterViewInit {
 // Excel 匯入、匯出
 //=============================================
 
+// excel檔案
+incomingFile($event: any) {
+  this.excelImportFile = $event.target.files[0];
+  let lastname = this.excelImportFile.name.split('.').pop();
+  if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+    this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+    return;
+  }
+}
+
+
   // Excel 匯入
   jsonExcelData: any[] = [];
-  handleImport($event: any) {
+  handleImport() {
 
-    const files = $event.target.files;
-
-    if (files.length) {
+    const fileValue = (<HTMLInputElement>document.getElementById("importExcel")).value;
+    if(fileValue === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "";
+      return;
+    }
 
       const reader = new FileReader();
-      const file = files[0];
-
+   
       // 文件加載完成後調用
       reader.onload = (e: any) => {
         this.isSpinning = true;
@@ -553,15 +573,14 @@ export class PPSI120Component implements AfterViewInit {
         }
       }
       // 加載文件
-      reader.readAsArrayBuffer(file);
-    }
+      reader.readAsArrayBuffer(this.excelImportFile);
   }
 
   importExcel(){
 
     // 檢查欄位名稱是否都正確
     if(!this.checkExcelHeader(this.jsonExcelData[0])){
-      this.errorMSG("匯入失敗", `Header名稱有誤或有缺失Header，請修正`);
+      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
       this.isSpinning = false;
       (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
       return;
@@ -579,14 +598,13 @@ export class PPSI120Component implements AfterViewInit {
     // 將jsonData轉成英文的key
     this.convertJsonToEnglishKey();
 
-    // 校驗Excel中的資料是否有重複
-    if(this.checkDataDuplicate()){
-      this.isSpinning = false;
-      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
-      return;
-    }
-    console.log("匯入的Excle中的資料皆無重複");
-    console.table(this.jsonExcelData);
+   // 校驗Excel中的資料是否有重複
+  if(this.commonService.checkExcelDataDuplicate(this.jsonExcelData)){
+    this.isSpinning = false;
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+    return;
+  } 
+  console.log("匯入的Excle中的資料皆無重複");
 
     // 將資料全刪除，再匯入EXCEL檔內的資料
     const myThis = this;
@@ -597,7 +615,6 @@ export class PPSI120Component implements AfterViewInit {
     }).then(barchInsertSuccess =>{
       myThis.sucessMSG(barchInsertSuccess, ``);
       this.getPPSINP09List();
-      myThis.isSpinning = false;
     }).catch(function(error) {
       myThis.isSpinning = false;
       myThis.errorMSG(error, ``);
@@ -628,45 +645,16 @@ export class PPSI120Component implements AfterViewInit {
     return new Promise(function(resolve, reject){
       myThis.PPSService.deleteI109AllData().subscribe(response => {
         if (response.success === true) {
-          resolve("刪除所有資料成功")
+          resolve("刪除所有資料成功");
         } 
         else {
-          resolve(response.success)
+          reject(response.message);
         }
       }, error =>{
-        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`)
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`);
       });
     });
   }
-
-  checkDataDuplicate(){
-
-    let i = 0;
-    let j = 1;
-    while(true){
-
-
-      if(i === this.jsonExcelData.length-1) return false;
-
-      if(j > this.jsonExcelData.length-1){
-        i++;
-        j = i+1;
-      }
-
-      if(i === this.jsonExcelData.length-1) return false;
-
-
-      if(_.isEqual(this.jsonExcelData[i], this.jsonExcelData[j])){
-        this.errorMSG("匯入失敗", `第 ${i+2} 行資料的與第 ${j+2} 行資料已重複，請修改後再匯入`);
-        return true;
-      }
-      else{
-        j++;
-      }
-
-    }
-  }
-
 
   convertJsonToEnglishKey() : void {
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"站號":').join('"SHOP_CODE":'));
@@ -785,6 +773,7 @@ export class PPSI120Component implements AfterViewInit {
     let b11 = false;
  
     const keys = Object.keys(d);
+    if(keys.length !== 11) return false;
 
     keys.forEach(k =>{
       if(k === "站號") b1 = true;
