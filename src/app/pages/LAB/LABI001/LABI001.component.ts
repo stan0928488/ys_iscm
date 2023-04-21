@@ -343,8 +343,7 @@ export class LABI001Component implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     this.LoadingPage = true;
-    console.log(this.data)
-    console.log(_id)
+
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
@@ -386,10 +385,10 @@ export class LABI001Component implements AfterViewInit {
     let titleArray = [];
     if(this.data.length > 0) {
       data = this.formatDataForExcel(this.data);
-      fileName = `非直棒整備時間`;
+      fileName = `直棒_實驗室靜態資料`;
       titleArray = ['硫酸銅試驗', '衝擊試驗', '尺寸MIN', '尺寸MAX', '型態', '機械性質碼', '鋼種', '實驗天數'];
     } else {
-      this.errorMSG("匯出失敗", "非直棒整備時間目前無資料");
+      this.errorMSG("匯出失敗", "直棒實驗室靜態資料目前無資料");
       return;
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
@@ -462,7 +461,7 @@ export class LABI001Component implements AfterViewInit {
       
       this.checkTemplate(worksheet, this.importdata);
     }
-    console.log('hello');
+
     fileReader.readAsArrayBuffer(this.file);
   }
 
@@ -626,7 +625,7 @@ export class LABI001Component implements AfterViewInit {
     this.data = data;
   }
 
-  // 資料過濾---整備時間 --> 站別
+  // 資料過濾---整備時間 --> 硫酸銅試驗
   searchCuso4Test() : void{
     this.ppsInp03ListFilter("cuso4_test", this.searchCuso4TestValue);
   } 
@@ -635,7 +634,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("cuso4_test", this.searchCuso4TestValue);
   }
 
-  // 資料過濾---整備時間 --> 機台
+  // 資料過濾---整備時間 --> 衝擊試驗
   searchImpactTest() : void{
     this.ppsInp03ListFilter("impact_test", this.searchImpactTestValue);
   } 
@@ -643,7 +642,7 @@ export class LABI001Component implements AfterViewInit {
     this.searchImpactTestValue = '';
     this.ppsInp03ListFilter("impact_test", this.searchImpactTestValue);
   }
-  // 資料過濾---整備時間 --> 機群
+  // 資料過濾---整備時間 --> 尺寸MIN
   searchDiaMin() : void{
     this.ppsInp03ListFilter("dia_min", this.searchDiaMinValue);
   } 
@@ -652,7 +651,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("dia_min", this.searchDiaMinValue);
   }
 
-  // 資料過濾---整備時間 --> 上下料
+  // 資料過濾---整備時間 --> 尺寸Max
   searchDiaMax() : void{
     this.ppsInp03ListFilter("dia_max", this.searchDiaMaxValue);
   } 
@@ -661,7 +660,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("dia_max", this.searchDiaMaxValue);
   }
 
-  // 資料過濾---整備時間 --> 搬運
+  // 資料過濾---整備時間 --> 型態
   searchByShape() : void{
     console.log(this.searchByShapeValue);
     this.ppsInp03ListFilter("shape", this.searchByShapeValue);
@@ -671,7 +670,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("shape", this.searchByShapeValue);
   }
 
-  // 資料過濾---整備時間 --> 大調機
+  // 資料過濾---整備時間 --> 機械性質碼
   searchByMechanicalPropertiesCode() : void{
     this.ppsInp03ListFilter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
   } 
@@ -680,7 +679,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
   }
 
-  // 資料過濾---整備時間 --> 小調機
+  // 資料過濾---整備時間 --> 鋼種
   searchByGradeNo() : void{
     this.ppsInp03ListFilter("grade_no", this.searchByGradeNoValue);
   } 
@@ -689,7 +688,7 @@ export class LABI001Component implements AfterViewInit {
     this.ppsInp03ListFilter("grade_no", this.searchByGradeNoValue);
   }
 
-  // 資料過濾---整備時間 --> 退料
+  // 資料過濾---整備時間 --> 實驗天數
   searchByExperimentDays() : void{
     this.ppsInp03ListFilter("experiment_days", this.searchByExperimentDaysValue);
   } 
