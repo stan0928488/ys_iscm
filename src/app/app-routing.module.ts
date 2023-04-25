@@ -68,7 +68,7 @@ import { MSHI002Component } from "./pages/MSH/MSHI002/MSHI002.component";
 import { MSHP001Component } from "./pages/MSH/MSHP001/MSHP001.component";
 
 import { LABI001Component } from "./pages/LAB/LABI001/LABI001.component";
-
+import { LABP100Component } from "./pages/LAB/LABP100/LABP100.component";
 import { LoginComponent } from "./login/login.component";
 import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.service";
 import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
@@ -242,8 +242,8 @@ const routes: Routes = [
   {
     path: "LABPlan",
     children: [   
-      { path: "", redirectTo: "/LABPlan/P001", pathMatch: "full" },
-      { path:'P001' }
+      { path: "", redirectTo: "/LABPlan/P100", pathMatch: "full" },
+      { path:'P100' , component:LABP100Component}
     ],
     canActivate: [AuthGuard]
   },
