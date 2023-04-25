@@ -345,7 +345,7 @@ export class LABP100Component implements AfterViewInit {
 
     console.log('getTblabl001AllData');
     let myObj = this;
-    myObj.LABService.getTblabl001AllData('YC','20230424160143').subscribe(res => {
+    myObj.LABService.getTblabl001AllData('YC','20230424163414').subscribe(res => {
 
       let result:any = res;
       
