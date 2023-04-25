@@ -219,7 +219,8 @@ const routes: Routes = [
     children: [   
       { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
       { path: "I001", component: MSHI001Component },
-      { path: "I002", component: MSHI002Component }
+      { path: "I002", component: MSHI002Component },
+      { path: "I003" }
     ],
     canActivate: [AuthGuard]
   },
