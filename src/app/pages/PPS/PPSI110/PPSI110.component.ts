@@ -5,6 +5,7 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
+import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 
@@ -576,6 +577,11 @@ export class PPSI110Component implements AfterViewInit {
     this.searchEquipQuanityValue = '';
     this.tbppsm013ListFilter("equipQuanity", this.searchEquipQuanityValue);
   }
+
+  // excel檔名
+ 
+
+  
 
 
 }

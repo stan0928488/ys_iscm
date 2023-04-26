@@ -91,6 +91,36 @@
 
 
       <nz-tab nzTitle="星期起始設定" (nzClick)="changeTab(4)">    <!-- TODO: 自動新增+刪除 -->
+        <div class="excel-control">
+          <td>
+              <input type="file" id="fileupload" 
+                     style="display: inline-block;"
+                     [(ngModel)] = "inputFileUseInUpload" 
+                     (change)="incomingfile($event)" 
+                     placeholder="Upload file" 
+                     accept=".xlsx, .xls, .csv">
+          </td>
+          <td>
+          <button
+          nz-button
+          nzType="primary"
+          style = "margin-right:1vw;"
+          [nzSize]="'large'"
+          (click)="Upload()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            匯入 Excel
+          </button>
+        </td><td>
+          <button
+          nz-button
+          nzType="primary"
+          [nzSize]="'large'"
+          (click)="convertToExcel()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            匯出 Excel
+          </button>
+        </td>
+        </div>
         <div style="background: rgb(255, 255, 255); min-height: 600px;">
           <div nz-col [nzSpan]="14">
             <nz-collapse style="background-color: aliceblue;">
@@ -216,6 +246,36 @@
 
 
       <nz-tab nzTitle="FCP結果保留設定" (nzClick)="changeTab(5)">
+        <div class="excel-control">
+          <td>
+              <input type="file" id="fileupload" 
+                     style="display: inline-block;"
+                     [(ngModel)] = "inputFileUseInUpload" 
+                     (change)="incomingfile($event)" 
+                     placeholder="Upload file" 
+                     accept=".xlsx, .xls, .csv">
+          </td>
+          <td>
+          <button
+          nz-button
+          nzType="primary"
+          style = "margin-right:1vw;"
+          [nzSize]="'large'"
+          (click)="Upload()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            匯入 Excel
+          </button>
+        </td><td>
+          <button
+          nz-button
+          nzType="primary"
+          [nzSize]="'large'"
+          (click)="convertToExcel1()"
+          ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            匯出 Excel
+          </button>
+        </td>
+        </div>
         <div style="background: rgb(255, 255, 255); min-height: 600px;">
           <div nz-col [nzSpan]="14">
             <nz-collapse style="background-color: aliceblue;">

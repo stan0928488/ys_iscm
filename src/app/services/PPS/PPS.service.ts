@@ -106,6 +106,13 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  importI101TablExcel(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/importExcelPPSI101`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   // I116 delI116Tab1Data 刪除資料
   delI116Tab1Data(_ID) {
     let queryUrl = this.APIURL + `/FCP/I116/delI116Tab1Data/${_ID}`;
@@ -786,6 +793,14 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+    //importI102Excel 優先順序表EXCEL匯入 1. 420/430尺寸  2.401COMPAIGN
+    importI107Excel(_result) {
+      const body = JSON.stringify(_result);
+      console.log("JSON.stringify");
+      console.log(body);
+      let queryUrl = this.APIURL + "/FCP/I107/importExcelPPSI107";
+      return this.http.post(queryUrl, body, this.httpOptions);
+    }
   //updCalendarData 定修計畫修改存檔
   updCalendarData(_result) {
     const body = JSON.stringify(_result);
