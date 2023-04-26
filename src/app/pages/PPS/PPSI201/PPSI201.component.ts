@@ -464,11 +464,12 @@ getSetShopEQUIP() {
   }
 
   //校驗當前列已存在
+  //wen 04/26 1018-先拿掉LPST 檢誤
   checkEPSTOrLPSTExist(index:number){
-    if(this.orginList[index].column_comment === "EPST" ||  this.orginList[index].column_comment === "LPST" ||  this.orginList[index].column_comment === "PST"){
+    if(this.orginList[index].column_comment === "EPST" ||  this.orginList[index].column_comment === "PST"){
       //校驗已存在列表是否包含
       for(let item of this.pickerList){
-        if(item.column_comment ==="EPST" || item.column_comment ==="LPST" || item.column_comment ==="PST" ){
+        if(item.column_comment ==="EPST" || item.column_comment ==="PST" ){
           return false
         }
       }

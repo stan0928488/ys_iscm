@@ -1219,6 +1219,7 @@ export class PPSI220Component implements AfterViewInit {
         DATE_DELIVERY_PP: _.get(item, "DATE_DELIVERY_PP"),
         WEIGHT: _.get(item, "WEIGHT"),
         PCT_FLAG: _.get(item, "PCT_FLAG"),
+        PCT_LAB_DATE: _.get(item, "PCT_LAB_DATE"),
         PROCESS_CODE: _.get(item, "PROCESS_CODE"),
         LINEUP_PROCESS: _.get(item, "LINEUP_PROCESS"),
         PLAN_WEIGHT_I: _.get(item, "PLAN_WEIGHT_I"),
