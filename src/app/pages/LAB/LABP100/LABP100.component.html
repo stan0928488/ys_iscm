@@ -5,132 +5,13 @@
     <nz-breadcrumb-item>工時擷取與結果</nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-button-group nzSize = "large" style = "margin:10px;">
-    <button id = "show_tab1"  nz-button (click)="showTab1()" style = "background-color: #008CBA;">擷取結果主檔</button>
-    <button id = "show_tab2" nz-button (click)="showTab2()" style = "background-color: ''">擷取結果明細檔</button>
-  </nz-button-group>
-  <div id = "tab_1">
-    <table  class="query" style="text-align:left;">
-      <tr>
-        <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
-        
-          <div style="margin-left:10px;margin-right:30px;">
-            <button  nz-button nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">{{mo_default || '請選擇版次'}}
-            <span nz-icon nzType="down"></span></button>
-          </div>
-        
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
-        
-          <div style="margin-left:10px;margin-right:30px;">
-            <button  nz-button nz-dropdown [nzDropdownMenu]="menu_abbr" nzTrigger="click">{{abbr_default || '請選擇客戶'}}
-            <span nz-icon nzType="down"></span></button>
-          </div>
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣ID</td>   
-          <div style="margin-left:10px;margin-right:30px;">
-            <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
-          </div>
+  <nz-spin nzTip="計算中..." [nzSpinning]="LoadingPage">
 
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;放樣ID</td>   
-          <div style="margin-left:10px;margin-right:30px;">
-            <input nz-input placeholder="" name="No" [(ngModel)]="idNo"/>
-          </div>
-
-          
-      </tr>
-      <br>
-      <tr>
-        <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;訂單編號</td>
-        
-          <div style="margin-left:10px;margin-right:30px;">
-            <button  nz-button nz-dropdown [nzDropdownMenu]="menu_order" nzTrigger="click">{{order_default || '請選擇訂單編號'}}
-            <span nz-icon nzType="down"></span></button>
-          </div>
-        
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
-          <div style="margin-left:10px;margin-right:30px;">
-            <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)"></nz-range-picker>
-          </div>
-
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;實驗預計完成日</td>   
-          <div style="margin-left:10px;margin-right:30px;width:100%;">
-            <nz-range-picker [(ngModel)]="expDateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onExpDateChange($event)"></nz-range-picker>
-          </div>
-
-          
-      </tr>
-    </table>
-    <div style="width: 100%; float: left;margin:10px 10px 10px 0px;">
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-        nzType="primary"
-        (click)="onQueryTab1()"
-      >
-      <span nz-icon nzType="search" nzTheme="outline"></span>
-        查詢
-      </button>
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
-        nzType="primary"
-        (click)="ngOnInit()"
-      >
-      <span nz-icon nzType="clear" nzTheme="outline"></span>
-        清除
-      </button>
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
-        nzType="primary"
-        (click)="exportExcelTab1()"
-      >
-      <span nz-icon nzType="download" nzTheme="outline"></span>
-        EXCEL 匯出
-      </button>
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
-        nzType="primary"
-        (click)="reloadLabStatus()"
-      >
-      <span nz-icon nzType="play-circle" nzTheme="outline"></span>
-        重新取得實驗室工時
-      </button>
-
-    </div>
-    <br><br><br>
-    <div style ="margin-bottom: 10px;">
-      <nz-collapse>
-        <nz-collapse-panel [nzHeader]="status">
-          
-          <div style="width: 170px;" *ngFor="let status of status_list ;let i = index">
-            <div>{{status.status}}</div>
-            <nz-progress [nzPercent]="status.percent" nzSize="small" [nzShowInfo]="false"></nz-progress>            
-          </div>
-
-        </nz-collapse-panel>
-      </nz-collapse>
-    </div>
-
-    <ag-grid-angular
-    style="width: 100% ; height:700px; overflow: scroll"
-    class="ag-theme-alpine"
-    [columnDefs]="columnDefsTab1"
-    [defaultColDef]="defaultColDefTab1"
-    [rowData]="rowDataTab1"
-    [suppressRowClickSelection]="true"
-    [groupSelectsChildren]="true"
-    [rowSelection]="'multiple'"
-    [pagination]="true"
-    [animateRows]="true"
-    (gridReady)="onGridReady($event)"
-    (cellClicked)="onCellClicked($event)"
-  ></ag-grid-angular>
-
-  </div>
-  <div id="tab_2" style="display: none;">
-  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
-
+    <nz-button-group nzSize = "large" style = "margin:10px;">
+      <button id = "show_tab1"  nz-button (click)="showTab1()" style = "background-color: #008CBA;">擷取結果主檔</button>
+      <button id = "show_tab2" nz-button (click)="showTab2()" style = "background-color: ''">擷取結果明細檔</button>
+    </nz-button-group>
+    <div id = "tab_1">
       <table  class="query" style="text-align:left;">
         <tr>
           <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
@@ -140,31 +21,52 @@
               <span nz-icon nzType="down"></span></button>
             </div>
           
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶簡稱</td>
+            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
           
             <div style="margin-left:10px;margin-right:30px;">
-              <button  nz-button nz-dropdown [nzDropdownMenu]="menu_abbr" nzTrigger="click">{{abbr_default || '請選擇客戶簡稱'}}
+              <button  nz-button nz-dropdown [nzDropdownMenu]="menu_abbr" nzTrigger="click">{{abbr_default || '請選擇客戶'}}
               <span nz-icon nzType="down"></span></button>
             </div>
             <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣ID</td>   
-            <div style="margin-left:10px;margin-right:30px;">
+            <div style="margin-left:10px;margin-right:30px; width: 135px;">
               <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
             </div>
 
+            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;放樣ID</td>   
+            <div style="margin-left:10px;margin-right:30px; width: 135px;">
+              <input nz-input placeholder="" name="No" [(ngModel)]="idNo"/>
+            </div>
+
+            
+        </tr>
+        <br>
+        <tr>
+          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;訂單編號</td>
+          
+            <div style="margin-left:10px;margin-right:30px;">
+              <button  nz-button nz-dropdown [nzDropdownMenu]="menu_order" nzTrigger="click">{{order_default || '請選擇訂單編號'}}
+              <span nz-icon nzType="down"></span></button>
+            </div>
+          
             <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
             <div style="margin-left:10px;margin-right:30px;">
               <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)"></nz-range-picker>
             </div>
 
-          
+            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;實驗預計完成日</td>   
+            <div style="margin-left:10px;margin-right:30px;width:100%;">
+              <nz-range-picker [(ngModel)]="expDateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onExpDateChange($event)"></nz-range-picker>
+            </div>
+
+            
         </tr>
       </table>
-      <div style="width: 30%; float: left;margin:10px 10px 10px 0px;">
+      <div style="width: 100%; float: left;margin:10px 10px 10px 0px;">
         <button
           nz-button
           style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
           nzType="primary"
-          (click)="onQueryTab2()"
+          (click)="onQueryTab1()"
         >
         <span nz-icon nzType="search" nzTheme="outline"></span>
           查詢
@@ -182,19 +84,42 @@
           nz-button
           style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
           nzType="primary"
-          (click)="exportExcel()"
+          (click)="exportExcelTab1()"
         >
         <span nz-icon nzType="download" nzTheme="outline"></span>
           EXCEL 匯出
         </button>
+        <button
+          nz-button
+          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
+          nzType="primary"
+          (click)="reloadLabStatus()"
+        >
+        <span nz-icon nzType="play-circle" nzTheme="outline"></span>
+          重新取得實驗室工時
+        </button>
+
       </div>
-      <br>
+      <br><br><br>
+      <div style ="margin-bottom: 10px;">
+        <nz-collapse>
+          <nz-collapse-panel [nzHeader]="status">
+            
+            <div style="width: 170px;" *ngFor="let status of status_list ;let i = index">
+              <div>{{status.status}}</div>
+              <nz-progress [nzPercent]="status.percent" nzSize="small" [nzShowInfo]="false"></nz-progress>            
+            </div>
+
+          </nz-collapse-panel>
+        </nz-collapse>
+      </div>
+
       <ag-grid-angular
       style="width: 100% ; height:700px; overflow: scroll"
       class="ag-theme-alpine"
-      [columnDefs]="columnDefsTab2"
-      [defaultColDef]="defaultColDefTab2"
-      [rowData]="rowDataTab2"
+      [columnDefs]="columnDefsTab1"
+      [defaultColDef]="defaultColDefTab1"
+      [rowData]="rowDataTab1"
       [suppressRowClickSelection]="true"
       [groupSelectsChildren]="true"
       [rowSelection]="'multiple'"
@@ -203,32 +128,110 @@
       (gridReady)="onGridReady($event)"
       (cellClicked)="onCellClicked($event)"
     ></ag-grid-angular>
+
+    </div>
+
   </nz-spin>
-  
-  </div>
-  <nz-dropdown-menu #menu="nzDropdownMenu">
-    <ul nz-menu>
-      <li *ngFor="let mo of mo_list ;let i = index" nz-menu-item (click)="changeMo(i)">{{mo}}</li>
-      
-    </ul>
-  </nz-dropdown-menu>
+    <div id="tab_2" style="display: none;">
+    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
 
-  <nz-dropdown-menu #menu_abbr="nzDropdownMenu">
-    <ul nz-menu>
-      <li *ngFor="let abbr of abbr_list ;let i = index" nz-menu-item (click)="changeAbbr(i)">{{abbr}}</li>
-      
-    </ul>
-  </nz-dropdown-menu>
+        <table  class="query" style="text-align:left;">
+          <tr>
+            <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
+            
+              <div style="margin-left:10px;margin-right:30px;">
+                <button  nz-button nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">{{mo_default || '請選擇版次'}}
+                <span nz-icon nzType="down"></span></button>
+              </div>
+            
+              <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
+            
+              <div style="margin-left:10px;margin-right:30px;">
+                <button  nz-button nz-dropdown [nzDropdownMenu]="menu_abbr" nzTrigger="click">{{abbr_default || '請選擇客戶'}}
+                <span nz-icon nzType="down"></span></button>
+              </div>
+              <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣ID</td>   
+              <div style="margin-left:10px;margin-right:30px;">
+                <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
+              </div>
 
-  <nz-dropdown-menu #menu_order="nzDropdownMenu">
-    <ul nz-menu>
-      <li *ngFor="let order of order_list ;let i = index" nz-menu-item (click)="changeOrder(i)">{{order}}</li>
-      
-    </ul>
-  </nz-dropdown-menu>
+              <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
+              <div style="margin-left:10px;margin-right:30px;">
+                <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)"></nz-range-picker>
+              </div>
 
-</nz-content>
+            
+          </tr>
+        </table>
+        <div style="width: 30%; float: left;margin:10px 10px 10px 0px;">
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            (click)="onQueryTab2()"
+          >
+          <span nz-icon nzType="search" nzTheme="outline"></span>
+            查詢
+          </button>
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
+            nzType="primary"
+            (click)="ngOnInit()"
+          >
+          <span nz-icon nzType="clear" nzTheme="outline"></span>
+            清除
+          </button>
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
+            nzType="primary"
+            (click)="exportExcel()"
+          >
+          <span nz-icon nzType="download" nzTheme="outline"></span>
+            EXCEL 匯出
+          </button>
+        </div>
+        <br>
+        <ag-grid-angular
+        style="width: 100% ; height:700px; overflow: scroll"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefsTab2"
+        [defaultColDef]="defaultColDefTab2"
+        [rowData]="rowDataTab2"
+        [suppressRowClickSelection]="true"
+        [groupSelectsChildren]="true"
+        [rowSelection]="'multiple'"
+        [pagination]="true"
+        [animateRows]="true"
+        (gridReady)="onGridReady($event)"
+        (cellClicked)="onCellClicked($event)"
+      ></ag-grid-angular>
+    </nz-spin>
+    
+    </div>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li *ngFor="let mo of mo_list ;let i = index" nz-menu-item (click)="changeMo(i)">{{mo}}</li>
+        
+      </ul>
+    </nz-dropdown-menu>
 
+    <nz-dropdown-menu #menu_abbr="nzDropdownMenu">
+      <ul nz-menu>
+        <li *ngFor="let abbr of abbr_list ;let i = index" nz-menu-item (click)="changeAbbr(i)">{{abbr}}</li>
+        
+      </ul>
+    </nz-dropdown-menu>
+
+    <nz-dropdown-menu #menu_order="nzDropdownMenu">
+      <ul nz-menu>
+        <li *ngFor="let order of order_list ;let i = index" nz-menu-item (click)="changeOrder(i)">{{order}}</li>
+        
+      </ul>
+    </nz-dropdown-menu>
+
+  </nz-content>
 
 
 

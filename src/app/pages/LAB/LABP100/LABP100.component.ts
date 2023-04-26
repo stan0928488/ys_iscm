@@ -96,6 +96,7 @@ class labInformation {
 
 export class LABP100Component implements AfterViewInit {
   isSpinning = false;
+  LoadingPage = false;
   isClear = true;
   USERNAME;
   PLANT_CODE;
@@ -123,7 +124,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 100 },
     { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 100 },
     { headerName:'放樣ID',field: 'idNo' , filter: false,width: 100 },
-    { headerName:'客戶簡稱',field: 'custAbbr' , filter: false,width: 100 },
+    { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
     { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 100 },
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
@@ -428,24 +429,29 @@ export class LABP100Component implements AfterViewInit {
 
   }
 
-  reloadLabStatus(){
-    
-    console.log('reloadLabStatus');
+  //重新取得工時
+  reloadLabStatus() {
     let myObj = this;
-    
-    myObj.LABService.reloadLabStatus(this.PLANT_CODE,moment().format('yyyyMMDDkkmmss'),this.USERNAME).subscribe(res => {
+    this.LoadingPage = true;
+    myObj.LABService.reloadLabStatus(this.PLANT_CODE, moment().format('YYYYMMDDHHmmss'), this.USERNAME).subscribe(res => {
       let result:any = res;
       
-      if(result.code == 200){
-
+      if(result.code == 200) {
+        this.LoadingPage = false;
+        this.getMoInformation(result.message.substring(result.message.length - 14))
+        this.sucessMSG("執行成功", result.message);
         console.log(result.data);
+      } else {
+        this.LoadingPage = false;
+        // this.getMoInformation(result.message.substring(result.message.length - 14))
+        this.sucessMSG("執行失敗", result.message);
       }
 
-      });
+    });
       
   }
   
-  initialSampleData(){
+  initialSampleData() {
     this.initialData = [
       {
       "moEdition": "版本一",
@@ -560,7 +566,7 @@ export class LABP100Component implements AfterViewInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['MO版本', '取樣代號', '取樣ID', '放樣ID', '客戶簡稱','取樣時間', '訂單尺寸', '現況站別', '現況尺寸', '現況final_mic_no', '鋼種',
+    let header = [['MO版本', '取樣代號', '取樣ID', '放樣ID', '客戶','取樣時間', '訂單尺寸', '現況站別', '現況尺寸', '現況final_mic_no', '鋼種',
           '生產型態', '機械性質碼', '取樣流程', '生產流程', '取樣站別','現況訂單', '現況訂單項次', '生計交期', '允收截止日', '敏化測試', '敏化測試說明',
             '衝擊測試', '衝擊測試說明', '取樣建立時間', '硫酸銅測試', '實驗天數', '預計實驗完成時間', '取樣狀態' ]];
 
@@ -676,13 +682,6 @@ export class LABP100Component implements AfterViewInit {
     console.log('cellClicked', e);
   }
 
-  errorMSG(_title, _context): void {
-		this.Modal.error({
-			nzTitle: _title,
-			nzContent: `${_context}`
-	  });
-	}
-
   formateDateTime(dateTimeArray, key): string{
     let resultStr = "";
 
@@ -756,5 +755,20 @@ export class LABP100Component implements AfterViewInit {
     this.expDateRange[1] = moment(result[1], "YYYY-MM-DD").format("YYYY-MM-DD");
   }
 
+
+  sucessMSG(_title, _plan): void {
+		this.Modal.success({
+			nzTitle: _title,
+			nzContent: `${_plan}`
+		});
+	}
+
+  
+  errorMSG(_title, _context): void {
+		this.Modal.error({
+			nzTitle: _title,
+			nzContent: `${_context}`
+	  });
+	}
 
 }
