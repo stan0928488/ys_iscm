@@ -69,30 +69,32 @@ export class LABService {
   }
 
   
-  getAbbrList(plantCode:String){
+  getAbbrList(plantCode:String,moEdition:String){
 
-    let queryUrl = this.APIURL + `/LABP100/getAbbrList?plantCode=${plantCode}`;
+    let queryUrl = this.APIURL + `/LABP100/getAbbrList?plantCode=${plantCode}&&moEdition=${moEdition}`;
   
       return this.http.get(queryUrl);
   }
 
-  getMoInformation(plantCode:String,moEdition:String){
+  getMoInformation(plantCode:String ,moEdition:String,abbr:String, sampleId:String,  idNo:String, order:String,  startDate:String, endDate:String
+    ,  expStartDate:String,  expEndDate:String){
 
-    let queryUrl = this.APIURL + `/LABP100/getMoInformation?plantCode=${plantCode}&&moEdition=${moEdition}`;
+    let queryUrl = this.APIURL + `/LABP100/getMoInformation?plantCode=${plantCode}&&moEdition=${moEdition}&&abbr=${abbr}&&sampleId=${sampleId}&&idNo=${idNo}`
+                  + `&&order=${order}&&startDate=${startDate}&&endDate=${endDate}&&expStartDate=${expStartDate}&&expEndDate=${expEndDate}`;
   
       return this.http.get(queryUrl);
   }
 
-  getMoDetailList(plantCode:String,moEdition:String){
+  getMoDetailList(plantCode:String,moEdition:String,abbr:String,sampleId:String,startDate:String,endDate:String){
 
-    let queryUrl = this.APIURL + `/LABP100/getMoDetailList?plantCode=${plantCode}&&moEdition=${moEdition}`;
+    let queryUrl = this.APIURL + `/LABP100/getMoDetailList?plantCode=${plantCode}&&moEdition=${moEdition}&&abbr=${abbr}&&sampleId=${sampleId}&&startDate=${startDate}&&endDate=${endDate}`;
   
       return this.http.get(queryUrl);
   }
 
-  getLabInformation(plantCode:String){
+  getLabInformation(plantCode:String,moEdition:String){
 
-    let queryUrl = this.APIURL + `/LABP100/getLabInformation?plantCode=${plantCode}`;
+    let queryUrl = this.APIURL + `/LABP100/getLabInformation?plantCode=${plantCode}&&moEdition=${moEdition}`;
       console.log(queryUrl)
       return this.http.get(queryUrl);
   }
@@ -107,6 +109,13 @@ export class LABService {
   getSaleOrder(plantCode:String,moEdition:String){
 
     let queryUrl = this.APIURL + `/LABP100/getSaleOrder?plantCode=${plantCode}&&moEdition=${moEdition}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  reloadLabStatus(plantCode:String,moEdition:String,userName:String){
+
+    let queryUrl = this.APIURL + `/lab/samplingRun?plantCode=${plantCode}&&moEdition=${moEdition}&&userName=${userName}`;
   
       return this.http.get(queryUrl);
   }
