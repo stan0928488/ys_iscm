@@ -343,8 +343,19 @@ category = '' ;
         exportHeader.push("KEY")
         this.columnDefs.push(index2);
         //数据类型
-        this.columKeyType["sortId"] = 0 ;
+        this.columKeyType["ID"] = 0 ;
 
+        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
+        exportHeader.push("START_DATE_C")
+        this.columnDefs.push(index3);
+        //数据类型
+        this.columKeyType["START_DATE_C"] = 0 ;
+
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("END_DATE_C")
+        this.columnDefs.push(index4);
+        //数据类型
+        this.columKeyType["START_DATE_C"] = 0 ;
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
@@ -365,7 +376,7 @@ category = '' ;
       this.export.header = exportHeader ;
      // console.log("标头栏位：", JSON.stringify(this.columnDefs)) ;
       if(this.selectFcpVer !== null && this.selectFcpVer !== '') {
-       // this.getTableData()
+        this.getTableData()
       }
     })
   }
