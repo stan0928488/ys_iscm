@@ -90,7 +90,7 @@ export class LABI001Component implements AfterViewInit {
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
-    this.getPPSINP03List();
+    this.getLabI001List();
   }
   
   onInit() {
@@ -130,7 +130,7 @@ export class LABI001Component implements AfterViewInit {
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayPPSINP03List: ItemData[] = [];
   
-  getPPSINP03List() {
+  getLabI001List() {
     this.loading = true;
 
     let myObj = this;
@@ -178,7 +178,20 @@ export class LABI001Component implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.EXPERIMENT_DAYS === 0 ) {
+
+    if(this.CUSO4_TEST == ''){
+      myObj.message.create("新增錯誤","硫酸銅試驗 不可為空");
+      return ;
+    }else if(this.IMPACT_TEST = ''){
+      myObj.message.create("新增錯誤","衝擊試驗 不可為空");
+      return ;
+    }else if(this.DIA_MIN == 0){
+      myObj.message.create("新增錯誤","尺寸MIN 不可為0");
+      return ;
+    }else if(this.DIA_MAX == 0){
+      myObj.message.create("新增錯誤","尺寸MAX 不可為0");
+      return ;
+    }else if (this.EXPERIMENT_DAYS === 0 ) {
       myObj.message.create("error", "「實驗天數」不可為0天");
       return;
     }else {
@@ -197,8 +210,7 @@ export class LABI001Component implements AfterViewInit {
 
   // update
   editRow(id: number): void {
-    console.log(id);
-    console.log(this.editCache);
+
     this.editCache[id].edit = true;
   }
   
@@ -230,10 +242,22 @@ export class LABI001Component implements AfterViewInit {
 
     let myObj = this;
 
-    if (this.editCache[id].data.experiment_days === '0') {
-      myObj.message.create("error", "「實驗天數」不可為0天");
+    if(this.editCache[id].data.cuso4_test == ''){
+      myObj.message.create("新增錯誤","硫酸銅試驗 不可為空");
+      return ;
+    }else if(this.editCache[id].data.impact_test = ''){
+      myObj.message.create("新增錯誤","衝擊試驗 不可為空");
+      return ;
+    }else if(this.editCache[id].data.dia_min == '0'){
+      myObj.message.create("新增錯誤","尺寸MIN 不可為0");
+      return ;
+    }else if(this.editCache[id].data.dia_max == '0'){
+      myObj.message.create("新增錯誤","尺寸MAX 不可為0");
+      return ;
+    }else if (this.editCache[id].data.experiment_days === '0') {
+      myObj.message.create("新增錯誤", "「實驗天數」不可為0天");
       return;  
-    } else {
+    }else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
@@ -264,6 +288,7 @@ export class LABI001Component implements AfterViewInit {
   insertSave() {
     let myObj = this;
     this.LoadingPage = true;
+    
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
@@ -287,7 +312,7 @@ export class LABI001Component implements AfterViewInit {
 
         if(result.code === 200) {
           this.onInit();
-          this.getPPSINP03List();
+          this.getLabI001List();
           this.sucessMSG("新增成功", ``);
         } else {
           this.errorMSG("新增失敗", res[0].MSG);
@@ -328,7 +353,7 @@ export class LABI001Component implements AfterViewInit {
 
         if(result.code === 200){
           this.sucessMSG("更新成功","更新成功");
-          this.getPPSINP03List();
+          this.getLabI001List();
         }
       },err => {
         reject('upload fail');
@@ -367,7 +392,7 @@ export class LABI001Component implements AfterViewInit {
 
         if(result.code === 200){
           this.sucessMSG("刪除成功","刪除成功");
-          this.getPPSINP03List();
+          this.getLabI001List();
         }
       },err => {
         reject('upload fail');
@@ -503,7 +528,7 @@ export class LABI001Component implements AfterViewInit {
       this.isErrorMsg = true;
       this.importdata_new = [];
       this.errorMSG("匯入錯誤", this.errorTXT);
-
+      return ;
     } else {
       
       for(let i=0 ; i < _data.length ; i++) {
@@ -536,42 +561,43 @@ export class LABI001Component implements AfterViewInit {
           shape: shape, mechanicalPropertiesCode: mechanicalPropertiesCode, gradeNo: gradeNo, experimentDays: experimentDays,userCreate: this.USERNAME
         ,dateCreate: moment(),plantCode : this.PLANT_CODE,delStatus : 0});
       }
-        if(this.isERROR){
+      if(this.isERROR){
           this.clearFile();
           this.isErrorMsg = true;
           this.importdata_new = [];
           this.errorMSG("匯入錯誤", this.errorTXT + "，重複 請檢查");
-        }
-      return new Promise((resolve, reject) => {
-        this.LoadingPage = true;
-        let myObj = this;
-        let obj = {};
-        _.extend(obj, {
-          EXCELDATA : this.importdata_new,
-          USERCODE : this.USERNAME
-        })
-        myObj.LABService.batchsaveLab001Data(this.importdata_new).subscribe(res => {
-          let result:any = res;
+      }
+      else{
+        return new Promise((resolve, reject) => {
+          this.LoadingPage = true;
+          let myObj = this;
+          let obj = {};
+          _.extend(obj, {
+            EXCELDATA : this.importdata_new,
+            USERCODE : this.USERNAME
+          })
+          myObj.LABService.batchsaveLab001Data(this.importdata_new).subscribe(res => {
+            let result:any = res;
 
-        if(result.code === 200){
-          this.sucessMSG("EXCCEL上傳成功", "");
-          this.getPPSINP03List();
-        }
-        else {
-            this.errorMSG("匯入錯誤", "");
-            this.clearFile();
+          if(result.code === 200){
+            this.sucessMSG("EXCCEL上傳成功", "");
+            this.getLabI001List();
+          }
+          else {
+              this.errorMSG("匯入錯誤", "");
+              this.clearFile();
+              this.importdata_new = [];
+              this.LoadingPage = false;
+            }
+          },err => {
+            reject('upload fail');
+            this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
             this.importdata_new = [];
             this.LoadingPage = false;
-          }
-        },err => {
-          reject('upload fail');
-          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
-          this.importdata_new = [];
-          this.LoadingPage = false;
-        })
-        
-      });
-      
+          })
+          
+        });
+      }
     }
   }
   

@@ -59,4 +59,55 @@ export class LABService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+
+  getMoEditionList(plantCode:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getMoEditionList?plantCode=${plantCode}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  
+  getAbbrList(plantCode:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getAbbrList?plantCode=${plantCode}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  getMoInformation(plantCode:String,moEdition:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getMoInformation?plantCode=${plantCode}&&moEdition=${moEdition}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  getMoDetailList(plantCode:String,moEdition:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getMoDetailList?plantCode=${plantCode}&&moEdition=${moEdition}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  getLabInformation(plantCode:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getLabInformation?plantCode=${plantCode}`;
+      console.log(queryUrl)
+      return this.http.get(queryUrl);
+  }
+
+  getTblabl001AllData(plantCode:String,moEdition:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getTblabl001AllData?plantCode=${plantCode}&&moEdition=${moEdition}`;
+  
+      return this.http.get(queryUrl);
+  }
+
+  getSaleOrder(plantCode:String,moEdition:String){
+
+    let queryUrl = this.APIURL + `/LABP100/getSaleOrder?plantCode=${plantCode}&&moEdition=${moEdition}`;
+  
+      return this.http.get(queryUrl);
+  }
 }
