@@ -100,20 +100,21 @@ export class LABP100Component implements AfterViewInit {
   USERNAME;
   PLANT_CODE;
   mo_default:string = null;
-  abbr_default = '';
+  abbr_default:string = '';
   order_default = '';
   shape = "";
   saleOrderDia = "";
   status = "this is a status test";
   
   dateRange = [];
+  expDateRange = [];
   startDateStr = '';
   endDateStr = '';
   mo_list = ['版本一','版本二','版本三','版本四','版本五'];
   abbr_list = ['a1' , 'b1'];
   order_list = ['o1' , 'o1'];
   stat
-  sampleId = '';
+  sampleId :string = '';
   idNo = '';
   date = '';
   status_list = [];
@@ -124,7 +125,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName:'放樣ID',field: 'idNo' , filter: false,width: 100 },
     { headerName:'客戶簡稱',field: 'custAbbr' , filter: false,width: 100 },
     { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 100 },
-    { headerName: '訂單尺寸' ,field: 'saleOrdeDia' , filter: false,width: 100 },
+    { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
     { headerName:'現況尺寸',field: 'sfcDia' , filter: false,width: 100 },
     { headerName:'現況final_mic_no',field: 'finalMicNo' , filter: false,width: 150 },
@@ -164,7 +165,7 @@ export class LABP100Component implements AfterViewInit {
   ];
 
   labs : labInformation[] = [];
-  rowDataTab1: data[] = [];
+  rowDataTab1: dataMain[] = [];
   rowDataTab2: data[] = [];
   initialData : data[] = [];
   // DefaultColDef sets props common to all Columns
@@ -227,25 +228,33 @@ export class LABP100Component implements AfterViewInit {
     var endDateStr = moment().endOf('month').format('YYYY-MM-DD');
     this.rowDataTab1 = [];
     this.rowDataTab2 = [];
-    this.getLabInformation();
+    
     this.getMoEditionList();
-    this.getAbbrList();
+    
     this.initialSampleData();
     this.getTblabl001AllData();
-    this.getSaleOrder();
     this.dateRange.push(startDateStr);
     this.dateRange.push(endDateStr);
+    this.expDateRange.push(startDateStr);
+    this.expDateRange.push(endDateStr);
+
   }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
   }
 
-  getLabInformation(){
+  getLabInformation(moEdition:String){
    
     console.log('get lab');
     let myObj = this;
-    myObj.LABService.getLabInformation('YC').subscribe(res => {
+
+    this.labs = [];
+    this.status  ='';
+    this.status_list = [];
+
+    
+    myObj.LABService.getLabInformation(this.PLANT_CODE,moEdition).subscribe(res => {
 
       let result:any = res;
       
@@ -264,39 +273,33 @@ export class LABP100Component implements AfterViewInit {
           
         }
 
-        
-          var stat = new statusInformation();
-          stat.moEdition = '20230424160143';
-          stat.status = '1.MO擷取';
-          stat.status_sub = 'success';
-          stat.percent = 100;
-          this.status_list.push(stat);
-
-          var stat = new statusInformation();
-          stat.moEdition = '20230424160143';
-          stat.status = '2.MO檔';
-          stat.status_sub = 'success';
-          stat.percent = 100;
-          this.status_list.push(stat);
-          
-          var stat = new statusInformation();
-          stat.moEdition = '20230424160143';
-          stat.status = '3.MO主檔計算';
-          stat.status_sub = 'success';
-          stat.percent = 100;
-          this.status_list.push(stat);
-        
-          var stat = new statusInformation();
-          stat.moEdition = '20230424160143';
-          stat.status = '4.MO明細檔計算';
-          stat.status_sub = 'active';
-          stat.percent = 60;
-          this.status_list.push(stat);
-
-        console.log(this.labs);
-        var now = this.labs[0].status == 'N' ? '結束':'執行中';
+        var now = this.labs[0].status == 'Y' ? '結束':'執行中';
 
         this.status = "狀態 : " + now;
+
+        myObj.LABService.getTblabl001AllData(this.PLANT_CODE,moEdition).subscribe(res => {
+        
+          let result:any = res;
+      
+          if(result.code == 200){
+            var temp = result.data;
+
+            for(var i=0 ; i<temp.length;i++){
+                var status = new statusInformation();
+
+                status.moEdition = temp[i].moEdition;
+                status.status = temp[i].status;
+
+                if(temp[i].statusSub == 'Success')
+                  status.percent = 100;
+
+                else 
+                  status.percent = 50;
+
+                  this.status_list.push(status);
+            }
+          }
+        });
       }
     });
   }
@@ -305,7 +308,7 @@ export class LABP100Component implements AfterViewInit {
 
     console.log('get mo edition');
     let myObj = this;
-    myObj.LABService.getMoEditionList('YC').subscribe(res => {
+    myObj.LABService.getMoEditionList(this.PLANT_CODE).subscribe(res => {
 
       let result:any = res;
       
@@ -316,16 +319,20 @@ export class LABP100Component implements AfterViewInit {
 
         this.mo_list = temp;
         this.mo_default = this.mo_list[0];
+
+        this.getSaleOrder(this.mo_default);
+        this.getAbbrList(this.mo_default);
+        this.getLabInformation(this.mo_default);
       }
     });
 
   }
 
-  getAbbrList(){
+  getAbbrList(moEdition:String){
 
     console.log('get cust abbr');
     let myObj = this;
-    myObj.LABService.getAbbrList('YC').subscribe(res => {
+    myObj.LABService.getAbbrList(this.PLANT_CODE,moEdition).subscribe(res => {
 
       let result:any = res;
       
@@ -345,7 +352,7 @@ export class LABP100Component implements AfterViewInit {
 
     console.log('getTblabl001AllData');
     let myObj = this;
-    myObj.LABService.getTblabl001AllData('YC','20230424163414').subscribe(res => {
+    myObj.LABService.getTblabl001AllData(this.PLANT_CODE,'20230424163414').subscribe(res => {
 
       let result:any = res;
       
@@ -361,11 +368,11 @@ export class LABP100Component implements AfterViewInit {
 
   }
 
-  getSaleOrder(){
+  getSaleOrder(moEdition:String){
 
     
     let myObj = this;
-    myObj.LABService.getSaleOrder('YC','20230424163414').subscribe(res => {
+    myObj.LABService.getSaleOrder(this.PLANT_CODE,moEdition).subscribe(res => {
 
       let result:any = res;
       
@@ -384,7 +391,9 @@ export class LABP100Component implements AfterViewInit {
 
     console.log('get mo edition');
     let myObj = this;
-    myObj.LABService.getMoDetailList('YC',moEdition).subscribe(res => {
+    console.log(this.abbr_default);
+    myObj.LABService.getMoDetailList(this.PLANT_CODE,moEdition,this.abbr_default,this.sampleId
+    ,this.dateRange[0],this.dateRange[1]).subscribe(res => {
 
       let result:any = res;
       
@@ -392,7 +401,7 @@ export class LABP100Component implements AfterViewInit {
         var temp = result.data;
 
         console.log(result);
-
+        this.rowDataTab2 = temp;
         
       }
     });
@@ -403,7 +412,8 @@ export class LABP100Component implements AfterViewInit {
 
     console.log('get mo edition');
     let myObj = this;
-    myObj.LABService.getMoInformation('YC',moEdition).subscribe(res => {
+    myObj.LABService.getMoInformation(this.PLANT_CODE,moEdition,this.abbr_default,this.sampleId,this.idNo,this.order_default,
+      this.dateRange[0],this.dateRange[1],this.expDateRange[0],this.expDateRange[1]).subscribe(res => {
 
       let result:any = res;
       
@@ -412,13 +422,28 @@ export class LABP100Component implements AfterViewInit {
 
         console.log(result);
 
-        this.rowDataTab2 = temp;
+        this.rowDataTab1 = temp;
       }
     });
 
   }
 
-  
+  reloadLabStatus(){
+    
+    console.log('reloadLabStatus');
+    let myObj = this;
+    
+    myObj.LABService.reloadLabStatus(this.PLANT_CODE,moment().format('yyyyMMDDkkmmss'),this.USERNAME).subscribe(res => {
+      let result:any = res;
+      
+      if(result.code == 200){
+
+        console.log(result.data);
+      }
+
+      });
+      
+  }
   
   initialSampleData(){
     this.initialData = [
@@ -491,6 +516,21 @@ export class LABP100Component implements AfterViewInit {
 
       console.log(this.rowDataTab2);
   }
+  onQueryTab1(): void{
+    let myObj = this;
+    if (this.mo_default === "" || this.mo_default === null) {
+      myObj.message.create("error", "請選擇「版次」");
+      return;
+    // } else if (this.ctNo === "" || this.ctNo === null) {
+    //   myObj.message.create("error", "請填寫「合約號」");
+    //   return;
+    }
+
+    this.rowDataTab2 = [];
+    this.isSpinning = true;
+    this.getMoInformation(this.mo_default);
+    this.isSpinning = false;
+  }
 
   onQueryTab2(): void{
     let myObj = this;
@@ -503,18 +543,73 @@ export class LABP100Component implements AfterViewInit {
     }
 
     this.rowDataTab2 = [];
-    console.log(this.mo_default)
     this.isSpinning = true;
-    this.getMoInformation(this.mo_default);
+    this.getMoDetailList(this.mo_default);
     this.isSpinning = false;
 
-    console.log(this.rowDataTab2)
   }
 
 
 
   onrowDataTab2Tab2(jsonData): void{
     this.gridOptionsTab2.rowDataTab2.push(jsonData);
+  }
+
+  exportExcelTab1(): void {
+    if (this.rowDataTab1.length < 1) {
+      this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
+      return;
+    }
+    let header = [['MO版本', '取樣代號', '取樣ID', '放樣ID', '客戶簡稱','取樣時間', '訂單尺寸', '現況站別', '現況尺寸', '現況final_mic_no', '鋼種',
+          '生產型態', '機械性質碼', '取樣流程', '生產流程', '取樣站別','現況訂單', '現況訂單項次', '生計交期', '允收截止日', '敏化測試', '敏化測試說明',
+            '衝擊測試', '衝擊測試說明', '取樣建立時間', '硫酸銅測試', '實驗天數', '預計實驗完成時間', '取樣狀態' ]];
+
+    var dataReSort = {
+      data : []
+    };
+
+    for(var i in this.rowDataTab1) {
+        var item = this.rowDataTab1[i];
+        dataReSort.data.push({
+            "moEdition" : item.moEdition,
+            "sampleNo" : item.sampleNo,
+            "sampleId" : item.sampleId,
+            "idNo" : item.idNo,
+            "custAbbr" : item.custAbbr,
+            "sampleDate" : item.sampleDate,
+            "saleOrderDia" : item.saleOrderDia,
+            "shopCode" : item.shopCode,
+            "sfcDia" : item.sfcDia,
+            "finalMicNo" : item.finalMicNo,
+            "gradeNo" : item.gradeNo,
+            "shape" : item.shape,
+            "mechanicalPropertiesCode" : item.mechanicalPropertiesCode,
+            "sampleLineUp" : item.sampleLineUp,
+            "lineupDesc" : item.lineupDesc,
+            "sampleShopCode" : item.sampleShopCode,
+            "saleOrder" : item.saleOrder,
+            "saleItem" : item.saleItem,
+            "dateDeliveryPp" : item.dateDeliveryPp,
+            "dlvyDate" : item.dlvyDate,
+            "sensitizationTest" : item.sensitizationTest,
+            "sensitizationTestDesc" : item.sensitizationTestDesc,
+            "impactTest" : item.impactTest,
+            "impacTestDesc" : item.impacTestDesc,
+            "sampleDateCreate" : item.sampleDateCreate,
+            "cuso4Test" : item.cuso4Test,
+            "experimentDays" : item.experimentDays,
+            "experimentDoneDate" : item.experimentDoneDate,
+            "sampleStatus" : item.sampleStatus
+        });
+    }
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    XLSX.utils.sheet_add_aoa(worksheet,header);
+    XLSX.utils.sheet_add_json(worksheet,dataReSort.data,{ origin: 'A2', skipHeader: true });//origin => started row
+
+    const book: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+    XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'工時擷取與詳細結果_擷取結果主檔.xlsx');//filename => Date_
   }
 
   exportExcel(): void {
@@ -551,7 +646,7 @@ export class LABP100Component implements AfterViewInit {
 
     const book: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-    XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'工時擷取與詳細結果.xlsx');//filename => Date_
+    XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'工時擷取與詳細結果_擷取結果明細檔.xlsx');//filename => Date_
   }
 
   // Example load data from sever
@@ -561,6 +656,20 @@ export class LABP100Component implements AfterViewInit {
  changeMo(index){
   console.log('change to' + this.mo_list[index]);
   this.mo_default = this.mo_list[index]
+  this.getSaleOrder(this.mo_default);
+  this.getAbbrList(this.mo_default);
+  this.getLabInformation(this.mo_default);
+ }
+
+ changeAbbr(index){
+  console.log('change to' + this.abbr_list[index]);
+  this.abbr_default = this.abbr_list[index]
+ }
+
+
+ changeOrder(index){
+  console.log('change to' + this.order_list[index]);
+  this.order_default = this.order_list[index]
  }
   // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
@@ -639,4 +748,13 @@ export class LABP100Component implements AfterViewInit {
     this.dateRange[0] =  moment(result[0], "YYYY-MM-DD").format("YYYY-MM-DD");
     this.dateRange[1] = moment(result[1], "YYYY-MM-DD").format("YYYY-MM-DD");
   }
+
+  onExpDateChange(result: Date[]): void {
+    console.log('onChange: ', result);
+    // before after
+    this.expDateRange[0] =  moment(result[0], "YYYY-MM-DD").format("YYYY-MM-DD");
+    this.expDateRange[1] = moment(result[1], "YYYY-MM-DD").format("YYYY-MM-DD");
+  }
+
+
 }
