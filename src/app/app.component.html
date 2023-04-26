@@ -127,7 +127,8 @@
             </ul>
           </li>
  -->
-          <li nz-submenu nzTitle="客戶交談作業管理" nzIcon="customer-service">
+
+          <!-- <li nz-submenu nzTitle="客戶交談作業管理" nzIcon="customer-service">
 
             <ul>
               <li nz-menu-item>
@@ -161,7 +162,7 @@
                 </a>
               </li>
             </ul>
-          </li>
+          </li> -->
     
 
       <!-- 先關閉，待其他模塊執行後再打開 
@@ -209,12 +210,12 @@
                       </li>
                       <li nz-menu-item>
                         <a [routerLink]="['/commonData/I107']">
-                          線速
+                          線速工時
                         </a>
                       </li>
                       <li nz-menu-item>
                         <a [routerLink]="['/commonData/I108']">
-                          非線速
+                          非線速工時
                         </a>
                       </li>
                       <li nz-menu-item>
@@ -366,7 +367,7 @@
                 </ul>
               </li>
 
-              <li nz-submenu nzTitle="排程設定" nzIcon="file-text">
+              <li nz-submenu nzTitle="排程設定" nzIcon="setting">
                 <ul>
                   <li nz-menu-item>
                     <a [routerLink]="['/MSHPlan/P001']">
@@ -379,6 +380,32 @@
             </ul>
           </li>
 
+          <!-- 實驗室工時 LAB -->
+          <li nz-submenu nzTitle="實驗室工時" nzIcon="hourglass">
+            <ul>
+              
+              <li nz-submenu nzTitle="靜態基本資料" nzIcon="file-text">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/LABSet/I001']">
+                      實驗室靜態資料
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li nz-submenu nzTitle="執行與結果" nzIcon="table">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/LABPlan/P100']">
+                      工時擷取與結果
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              
+            </ul>
+          </li>
           
       <!-- 先關閉，待其他模塊執行後再打開 
         </ul>

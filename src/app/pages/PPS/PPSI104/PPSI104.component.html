@@ -12,8 +12,8 @@
             <li class="active"><a href="#/commonData/I104"><label style="color:blue">整備時間</label></a></li>
             <li><a href="#/commonData/I105">大調機</a></li>
             <li><a href="#/commonData/I106">小調機</a></li>
-            <li><a href="#/commonData/I107">線速</a></li>
-            <li><a href="#/commonData/I108">非線速</a></li>
+            <li><a href="#/commonData/I107">線速工時</a></li>
+            <li><a href="#/commonData/I108">非線速工時</a></li>
             <li><a href="#/commonData/I109">產率設定</a></li>
             <li><a href="#/commonData/I110">產能維護</a></li>
             <li><a href="#/commonData/I111">combine資料設定</a></li>
@@ -25,7 +25,7 @@
   
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         直棒
       </a>
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
@@ -153,7 +153,7 @@
               <ng-container *ngIf="!editCache3[data.id].edit; else editTemplate1">
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.LOAD_TIME | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OTHER_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.BIG_ADJUST_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SMALL_ADJUST_TIME | number }}</td>
@@ -203,7 +203,7 @@
     </nz-tab>
 
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I104_NonBar']">
+      <a *nzTabLink nz-tab-link [routerLink]="['../I104_NonBar']" style="color: gray">
         非直棒
       </a>
     </nz-tab>

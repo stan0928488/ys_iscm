@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, NgZone } from "@angular/core";
 import { registerLocaleData, DatePipe } from '@angular/common';
 import { CookieService } from "src/app/services/config/cookie.service";
+import { AppComponent } from "src/app/app.component";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -33,6 +34,7 @@ export class PPSI220Component implements AfterViewInit {
   isVisibleSelPlan = false;
   isVisibleUpd = false;
   isCommon = false;
+  byUserShow = true;
 
   PlanDataList;           //規劃案清單
   PlanDataDtlList     //規劃案清單 (執行歷程)
@@ -91,12 +93,13 @@ export class PPSI220Component implements AfterViewInit {
   timer = new Date();
   commSCHEDULE_TIME;
   titleArray;
-  FCPResRepo;
+  FCPResRepo = [];
 
   nzPagination:any ;
 
   constructor(
     private router: Router,
+    private AppComponet: AppComponent,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -110,12 +113,13 @@ export class PPSI220Component implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
   }
 
-
-
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPlanDataList();
     this.getRunFCPCount();
+    if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'ur10369' || this.USERNAME === 'UR11994') {
+      this.byUserShow = false;
+    }
   }
 
 
@@ -957,7 +961,7 @@ export class PPSI220Component implements AfterViewInit {
             DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
           });
 
-          myObj.getPPSService.StartFullRunPlan(data.PLAN_EDITION, data.SCHEDULE_FLAG, "A").subscribe(res => {
+          myObj.getPPSService.StartFullRunPlan(data.PLAN_EDITION, data.SCHEDULE_FLAG, "A"+this.USERNAME).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
@@ -973,6 +977,37 @@ export class PPSI220Component implements AfterViewInit {
     }
   }
 
+
+
+  // 停止生產規劃
+  async stopPlan(data) {
+    console.log(JSON.stringify(data))
+    console.log(JSON.stringify(data.STARTRUN_TIME))
+    let myObj = this;
+		return new Promise((resolve, reject) => {
+			let obj = {};
+
+			_.extend(obj, {
+        STARTRUN_TIME : data.STARTRUN_TIME,
+        PLAN_EDITION : data.PLAN_EDITION,
+        USERNAME : this.USERNAME,
+        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+			})
+      myObj.getPPSService.stopPlanData(obj).subscribe(res => {
+        if(res[0].MSG === "Y") {
+
+          this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+          this.getPlanDataList();
+        }
+      },err => {
+        reject('upload fail');
+        this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        this.LoadingPage = false;
+      })
+		})
+  }
+
+
   sleep(millisecond) {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -983,11 +1018,15 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
+  
+
+
+
   //convert to Excel and Download
   exportExcel(data) {
     var titleName = [];
     this.LoadingPage = true;
-    
+    this.isVisibleRun = false;
 		return new Promise((resolve, reject) => {
       this.getPPSService.getFCP_EDITIONexist(data).subscribe(res => {
         if(res[0].MSG === "Y") {
@@ -998,8 +1037,9 @@ export class PPSI220Component implements AfterViewInit {
             }
             
             this.getPPSService.getFCPResRepo(data).subscribe(res => {
-              this.FCPResRepo = res;
-              let data = this.formatDataForExcel(this.FCPResRepo);
+              let result:any = res ;
+              this.FCPResRepo = result;
+              const data = this.formatDataForExcel(this.FCPResRepo);
               let fileName = `FCP結果表`;
               this.excelService.exportAsExcelFile(data, fileName, titleName);
               this.LoadingPage = false;
@@ -1020,116 +1060,258 @@ export class PPSI220Component implements AfterViewInit {
 
   formatDataForExcel(_displayData) {
     let excelData = [];
+    // excelData = _displayData.reduce((result, item) => {
+    //   for (const key in item) {
+    //     if (result[key]) {
+    //       result[key].push(item[key]);
+    //     } else {
+    //       result[key] = [item[key]];
+    //     }
+    //   }
+    //   return result;
+    // }, {});
+
+    // console.log(excelData)
+
+    // let excelData2 = [];
+    // _displayData.forEach(item => {
+    //   for (const key in item) {
+    //     if (excelData2[key]) {
+    //       excelData2[key].push(item[key]);
+    //     } else {
+    //       excelData2[key] = [item[key]];
+    //     }
+    //   }
+    // });
+    // console.log(excelData2)
+
     for (let item of _displayData) {
       let obj = {};
       _.extend(obj, {
+        
+        // FCP_EDITION: _.get(item, "FCP_EDITION"),
+        // MO_EDITION: _.get(item, "MO_EDITION"),     
+        // PLANT_CODE: _.get(item, "PLANT_CODE"),        
+        // SCH_SHOP_CODE: _.get(item, "SCH_SHOP_CODE"),
+        // ID_NO: _.get(item, "ID_NO"),
+        // ROUTING_SEQ: _.get(item, "ROUTING_SEQ"),
+        // MODEL_TYPE: _.get(item, "MODEL_TYPE"),
+        // BEST_MACHINE: _.get(item, "BEST_MACHINE"),
+        // PST: _.get(item, "PST"),
+        // PST_MACHINE: _.get(item, "PST_MACHINE"),
+        // SORT: _.get(item, "SORT"),
+        // CROSSDAYS: _.get(item, "CROSSDAYS"),
+        // WORK_TIME: _.get(item, "WORK_TIME"),
+        // TOTAL_WORK_TIME: _.get(item, "TOTAL_WORK_TIME"),
+        // STARTPOINT: _.get(item, "STARTPOINT"),
+        // SALE_ORDER: _.get(item, "SALE_ORDER"),
+        // SALE_ITEM: _.get(item, "SALE_ITEM"),
+        // SALE_LINENO: _.get(item, "SALE_LINENO"),
+        // DATE_DELIVERY_PP: this.AppComponet.dateStringFormat(_.get(item, "DATE_DELIVERY_PP")),
+        // WEIGHT: _.get(item, "WEIGHT"),
+        // PCT_FLAG: _.get(item, "PCT_FLAG"),
+        // PROCESS_CODE: _.get(item, "PROCESS_CODE"),
+        // LINEUP_PROCESS: _.get(item, "LINEUP_PROCESS"),
+        // PLAN_WEIGHT_I: _.get(item, "PLAN_WEIGHT_I"),
+        // MERGE_NO: _.get(item, "MERGE_NO"),
+        // SALE_ITEM_LENGTH: _.get(item, "SALE_ITEM_LENGTH"),
+        // ACTUAL_LENGTH: _.get(item, "ACTUAL_LENGTH"),
+        // NEXT_SCH_SHOP_CODE: _.get(item, "NEXT_SCH_SHOP_CODE"),
+        // CYCLE_NO: _.get(item, "CYCLE_NO"),
+        // STEEL_TYPE: _.get(item, "STEEL_TYPE"),
+        // NEXT_ROUTING_SEQ: _.get(item, "NEXT_ROUTING_SEQ"),
+        // PRIOR_ROUTING_SEQ: _.get(item, "PRIOR_ROUTING_SEQ"),
+        // INPUT_TYPE: _.get(item, "INPUT_TYPE"),
+        // OUTPUT_SHAPE: _.get(item, "OUTPUT_SHAPE"),
+        // INPUT_DIA: _.get(item, "INPUT_DIA"),
+        // OUT_DIA: _.get(item, "OUT_DIA"),
+        // DENSITY: _.get(item, "DENSITY"),
+        // ROLL_DATE: this.AppComponet.dateStringFormat(_.get(item, "ROLL_DATE")),
+        // DATE_PLAN_IN_STORAGE: this.AppComponet.dateStringFormat(_.get(item, "DATE_PLAN_IN_STORAGE")),
+        // LAST_WORKS_HOURS: _.get(item, "LAST_WORKS_HOURS"),
+        // FINAL_PROCESS: _.get(item, "FINAL_PROCESS"),
+        // FINAL_MIC_NO: _.get(item, "FINAL_MIC_NO"),
+        // SFC_DIA: _.get(item, "SFC_DIA"),
+        // SFC_SHOP_CODE: _.get(item, "SFC_SHOP_CODE"),
+        // SALE_AREA_GROUP: _.get(item, "SALE_AREA_GROUP"),
+        // CUST_ABBREVIATIONS: _.get(item, "CUST_ABBREVIATIONS"),
+        // DATE_CREATE: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "DATE_CREATE"))), 1),
+        // TC_TEMPERATURE: _.get(item, "TC_TEMPERATURE"),
+        // TC_FREQUENCE: _.get(item, "TC_FREQUENCE"),
+        // BA1_TEMPERATURE: _.get(item, "BA1_TEMPERATURE"),
+        // BA1_FREQUENCE: _.get(item, "BA1_FREQUENCE"),
+        // RF_TEMPERATURE: _.get(item, "RF_TEMPERATURE"),
+        // RF_FREQUENCE: _.get(item, "RF_FREQUENCE"),
+        // STATUS: _.get(item, "STATUS"),
+        // EPST: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "EPST"))) ,1),
+        // LPST: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "LPST"))) ,1),
+        // JIT: this.AppComponet.dateStringFormat(_.get(item, "JIT")),
+        // ASAP: this.AppComponet.dateStringFormat(_.get(item, "ASAP")),
+        // WORK_HOURS: _.get(item, "WORK_HOURS"),
+        // MACHINE1: _.get(item, "MACHINE1"),
+        // STATUS1: _.get(item, "STATUS1"),
+        // WORK_HOURS1: _.get(item, "WORK_HOURS1"),
+        // MACHINE2: _.get(item, "MACHINE2"),
+        // STATUS2: _.get(item, "STATUS2"),
+        // WORK_HOURS2: _.get(item, "WORK_HOURS2"),
+        // MACHINE3: _.get(item, "MACHINE3"),
+        // STATUS3: _.get(item, "STATUS3"),
+        // WORK_HOURS3: _.get(item, "WORK_HOURS3"),
+        // NEW_EPST: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "NEW_EPST"))), 1),
+        // NEWL_PST: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "NEW_LPST"))), 1),
+        // CPST:this.AppComponet.dateStringFormat( _.get(item, "CPST")),
+        // CAMPAIGN_ID: _.get(item, "CAMPAIGN_ID"),
+        // SCHE_TYPE: _.get(item, "SCHE_TYPE"),
+        // AUTO_FROZEN: _.get(item, "AUTO_FROZEN"),
+        // SORT_GROUP: _.get(item, "SORT_GROUP"),
+        // ICP_EDITION: _.get(item, "ICP_EDITION"),
+        // NEW_ASAP: this.AppComponet.dateStringFormat(_.get(item, "NEW_ASAP")),
+        // TRANSFER_TIME: _.get(item, "TRANSFER_TIME"),
+        // TRANSFER_TIME1: _.get(item, "TRANSFER_TIME1"),
+        // TRANSFER_TIME2: _.get(item, "TRANSFER_TIME2"),
+        // TRANSFER_TIME3: _.get(item, "TRANSFER_TIME3"),
+        // CHOOSE_EQUIP_CODE: _.get(item, "CHOOSE_EQUIP_CODE"),
+        // PREPARE_DIVIDE_ID: _.get(item, "PREPARE_DIVIDE_ID"),
+        // PLAN_DATE_I: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "PLAN_DATE_I"))), 1),
+        // PLAN_DATE_O: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "PLAN_DATE_O"))), 1),
+        // AUTO_SORT: _.get(item, "AUTO_SORT"),
+        // FLAG_OUTSOURCING: _.get(item, "FLAG_OUTSOURCING"),
+        // DATE_BACK_OUTSOURCING: _.get(item, "DATE_BACK_OUTSOURCING"),
+        // DATE_SEND_OUTSOURCING: _.get(item, "DATE_SEND_OUTSOURCING"),
+        // FIXED_EQUIP_CODE: _.get(item, "FIXED_EQUIP_CODE"),
+        // KIND_TYPE: _.get(item, "KIND_TYPE"),
+        // MTRL_NO: _.get(item, "MTRL_NO"),
+        // NEW_CPST: this.AppComponet.dateStringFormat(_.get(item, "NEW_CPST")),
+        // PST_RERUN: this.AppComponet.dateStringFormat(_.get(item, "PST_RERUN")),
+        // LOCK: _.get(item, "LOCK"),
+        // LINEUP_MIC_NO: _.get(item, "LINEUP_MIC_NO"),
+        // GRADE_GROUP: _.get(item, "GRADE_GROUP"),
+        // OP_CODE: _.get(item, "OP_CODE"),
+        // COMBINE_FLAG: _.get(item, "COMBINE_FLAG"),
+        // CREATE_DATE: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "CREATE_DATE"))), 1),
+        // FIX_EPST: this.AppComponet.dateFormat(new Date(Date.parse(_.get(item, "FIX_EPST"))), 1),
+        // FIX_AUTO_FROZEN: _.get(item, "FIX_AUTO_FROZEN"),
+        // CUSTOM_SORT: _.get(item, "CUSTOM_SORT"),
+        // ORIGINAL_CAMPAIGN_ID: _.get(item, "ORIGINAL_CAMPAIGN_ID"),
+        // ORIGINAL_CUSTOM_SORT: _.get(item, "ORIGINAL_CUSTOM_SORT"),
+        // CATEGORY: _.get(item, "CATEGORY"),
+        // REMARK: _.get(item, "REMARK"),
+        // REMARK_PLAN_IN_STORAGE: _.get(item, "REMARK_PLAN_IN_STORAGE")
+
         FCP_EDITION: _.get(item, "FCP_EDITION"),
-        MO_EDITION: _.get(item, "MO_EDITION"),        
-        SCHSHOPCODE: _.get(item, "SCHSHOPCODE"),
-        IDNO: _.get(item, "IDNO"),
-        ROUTINGSEQ: _.get(item, "ROUTINGSEQ"),
-        MODELTYPE: _.get(item, "MODELTYPE"),
-        BESTMACHINE: _.get(item, "BESTMACHINE"),
+        MO_EDITION: _.get(item, "MO_EDITION"),     
+        PLANT_CODE: _.get(item, "PLANT_CODE"),        
+        SCH_SHOP_CODE: _.get(item, "SCH_SHOP_CODE"),
+        ID_NO: _.get(item, "ID_NO"),
+        ROUTING_SEQ: _.get(item, "ROUTING_SEQ"),
+        MODEL_TYPE: _.get(item, "MODEL_TYPE"),
+        BEST_MACHINE: _.get(item, "BEST_MACHINE"),
         PST: _.get(item, "PST"),
-        PSTMACHINE: _.get(item, "PSTMACHINE"),
+        PST_MACHINE: _.get(item, "PST_MACHINE"),
         SORT: _.get(item, "SORT"),
         CROSSDAYS: _.get(item, "CROSSDAYS"),
-        WORKTIME: _.get(item, "WORKTIME"),
-        TOTALWORKTIME: _.get(item, "TOTALWORKTIME"),
+        WORK_TIME: _.get(item, "WORK_TIME"),
+        TOTAL_WORK_TIME: _.get(item, "TOTAL_WORK_TIME"),
         STARTPOINT: _.get(item, "STARTPOINT"),
-        SALEORDER: _.get(item, "SALEORDER"),
-        SALEITEM: _.get(item, "SALEITEM"),
-        SALELINENO: _.get(item, "SALELINENO"),
-        DATEDELIVERYPP: _.get(item, "DATEDELIVERYPP"),
+        SALE_ORDER: _.get(item, "SALE_ORDER"),
+        SALE_ITEM: _.get(item, "SALE_ITEM"),
+        SALE_LINENO: _.get(item, "SALE_LINENO"),
+        DATE_DELIVERY_PP: _.get(item, "DATE_DELIVERY_PP"),
         WEIGHT: _.get(item, "WEIGHT"),
-        PCTFLAG: _.get(item, "PCTFLAG"),
-        PROCESSCODE: _.get(item, "PROCESSCODE"),
-        LINEUPPROCESS: _.get(item, "LINEUPPROCESS"),
-        PLANWEIGHTI: _.get(item, "PLANWEIGHTI"),
-        MERGENO: _.get(item, "MERGENO"),
-        SALEITEMLENGTH: _.get(item, "SALEITEMLENGTH"),
-        ACTUALLENGTH: _.get(item, "ACTUALLENGTH"),
-        NEXTSCHSHOPCODE: _.get(item, "NEXTSCHSHOPCODE"),
-        CYCLENO: _.get(item, "CYCLENO"),
-        STEELTYPE: _.get(item, "STEELTYPE"),
-        NEXTROUTINGSEQ: _.get(item, "NEXTROUTINGSEQ"),
-        PRIORROUTINGSEQ: _.get(item, "PRIORROUTINGSEQ"),
-        INPUTTYPE: _.get(item, "INPUTTYPE"),
-        OUTPUTSHAPE: _.get(item, "OUTPUTSHAPE"),
-        INPUTDIA: _.get(item, "INPUTDIA"),
-        OUTDIA: _.get(item, "OUTDIA"),
+        PCT_FLAG: _.get(item, "PCT_FLAG"),
+        PROCESS_CODE: _.get(item, "PROCESS_CODE"),
+        LINEUP_PROCESS: _.get(item, "LINEUP_PROCESS"),
+        PLAN_WEIGHT_I: _.get(item, "PLAN_WEIGHT_I"),
+        MERGE_NO: _.get(item, "MERGE_NO"),
+        SALE_ITEM_LENGTH: _.get(item, "SALE_ITEM_LENGTH"),
+        ACTUAL_LENGTH: _.get(item, "ACTUAL_LENGTH"),
+        NEXT_SCH_SHOP_CODE: _.get(item, "NEXT_SCH_SHOP_CODE"),
+        CYCLE_NO: _.get(item, "CYCLE_NO"),
+        STEEL_TYPE: _.get(item, "STEEL_TYPE"),
+        NEXT_ROUTING_SEQ: _.get(item, "NEXT_ROUTING_SEQ"),
+        PRIOR_ROUTING_SEQ: _.get(item, "PRIOR_ROUTING_SEQ"),
+        INPUT_TYPE: _.get(item, "INPUT_TYPE"),
+        OUTPUT_SHAPE: _.get(item, "OUTPUT_SHAPE"),
+        INPUT_DIA: _.get(item, "INPUT_DIA"),
+        OUT_DIA: _.get(item, "OUT_DIA"),
         DENSITY: _.get(item, "DENSITY"),
-        ROLLDATE: _.get(item, "ROLLDATE"),
-        DATEPLANINSTORAGE: _.get(item, "DATEPLANINSTORAGE"),
-        LASTWORKSHOURS: _.get(item, "LASTWORKSHOURS"),
-        FINALPROCESS: _.get(item, "FINALPROCESS"),
-        FINALMICNO: _.get(item, "FINALMICNO"),
-        SFCDIA: _.get(item, "SFCDIA"),
-        SFCSHOPCODE: _.get(item, "SFCSHOPCODE"),
-        SALEAREAGROUP: _.get(item, "SALEAREAGROUP"),
-        CUSTABBREVIATIONS: _.get(item, "CUSTABBREVIATIONS"),
-        DATECREATE: _.get(item, "DATECREATE"),
-        TCTEMPERATURE: _.get(item, "TCTEMPERATURE"),
-        TCFREQUENCE: _.get(item, "TCFREQUENCE"),
-        BA1TEMPERATURE: _.get(item, "BA1TEMPERATURE"),
-        BA1FREQUENCE: _.get(item, "BA1FREQUENCE"),
-        RFTEMPERATURE: _.get(item, "RFTEMPERATURE"),
-        RFFREQUENCE: _.get(item, "RFFREQUENCE"),
+        ROLL_DATE: _.get(item, "ROLL_DATE"),
+        DATE_PLAN_IN_STORAGE: _.get(item, "DATE_PLAN_IN_STORAGE"),
+        LAST_WORKS_HOURS: _.get(item, "LAST_WORKS_HOURS"),
+        FINAL_PROCESS: _.get(item, "FINAL_PROCESS"),
+        FINAL_MIC_NO: _.get(item, "FINAL_MIC_NO"),
+        SFC_DIA: _.get(item, "SFC_DIA"),
+        SFC_SHOP_CODE: _.get(item, "SFC_SHOP_CODE"),
+        SALE_AREA_GROUP: _.get(item, "SALE_AREA_GROUP"),
+        CUST_ABBREVIATIONS: _.get(item, "CUST_ABBREVIATIONS"),
+        DATE_CREATE: _.get(item, "DATE_CREATE"),
+        TC_TEMPERATURE: _.get(item, "TC_TEMPERATURE"),
+        TC_FREQUENCE: _.get(item, "TC_FREQUENCE"),
+        BA1_TEMPERATURE: _.get(item, "BA1_TEMPERATURE"),
+        BA1_FREQUENCE: _.get(item, "BA1_FREQUENCE"),
+        RF_TEMPERATURE: _.get(item, "RF_TEMPERATURE"),
+        RF_FREQUENCE: _.get(item, "RF_FREQUENCE"),
         STATUS: _.get(item, "STATUS"),
         EPST: _.get(item, "EPST"),
         LPST: _.get(item, "LPST"),
         JIT: _.get(item, "JIT"),
         ASAP: _.get(item, "ASAP"),
-        WORKHOURS: _.get(item, "WORKHOURS"),
+        WORK_HOURS: _.get(item, "WORK_HOURS"),
         MACHINE1: _.get(item, "MACHINE1"),
         STATUS1: _.get(item, "STATUS1"),
-        WORKHOURS1: _.get(item, "WORKHOURS1"),
+        WORK_HOURS1: _.get(item, "WORK_HOURS1"),
         MACHINE2: _.get(item, "MACHINE2"),
         STATUS2: _.get(item, "STATUS2"),
-        WORKHOURS2: _.get(item, "WORKHOURS2"),
+        WORK_HOURS2: _.get(item, "WORK_HOURS2"),
         MACHINE3: _.get(item, "MACHINE3"),
         STATUS3: _.get(item, "STATUS3"),
-        WORKHOURS3: _.get(item, "WORKHOURS3"),
-        NEWEPST: _.get(item, "NEWEPST"),
-        NEWLPST: _.get(item, "NEWLPST"),
+        WORK_HOURS3: _.get(item, "WORK_HOURS3"),
+        NEW_EPST: _.get(item, "NEW_EPST"),
+        NEWL_PST: _.get(item, "NEW_LPST"),
         CPST: _.get(item, "CPST"),
-        CAMPAIGNID: _.get(item, "CAMPAIGNID"),
-        SCHETYPE: _.get(item, "SCHETYPE"),
-        AUTOFROZEN: _.get(item, "AUTOFROZEN"),
-        SORTGROUP: _.get(item, "SORTGROUP"),
-        ICPEDITION: _.get(item, "ICPEDITION"),
-        NEWASAP: _.get(item, "NEWASAP"),
-        TRANSFERTIME: _.get(item, "TRANSFERTIME"),
-        TRANSFERTIME1: _.get(item, "TRANSFERTIME1"),
-        TRANSFERTIME2: _.get(item, "TRANSFERTIME2"),
-        TRANSFERTIME3: _.get(item, "TRANSFERTIME3"),
-        CHOOSEEQUIPCODE: _.get(item, "CHOOSEEQUIPCODE"),
-        PREPAREDIVIDEID: _.get(item, "PREPAREDIVIDEID"),
-        PLANDATEI: _.get(item, "PLANDATEI"),
-        PLANDATEO: _.get(item, "PLANDATEO"),
-        AUTOSORT: _.get(item, "AUTOSORT"),
-        FLAGOUTSOURCING: _.get(item, "FLAGOUTSOURCING"),
-        DATEBACKOUTSOURCING: _.get(item, "DATEBACKOUTSOURCING"),
-        DATESENDOUTSOURCING: _.get(item, "DATESENDOUTSOURCING"),
-        FIXEDEQUIPCODE: _.get(item, "FIXEDEQUIPCODE"),
-        KINDTYPE: _.get(item, "KINDTYPE"),
-        MTRLNO: _.get(item, "MTRLNO"),
-        NEWCPST: _.get(item, "NEWCPST"),
-        PSTRERUN: _.get(item, "PSTRERUN"),
+        CAMPAIGN_ID: _.get(item, "CAMPAIGN_ID"),
+        SCHE_TYPE: _.get(item, "SCHE_TYPE"),
+        AUTO_FROZEN: _.get(item, "AUTO_FROZEN"),
+        SORT_GROUP: _.get(item, "SORT_GROUP"),
+        ICP_EDITION: _.get(item, "ICP_EDITION"),
+        NEW_ASAP: _.get(item, "NEW_ASAP"),
+        TRANSFER_TIME: _.get(item, "TRANSFER_TIME"),
+        TRANSFER_TIME1: _.get(item, "TRANSFER_TIME1"),
+        TRANSFER_TIME2: _.get(item, "TRANSFER_TIME2"),
+        TRANSFER_TIME3: _.get(item, "TRANSFER_TIME3"),
+        CHOOSE_EQUIP_CODE: _.get(item, "CHOOSE_EQUIP_CODE"),
+        PREPARE_DIVIDE_ID: _.get(item, "PREPARE_DIVIDE_ID"),
+        PLAN_DATE_I: _.get(item, "PLAN_DATE_I"),
+        PLAN_DATE_O: _.get(item, "PLAN_DATE_O"),
+        AUTO_SORT: _.get(item, "AUTO_SORT"),
+        FLAG_OUTSOURCING: _.get(item, "FLAG_OUTSOURCING"),
+        DATE_BACK_OUTSOURCING: _.get(item, "DATE_BACK_OUTSOURCING"),
+        DATE_SEND_OUTSOURCING: _.get(item, "DATE_SEND_OUTSOURCING"),
+        FIXED_EQUIP_CODE: _.get(item, "FIXED_EQUIP_CODE"),
+        KIND_TYPE: _.get(item, "KIND_TYPE"),
+        MTRL_NO: _.get(item, "MTRL_NO"),
+        NEW_CPST: _.get(item, "NEW_CPST"),
+        PST_RERUN: _.get(item, "PST_RERUN"),
         LOCK: _.get(item, "LOCK"),
-        LINEUPMICNO: _.get(item, "LINEUPMICNO"),
-        GRADEGROUP: _.get(item, "GRADEGROUP"),
-        OPCODE: _.get(item, "OPCODE"),
-        COMBINEFLAG: _.get(item, "COMBINEFLAG"),
-        CREATEDATE: _.get(item, "CREATEDATE"),
+        LINEUP_MIC_NO: _.get(item, "LINEUP_MIC_NO"),
+        GRADE_GROUP: _.get(item, "GRADE_GROUP"),
+        OP_CODE: _.get(item, "OP_CODE"),
+        COMBINE_FLAG: _.get(item, "COMBINE_FLAG"),
+        CREATE_DATE: _.get(item, "CREATE_DATE"),
         FIX_EPST: _.get(item, "FIX_EPST"),
         FIX_AUTO_FROZEN: _.get(item, "FIX_AUTO_FROZEN"),
         CUSTOM_SORT: _.get(item, "CUSTOM_SORT"),
         ORIGINAL_CAMPAIGN_ID: _.get(item, "ORIGINAL_CAMPAIGN_ID"),
-        ORIGINAL_CUSTOM_SORT: _.get(item, "ORIGINAL_CUSTOM_SORT")
+        ORIGINAL_CUSTOM_SORT: _.get(item, "ORIGINAL_CUSTOM_SORT"),
+        CATEGORY: _.get(item, "CATEGORY"),
+        REMARK: _.get(item, "REMARK"),
+        REMARK_PLAN_IN_STORAGE: _.get(item, "REMARK_PLAN_IN_STORAGE")
+    
       });
       excelData.push(obj);
     }
+
+    console.log(excelData)
     return excelData;
   }
 
@@ -1257,79 +1439,79 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
-  // 啟動 ICP 執行--------暫不使用
-  async callICP (plandata, ICPparam) {
-    let myObj = this;
-    let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
+  // // 啟動 ICP 執行--------暫不使用
+  // async callICP (plandata, ICPparam) {
+  //   let myObj = this;
+  //   let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
 
-		return new Promise((resolve, reject) => {
-      myObj.getPPSService.StartICP(ICPparam).subscribe(async res => {
-        console.log("res[0].MO_Edition  : " + res)
+	// 	return new Promise((resolve, reject) => {
+  //     myObj.getPPSService.StartICP(ICPparam).subscribe(async res => {
+  //       console.log("res[0].MO_Edition  : " + res)
 
-        const list = `${plandata.PLANSET_LIST}`;
-        const FCPplan = JSON.parse(list);
-        FCPplan.mo_version = plandata.MO_EDITION;     // for FCP 版本策略--- todo
+  //       const list = `${plandata.PLANSET_LIST}`;
+  //       const FCPplan = JSON.parse(list);
+  //       FCPplan.mo_version = plandata.MO_EDITION;     // for FCP 版本策略--- todo
 
-        let obj = {};
-        _.extend(obj, {
-          UPD_FLAG : 'ICP',
-          PLAN_EDITION : plandata.PLAN_EDITION,
-          FCPList : FCPplan,
-          EDITION : plandata.MO_EDITION,           // for FCP 版本策略--- todo
-          ICP_EDITION : plandata.ICP_EDITION,           // for FCP 版本策略--- todo
-          USERNAME : 'ICPOK',
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        });
+  //       let obj = {};
+  //       _.extend(obj, {
+  //         UPD_FLAG : 'ICP',
+  //         PLAN_EDITION : plandata.PLAN_EDITION,
+  //         FCPList : FCPplan,
+  //         EDITION : plandata.MO_EDITION,           // for FCP 版本策略--- todo
+  //         ICP_EDITION : plandata.ICP_EDITION,           // for FCP 版本策略--- todo
+  //         USERNAME : 'ICPOK',
+  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+  //       });
 
-        if(res[0].msg == "Y") {
-          myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-            if(_.get(res, 'msg') == "UPDATE_OK") {
-              await this.callFCP(plandata, FCPplan);
-            }
-          },err => {
-            reject('update fail')
-          });
-        }
-      },err => {
-        reject('ICP fail')
-      });
-		});
-  }
+  //       if(res[0].msg == "Y") {
+  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
+  //           if(_.get(res, 'msg') == "UPDATE_OK") {
+  //             await this.callFCP(plandata, FCPplan);
+  //           }
+  //         },err => {
+  //           reject('update fail')
+  //         });
+  //       }
+  //     },err => {
+  //       reject('ICP fail')
+  //     });
+	// 	});
+  // }
 
 
-  // 啟動 FCP 執行--------暫不使用
-  async callFCP (plandata, FCPplan) {
-    let myObj = this;
+  // // 啟動 FCP 執行--------暫不使用
+  // async callFCP (plandata, FCPplan) {
+  //   let myObj = this;
 
-		return new Promise((resolve, reject) => {
-      myObj.getPPSService.StartFCP(plandata.INITIALFLAG, FCPplan).subscribe(async res => {
-        console.log("res[0].FCP_Edition  : " + res)
+	// 	return new Promise((resolve, reject) => {
+  //     myObj.getPPSService.StartFCP(plandata.INITIALFLAG, FCPplan).subscribe(async res => {
+  //       console.log("res[0].FCP_Edition  : " + res)
 
-        let obj = {};
-        _.extend(obj, {
-          UPD_FLAG : 'ICP',
-          PLAN_EDITION : plandata.PLAN_EDITION,                  // FCP 版本策略--- todo
-          FCPList : `{}`,
-          EDITION : plandata.FCP_EDITION,
-          ICP_EDITION : plandata.ICP_EDITION,                    // for FCP 版本策略--- todo
-          USERNAME : 'FCPOK',
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        });
+  //       let obj = {};
+  //       _.extend(obj, {
+  //         UPD_FLAG : 'ICP',
+  //         PLAN_EDITION : plandata.PLAN_EDITION,                  // FCP 版本策略--- todo
+  //         FCPList : `{}`,
+  //         EDITION : plandata.FCP_EDITION,
+  //         ICP_EDITION : plandata.ICP_EDITION,                    // for FCP 版本策略--- todo
+  //         USERNAME : 'FCPOK',
+  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+  //       });
 
-        if(res[0].msg == "Y") {
-          myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-            if(_.get(res, 'msg') == "UPDATE_OK") {
-              this.getPlanDataList();
-            }
-          },err => {
-            reject('update fail')
-          });
-        }
-      },err => {
-        reject('FCP fail')
-      });
-    });
-  }
+  //       if(res[0].msg == "Y") {
+  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
+  //           if(_.get(res, 'msg') == "UPDATE_OK") {
+  //             this.getPlanDataList();
+  //           }
+  //         },err => {
+  //           reject('update fail')
+  //         });
+  //       }
+  //     },err => {
+  //       reject('FCP fail')
+  //     });
+  //   });
+  // }
 
 
 

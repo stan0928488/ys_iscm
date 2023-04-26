@@ -1,0 +1,39 @@
+<div>
+    <div class="chat_content">
+      <div class="chat_list" *ngFor="let chatMessage of messageList ">
+        <div  nz-row >
+          <div ng-class="{chatMessage.type === '1':'ask_style', chatMessage.type !== '1':'answer_style' } "    nz-col nzSpan="2">
+            
+            <span *ngIf="chatMessage.type === '1' ; else type2" nz-icon nzType="user-switch" nzTheme="outline">{{chatMessage.from}}</span>
+            <ng-template #type2>
+              <span #type2 nz-icon nzType="user" nzTheme="outline">{{chatMessage.from}}</span>
+            </ng-template>
+            
+          </div>
+          <div nz-col nzSpan="20">
+            <p>{{chatMessage.messageContent}}</p>
+            <!---訊息內容-->
+            <ng-container *ngIf="chatMessage.type === 'workbutton'">
+              <button  [disabled]="chatMessage.endFlag"   nz-button nzType="dashed" (click)="workFunBtn(chatMessage.messageId,'M21')"  nzDanger>訂單追蹤</button>
+              <button  style="margin-left: 30px;"   [disabled]="chatMessage.endFlag" (click)="workFunBtn(chatMessage.messageId,'M31')"  nz-button nzType="dashed" nzDanger>信用狀餘額</button>
+              <button  style="margin-left: 30px;"  [disabled]="chatMessage.endFlag" (click)="workFunBtn(chatMessage.messageId,'M23')" nz-button nzType="dashed" nzDanger>可出貨成品</button>
+              <button  style="margin-left: 30px;"  [disabled]="chatMessage.endFlag"  (click)="workFunBtn(chatMessage.messageId,'M25')" nz-button nzType="dashed" nzDanger>出貨追蹤</button>
+            </ng-container>
+
+            
+          </div>
+          <hr>
+        </div>
+
+      
+
+      </div>
+
+
+
+    </div>
+    
+    <div class="chat_input">
+     
+    </div>
+</div>

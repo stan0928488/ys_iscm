@@ -146,27 +146,28 @@ export class AppComponent {
 
   // 日期轉換
   dateFormat(_dateString, _flag) {
-    if (_dateString == undefined || _dateString == '') {
+    if (_dateString == undefined || _dateString == '' || _dateString == null) {
       return "";
-    }
-    if (_flag == '1') {
-      let date = moment(_dateString, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-      return date;
-    } else if (_flag == '2') {
-      let date = moment(_dateString, "YYYY-MM-DD").format("YYYY-MM-DD");
-      return date;
-    } else if (_flag == '3') {
-      let date = moment(_dateString, "HH:mm:ss").format("HH:mm:ss");
-      return date;
-    } else if (_flag == '4') {
-      let date = moment(_dateString, "HH:mm").format("HH:mm");
-      return date;
-    } else if (_flag == '5') {
-      let date = moment(_dateString, "MM").format("MM");
-      return date;
-    } else if (_flag == '6') {
-      let date = moment(_dateString, "YYYY-MM").format("YYYY-MM");
-      return date;
+    } else {
+      if (_flag == '1') {
+        let date = moment(_dateString, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+        return date;
+      } else if (_flag == '2') {
+        let date = moment(_dateString, "YYYY-MM-DD").format("YYYY-MM-DD");
+        return date;
+      } else if (_flag == '3') {
+        let date = moment(_dateString, "HH:mm:ss").format("HH:mm:ss");
+        return date;
+      } else if (_flag == '4') {
+        let date = moment(_dateString, "HH:mm").format("HH:mm");
+        return date;
+      } else if (_flag == '5') {
+        let date = moment(_dateString, "MM").format("MM");
+        return date;
+      } else if (_flag == '6') {
+        let date = moment(_dateString, "YYYY-MM").format("YYYY-MM");
+        return date;
+      }
     }
   }
 
@@ -182,5 +183,18 @@ export class AppComponent {
     return paramStr;
   }
 
+  // date 轉換
+  dateStringFormat(dateString) {
+    if(dateString !== undefined) {
+      const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+      const parts = dateString.split(' ');
+      const month = months.indexOf(parts[0]) + 1;
+      const day = parseInt(parts[1].replace(',', ''));
+      const year = parseInt(parts[2]);
+      const isoDateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      return isoDateString;
+    }
+    return '';
+  }
 
 }

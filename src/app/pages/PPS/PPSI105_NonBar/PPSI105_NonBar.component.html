@@ -1,0 +1,46 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li><a href="#/commonData/I101">鋼種分類</a></li>
+            <li><a href="#/commonData/I102_NonBar">站別機台關聯表</a></li>
+            <li><a href="#/commonData/I103_NonBar">設備能力</a></li>
+            <li><a href="#/commonData/I104_NonBar">整備時間</a></li>
+            <li class="active"><a href="#/commonData/I105_NonBar"><label style="color:blue">大調機</label></a></li>
+            <li><a href="#/commonData/I106_NonBar">小調機</a></li>
+            <li><a href="#/commonData/I107_NonBar">線速工時</a></li>
+            <li><a href="#/commonData/I108_NonBar">非線速工時</a></li>
+            <li><a href="#/commonData/I109_NonBar">產率設定</a></li>
+            <li><a href="#/commonData/I110_NonBar">產能維護</a></li>
+            <li><a href="#/commonData/I111_NonBar">combine資料設定</a></li>
+            <li><a href="#/commonData/I200">系統設定</a></li>
+        </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['../I105']" style="color: gray">
+        直棒
+      </a>
+    </nz-tab>
+
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+        非直棒
+      </a>
+      <nz-result nzStatus="404" nzTitle="網頁建置中..." nzSubTitle="目前網頁尚待開發">
+       
+      </nz-result>
+    </nz-tab>
+  </nz-tabset>
+
+
+</nz-content>
+

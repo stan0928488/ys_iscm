@@ -1,0 +1,299 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
+    <nz-breadcrumb-item>策略基礎設定</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Campaign 限制</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['../I204']" style="color: gray">
+        直棒
+      </a>
+    </nz-tab>
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+        非直棒
+      </a>
+      <nz-result nzStatus="404" nzTitle="網頁建置中..." nzSubTitle="目前網頁尚待開發">
+       
+      </nz-result>
+    </nz-tab>
+  </nz-tabset>
+
+
+</nz-content>
+
+
+<!-- Campaign限制新增 -->
+<nz-modal
+  [(nzVisible)]="isVisibleCampaign"
+  [nzWidth]="800"
+  [nzContent]="campaignInputContent"
+  [nzFooter]="campaignInputFooter"
+  (nzOnCancel)="cancelCampaignInput()">
+
+  <ng-template #campaignInputContent>
+    <div>
+      <table style="border-collapse: separate;">
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="站別" [(ngModel)]="SHOP_CODE_SCHE" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="機台" [(ngModel)]="CHOOSE_EQUIP_CODE" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出成品尺寸最小值</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="產出成品尺寸最小值" [(ngModel)]="DIA_MIN" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;Campaign ID</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="Campaign ID" [(ngModel)]="COMPAIGN_ID" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;欄位</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="欄位" [(ngModel)]="PARAMETER_COL" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;條件</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="條件" [(ngModel)]="PARAMETER_CONDITION" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;參數</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="參數" [(ngModel)]="PARAMETER_NAME" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出尺寸MIN</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="產出尺寸MIN" [(ngModel)]="TURN_DIA_MAX_MIN" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出尺寸MAX</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="產出尺寸MAX" [(ngModel)]="TURN_DIA_MAX_MAX" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;抽數別</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="抽數別" [(ngModel)]="SCHE_TYPE" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;交期區間MIN</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="交期區間MIN" [(ngModel)]="DATA_DELIVERY_RANGE_MIN" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;交期區間MAX</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="交期區間MAX" [(ngModel)]="DATA_DELIVERY_RANGE_MAX" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;生產日期 起</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="生產日期 起" [(ngModel)]="START_TIME" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;生產日期 訖</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="生產日期 訖" [(ngModel)]="END_TIME" />
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    
+  </ng-template>
+
+  <ng-template #campaignInputFooter>
+    <button nz-button nzType="default" (click)="cancelCampaignInput()">取消新增</button>
+    <button nz-button nzType="primary" (click)="insertTab()">確定</button>
+  </ng-template>
+
+</nz-modal>
+
+<nz-dropdown-menu #shopCodeScheMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchShopCodeScheValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByShopCodeSche()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByShopCodeSche()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #chooseEquipCodeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchChooseEquipCodeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByChooseEquipCode()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByChooseEquipCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #compaignIdMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchCompaignIdValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByCompaignId()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByCompaignId()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #compaignIdMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchCompaignIdValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByCompaignId()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByCompaignId()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #parameterColMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchParameterColValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByParameterCol()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByParameterCol()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #parameterConditionMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchParameterConditionValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByParameterCondition()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByParameterCondition()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #parameterNameMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchParameterNameValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByParameterName()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByParameterName()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #turnDiaMaxMinMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchTurnDiaMaxMinValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByTurnDiaMaxMin()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByTurnDiaMaxMin()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #turnDiaMaxMaxMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchTurnDiaMaxMaxValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByTurnDiaMaxMax()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByTurnDiaMaxMax()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #scheTypeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchScheTypeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByScheType()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByScheType()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #dataDeliveryRangeMinMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDataDeliveryRangeMinValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDataDeliveryRangeMin()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDataDeliveryRangeMin()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #dataDeliveryRangeMaxMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDataDeliveryRangeMaxValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDataDeliveryRangeMax()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDataDeliveryRangeMax()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #startTimeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchStartTimeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByStartTime()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByStartTime()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #startTimeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchStartTimeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByStartTime()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByStartTime()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #endTimeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchEndTimeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByEndTime()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByEndTime()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

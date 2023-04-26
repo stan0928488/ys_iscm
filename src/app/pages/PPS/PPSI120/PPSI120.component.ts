@@ -5,6 +5,8 @@ import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
+import * as XLSX from 'xlsx';
+import { CommonService } from "src/app/services/common/common.service";
 
 
 
@@ -65,9 +67,15 @@ export class PPSI120Component implements AfterViewInit {
   searchHeatMinValue = '';
   searchAlternateSetValue = '';
 
+  // 是否顯示「執行中」元件
+  isSpinning = false;
+
+  excelImportFile : File;
+
 
   constructor(
     private PPSService: PPSService,
+    private commonService : CommonService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
@@ -90,11 +98,16 @@ export class PPSI120Component implements AfterViewInit {
   displayPPSINP09List : ItemData9[] = [];
   //tab9_select 
   getPPSINP09List() {
+    this.isSpinning = true;
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP09List().subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP09List_tmp = res;
+
+      console.log("OP_CODE", this.PPSINP09List_tmp[0].OP_CODE);
+      
+      console.table(this.PPSINP09List_tmp);
 
       const data = [];
       for (let i = 0; i < this.PPSINP09List_tmp.length ; i++) {
@@ -119,6 +132,7 @@ export class PPSI120Component implements AfterViewInit {
       this.displayPPSINP09List = this.PPSINP09List;
       this.updateEditCache();
       myObj.loading = false;
+      myObj.isSpinning = false;
     });
   }
 
@@ -496,6 +510,310 @@ export class PPSI120Component implements AfterViewInit {
   resetByAlternateSet() : void {
     this.searchAlternateSetValue = '';
     this.ppsInp09ListFilter("ALTERNATE_SET", this.searchAlternateSetValue);
+  }
+
+//=============================================
+// Excel 匯入、匯出
+//=============================================
+
+// excel檔案
+incomingFile($event: any) {
+  this.excelImportFile = $event.target.files[0];
+  let lastname = this.excelImportFile.name.split('.').pop();
+  if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+    this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+    return;
+  }
+}
+
+
+  // Excel 匯入
+  jsonExcelData: any[] = [];
+  handleImport() {
+
+    const fileValue = (<HTMLInputElement>document.getElementById("importExcel")).value;
+    if(fileValue === "") {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "";
+      return;
+    }
+
+      const reader = new FileReader();
+   
+      // 文件加載完成後調用
+      reader.onload = (e: any) => {
+        this.isSpinning = true;
+
+        // 從檔案獲取原始資料
+        let data = e.target.result;
+
+        // 從原始資料獲取工作簿
+        // 兼容IE，需把type改為binary，並對data進行轉化
+        let workbook = XLSX.read(data, {
+          type: 'binary'
+        });
+
+        const sheets = workbook.SheetNames;
+
+        if (sheets.length) {
+          var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
+            defval: '' // 單元格為空的預設值
+          });
+          this.jsonExcelData = jsonData;
+
+          if(this.jsonExcelData.length != 0){
+            this.importExcel();
+          }
+          else{
+            this.errorMSG("匯入失敗", `此檔案無任何數據`);
+            this.isSpinning = false;
+          }
+
+        }
+      }
+      // 加載文件
+      reader.readAsArrayBuffer(this.excelImportFile);
+  }
+
+  importExcel(){
+
+    // 檢查欄位名稱是否都正確
+    if(!this.checkExcelHeader(this.jsonExcelData[0])){
+      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
+      this.isSpinning = false;
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+    console.log("匯入的Excle欄位名稱皆正確");
+
+    // 校驗每個Excel欄位是否都有填寫
+    if(!this.checkAllValuesNotEmpty(this.jsonExcelData)){
+      this.isSpinning = false;
+      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+      return;
+    }
+    console.log("匯入的Excle特定的欄位都有填寫");
+
+    // 將jsonData轉成英文的key
+    this.convertJsonToEnglishKey();
+
+   // 校驗Excel中的資料是否有重複
+  if(this.commonService.checkExcelDataDuplicate(this.jsonExcelData)){
+    this.isSpinning = false;
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+    return;
+  } 
+  console.log("匯入的Excle中的資料皆無重複");
+
+    // 將資料全刪除，再匯入EXCEL檔內的資料
+    const myThis = this;
+    const p = this.deleteAllData();
+    p.then(deleteSuccess =>{
+      // 批次新增Excle中的資料
+      return myThis.barchInsertExcelData();
+    }).then(barchInsertSuccess =>{
+      myThis.sucessMSG(barchInsertSuccess, ``);
+      this.getPPSINP09List();
+    }).catch(function(error) {
+      myThis.isSpinning = false;
+      myThis.errorMSG(error, ``);
+    });
+    (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+
+  }
+
+  barchInsertExcelData(){
+    const myThis = this;
+    return new Promise(function(resolve, reject){
+      myThis.PPSService.batchSaveI109Data(myThis.jsonExcelData).subscribe(response => {
+        if (response.success === true) {
+          resolve("匯入成功")
+        } 
+        else {
+          reject(response.success)
+        }
+      }, error =>{
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`)
+      });
+    });
+
+  }
+
+  deleteAllData(){
+    const myThis = this;
+    return new Promise(function(resolve, reject){
+      myThis.PPSService.deleteI109AllData().subscribe(response => {
+        if (response.success === true) {
+          resolve("刪除所有資料成功");
+        } 
+        else {
+          reject(response.message);
+        }
+      }, error =>{
+        reject(`匯入失敗，後台匯入錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(error["error"])}`);
+      });
+    });
+  }
+
+  convertJsonToEnglishKey() : void {
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"站號":').join('"SHOP_CODE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機台":').join('"EQUIP_CODE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"作業代碼":').join('"OP_CODE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"作業代碼1":').join('"OP_CODE1":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"作業代碼2":').join('"OP_CODE2":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"作業代碼3":').join('"OP_CODE3":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"溫度":').join('"TEMPERATURE":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"頻率":').join('"FREQUENCY":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"每噸花時間":').join('"STEEL_GRADE_MIN":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"每爐工時":').join('"HEAT_MIN":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"穿插設定":').join('"ALTERNATE_SET":'));
+
+    for (let i = 0; i < this.jsonExcelData.length; i++) {
+
+      this.jsonExcelData[i].PLANT_CODE = this.PLANT_CODE;
+
+      if(_.isEqual(this.jsonExcelData[i].OP_CODE1, '-') || _.isEqual(this.jsonExcelData[i].OP_CODE1, '')){
+        this.jsonExcelData[i].OP_CODE1 = null;
+      }
+
+      if(_.isEqual(this.jsonExcelData[i].OP_CODE2, '-') || _.isEqual(this.jsonExcelData[i].OP_CODE2, '')){
+        this.jsonExcelData[i].OP_CODE2 = null;
+      }
+
+      if(_.isEqual(this.jsonExcelData[i].ALTERNATE_SET, '-') || _.isEqual(this.jsonExcelData[i].ALTERNATE_SET, '')){
+        this.jsonExcelData[i].ALTERNATE_SET = null;
+      }
+
+    }
+
+  }
+
+  checkAllValuesNotEmpty(jsonExcelData) : boolean{
+
+    for (let i = 1; i <= jsonExcelData.length; i++){
+
+      let rowNumberInExcel = i+1;
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["站號"])) || _.isEqual(String(jsonExcelData[i-1]["站號"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「站號」不得為空，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["機台"])) || _.isEqual(String(jsonExcelData[i-1]["機台"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「機台」不得為空，請修正`);
+        return false;
+      }
+
+      // if(_.isEmpty(String(jsonExcelData[i-1]["作業代碼"])) || _.isEqual(String(jsonExcelData[i-1]["作業代碼"]), '-')){
+      //   this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「作業代碼」不得為空，請修正`);
+      //   return false;
+      // }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["溫度"])) || _.isEqual(String(jsonExcelData[i-1]["溫度"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「溫度」不得為空，請修正`);
+        return false;
+      }
+      else if(!this.myIsNumber(jsonExcelData[i-1]["溫度"])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「溫度」必須為數字，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["頻率"])) || _.isEqual(String(jsonExcelData[i-1]["頻率"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「頻率」不得為空，請修正`);
+        return false;
+      }
+      else if(!this.myIsNumber(jsonExcelData[i-1]["頻率"])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「頻率」必須為數字，請修正`);
+        return false;
+      }
+
+      if(_.isEmpty(String(jsonExcelData[i-1]["每噸花時間"])) || _.isEqual(String(jsonExcelData[i-1]["每噸花時間"]), '-')){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「每噸花時間」不得為空，請修正`);
+        return false;
+      }
+      else if(!this.myIsNumber(jsonExcelData[i-1]["每噸花時間"])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「每噸花時間」必須為數字，請修正`);
+        return false;
+      }
+
+      // if(_.isEmpty(String(jsonExcelData[i-1]["每爐工時"])) || _.isEqual(String(jsonExcelData[i-1]["每爐工時"]), '-')){
+      //   this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「每爐工時」不得為空，請修正`);
+      //   return false;
+      // }
+      // else if(!this.myIsNumber(jsonExcelData[i-1]["每爐工時"])){
+      //   this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「每爐工時」必須為數字，請修正`);
+      //   return false;
+      // }
+      if(!_.isEmpty(String(jsonExcelData[i-1]["每爐工時"])) && !_.isEqual(String(jsonExcelData[i-1]["每爐工時"]), '-') && !this.myIsNumber(jsonExcelData[i-1]["每爐工時"])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「每爐工時」必須為數字，請修正`);
+        return false;
+      }
+    } // end for
+
+    return true;
+  }
+
+  myIsNumber(_data){
+    return _data !== true && _data !== false && _data !== null && isNaN(_.toNumber(_data)) === false;
+  }
+
+  checkExcelHeader(d) : boolean{
+
+    let b1 = false;
+    let b2 = false;
+    let b3 = false;
+    let b4 = false;
+    let b5 = false;
+    let b6 = false;
+    let b7 = false;
+    let b8 = false;
+    let b9 = false;
+    let b10 = false;
+    let b11 = false;
+ 
+    const keys = Object.keys(d);
+    if(keys.length !== 11) return false;
+
+    keys.forEach(k =>{
+      if(k === "站號") b1 = true;
+      else if (k === "機台") b2 = true;
+      else if (k === "作業代碼") b3 = true;
+      else if (k === "作業代碼1") b4 = true;
+      else if (k === "作業代碼2") b5 = true;
+      else if (k === "作業代碼3") b6 = true;
+      else if (k === "溫度") b7 = true;
+      else if (k === "頻率") b8 = true;
+      else if (k === "每噸花時間") b9 = true;
+      else if (k === "每爐工時") b10 = true;
+      else if (k === "穿插設定") b11 = true;
+    });
+
+    return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11;
+  }
+
+
+  // Excel 匯出
+  exportToExcel(){
+
+    this.isSpinning = true;
+
+    const exportJsonDataList = this.displayPPSINP09List.map(obj => {
+      return _.omit(obj, ['id', 'tab9ID']);
+    });
+
+    const firstRow = ["SHOP_CODE", "EQUIP_CODE", "OP_CODE", "OP_CODE1", "OP_CODE2", "OP_CODE3", "TEMPERATURE", "FREQUENCY", "STEEL_GRADE_MIN", "HEAT_MIN", "ALTERNATE_SET"];
+    const firstRowDisplay = {SHOP_CODE:"站號", EQUIP_CODE:"機台", OP_CODE:"作業代碼", OP_CODE1:"作業代碼1", OP_CODE2:"作業代碼2", OP_CODE3:"作業代碼3", TEMPERATURE:"溫度", FREQUENCY:"頻率", STEEL_GRADE_MIN:"每噸花時間", HEAT_MIN:"每爐工時", ALTERNATE_SET:"穿插設定"};
+    const exportData = [firstRowDisplay, ...exportJsonDataList];  
+
+    const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
+    const workBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet1");
+    XLSX.writeFileXLSX(workBook, '直棒退火爐工時.xlsx')
+
+    this.isSpinning = false;
+    this.sucessMSG("匯出成功!", ``);
+
   }
 
 

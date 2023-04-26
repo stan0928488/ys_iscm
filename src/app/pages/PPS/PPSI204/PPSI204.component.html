@@ -8,7 +8,7 @@
   
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         直棒
       </a>
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
@@ -107,7 +107,7 @@
               </nz-filter-trigger>
               </th>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >交期區間MIN
+              >交期區間MIN<br>(>=)
               <nz-filter-trigger 
               [nzActive]="searchDataDeliveryRangeMinValue.length > 0" 
               [nzDropdownMenu]="dataDeliveryRangeMinMenu">
@@ -115,7 +115,7 @@
               </nz-filter-trigger>
               </th>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >交期區間MAX
+              >交期區間MAX<br>(＜)
               <nz-filter-trigger 
               [nzActive]="searchDataDeliveryRangeMaxValue.length > 0" 
               [nzDropdownMenu]="dataDeliveryRangeMaxMenu">
@@ -153,10 +153,10 @@
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.TURN_DIA_MAX_MIN | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.TURN_DIA_MAX_MAX | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SCHE_TYPE }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MIN }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MAX }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.START_TIME }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.END_TIME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MIN | date:'yyyy-MM-dd' }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DATA_DELIVERY_RANGE_MAX | date:'yyyy-MM-dd' }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.START_TIME | date:'yyyy-MM-dd' }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.END_TIME | date:'yyyy-MM-dd' }}</td>
                 <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
                   <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
                   <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
@@ -214,7 +214,7 @@
       </div>
     </nz-tab>
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../xxx']">
+      <a *nzTabLink nz-tab-link [routerLink]="['../I204_NonBar']" style="color: gray">
         非直棒
       </a>
     </nz-tab>

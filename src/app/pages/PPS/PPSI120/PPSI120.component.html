@@ -17,187 +17,221 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
+  <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+    <div style="background: rgb(255, 255, 255); min-height: 1200px;">
 
-  <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+      <table>
 
-    <table>
+        <tr>
+          <td style="text-align:left;width:73%">
+            <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            [nzSize]="'large'"
+            (click)="openStoveInput()"
+            ><span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增
+            </button>
+          </td>
 
-      <tr>
-        <td>
-          <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-          nzType="primary"
-          [nzSize]="'large'"
-          (click)="openStoveInput()"
-          ><span nz-icon nzType="plus" nzTheme="outline"></span>
-            新增
-          </button>
-        </td>
-      </tr>
+          <td style="text-align:rifgt; width:0%; vertical-align: middle; padding-bottom: 20px;">
+            &nbsp;&nbsp;
+            <input style="display:inline; width:180px; " type="file" name="file" id="importExcel" required (change)="incomingFile($event)"
+            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          </td>
 
-    </table>
-  <p></p><p></p>
+          <td>
+            <!-- 匯入EXCEL功能 -->
+            <button 
+              id="bacthAdd" 
+              nz-button 
+              nzType="primary"
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              (click)="handleImport()" >
+              <span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+            </button>
+          </td>
 
-    <div nz-col [nzSpan]="90">
-      <nz-table #RowTable9 nzBordered [nzData]="displayPPSINP09List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
-        <thead>
-          <tr>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-            >站號
-            <nz-filter-trigger 
-            [nzActive]="searchShopCodeValue.length > 0" 
-            [nzDropdownMenu]="shopCodeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-            >機台
-            <nz-filter-trigger 
-            [nzActive]="searchEquipCodeValue.length > 0" 
-            [nzDropdownMenu]="equipCodeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >作業代碼
-            <nz-filter-trigger 
-            [nzActive]="searchOpCodeValue.length > 0" 
-            [nzDropdownMenu]="opCodeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >作業代碼1
-            <nz-filter-trigger 
-            [nzActive]="searchOpCode1Value.length > 0" 
-            [nzDropdownMenu]="opCode1Menu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >作業代碼2
-            <nz-filter-trigger 
-            [nzActive]="searchOpCode2Value.length > 0" 
-            [nzDropdownMenu]="opCode2Menu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >作業代碼3
-            <nz-filter-trigger 
-            [nzActive]="searchOpCode3Value.length > 0" 
-            [nzDropdownMenu]="opCode3Menu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >溫度
-            <nz-filter-trigger 
-            [nzActive]="searchTemperatureValue.length > 0" 
-            [nzDropdownMenu]="temperatureMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >頻率
-            <nz-filter-trigger 
-            [nzActive]="searchFrequencyValue.length > 0" 
-            [nzDropdownMenu]="frequencyMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >每噸花時間
-            <nz-filter-trigger 
-            [nzActive]="searchSteelGradeMinValue.length > 0" 
-            [nzDropdownMenu]="steelGradeMinMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >每爐工時
-            <nz-filter-trigger 
-            [nzActive]="searchHeatMinValue.length > 0" 
-            [nzDropdownMenu]="HeatMinMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >穿插設定
-            <nz-filter-trigger 
-            [nzActive]="searchAlternateSetValue.length > 0" 
-            [nzDropdownMenu]="AlternateSetMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of RowTable9.data;let i = index" class="editable-row">
-            <ng-container *ngIf="!editCache9[data.id].edit; else editTemplate1">
-              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE1 }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE2 }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE3 }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TEMPERATURE | number }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FREQUENCY | number }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.STEEL_GRADE_MIN }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.HEAT_MIN }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.ALTERNATE_SET }}</td>
-              <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
-                <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
-              </td>
-            </ng-container>
-            <ng-template #editTemplate1>
-              <td>
-                <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache9[data.id].data.SHOP_CODE" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="機台" [(ngModel)]="editCache9[data.id].data.EQUIP_CODE" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="作業代碼" [(ngModel)]="editCache9[data.id].data.OP_CODE" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="替代作業代碼1" [(ngModel)]="editCache9[data.id].data.OP_CODE1" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="替代作業代碼2" [(ngModel)]="editCache9[data.id].data.OP_CODE2" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="替代作業代碼3" [(ngModel)]="editCache9[data.id].data.OP_CODE3" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="溫度" [(ngModel)]="editCache9[data.id].data.TEMPERATURE" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="頻率" [(ngModel)]="editCache9[data.id].data.FREQUENCY" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="每噸花時間" [(ngModel)]="editCache9[data.id].data.STEEL_GRADE_MIN" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="每爐工時" [(ngModel)]="editCache9[data.id].data.HEAT_MIN" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="穿插設定" [(ngModel)]="editCache9[data.id].data.ALTERNATE_SET" />
-              </td>
-              <td>
-                <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
-              </td>
-            </ng-template>
-          </tr>
-        </tbody>
-      </nz-table>
+          <td>
+            <!-- 匯出EXCEL功能 -->
+            <button 
+              id="download" 
+              nz-button
+              nzType="primary"
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none; margin-left: 5px;"
+              (click)="exportToExcel()">
+              <span nz-icon nzType="download" nzTheme="outline" ></span>
+              E X C E L 匯出
+            </button>
+          </td>
+
+        </tr>
+
+      </table>
+    <p></p><p></p>
+
+      <div nz-col [nzSpan]="90">
+        <nz-table #RowTable9 nzBordered [nzData]="displayPPSINP09List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+          <thead>
+            <tr>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+              >站號
+              <nz-filter-trigger 
+              [nzActive]="searchShopCodeValue.length > 0" 
+              [nzDropdownMenu]="shopCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
+              >機台
+              <nz-filter-trigger 
+              [nzActive]="searchEquipCodeValue.length > 0" 
+              [nzDropdownMenu]="equipCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >作業代碼
+              <nz-filter-trigger 
+              [nzActive]="searchOpCodeValue.length > 0" 
+              [nzDropdownMenu]="opCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >作業代碼1
+              <nz-filter-trigger 
+              [nzActive]="searchOpCode1Value.length > 0" 
+              [nzDropdownMenu]="opCode1Menu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >作業代碼2
+              <nz-filter-trigger 
+              [nzActive]="searchOpCode2Value.length > 0" 
+              [nzDropdownMenu]="opCode2Menu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >作業代碼3
+              <nz-filter-trigger 
+              [nzActive]="searchOpCode3Value.length > 0" 
+              [nzDropdownMenu]="opCode3Menu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >溫度
+              <nz-filter-trigger 
+              [nzActive]="searchTemperatureValue.length > 0" 
+              [nzDropdownMenu]="temperatureMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >頻率
+              <nz-filter-trigger 
+              [nzActive]="searchFrequencyValue.length > 0" 
+              [nzDropdownMenu]="frequencyMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >每噸花時間
+              <nz-filter-trigger 
+              [nzActive]="searchSteelGradeMinValue.length > 0" 
+              [nzDropdownMenu]="steelGradeMinMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >每爐工時
+              <nz-filter-trigger 
+              [nzActive]="searchHeatMinValue.length > 0" 
+              [nzDropdownMenu]="HeatMinMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+              >穿插設定
+              <nz-filter-trigger 
+              [nzActive]="searchAlternateSetValue.length > 0" 
+              [nzDropdownMenu]="AlternateSetMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of RowTable9.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!editCache9[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.EQUIP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE1 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE2 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OP_CODE3 }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TEMPERATURE | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.FREQUENCY | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.STEEL_GRADE_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.HEAT_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.ALTERNATE_SET }}</td>
+                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                  <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
+                </td>
+              </ng-container>
+              <ng-template #editTemplate1>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="站號" [(ngModel)]="editCache9[data.id].data.SHOP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="機台" [(ngModel)]="editCache9[data.id].data.EQUIP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="作業代碼" [(ngModel)]="editCache9[data.id].data.OP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="替代作業代碼1" [(ngModel)]="editCache9[data.id].data.OP_CODE1" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="替代作業代碼2" [(ngModel)]="editCache9[data.id].data.OP_CODE2" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="替代作業代碼3" [(ngModel)]="editCache9[data.id].data.OP_CODE3" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="溫度" [(ngModel)]="editCache9[data.id].data.TEMPERATURE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="頻率" [(ngModel)]="editCache9[data.id].data.FREQUENCY" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="每噸花時間" [(ngModel)]="editCache9[data.id].data.STEEL_GRADE_MIN" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="每爐工時" [(ngModel)]="editCache9[data.id].data.HEAT_MIN" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="穿插設定" [(ngModel)]="editCache9[data.id].data.ALTERNATE_SET" />
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
+                </td>
+              </ng-template>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
     </div>
-  </div>
-
+  </nz-spin>
+  
 </nz-content>
 
 

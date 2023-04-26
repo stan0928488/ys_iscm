@@ -93,7 +93,7 @@ export class PPSI104Component implements AfterViewInit {
   getPPSINP03List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP03List().subscribe(res => {
+    this.PPSService.getPPSINP03List('1').subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP03List_tmp = res;
 
@@ -261,7 +261,7 @@ export class PPSI104Component implements AfterViewInit {
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
-      myObj.PPSService.insertI103Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.insertI103Tab1Save('1', obj).subscribe(res => {
 
         console.log(res)
         if(res[0].MSG === "Y") {
@@ -307,7 +307,7 @@ export class PPSI104Component implements AfterViewInit {
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
-      myObj.PPSService.updateI103Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.updateI103Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE = undefined;
           this.LOAD_TIME = undefined;
@@ -340,7 +340,7 @@ export class PPSI104Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let _ID = this.editCache3[_id].data.tab3ID;
-      myObj.PPSService.delI103Tab1Data(_ID).subscribe(res => {
+      myObj.PPSService.delI103Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE = undefined;
           this.LOAD_TIME = undefined;
@@ -584,7 +584,7 @@ export class PPSI104Component implements AfterViewInit {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI102Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel(obj).subscribe(res => {
         console.log("importExcelPPSI102");
         if(res[0].MSG === "Y") { 
           

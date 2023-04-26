@@ -12,8 +12,8 @@
             <li><a href="#/commonData/I104">整備時間</a></li>
             <li><a href="#/commonData/I105">大調機</a></li>
             <li><a href="#/commonData/I106">小調機</a></li>
-            <li><a href="#/commonData/I107">線速</a></li>
-            <li><a href="#/commonData/I108">非線速</a></li>
+            <li><a href="#/commonData/I107">線速工時</a></li>
+            <li><a href="#/commonData/I108">非線速工時</a></li>
             <li><a href="#/commonData/I109">產率設定</a></li>
             <li><a href="#/commonData/I110">產能維護</a></li>
             <li class="active"><a href="#/commonData/I111"><label style="color:blue">combine資料設定</label></a></li>
@@ -26,7 +26,7 @@
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']">
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         直棒
       </a>
       <div class="excel-control">
@@ -183,7 +183,7 @@
     </nz-tab>
 
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I111_NonBar']">
+      <a *nzTabLink nz-tab-link [routerLink]="['../I111_NonBar']" style="color: gray">
         非直棒
       </a>
     </nz-tab>

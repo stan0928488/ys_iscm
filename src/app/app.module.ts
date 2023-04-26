@@ -36,7 +36,7 @@ import { ORPPDEMOComponent } from './pages/ORP/ORPPDEMO/ORPPDEMO.component';
 import { ORPPDEMO1Component } from './pages/ORP/ORPPDEMO1/ORPPDEMO1.component';
 import { ORPP100Component } from './pages/ORP/ORPP100/ORPP100.component';
 import { ORPP101Component } from './pages/ORP/ORPP101/ORPP101.component';
-
+import { ORPPCHATDEMOComponent } from './pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component';
 
 import { TRAP001component } from "./pages/TRA/TRAP001/TRAP001.component";
 
@@ -45,30 +45,40 @@ import { PPSI101Component } from "./pages/PPS/PPSI101/PPSI101.component";
 import { PPSI102Component } from "./pages/PPS/PPSI102/PPSI102.component";
 import { PPSI102_NonBarComponent } from "./pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component";
 import { PPSI103Component } from "./pages/PPS/PPSI103/PPSI103.component";
+import { PPSI103_NonBarComponent } from "./pages/PPS/PPSI103_NonBar/PPSI103_NonBar.component";
 import { PPSI104Component } from "./pages/PPS/PPSI104/PPSI104.component";
+import { PPSI104_NonBarComponent } from "./pages/PPS/PPSI104_NonBar/PPSI104_NonBar.component";
 import { PPSI105Component } from "./pages/PPS/PPSI105/PPSI105.component";
+import { PPSI105_NonBarComponent } from "./pages/PPS/PPSI105_NonBar/PPSI105_NonBar.component";
 import { PPSI106Component } from "./pages/PPS/PPSI106/PPSI106.component";
+import { PPSI106_NonBarComponent } from "./pages/PPS/PPSI106_NonBar/PPSI106_NonBar.component";
 import { PPSI107Component } from "./pages/PPS/PPSI107/PPSI107.component";
+import { PPSI107_NonBarComponent } from "./pages/PPS/PPSI107_NonBar/PPSI107_NonBar.component";
 import { PPSI108Component } from "./pages/PPS/PPSI108/PPSI108.component";
+import { PPSI108_NonBarComponent } from "./pages/PPS/PPSI108_NonBar/PPSI108_NonBar.component";
 import { PPSI109Component } from "./pages/PPS/PPSI109/PPSI109.component";
+import { PPSI109_NonBarComponent } from "./pages/PPS/PPSI109_NonBar/PPSI109_NonBar.component";
 import { PPSI110Component } from "./pages/PPS/PPSI110/PPSI110.component";
+import { PPSI110_NonBarComponent } from "./pages/PPS/PPSI110_NonBar/PPSI110_NonBar.component";
 import { PPSI111Component } from "./pages/PPS/PPSI111/PPSI111.component";
+import { PPSI111_NonBarComponent } from "./pages/PPS/PPSI111_NonBar/PPSI111_NonBar.component";
 import { PPSI120Component } from "./pages/PPS/PPSI120/PPSI120.component";
 import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
 import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
+import { PPSI130Component } from "./pages/PPS/PPSI130/PPSI130.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
 import { PPSI203Component } from "./pages/PPS/PPSI203/PPSI203.component";
 import { PPSI204Component } from "./pages/PPS/PPSI204/PPSI204.component";
+import { PPSI204_NonBarComponent } from "./pages/PPS/PPSI204_NonBar/PPSI204_NonBar.component";
 import { PPSI205Component } from "./pages/PPS/PPSI205/PPSI205.component";
 import { PPSI210Component } from "./pages/PPS/PPSI210/PPSI210.component";
 import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
 import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
-
 
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
@@ -79,7 +89,7 @@ import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 
-
+import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
 import { AgGridModule } from "ag-grid-angular";
 
 registerLocaleData(zh);
@@ -108,30 +118,41 @@ registerLocaleData(zh);
     ORPP043Component,
     ORPPDEMOComponent,
     ORPPDEMO1Component,
-    
+    ORPPCHATDEMOComponent,
     TRAP001component,
 
     PPSI101Component,
     PPSI102Component,
     PPSI102_NonBarComponent,
     PPSI103Component,
+    PPSI103_NonBarComponent,
     PPSI104Component,
+    PPSI104_NonBarComponent,
     PPSI105Component,
+    PPSI105_NonBarComponent,
     PPSI106Component,
+    PPSI106_NonBarComponent,
     PPSI107Component,
+    PPSI107_NonBarComponent,
     PPSI108Component,
+    PPSI108_NonBarComponent,
     PPSI109Component,
+    PPSI109_NonBarComponent,
     PPSI110Component,
+    PPSI110_NonBarComponent,
     PPSI111Component,
+    PPSI111_NonBarComponent,
     PPSI120Component,
     PPSI121Component,
     PPSI122Component,
     PPSI123Component,
+    PPSI130Component,
     PPSI200Component,
     PPSI201Component,
     PPSI202Component,
     PPSI203Component,
     PPSI204Component,
+    PPSI204_NonBarComponent,
     PPSI205Component,
     PPSI210Component,
     PPSI220Component,
@@ -143,11 +164,11 @@ registerLocaleData(zh);
     
     SPAP100component,
     SPAP101component,
-    InactivityTimerComponent
-    ,
+    InactivityTimerComponent,
     MSHI001Component,
     MSHI002Component,
-    MSHP001Component
+    MSHP001Component,
+    LABI001Component
    ],
   imports: [
     BrowserModule,

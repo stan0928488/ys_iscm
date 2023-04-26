@@ -555,7 +555,7 @@ resetByFuranceBatchQty17() : void {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI102Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel(obj).subscribe(res => {
         console.log("importExcelPPSI105");
         if(res[0].MSG === "Y") { 
           
