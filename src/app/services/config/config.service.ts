@@ -32,14 +32,14 @@ export class ConfigService {
 
     switch (hostName) {
       case "localhost":
-        if(flag === "1") { 
+        // if(flag === "1") { 
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        } else {
-          var urlHost = "ys-webapt1.walsin.com"
-          this.APIURL = `http://${urlHost}:8080${APIBODY}`;
-        }
+        // } else {
+        //   var urlHost = "ys-webapt1.walsin.com"
+        //   this.APIURL = `http://${urlHost}:8080${APIBODY}`;
+        // }
        
-      break;
+        break;
       case "ys-webapt1.walsin.com":
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;

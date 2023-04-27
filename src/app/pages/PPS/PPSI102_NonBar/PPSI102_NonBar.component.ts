@@ -66,7 +66,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab1ID","PLANT_CODE","工廠別","站別代碼","站別名稱","機台","設備名","機台群組","BALANCE_RULE","ORDER_SEQ","WT_TYPE","VALID","工時計算分類","有效碼"];
+  titleArray = ["工廠別","站別代碼","站別名稱","機台","機台名稱","機台群組","有效碼","工時計算分類"];
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -234,14 +234,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         PLANT_CODE : this.PLANT_CODE,
         PLANT : this.PLANT,
         SHOP_CODE : this.SHOP_CODE,
-        SHOP_NAME : this.SHOP_NAME,
+        SHOP_NAME : this.SHOP_NAME === undefined ? null : this.SHOP_NAME,
         EQUIP_CODE : this.EQUIP_CODE,
-        EQUIP_NAME : this.EQUIP_NAME,
-        EQUIP_GROUP: this.EQUIP_GROUP,
+        EQUIP_NAME : this.EQUIP_NAME === undefined ? null : this.EQUIP_NAME,
+        EQUIP_GROUP: this.EQUIP_GROUP === undefined ? null : this.EQUIP_GROUP,
         VALID: this.VALID,
-        WT_TYPE: this.WT_TYPE,
-        BALANCE_RULE: "",
-        ORDER_SEQ: ""
+        WT_TYPE: this.WT_TYPE === undefined ? null : this.WT_TYPE,
+        BALANCE_RULE: null,
+        ORDER_SEQ: null
       })
 
       myObj.PPSService.insertI107Save('2', obj).subscribe(res => {
@@ -297,14 +297,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         PLANT_CODE : this.editCache7[_id].data.PLANT_CODE,
         PLANT : this.editCache7[_id].data.PLANT,
         SHOP_CODE : this.editCache7[_id].data.SHOP_CODE,
-        SHOP_NAME : this.editCache7[_id].data.SHOP_NAME,
+        SHOP_NAME : this.editCache7[_id].data.SHOP_NAME === undefined ? null : this.editCache7[_id].data.SHOP_NAME,
         EQUIP_CODE : this.editCache7[_id].data.EQUIP_CODE,
-        EQUIP_NAME : this.editCache7[_id].data.EQUIP_NAME,
-        EQUIP_GROUP : this.editCache7[_id].data.EQUIP_GROUP,
+        EQUIP_NAME : this.editCache7[_id].data.EQUIP_NAME === undefined ? null : this.editCache7[_id].data.EQUIP_NAME,
+        EQUIP_GROUP : this.editCache7[_id].data.EQUIP_GROUP === undefined ? null : this.editCache7[_id].data.EQUIP_GROUP,
         VALID : this.editCache7[_id].data.VALID,
-        WT_TYPE : this.editCache7[_id].data.WT_TYPE,
-        BALANCE_RULE: "",
-        ORDER_SEQ: ""
+        WT_TYPE : this.editCache7[_id].data.WT_TYPE === undefined ? null : this.editCache7[_id].data.WT_TYPE,
+        BALANCE_RULE: null,
+        ORDER_SEQ: null
       })
 
       myObj.PPSService.updateI107Save('2', obj).subscribe(res => {
@@ -530,42 +530,47 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
+      if (_data[i]['工廠別'] === undefined) {
+        this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「工廠別」不可為空');
+        this.clearFile();
+          return;
+      } else if (_data[i]['站別代碼'] === undefined) {
+        this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「站別代碼」不可為空');
+        this.clearFile();
+          return;
+      } else if (_data[i]['機台']  === undefined) {
+        this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「機台」不可為空');
+        this.clearFile();
+          return;
+      } else if (_data[i]['有效碼']  === undefined) {
+        this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「有效碼」不可為空');
+        this.clearFile();
+          return;
+      }
 
       let allData = JSON.stringify(_data[i]);
-
-      
-        
-
         if(_data[i]['機台名稱'] == undefined)
           _data[i]['機台名稱'] = '';
         if(_data[i]['機台群組'] == undefined)
           _data[i]['機台群組'] = '';
         if(_data[i]['機台'] == undefined)
           _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
 
         upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
+          PLANT_CODE: 'YS',
           PLANT: _data[i]['工廠別'],
           SHOP_CODE: _data[i]['站別代碼'],
           SHOP_NAME: _data[i]['站別名稱'],
+          EQUIP_CODE: _data[i]['機台'] ,
+          EQUIP_GROUP: _data[i]['機台群組'],
+          EQUIP_NAME: _data[i]['機台名稱'],
           VALID: _data[i]['有效碼'],
+          WT_TYPE: _data[i]['工時計算分類'],
+          BALANCE_RULE: null,
+          ORDER_SEQ: null,
           DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
           USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
         })
-      
     }
     
     console.log(upload_data);
@@ -582,8 +587,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       myObj.PPSService.importI107Excel(obj).subscribe(res => {
         console.log("importExcelPPSI102");
         if(res[0].MSG === "Y") { 
-          
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -613,7 +616,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     let ID_List = [];
     let arr = [];
     console.log(JSON.stringify(this.displayPPSINP07List[0]));
-    let fileName = `站別機台關聯表-非直棒`;
+    let fileName = `站別機台關聯表_非直棒`;
     
     this.excelService.exportAsExcelFile(this.displayPPSINP07List, fileName, this.titleArray);
   }

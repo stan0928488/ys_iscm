@@ -101,6 +101,8 @@ export class LABP100Component implements AfterViewInit {
   LoadingPage = false;
   isRun = false;
   isClear = true;
+  queryBarActive1 = true;
+  queryBarActive2 = true;
   USERNAME;
   PLANT_CODE;
   mo_default:string = null;
@@ -108,6 +110,7 @@ export class LABP100Component implements AfterViewInit {
   order_default = '';
   shape = "";
   saleOrderDia = "";
+  spinType = "";
   status = "this is a status test";
   
   dateRange = [];
@@ -146,11 +149,11 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '現況訂單項次' ,field: 'saleItem' , filter: false,width: 120 },
     { headerName: '生計交期' ,field: 'deliveryPpDate' , filter: false,width: 170 ,
         cellRenderer: (data) => {
-          return moment(data.deliveryPpDate).format('YYYY-MM-DD HH:mm:ss')
+          return moment(data.deliveryPpDate).format('YYYY-MM-DD')
       }},
     { headerName: '允收截止日' ,field: 'devyDate' , filter: false,width: 170 ,
         cellRenderer: (data) => {
-          return moment(data.devyDate).format('YYYY-MM-DD HH:mm:ss')
+          return moment(data.devyDate).format('YYYY-MM-DD')
       }},
     { headerName: '敏化測試' ,field: 'sensitizationTest' , filter: false,width: 100 },
     { headerName: '敏化測試說明' ,field: 'sensitizationTestDesc' , filter: false,width: 120 },
@@ -164,7 +167,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
     { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 ,
       cellRenderer: (data) => {
-        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH:mm:ss')
+        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH')
     }},
     { headerName: '取樣狀態' ,field: 'sampleStatus' , filter: false,width: 100 }
   ];
@@ -241,9 +244,13 @@ export class LABP100Component implements AfterViewInit {
 
   ngOnInit(): void {
     this.isSpinning = false;
+    this.isRun = false;
+    this.queryBarActive1 = true;
+    this.queryBarActive2 = true;
     this.isClear = true;
     this.mo_default=null;
     this.shape = "";
+    this.spinType = "";
     this.saleOrderDia = "";
      
     var startDateStr = moment().startOf('month').format('YYYY-MM-DD');
@@ -302,6 +309,7 @@ export class LABP100Component implements AfterViewInit {
           this.isRun = false;
         } else {
           now = '執行中';
+          this.spinType = "執行中 ... "
           this.isRun = true;
         }
 
@@ -422,13 +430,15 @@ export class LABP100Component implements AfterViewInit {
   getMoDetailList(moEdition: String){
 
     this.checkQueryValue();
-    console.log('get mo edition');
+    
     let myObj = this;
-    console.log(this.abbr_default);
+    this.isSpinning = true;    
     myObj.LABService.getMoDetailList(this.PLANT_CODE,moEdition,this.abbr_default,this.sampleId
     ,this.dateRange[0],this.dateRange[1]).subscribe(res => {
 
       let result:any = res;
+      this.isSpinning = false;
+      this.queryBarActive2 = false;
       
       if(result.code == 200){
         var temp = result.data;
@@ -446,18 +456,20 @@ export class LABP100Component implements AfterViewInit {
     this.checkQueryValue();
     console.log('get mo edition');
     let myObj = this;
+    this.LoadingPage = true;
+    this.spinType = "查詢中 ... ";
     myObj.LABService.getMoInformation(this.PLANT_CODE,moEdition,this.abbr_default,this.sampleId,this.idNo,this.order_default,
       this.dateRange[0],this.dateRange[1],this.expDateRange[0],this.expDateRange[1]).subscribe(res => {
 
+      this.LoadingPage = false;
+      this.queryBarActive1 = false;
       let result:any = res;
       
       if(result.code == 200){
         var temp = result.data;
-        
-        this.rowDataTab1 = temp;
-        
-          
+        this.rowDataTab1 = temp;          
       }
+
     });
 
   }
@@ -467,6 +479,7 @@ export class LABP100Component implements AfterViewInit {
     let myObj = this;
     this.LoadingPage = true;
     this.isRun = true;
+    this.spinType = "執行中 ... ";
     myObj.LABService.reloadLabStatus(this.PLANT_CODE, moment().format('YYYYMMDDHHmmss'), this.USERNAME).subscribe(res => {
       let result:any = res;
       
@@ -503,9 +516,7 @@ export class LABP100Component implements AfterViewInit {
     }
 
     this.rowDataTab2 = [];
-    this.isSpinning = true;
     this.getMoInformation(this.mo_default);
-    this.isSpinning = false;
   }
 
   onQueryTab2(): void{
@@ -519,10 +530,7 @@ export class LABP100Component implements AfterViewInit {
     }
 
     this.rowDataTab2 = [];
-    this.isSpinning = true;
     this.getMoDetailList(this.mo_default);
-    this.isSpinning = false;
-
   }
 
 
@@ -565,8 +573,8 @@ export class LABP100Component implements AfterViewInit {
             "sampleShopCode" : item.sampleShopCode,
             "saleOrder" : item.saleOrder,
             "saleItem" : item.saleItem,
-            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD HH:mm:ss'),
-            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD HH:mm:ss'),
+            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD'),
+            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD'),
             "sensitizationTest" : item.sensitizationTest,
             "sensitizationTestDesc" : item.sensitizationTestDesc,
             "impactTest" : item.impactTest,
@@ -574,7 +582,7 @@ export class LABP100Component implements AfterViewInit {
             "sampleDateCreate" : moment(item.sampleDateCreate).format('YYYY-MM-DD HH:mm:ss'),
             "cuso4Test" : item.cuso4Test,
             "experimentDays" : item.experimentDays,
-            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH:mm:ss'),
+            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH'),
             "sampleStatus" : item.sampleStatus
         });
     }

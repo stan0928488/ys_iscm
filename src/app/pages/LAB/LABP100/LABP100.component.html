@@ -5,72 +5,20 @@
     <nz-breadcrumb-item>工時擷取與結果</nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-spin nzTip="計算中..." [nzSize] ="'large'" [nzSpinning]="LoadingPage">
+  <nz-spin [nzTip]="spinType" [nzSize] ="'large'" [nzSpinning]="LoadingPage">
 
     <nz-button-group nzSize = "large" style = "margin:10px;">
       <button id = "show_tab1"  nz-button (click)="showTab1()" style = "background-color: #008CBA;">擷取結果主檔</button>
       <button id = "show_tab2" nz-button (click)="showTab2()" style = "background-color: ''">擷取結果明細檔</button>
     </nz-button-group>
     <div id = "tab_1">
-      <table  class="query" style="text-align:left;">
-        <tr>
-          <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
-          <nz-select nzPlaceHolder="請選擇版次" style=" margin-left:10px; margin-right:10px;" [(ngModel)]="mo_default" nzShowSearch >
-            <nz-option *ngFor="let mo of mo_list" [nzLabel]="mo" [nzValue]="mo"></nz-option>
-          </nz-select>
-          
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
-            <nz-select nzPlaceHolder="請選擇客戶名稱" style=" margin-left:10px;width: 180px; " [(ngModel)]="abbr_default" nzShowSearch nzAllowClear >
-              <nz-option *ngFor="let abbr of abbr_list" [nzLabel]="abbr" [nzValue]="abbr"></nz-option>
-            </nz-select>
-
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣ID</td>   
-            <div style="margin-left:10px;margin-right:30px; width: 135px;">
-              <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
-            </div>
-
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;放樣ID</td>   
-            <div style="margin-left:10px;margin-right:30px; width: 135px;">
-              <input nz-input placeholder="" name="No" [(ngModel)]="idNo"/>
-            </div>
-
-        </tr>
-        <br>
-        <tr>
-          <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;訂單編號</td>
-          
-          <nz-select nzPlaceHolder="請選擇訂單編號" style=" margin-left:10px;" [(ngModel)]="order_default" nzShowSearch nzAllowClear >
-            <nz-option *ngFor="let order of order_list" [nzLabel]="order" [nzValue]="order"></nz-option>
-          </nz-select>
-          
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
-            <div style="margin-left:10px;margin-right:30px;">
-              <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)" nzAllowClear = "false"></nz-range-picker>
-            </div>
-
-            <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;實驗預計完成日</td>   
-            <div style="margin-left:10px;margin-right:30px;width:100%;">
-              <nz-range-picker [(ngModel)]="expDateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onExpDateChange($event)" nzAllowClear = "false"></nz-range-picker>
-            </div>
-
-            
-        </tr>
-      </table>
       <div style="width: 100%; float: left;margin:10px 10px 10px 0px;">
-        <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-          nzType="primary"
-          (click)="onQueryTab1()"
-        >
-        <span nz-icon nzType="search" nzTheme="outline"></span>
-          查詢
-        </button>
         <button
           nz-button
           style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
           nzType="primary"
           (click)="ngOnInit()"
+          [hidden] = "true"
         >
         <span nz-icon nzType="clear" nzTheme="outline"></span>
           清除
@@ -93,13 +41,72 @@
           [disabled]="isRun"
         >
         <span nz-icon nzType="play-circle" nzTheme="outline"></span>
-          重新取得實驗室工時
+          重新取得資料
         </button>
         <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRun"> ※ 實驗室工時執行中，不可重新取得 </label>
 
       </div>
       <br><br><br>
       <div style ="margin-bottom: 10px;">
+        <nz-collapse>
+          <nz-collapse-panel [nzHeader]="'查詢條件'" [nzActive]="queryBarActive1">
+            <table  class="query" style="text-align:left;">
+              <tr>
+                <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
+                <nz-select nzPlaceHolder="請選擇版次" style=" margin-left:10px; margin-right:10px;" [(ngModel)]="mo_default" nzShowSearch >
+                  <nz-option *ngFor="let mo of mo_list" [nzLabel]="mo" [nzValue]="mo"></nz-option>
+                </nz-select>
+                
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
+                  <nz-select nzPlaceHolder="請選擇客戶名稱" style=" margin-left:10px;width: 180px; " [(ngModel)]="abbr_default" nzShowSearch nzAllowClear >
+                    <nz-option *ngFor="let abbr of abbr_list" [nzLabel]="abbr" [nzValue]="abbr"></nz-option>
+                  </nz-select>
+      
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣ID</td>   
+                  <div style="margin-left:10px;margin-right:30px; width: 135px;">
+                    <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
+                  </div>
+      
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;放樣ID</td>   
+                  <div style="margin-left:10px;margin-right:30px; width: 135px;">
+                    <input nz-input placeholder="" name="No" [(ngModel)]="idNo"/>
+                  </div>
+              </tr>
+              <br>
+              <tr>
+                <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;訂單編號</td>
+                
+                <nz-select nzPlaceHolder="請選擇訂單編號" style=" margin-left:10px;" [(ngModel)]="order_default" nzShowSearch nzAllowClear >
+                  <nz-option *ngFor="let order of order_list" [nzLabel]="order" [nzValue]="order"></nz-option>
+                </nz-select>
+                
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
+                  <div style="margin-left:10px;margin-right:30px;">
+                    <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)" nzAllowClear = "false"></nz-range-picker>
+                  </div>
+      
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;實驗預計完成日</td>   
+                  <div style="margin-left:10px;margin-right:30px;width:100%;">
+                    <nz-range-picker [(ngModel)]="expDateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onExpDateChange($event)" nzAllowClear = "false"></nz-range-picker>
+                  </div>
+              </tr>
+              <br>
+              <tr>
+                <button
+                  nz-button
+                  style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                  nzType="primary"
+                  (click)="onQueryTab1()"
+                >
+                <span nz-icon nzType="search" nzTheme="outline"></span>
+                  查詢
+                </button>
+              </tr>
+            </table>
+            
+          </nz-collapse-panel>
+        </nz-collapse>
+
         <nz-collapse>
           <nz-collapse-panel [nzHeader]="status">
             
@@ -131,16 +138,18 @@
 
   </nz-spin>
     <div id="tab_2" style="display: none;">
-    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
+    <nz-spin  nzTip="查詢中 ... " [nzSize]="'large'" [nzSpinning] = "isSpinning" >
 
-        <table  class="query" style="text-align:left;">
-          <tr>
-            <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
-            
-            <nz-select nzPlaceHolder="請選擇版次" style=" margin-left:10px; margin-right:10px;" [(ngModel)]="mo_default" nzShowSearch nzAllowClear >
-              <nz-option *ngFor="let mo of mo_list" [nzLabel]="mo" [nzValue]="mo"></nz-option>
-            </nz-select>
-            
+      <nz-collapse>
+        <nz-collapse-panel [nzHeader]="'查詢條件'" [nzActive]="queryBarActive2">
+          <table  class="query" style="text-align:left;">
+            <tr>
+              <td style = "width: 5%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;版次</td>
+              
+              <nz-select nzPlaceHolder="請選擇版次" style=" margin-left:10px; margin-right:10px;" [(ngModel)]="mo_default" nzShowSearch nzAllowClear >
+                <nz-option *ngFor="let mo of mo_list" [nzLabel]="mo" [nzValue]="mo"></nz-option>
+              </nz-select>
+              
               <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;客戶</td>
             
               <nz-select nzPlaceHolder="請選擇客戶名稱" style=" margin-left:10px;" [(ngModel)]="abbr_default" nzShowSearch nzAllowClear >
@@ -155,26 +164,31 @@
               <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;取樣日期</td>   
               <div style="margin-left:10px;margin-right:30px;">
                 <nz-range-picker [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)" nzAllowClear = "false"></nz-range-picker>
-              </div>
+              </div>              
+            </tr>
+            <br>
+            <tr>
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+              nzType="primary"
+              (click)="onQueryTab2()"
+            >
+            <span nz-icon nzType="search" nzTheme="outline"></span>
+              查詢
+            </button>
+            </tr>
+          </table>
+        </nz-collapse-panel>
+      </nz-collapse>
 
-            
-          </tr>
-        </table>
         <div style="width: 30%; float: left;margin:10px 10px 10px 0px;">
-          <button
-            nz-button
-            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-            nzType="primary"
-            (click)="onQueryTab2()"
-          >
-          <span nz-icon nzType="search" nzTheme="outline"></span>
-            查詢
-          </button>
           <button
             nz-button
             style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px;"
             nzType="primary"
             (click)="ngOnInit()"
+            [hidden] = "true"
           >
           <span nz-icon nzType="clear" nzTheme="outline"></span>
             清除
