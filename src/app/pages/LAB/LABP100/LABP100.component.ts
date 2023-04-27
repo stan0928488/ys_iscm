@@ -73,6 +73,7 @@ class statusInformation {
     this.status_sub = status_sub;
   }
 }
+
 class labInformation {
   moEdition: String;
   status: String;
@@ -87,6 +88,7 @@ class labInformation {
   }
   
 }
+
 @Component({
   selector: 'app-LABP100',
   templateUrl: './LABP100.component.html',
@@ -97,6 +99,7 @@ class labInformation {
 export class LABP100Component implements AfterViewInit {
   isSpinning = false;
   LoadingPage = false;
+  isRun = false;
   isClear = true;
   USERNAME;
   PLANT_CODE;
@@ -120,14 +123,14 @@ export class LABP100Component implements AfterViewInit {
   date = '';
   status_list = [];
   columnDefsTab1: ColDef<data>[] = [
-    { headerName:'MO版本',field: 'moEdition' , filter: false,width: 100 },
-    { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 100 },
-    { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 100 },
-    { headerName:'放樣ID',field: 'idNo' , filter: false,width: 100 },
+    { headerName:'MO版本',field: 'moEdition' , filter: false,width: 160 },
+    { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 120 },
+    { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 120 },
+    { headerName:'放樣ID',field: 'idNo' , filter: false,width: 120 },
     { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
-    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 100 ,
+    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 170 ,
         cellRenderer: (data) => {
-          return moment(data.sampleDate).format('YYYY-MM-DD HH:mm')
+          return moment(data.sampleDate).format('YYYY-MM-DD HH:mm:ss')
       }},
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
@@ -141,44 +144,44 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '取樣站別' ,field: 'sampleShopCode' , filter: false,width: 100 },
     { headerName: '現況訂單' ,field: 'saleOrder' , filter: false,width: 100 },
     { headerName: '現況訂單項次' ,field: 'saleItem' , filter: false,width: 120 },
-    { headerName: '生計交期' ,field: 'deliveryPpDate' , filter: false,width: 100 ,
+    { headerName: '生計交期' ,field: 'deliveryPpDate' , filter: false,width: 170 ,
         cellRenderer: (data) => {
-          return moment(data.deliveryPpDate).format('YYYY-MM-DD HH:mm')
+          return moment(data.deliveryPpDate).format('YYYY-MM-DD HH:mm:ss')
       }},
-    { headerName: '允收截止日' ,field: 'devyDate' , filter: false,width: 120 ,
+    { headerName: '允收截止日' ,field: 'devyDate' , filter: false,width: 170 ,
         cellRenderer: (data) => {
-          return moment(data.devyDate).format('YYYY-MM-DD HH:mm')
+          return moment(data.devyDate).format('YYYY-MM-DD HH:mm:ss')
       }},
     { headerName: '敏化測試' ,field: 'sensitizationTest' , filter: false,width: 100 },
     { headerName: '敏化測試說明' ,field: 'sensitizationTestDesc' , filter: false,width: 120 },
     { headerName: '衝擊測試' ,field: 'impactTest' , filter: false,width: 100 },
     { headerName: '衝擊測試說明' ,field: 'impactTestDesc' , filter: false,width: 120 },
-    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 120 ,
+    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 170 ,
           cellRenderer: (data) => {
-            return moment(data.sampleDateCreate).format('YYYY-MM-DD HH:mm')
+            return moment(data.sampleDateCreate).format('YYYY-MM-DD HH:mm:ss')
         }},
     { headerName: '硫酸銅測試' ,field: 'cuso4Test' , filter: false,width: 120 },
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
-    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 150 ,
+    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 ,
       cellRenderer: (data) => {
-        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH:mm')
+        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH:mm:ss')
     }},
     { headerName: '取樣狀態' ,field: 'sampleStatus' , filter: false,width: 100 }
   ];
 
   columnDefsTab2: ColDef<data>[] = [
-    { headerName:'MO版本',field: 'moEdition' , filter: false,width: 100 },
-    { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 100 },
-    { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 100 },
+    { headerName:'MO版本',field: 'moEdition' , filter: false,width: 160 },
+    { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 120 },
+    { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 120 },
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName: '硫酸銅測試' ,field: 'cuso4Test' , filter: false,width: 120 },
     { headerName: '衝擊測試' ,field: 'impactTest' , filter: false,width: 100 },
     { headerName: '生產型態' ,field: 'shape' , filter: false,width: 100 },
     { headerName: '機械性質碼' ,field: 'mechanicalPropertiesCode' , filter: false,width: 120 },
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
-    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 100  ,
+    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 170  ,
           cellRenderer: (data) => {
-            return moment(data.sampleDate).format('YYYY-MM-DD HH:mm')
+            return moment(data.sampleDate).format('YYYY-MM-DD HH:mm:ss')
         }},
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 }
   ];
@@ -288,13 +291,21 @@ export class LABP100Component implements AfterViewInit {
           lab.dateUpdate = moment(temp[i]['dateUpdate']).format('YYYY-MM-DD HH:mm:ss');
 
           this.labs.push(lab);
-
-          
         }
 
-        var now = this.labs[0].status == 'Y' ? '結束':'執行中';
+        var now;
+        if(this.labs[0].status == 'Y') {
+          now = '執行成功';
+          this.isRun = false;
+        } else if (this.labs[0].status == 'N') {
+          now = '執行失敗';
+          this.isRun = false;
+        } else {
+          now = '執行中';
+          this.isRun = true;
+        }
 
-        this.status = "狀態 : " + now;
+        this.status = "狀態：" + now;
 
         myObj.LABService.getTblabl001AllData(this.PLANT_CODE,moEdition).subscribe(res => {
         
@@ -316,6 +327,8 @@ export class LABP100Component implements AfterViewInit {
                   status.percent = 50;
 
                   this.status_list.push(status);
+
+                  
             }
           }
         });
@@ -389,7 +402,6 @@ export class LABP100Component implements AfterViewInit {
   }
 
   getSaleOrder(moEdition:String){
-
     
     let myObj = this;
     myObj.LABService.getSaleOrder(this.PLANT_CODE,moEdition).subscribe(res => {
@@ -454,19 +466,21 @@ export class LABP100Component implements AfterViewInit {
   reloadLabStatus() {
     let myObj = this;
     this.LoadingPage = true;
+    this.isRun = true;
     myObj.LABService.reloadLabStatus(this.PLANT_CODE, moment().format('YYYYMMDDHHmmss'), this.USERNAME).subscribe(res => {
       let result:any = res;
       
       if(result.code == 200) {
         this.LoadingPage = false;
-        this.getMoInformation(result.message.substring(result.message.length - 14))
+        this.getMoEditionList();
+        this.getMoInformation(result.message.substring(result.message.length - 14));
         this.sucessMSG("執行成功", result.message);
         console.log(result.data);
       } else {
         this.LoadingPage = false;
-        // this.getMoInformation(result.message.substring(result.message.length - 14))
         this.sucessMSG("執行失敗", result.message);
       }
+      this.isRun = false;
 
     });
       
@@ -538,7 +552,7 @@ export class LABP100Component implements AfterViewInit {
             "sampleId" : item.sampleId,
             "idNo" : item.idNo,
             "custAbbr" : item.custAbbr,
-            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm'),
+            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm:ss'),
             "saleOrderDia" : item.saleOrderDia,
             "shopCode" : item.shopCode,
             "dia" : item.dia,
@@ -551,16 +565,16 @@ export class LABP100Component implements AfterViewInit {
             "sampleShopCode" : item.sampleShopCode,
             "saleOrder" : item.saleOrder,
             "saleItem" : item.saleItem,
-            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD HH:mm'),
-            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD HH:mm'),
+            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD HH:mm:ss'),
+            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD HH:mm:ss'),
             "sensitizationTest" : item.sensitizationTest,
             "sensitizationTestDesc" : item.sensitizationTestDesc,
             "impactTest" : item.impactTest,
             "impactTestDesc" : item.impactTestDesc,
-            "sampleDateCreate" : moment(item.sampleDateCreate).format('YYYY-MM-DD HH:mm'),
+            "sampleDateCreate" : moment(item.sampleDateCreate).format('YYYY-MM-DD HH:mm:ss'),
             "cuso4Test" : item.cuso4Test,
             "experimentDays" : item.experimentDays,
-            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH:mm'),
+            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH:mm:ss'),
             "sampleStatus" : item.sampleStatus
         });
     }
@@ -597,7 +611,7 @@ export class LABP100Component implements AfterViewInit {
             "shape" : item.shape,
             "mechanicalPropertiesCode" : item.mechanicalPropertiesCode,
             "gradeNo" : item.gradeNo,
-            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm'),
+            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm:ss'),
             "experimentDays" : item.experimentDays
         });
     }

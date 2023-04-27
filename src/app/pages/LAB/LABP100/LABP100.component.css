@@ -24,6 +24,12 @@
 	top:1px;
 }
 
+.runEnable{
+	box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #6882ca;border:2px blue none;
+}
+.runDisable{
+	box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue; border:2px blue none;
+}
 
 ::ng-deep .ag-header-cell-label {
 	justify-content: center;
