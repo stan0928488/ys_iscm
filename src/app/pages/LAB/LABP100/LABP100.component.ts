@@ -1,7 +1,7 @@
 
 import { Component, AfterViewInit, NgZone,ViewChild} from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
-import { zh_TW ,NzI18nService } from "ng-zorro-antd/i18n";
+import { zh_TW ,NzI18nService, ms_MY } from "ng-zorro-antd/i18n";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { AppComponent } from "src/app/app.component";
@@ -31,35 +31,35 @@ interface data {
 }
 
 interface dataMain {
-  moEdition: String,
+  moEdition: string,
   sampleNo: string,
   sampleId: string,
-  idNo: String,
-  custAbbr: String,
-  sampleDate: String,
+  idNo: string,
+  custAbbr: string,
+  sampleDate: string,
   saleOrderDia: string,
-  shopCode: String,
-  sfcDia: String,
-  finalMicNo: String,
-  gradeNo: String,
-  shape: String,
-  mechanicalPropertiesCode: String,
-  sampleLineUp: String,
-  lineupDesc: String,
-  sampleShopCode: String,
-  saleOrder: String,
-  saleItem: String,
-  dateDeliveryPp: String,
-  dlvyDate: String,
-  sensitizationTest: String,
-  sensitizationTestDesc: String,
-  impactTest: String,
-  impacTestDesc: String,
-  sampleDateCreate: String,
-  cuso4Test: String,
-  experimentDays: String,
-  experimentDoneDate: String,
-  sampleStatus: String,
+  shopCode: string,
+  dia: string,
+  finalMicNo: string,
+  gradeNo: string,
+  shape: string,
+  mechanicalPropertiesCode: string,
+  sampleLineUp: string,
+  lineupDesc: string,
+  sampleShopCode: string,
+  saleOrder: string,
+  saleItem: string,
+  dateDeliveryPp: string,
+  dlvyDate: string,
+  sensitizationTest: string,
+  sensitizationTestDesc: string,
+  impactTest: string,
+  impactTestDesc: string,
+  sampleDateCreate: string,
+  cuso4Test: string,
+  experimentDays: string,
+  experimentDoneDate: string,
+  sampleStatus: string,
 }
 
 class statusInformation {
@@ -125,10 +125,13 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 100 },
     { headerName:'放樣ID',field: 'idNo' , filter: false,width: 100 },
     { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
-    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 100 },
+    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 100 ,
+        cellRenderer: (data) => {
+          return moment(data.sampleDate).format('YYYY-MM-DD HH:mm')
+      }},
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
-    { headerName:'現況尺寸',field: 'sfcDia' , filter: false,width: 100 },
+    { headerName:'現況尺寸',field: 'dia' , filter: false,width: 100 },
     { headerName:'現況final_mic_no',field: 'finalMicNo' , filter: false,width: 150 },
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
     { headerName: '生產型態' ,field: 'shape' , filter: false,width: 100 },
@@ -138,16 +141,28 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '取樣站別' ,field: 'sampleShopCode' , filter: false,width: 100 },
     { headerName: '現況訂單' ,field: 'saleOrder' , filter: false,width: 100 },
     { headerName: '現況訂單項次' ,field: 'saleItem' , filter: false,width: 120 },
-    { headerName: '生計交期' ,field: 'dateDeliveryPp' , filter: false,width: 100 },
-    { headerName: '允收截止日' ,field: 'dlvyDate' , filter: false,width: 120 },
+    { headerName: '生計交期' ,field: 'deliveryPpDate' , filter: false,width: 100 ,
+        cellRenderer: (data) => {
+          return moment(data.deliveryPpDate).format('YYYY-MM-DD HH:mm')
+      }},
+    { headerName: '允收截止日' ,field: 'devyDate' , filter: false,width: 120 ,
+        cellRenderer: (data) => {
+          return moment(data.devyDate).format('YYYY-MM-DD HH:mm')
+      }},
     { headerName: '敏化測試' ,field: 'sensitizationTest' , filter: false,width: 100 },
     { headerName: '敏化測試說明' ,field: 'sensitizationTestDesc' , filter: false,width: 120 },
     { headerName: '衝擊測試' ,field: 'impactTest' , filter: false,width: 100 },
-    { headerName: '衝擊測試說明' ,field: 'impacTestDesc' , filter: false,width: 120 },
-    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 120 },
+    { headerName: '衝擊測試說明' ,field: 'impactTestDesc' , filter: false,width: 120 },
+    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 120 ,
+          cellRenderer: (data) => {
+            return moment(data.sampleDateCreate).format('YYYY-MM-DD HH:mm')
+        }},
     { headerName: '硫酸銅測試' ,field: 'cuso4Test' , filter: false,width: 120 },
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
-    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 150 },
+    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 150 ,
+      cellRenderer: (data) => {
+        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH:mm')
+    }},
     { headerName: '取樣狀態' ,field: 'sampleStatus' , filter: false,width: 100 }
   ];
 
@@ -161,7 +176,10 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '生產型態' ,field: 'shape' , filter: false,width: 100 },
     { headerName: '機械性質碼' ,field: 'mechanicalPropertiesCode' , filter: false,width: 120 },
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
-    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 100 },
+    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 100  ,
+          cellRenderer: (data) => {
+            return moment(data.sampleDate).format('YYYY-MM-DD HH:mm')
+        }},
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 }
   ];
 
@@ -232,8 +250,8 @@ export class LABP100Component implements AfterViewInit {
     
     this.getMoEditionList();
     
-    this.initialSampleData();
-    this.getTblabl001AllData();
+    //this.initialSampleData();
+    //this.getTblabl001AllData();
     this.dateRange.push(startDateStr);
     this.dateRange.push(endDateStr);
     this.expDateRange.push(startDateStr);
@@ -324,6 +342,7 @@ export class LABP100Component implements AfterViewInit {
         this.getSaleOrder(this.mo_default);
         this.getAbbrList(this.mo_default);
         this.getLabInformation(this.mo_default);
+        this.getTblabl001AllData(this.mo_default);
       }
     });
 
@@ -349,11 +368,11 @@ export class LABP100Component implements AfterViewInit {
 
   }
 
-  getTblabl001AllData(){
+  getTblabl001AllData(moEdition:String){
 
     console.log('getTblabl001AllData');
     let myObj = this;
-    myObj.LABService.getTblabl001AllData(this.PLANT_CODE,'20230424163414').subscribe(res => {
+    myObj.LABService.getTblabl001AllData(this.PLANT_CODE,moEdition).subscribe(res => {
 
       let result:any = res;
       
@@ -390,6 +409,7 @@ export class LABP100Component implements AfterViewInit {
   }
   getMoDetailList(moEdition: String){
 
+    this.checkQueryValue();
     console.log('get mo edition');
     let myObj = this;
     console.log(this.abbr_default);
@@ -411,6 +431,7 @@ export class LABP100Component implements AfterViewInit {
 
   getMoInformation(moEdition: String){
 
+    this.checkQueryValue();
     console.log('get mo edition');
     let myObj = this;
     myObj.LABService.getMoInformation(this.PLANT_CODE,moEdition,this.abbr_default,this.sampleId,this.idNo,this.order_default,
@@ -420,10 +441,10 @@ export class LABP100Component implements AfterViewInit {
       
       if(result.code == 200){
         var temp = result.data;
-
-        console.log(result);
-
+        
         this.rowDataTab1 = temp;
+        
+          
       }
     });
 
@@ -451,76 +472,11 @@ export class LABP100Component implements AfterViewInit {
       
   }
   
-  initialSampleData() {
-    this.initialData = [
-      {
-      "moEdition": "版本一",
-      "sampleNo": "1",
-      "sampleId": "1",
-      "saleOrderDia": "1",
-      "cuso4Test": "1",
-      "impactTest": "1",
-      "shape": "1",
-      "mechanicalPropertiesCode": "1",
-      "gradeNo": "1",
-      "sampleDate": "1",
-      "experimentDays": "1"
-      },
-      {
-      "moEdition": "版本二",
-      "sampleNo": "2",
-      "sampleId": "2",
-      "saleOrderDia": "2",
-      "cuso4Test": "2",
-      "impactTest": "2",
-      "shape": "2",
-      "mechanicalPropertiesCode": "2",
-      "gradeNo": "2",
-      "sampleDate": "2",
-      "experimentDays": "2"
-      },
-      {
-      "moEdition": "版本三",
-      "sampleNo": "3",
-      "sampleId": "3",
-      "saleOrderDia": "3",
-      "cuso4Test": "3",
-      "impactTest": "3",
-      "shape": "3",
-      "mechanicalPropertiesCode": "3",
-      "gradeNo": "3",
-      "sampleDate": "3",
-      "experimentDays": "3"
-      },
-      {
-      "moEdition": "版本四",
-      "sampleNo": "4",
-      "sampleId": "4",
-      "saleOrderDia": "4",
-      "cuso4Test": "4",
-      "impactTest": "4",
-      "shape": "4",
-      "mechanicalPropertiesCode": "4",
-      "gradeNo": "4",
-      "sampleDate": "4",
-      "experimentDays": "4"
-      },
-      {
-      "moEdition": "版本五",
-      "sampleNo": "5",
-      "sampleId": "5",
-      "saleOrderDia": "5",
-      "cuso4Test": "5",
-      "impactTest": "5",
-      "shape": "5",
-      "mechanicalPropertiesCode": "5",
-      "gradeNo": "5",
-      "sampleDate": "5",
-      "experimentDays": "5"
-      }
-      ]
-
-      console.log(this.rowDataTab2);
+  checkQueryValue(){
+    this.abbr_default = this.abbr_default == null?'': this.abbr_default;
+    this.sampleId = this.sampleId == null?'':this.sampleId;
+    this.idNo = this.idNo == null?'':this.idNo;
+    this.order_default = this.order_default == null?'':this.order_default;
   }
   onQueryTab1(): void{
     let myObj = this;
@@ -582,10 +538,10 @@ export class LABP100Component implements AfterViewInit {
             "sampleId" : item.sampleId,
             "idNo" : item.idNo,
             "custAbbr" : item.custAbbr,
-            "sampleDate" : item.sampleDate,
+            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm'),
             "saleOrderDia" : item.saleOrderDia,
             "shopCode" : item.shopCode,
-            "sfcDia" : item.sfcDia,
+            "dia" : item.dia,
             "finalMicNo" : item.finalMicNo,
             "gradeNo" : item.gradeNo,
             "shape" : item.shape,
@@ -595,16 +551,16 @@ export class LABP100Component implements AfterViewInit {
             "sampleShopCode" : item.sampleShopCode,
             "saleOrder" : item.saleOrder,
             "saleItem" : item.saleItem,
-            "dateDeliveryPp" : item.dateDeliveryPp,
-            "dlvyDate" : item.dlvyDate,
+            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD HH:mm'),
+            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD HH:mm'),
             "sensitizationTest" : item.sensitizationTest,
             "sensitizationTestDesc" : item.sensitizationTestDesc,
             "impactTest" : item.impactTest,
-            "impacTestDesc" : item.impacTestDesc,
-            "sampleDateCreate" : item.sampleDateCreate,
+            "impactTestDesc" : item.impactTestDesc,
+            "sampleDateCreate" : moment(item.sampleDateCreate).format('YYYY-MM-DD HH:mm'),
             "cuso4Test" : item.cuso4Test,
             "experimentDays" : item.experimentDays,
-            "experimentDoneDate" : item.experimentDoneDate,
+            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH:mm'),
             "sampleStatus" : item.sampleStatus
         });
     }
@@ -641,7 +597,7 @@ export class LABP100Component implements AfterViewInit {
             "shape" : item.shape,
             "mechanicalPropertiesCode" : item.mechanicalPropertiesCode,
             "gradeNo" : item.gradeNo,
-            "sampleDate" : item.sampleDate,
+            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm'),
             "experimentDays" : item.experimentDays
         });
     }
@@ -665,6 +621,7 @@ export class LABP100Component implements AfterViewInit {
   this.getSaleOrder(this.mo_default);
   this.getAbbrList(this.mo_default);
   this.getLabInformation(this.mo_default);
+  this.getTblabl001AllData(this.mo_default);
  }
 
  changeAbbr(index){
