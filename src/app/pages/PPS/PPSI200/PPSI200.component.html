@@ -93,7 +93,7 @@
       <nz-tab nzTitle="星期起始設定" (nzClick)="changeTab(4)">    <!-- TODO: 自動新增+刪除 -->
         <div class="excel-control">
           <td>
-              <input type="file" id="fileupload" 
+              <input hidden type="file" id="fileupload" 
                      style="display: inline-block;"
                      [(ngModel)] = "inputFileUseInUpload" 
                      (change)="incomingfile($event)" 
@@ -101,12 +101,14 @@
                      accept=".xlsx, .xls, .csv">
           </td>
           <td>
+            
           <button
           nz-button
           nzType="primary"
           style = "margin-right:1vw;"
           [nzSize]="'large'"
           (click)="Upload()"
+          [hidden] = "true"
           ><span nz-icon nzType="plus" nzTheme="outline"></span>
             匯入 Excel
           </button>
@@ -116,6 +118,7 @@
           nzType="primary"
           [nzSize]="'large'"
           (click)="convertToExcel()"
+          [hidden] = "true"
           ><span nz-icon nzType="plus" nzTheme="outline"></span>
             匯出 Excel
           </button>
@@ -248,7 +251,7 @@
       <nz-tab nzTitle="FCP結果保留設定" (nzClick)="changeTab(5)">
         <div class="excel-control">
           <td>
-              <input type="file" id="fileupload" 
+              <input hidden type="file" id="fileupload" 
                      style="display: inline-block;"
                      [(ngModel)] = "inputFileUseInUpload" 
                      (change)="incomingfile($event)" 
@@ -262,6 +265,7 @@
           style = "margin-right:1vw;"
           [nzSize]="'large'"
           (click)="Upload()"
+          [hidden] = "true"
           ><span nz-icon nzType="plus" nzTheme="outline"></span>
             匯入 Excel
           </button>
@@ -271,6 +275,7 @@
           nzType="primary"
           [nzSize]="'large'"
           (click)="convertToExcel1()"
+          [hidden] = "true"
           ><span nz-icon nzType="plus" nzTheme="outline"></span>
             匯出 Excel
           </button>

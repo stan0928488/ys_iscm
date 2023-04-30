@@ -526,8 +526,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   }
 
   importExcel(_data) {
-
-    console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
       if (_data[i]['工廠別'] === undefined) {
@@ -546,7 +544,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「有效碼」不可為空');
         this.clearFile();
           return;
-      }
+      } 
 
       let allData = JSON.stringify(_data[i]);
         if(_data[i]['機台名稱'] == undefined)
@@ -555,7 +553,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           _data[i]['機台群組'] = '';
         if(_data[i]['機台'] == undefined)
           _data[i]['機台'] = '';
-
         upload_data.push({
           PLANT_CODE: 'YS',
           PLANT: _data[i]['工廠別'],
@@ -565,7 +562,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           EQUIP_GROUP: _data[i]['機台群組'],
           EQUIP_NAME: _data[i]['機台名稱'],
           VALID: _data[i]['有效碼'],
-          WT_TYPE: _data[i]['工時計算分類'],
+          WT_TYPE: _data[i]['工時計算分類'] ==='線速' ? '1' :_data[i]['工時計算分類'] ==='非線速' ? '2' : null,
           BALANCE_RULE: null,
           ORDER_SEQ: null,
           DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -583,8 +580,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         EXCELDATA: upload_data
       };
 
-      console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel('2', obj).subscribe(res => {
         console.log("importExcelPPSI102");
         if(res[0].MSG === "Y") { 
           this.loading = false;
@@ -613,11 +609,31 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
 
   convertToExcel() {
     console.log("convertToExcel");
-    let ID_List = [];
-    let arr = [];
-    console.log(JSON.stringify(this.displayPPSINP07List[0]));
+    let data;
     let fileName = `站別機台關聯表_非直棒`;
-    
-    this.excelService.exportAsExcelFile(this.displayPPSINP07List, fileName, this.titleArray);
+    data = this.formatDataForExcel(this.displayPPSINP07List);
+    this.excelService.exportAsExcelFile(data, fileName, this.titleArray);
   }
+
+  
+  formatDataForExcel(displayData) {
+    let excelData = [];
+    for (let item of displayData) {
+      let obj = {};
+      _.extend(obj, {
+        PLANT: _.get(item, "PLANT"),
+        SHOP_CODE: _.get(item, "SHOP_CODE"),
+        SHOP_NAME: _.get(item, "SHOP_NAME"),
+        EQUIP_CODE: _.get(item, "EQUIP_CODE"),
+        EQUIP_NAME: _.get(item, "EQUIP_NAME"),
+        EQUIP_GROUP: _.get(item, "EQUIP_GROUP"),
+        VALID: _.get(item, "VALID"),
+        WT_TYPE: _.get(item, "WT_TYPE") ==='1' ? '線速' : _.get(item, "WT_TYPE")==='2' ? '非線速' : ''
+      });
+      excelData.push(obj);
+    }
+    console.log(excelData);
+    return excelData;
+  } 
+
 }

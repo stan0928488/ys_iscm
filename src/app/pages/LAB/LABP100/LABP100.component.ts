@@ -125,16 +125,29 @@ export class LABP100Component implements AfterViewInit {
   idNo = '';
   date = '';
   status_list = [];
+
+
+  constructor(
+    private LABService : LABService,
+    private i18n: NzI18nService,
+    private _ngZone: NgZone,
+    private cookieService: CookieService,
+    private message: NzMessageService,
+    private Modal: NzModalService,
+    private component: AppComponent
+  ) {
+    this.i18n.setLocale(zh_TW);
+    this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+  }
+
   columnDefsTab1: ColDef<data>[] = [
     { headerName:'MO版本',field: 'moEdition' , filter: false,width: 160 },
     { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 120 },
     { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 120 },
     { headerName:'放樣ID',field: 'idNo' , filter: false,width: 120 },
     { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
-    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 170 ,
-        cellRenderer: (data) => {
-          return moment(data.sampleDate).format('YYYY-MM-DD HH:mm:ss')
-      }},
+    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 170 },
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
     { headerName:'現況尺寸',field: 'dia' , filter: false,width: 100 },
@@ -147,28 +160,16 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '取樣站別' ,field: 'sampleShopCode' , filter: false,width: 100 },
     { headerName: '現況訂單' ,field: 'saleOrder' , filter: false,width: 100 },
     { headerName: '現況訂單項次' ,field: 'saleItem' , filter: false,width: 120 },
-    { headerName: '生計交期' ,field: 'deliveryPpDate' , filter: false,width: 170 ,
-        cellRenderer: (data) => {
-          return moment(data.deliveryPpDate).format('YYYY-MM-DD')
-      }},
-    { headerName: '允收截止日' ,field: 'devyDate' , filter: false,width: 170 ,
-        cellRenderer: (data) => {
-          return moment(data.devyDate).format('YYYY-MM-DD')
-      }},
+    { headerName: '生計交期' ,field: 'dateDeliveryPp' , filter: false,width: 170 },
+    { headerName: '允收截止日' ,field: 'dlvyDate' , filter: false,width: 170},
     { headerName: '敏化測試' ,field: 'sensitizationTest' , filter: false,width: 100 },
     { headerName: '敏化測試說明' ,field: 'sensitizationTestDesc' , filter: false,width: 120 },
     { headerName: '衝擊測試' ,field: 'impactTest' , filter: false,width: 100 },
     { headerName: '衝擊測試說明' ,field: 'impactTestDesc' , filter: false,width: 120 },
-    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 170 ,
-          cellRenderer: (data) => {
-            return moment(data.sampleDateCreate).format('YYYY-MM-DD HH:mm:ss')
-        }},
+    { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 170 },
     { headerName: '硫酸銅測試' ,field: 'cuso4Test' , filter: false,width: 120 },
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
-    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 ,
-      cellRenderer: (data) => {
-        return moment(data.experimentDoneDate).format('YYYY-MM-DD HH')
-    }},
+    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 },
     { headerName: '取樣狀態' ,field: 'sampleStatus' , filter: false,width: 100 }
   ];
 
@@ -182,10 +183,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '生產型態' ,field: 'shape' , filter: false,width: 100 },
     { headerName: '機械性質碼' ,field: 'mechanicalPropertiesCode' , filter: false,width: 120 },
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
-    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 170  ,
-          cellRenderer: (data) => {
-            return moment(data.sampleDate).format('YYYY-MM-DD HH:mm:ss')
-        }},
+    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 170 },
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 }
   ];
 
@@ -228,19 +226,6 @@ export class LABP100Component implements AfterViewInit {
   // For accessing the Grid's API
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
-  constructor(
-    private LABService : LABService,
-    private i18n: NzI18nService,
-    private _ngZone: NgZone,
-    private cookieService: CookieService,
-    private message: NzMessageService,
-    private Modal: NzModalService,
-    private component: AppComponent
-  ) {
-    this.i18n.setLocale(zh_TW);
-    this.USERNAME = this.cookieService.getCookie("USERNAME");
-    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
-  }
 
   ngOnInit(): void {
     this.isSpinning = false;
@@ -290,12 +275,12 @@ export class LABP100Component implements AfterViewInit {
       if(result.code == 200){
         var temp = result.data;
 
-        for(var i=0 ; i<temp.length;i++){
+        for(var i=0 ; i<temp.length; i++){
           var lab = new labInformation();
           lab.moEdition = temp[i]['moEdition'];
           lab.status = temp[i]['status'];
-          lab.dateCreate = moment(temp[i]['dateCreate']).format('YYYY-MM-DD HH:mm:ss');
-          lab.dateUpdate = moment(temp[i]['dateUpdate']).format('YYYY-MM-DD HH:mm:ss');
+          lab.dateCreate = this.component.dateFormat(temp[i]['dateCreate'], 1);
+          lab.dateUpdate = this.component.dateFormat(temp[i]['dateUpdate'], 1);
 
           this.labs.push(lab);
         }
@@ -442,8 +427,14 @@ export class LABP100Component implements AfterViewInit {
       
       if(result.code == 200){
         var temp = result.data;
-
-        console.log(result);
+        
+        temp.forEach(element => {
+          let sampleDate = _.get(element, "sampleDate");
+  
+          const sampleDateStr = this.component.dateFormat(sampleDate, 1);
+          _.set(element, "sampleDate", sampleDateStr);       
+        });
+        
         this.rowDataTab2 = temp;
         
       }
@@ -453,6 +444,7 @@ export class LABP100Component implements AfterViewInit {
 
   getMoInformation(moEdition: String){
 
+    const dateRegex = /^\d{4}[\/-]\d{2}[\/-]\d{2}$|^\d{4}[\/-]\d{2}[\/-]\d{2}\s\d{2}:\d{2}:\d{2}$/;
     this.checkQueryValue();
     console.log('get mo edition');
     let myObj = this;
@@ -464,9 +456,28 @@ export class LABP100Component implements AfterViewInit {
       this.LoadingPage = false;
       this.queryBarActive1 = false;
       let result:any = res;
-      
-      if(result.code == 200){
+      if(result.code == 200) {
         var temp = result.data;
+        temp.forEach(element => {
+          let sampleDate = _.get(element, "sampleDate");
+          let dateDeliveryPp = _.get(element, "dateDeliveryPp");
+          let dlvyDate = _.get(element, "dlvyDate");
+          let sampleDateCreate = _.get(element, "sampleDateCreate");
+          let experimentDoneDate = _.get(element, "experimentDoneDate");
+
+          // if(!_.isEmpty(String(dateDeliveryPp)) && dateRegex.test(String(dateDeliveryPp))){
+          const sampleDateStr = this.component.dateFormat(sampleDate, 1);
+          const dateDeliveryPpStr = this.component.dateFormat(dateDeliveryPp, 2);
+          const dlvyDateStr = this.component.dateFormat(dlvyDate, 2);
+          const sampleDateCreateStr = moment(sampleDateCreate, 'YYYY-MM-DD HH').format('YYYY-MM-DD HH');
+          const experimentDoneDateStr = this.component.dateFormat(experimentDoneDate, 1);
+          _.set(element, "sampleDate", sampleDateStr);
+          _.set(element, "dateDeliveryPp", dateDeliveryPpStr);
+          _.set(element, "dlvyDate", dlvyDateStr);
+          _.set(element, "sampleDateCreate", sampleDateCreateStr);
+          _.set(element, "experimentDoneDate", experimentDoneDateStr);
+          // }          
+        });
         this.rowDataTab1 = temp;          
       }
 
@@ -505,17 +516,15 @@ export class LABP100Component implements AfterViewInit {
     this.idNo = this.idNo == null?'':this.idNo;
     this.order_default = this.order_default == null?'':this.order_default;
   }
+
   onQueryTab1(): void{
     let myObj = this;
     if (this.mo_default === "" || this.mo_default === null) {
       myObj.message.create("error", "請選擇「版次」");
       return;
-    // } else if (this.ctNo === "" || this.ctNo === null) {
-    //   myObj.message.create("error", "請填寫「合約號」");
-    //   return;
     }
 
-    this.rowDataTab2 = [];
+    this.rowDataTab1 = [];
     this.getMoInformation(this.mo_default);
   }
 
@@ -524,9 +533,6 @@ export class LABP100Component implements AfterViewInit {
     if (this.mo_default === "" || this.mo_default === null) {
       myObj.message.create("error", "請選擇「版次」");
       return;
-    // } else if (this.ctNo === "" || this.ctNo === null) {
-    //   myObj.message.create("error", "請填寫「合約號」");
-    //   return;
     }
 
     this.rowDataTab2 = [];
@@ -560,7 +566,7 @@ export class LABP100Component implements AfterViewInit {
             "sampleId" : item.sampleId,
             "idNo" : item.idNo,
             "custAbbr" : item.custAbbr,
-            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm:ss'),
+            "sampleDate" : item.sampleDate,
             "saleOrderDia" : item.saleOrderDia,
             "shopCode" : item.shopCode,
             "dia" : item.dia,
@@ -573,16 +579,16 @@ export class LABP100Component implements AfterViewInit {
             "sampleShopCode" : item.sampleShopCode,
             "saleOrder" : item.saleOrder,
             "saleItem" : item.saleItem,
-            "dateDeliveryPp" : moment(item.dateDeliveryPp).format('YYYY-MM-DD'),
-            "dlvyDate" : moment(item.dlvyDate).format('YYYY-MM-DD'),
+            "dateDeliveryPp" : item.dateDeliveryPp,
+            "dlvyDate" : item.dlvyDate,
             "sensitizationTest" : item.sensitizationTest,
             "sensitizationTestDesc" : item.sensitizationTestDesc,
             "impactTest" : item.impactTest,
             "impactTestDesc" : item.impactTestDesc,
-            "sampleDateCreate" : moment(item.sampleDateCreate).format('YYYY-MM-DD HH:mm:ss'),
+            "sampleDateCreate" : item.sampleDateCreate,
             "cuso4Test" : item.cuso4Test,
             "experimentDays" : item.experimentDays,
-            "experimentDoneDate" : moment(item.experimentDoneDate).format('YYYY-MM-DD HH'),
+            "experimentDoneDate" : item.experimentDoneDate,
             "sampleStatus" : item.sampleStatus
         });
     }
@@ -619,7 +625,7 @@ export class LABP100Component implements AfterViewInit {
             "shape" : item.shape,
             "mechanicalPropertiesCode" : item.mechanicalPropertiesCode,
             "gradeNo" : item.gradeNo,
-            "sampleDate" : moment(item.sampleDate).format('YYYY-MM-DD HH:mm:ss'),
+            "sampleDate" : item.sampleDate,
             "experimentDays" : item.experimentDays
         });
     }
@@ -656,32 +662,12 @@ export class LABP100Component implements AfterViewInit {
   console.log('change to' + this.order_list[index]);
   this.order_default = this.order_list[index]
  }
+
   // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
     console.log('cellClicked', e);
   }
 
-  formateDateTime(dateTimeArray, key): string{
-    let resultStr = "";
-
-    for(let arrNum = 0; arrNum < dateTimeArray.length; arrNum ++){
-      if(arrNum >= 0 && arrNum <=2){
-        resultStr += arrNum == 2 ?
-          dateTimeArray[arrNum].toString()+" " : dateTimeArray[arrNum].toString()+"/";
-      }else if(arrNum >=3 && arrNum != dateTimeArray.length-1){
-        resultStr += dateTimeArray[arrNum].toString()+":";
-      }else{
-        if(key == "plnDate"){
-          resultStr += (dateTimeArray.length < 6 && arrNum == dateTimeArray.length-1) ?
-                    dateTimeArray[arrNum].toString()+":0" : dateTimeArray[arrNum].toString();
-        }else{
-          resultStr += dateTimeArray[arrNum].toString();
-        }
-      }
-    }
-
-    return resultStr;
-  }
 
 
   showTab1(){
@@ -749,5 +735,6 @@ export class LABP100Component implements AfterViewInit {
 			nzContent: `${_context}`
 	  });
 	}
+
 
 }

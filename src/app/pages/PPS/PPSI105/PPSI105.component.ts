@@ -563,7 +563,7 @@ export class PPSI105Component implements AfterViewInit {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
         console.log("importExcelPPSI105");
         if(res[0].MSG === "Y") { 
           

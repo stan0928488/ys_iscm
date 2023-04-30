@@ -356,6 +356,16 @@ export class PPSService {
     return this.http.post(queryUrl, "", this.httpOptions);
   }
 
+  //importI107Excel
+  importI107Excel(_type, _data) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/importExcelPPSI107`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  
+
   // 8.非線速
   //Get getPPSINP08List 取得08tab data
   getPPSINP08List(_type) {
@@ -793,14 +803,6 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-    //importI102Excel 優先順序表EXCEL匯入 1. 420/430尺寸  2.401COMPAIGN
-    importI107Excel(_result) {
-      const body = JSON.stringify(_result);
-      console.log("JSON.stringify");
-      console.log(body);
-      let queryUrl = this.APIURL + "/FCP/I107/importExcelPPSI107";
-      return this.http.post(queryUrl, body, this.httpOptions);
-    }
   //updCalendarData 定修計畫修改存檔
   updCalendarData(_result) {
     const body = JSON.stringify(_result);
