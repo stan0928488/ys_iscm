@@ -1004,7 +1004,9 @@ export class PPSI203Component implements AfterViewInit {
             this.custAbbreviationsForAdd    = undefined;           // 客戶
             this.gradeGroupForAdd           = undefined;           // 鋼鐵種類
             
+            this.importdata = [];
             this.importdata_new = [];
+            this.importdata_repeat = [];
 
             this.loading = false;
             this.LoadingPage = false;
@@ -1016,6 +1018,7 @@ export class PPSI203Component implements AfterViewInit {
           } else {
             this.errorMSG("匯入錯誤", res[0].MSG);
             this.clearFile();
+            this.importdata = [];
             this.importdata_new = [];
             this.loading = false;
             this.LoadingPage = false;
@@ -1024,6 +1027,7 @@ export class PPSI203Component implements AfterViewInit {
           reject('upload fail');
           this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
           this.importdata_new = [];
+          this.importdata_repeat = [];
           this.loading = false;
           this.LoadingPage = false;
         })
