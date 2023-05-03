@@ -1,0 +1,42 @@
+
+.opButton {
+	box-shadow:inset 0px 1px 0px 0px #fce2c1;
+	background:linear-gradient(to bottom, #ffc477 5%, #fb9e25 100%);
+	background-color:#ffc477;
+	border-radius:6px;
+	border:1px solid #eeb44f;
+	display:inline-block;
+	cursor:pointer;
+	color:#5f5959;
+	font-family:Arial;
+	font-size:16px;
+	font-weight:bold;
+	padding:6px 11px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #cc9f52;
+}
+.opButton:hover {
+	background:linear-gradient(to bottom, #fb9e25 5%, #ffc477 100%);
+	background-color:#fb9e25;
+}
+.opButton:active {
+	position:relative;
+	top:1px;
+}
+
+.runEnable{
+	box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #6882ca;border:2px blue none;
+}
+.runDisable{
+	box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #bec4be; color: darkblue; border:2px blue none;
+}
+
+::ng-deep .ag-header-cell-label {
+	justify-content: center;
+}
+
+::ng-deep .ag-cell-value {
+	text-align: center;
+}
+
+

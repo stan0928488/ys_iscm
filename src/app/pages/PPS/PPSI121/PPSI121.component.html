@@ -17,125 +17,160 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
   
+  <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+    <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+      <table>
 
-  <div style="background: rgb(255, 255, 255); min-height: 1200px;">
-    <table>
-
-      <tr>
-        <td>
-          <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-          nzType="primary"
-          [nzSize]="'large'"
-          (click)="openGrindingInput()"
-          ><span nz-icon nzType="plus" nzTheme="outline"></span>
-            新增
-          </button>
-        </td>
-      </tr>
-
-    </table>
-    <p></p><p></p>
-
-    <div nz-col [nzSpan]="30">
-      <nz-table #RowTable13 nzBordered [nzData]="displayPPSINP13List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
-        <thead>
         <tr>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-          >鋼種類別
-          <nz-filter-trigger 
-          [nzActive]="searchGradeNo13Value.length > 0" 
-          [nzDropdownMenu]="gradeNo13Menu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-          >產出型態
-          <nz-filter-trigger 
-          [nzActive]="searchOutTypeValue.length > 0" 
-          [nzDropdownMenu]="outTypeMenu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-          >產出成品尺寸最小值
-          <nz-filter-trigger 
-          [nzActive]="searchDiaMinValue.length > 0" 
-          [nzDropdownMenu]="diaMinMenu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-          >產出成品尺寸最大值
-          <nz-filter-trigger 
-          [nzActive]="searchDiaMaxValue.length > 0" 
-          [nzDropdownMenu]="diaMaxMenu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-          >研磨道次
-          <nz-filter-trigger 
-          [nzActive]="searchGrindingPassValue.length > 0" 
-          [nzDropdownMenu]="grindingPassMenu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-          >每刀研磨尺寸
-          <nz-filter-trigger 
-          [nzActive]="searchGrindingSizeValue.length > 0" 
-          [nzDropdownMenu]="grindingSizeMenu">
-          <span nz-icon nzType="search"></span>
-          </nz-filter-trigger>
-          </th>
-          <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+          <td style="text-align:left;width:73%">
+            <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+            nzType="primary"
+            [nzSize]="'large'"
+            (click)="openGrindingInput()"
+            ><span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增
+            </button>
+          </td>
+
+          <td style="padding-bottom: 20px;">
+            &nbsp;&nbsp;
+            <input style="display:inline; width:180px; " type="file" name="file" id="importExcel" required (change)="incomingFile($event)"
+            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          </td>
+
+          <td>
+            <!-- 匯入EXCEL功能 -->
+            <button 
+              id="bacthAdd" 
+              nz-button 
+              nzType="primary"
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              (click)="handleImport()" >
+              <span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+            </button>
+          </td>
+
+          <td>
+            <!-- 匯出EXCEL功能 -->
+            <button 
+              id="download" 
+              nz-button
+              nzType="primary"
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none; margin-left: 5px;"
+              (click)="exportToExcel()">
+              <span nz-icon nzType="download" nzTheme="outline" ></span>
+              E X C E L 匯出
+            </button>
+          </td>
+
+
         </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let data of RowTable13.data;let i = index" class="editable-row">
-          <ng-container *ngIf="!editCache13[data.id].edit; else editTemplate13">
-            <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRADE_NO_13 }}</td>
-            <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.OUT_TYPE }}</td>
-            <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN | number }}</td>
-            <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DIA_MAX | number }}</td>
-            <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_PASS | number }}</td>
-            <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_SIZE | number }}</td>
-            <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
-              <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-              <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
-            </td>
-          </ng-container>
-          <ng-template #editTemplate13>
-            <td>
-              <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache13[data.id].data.GRADE_NO_13" />
-            </td>
-            <td>
-              <input nz-width="20%" nz-input placeholder="產出型態" [(ngModel)]="editCache13[data.id].data.OUT_TYPE" />
-            </td>
-            <td>
-              <input nz-width="20%" nz-input placeholder="產出成品尺寸最小值" [(ngModel)]="editCache13[data.id].data.DIA_MIN" />
-            </td>
-            <td>
-              <input nz-width="20%" nz-input placeholder="產出成品尺寸最大值" [(ngModel)]="editCache13[data.id].data.DIA_MAX" />
-            </td>
-            <td>
-              <input nz-width="20%" nz-input placeholder="研磨道次" [(ngModel)]="editCache13[data.id].data.GRINDING_PASS" />
-            </td>
-            <td>
-              <input nz-width="20%" nz-input placeholder="每刀研磨尺寸" [(ngModel)]="editCache13[data.id].data.GRINDING_SIZE" />
-            </td>
-            <td>
-              <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-              <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
-            </td>
-          </ng-template>
-        </tr>
-        </tbody>
-      </nz-table>
+
+      </table>
+      <p></p><p></p>
+
+      <div nz-col [nzSpan]="30">
+        <nz-table #RowTable13 nzBordered [nzData]="displayPPSINP13List" [nzPageSize]="20" [nzScroll]="{ y: '500px' }">
+          <thead>
+          <tr>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+            >鋼種類別
+            <nz-filter-trigger 
+            [nzActive]="searchGradeNo13Value.length > 0" 
+            [nzDropdownMenu]="gradeNo13Menu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
+            >產出型態
+            <nz-filter-trigger 
+            [nzActive]="searchOutTypeValue.length > 0" 
+            [nzDropdownMenu]="outTypeMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >產出成品尺寸最小值
+            <nz-filter-trigger 
+            [nzActive]="searchDiaMinValue.length > 0" 
+            [nzDropdownMenu]="diaMinMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >產出成品尺寸最大值
+            <nz-filter-trigger 
+            [nzActive]="searchDiaMaxValue.length > 0" 
+            [nzDropdownMenu]="diaMaxMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >研磨道次
+            <nz-filter-trigger 
+            [nzActive]="searchGrindingPassValue.length > 0" 
+            [nzDropdownMenu]="grindingPassMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
+            >每刀研磨尺寸
+            <nz-filter-trigger 
+            [nzActive]="searchGrindingSizeValue.length > 0" 
+            [nzDropdownMenu]="grindingSizeMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of RowTable13.data;let i = index" class="editable-row">
+            <ng-container *ngIf="!editCache13[data.id].edit; else editTemplate13">
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRADE_NO_13 }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.OUT_TYPE }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.DIA_MAX | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_PASS | number }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.GRINDING_SIZE | number }}</td>
+              <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
+              </td>
+            </ng-container>
+            <ng-template #editTemplate13>
+              <td>
+                <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache13[data.id].data.GRADE_NO_13" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="產出型態" [(ngModel)]="editCache13[data.id].data.OUT_TYPE" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="產出成品尺寸最小值" [(ngModel)]="editCache13[data.id].data.DIA_MIN" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="產出成品尺寸最大值" [(ngModel)]="editCache13[data.id].data.DIA_MAX" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="研磨道次" [(ngModel)]="editCache13[data.id].data.GRINDING_PASS" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="每刀研磨尺寸" [(ngModel)]="editCache13[data.id].data.GRINDING_SIZE" />
+              </td>
+              <td>
+                <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
+              </td>
+            </ng-template>
+          </tr>
+          </tbody>
+        </nz-table>
+      </div>
     </div>
-  </div>
+  </nz-spin>
 </nz-content>
 
 

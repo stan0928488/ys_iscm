@@ -23,7 +23,7 @@
       <table>
 
         <tr>
-          <td>
+          <td style="text-align:left;width:73%">
             <button
             nz-button
             style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
@@ -35,21 +35,23 @@
             </button>
           </td>
 
+          <td style="text-align:rifgt; width:0%; vertical-align: middle; padding-bottom: 20px;">
+            &nbsp;&nbsp;
+            <input style="display:inline; width:180px; " type="file" name="file" id="importExcel" required (change)="incomingFile($event)"
+            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          </td>
+
           <td>
             <!-- 匯入EXCEL功能 -->
             <button 
               id="bacthAdd" 
               nz-button 
               nzType="primary"
-              [nzSize]="'large'"
-              role="button" 
-              class="ImportButton" 
-              onclick="document.getElementById('importExcel').click();" >
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              (click)="handleImport()" >
               <span nz-icon nzType="upload" nzTheme="outline"></span>
-              匯入
+              E X C E L 匯入
             </button>
-            <input style="display:none;" type="file" name="file" id="importExcel" required (change)="handleImport($event)"
-            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
           </td>
 
           <td>
@@ -58,12 +60,10 @@
               id="download" 
               nz-button
               nzType="primary"
-              [nzSize]="'large'"
-              (click)="exportToExcel()" 
-              class="ExportButton" 
-              role="button">
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none; margin-left: 5px;"
+              (click)="exportToExcel()">
               <span nz-icon nzType="download" nzTheme="outline" ></span>
-              匯出
+              E X C E L 匯出
             </button>
           </td>
 

@@ -50,6 +50,25 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I113/delI113Tab1Data/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
+
+  // I113 刪除所有資料
+  deleteI113AllData() {
+    let endpointUrl = this.APIURL + `/FCP/I113/deleteI113AllData`;
+    console.log("刪除「直棒研磨道次」所有資料")
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 : 無`);
+    return this.http.delete<any>(endpointUrl);
+  }
+
+  // I113 批次新增資料
+  batchSaveI113Data(_data) {
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/I113/batchInsertI113Data`;
+    console.log("批次新增「直棒研磨道次」資料")
+    console.log(`請求API Endpoint Url:${endpointUrl}`);
+    console.log(`請求API 參數:${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
   
 
   //Get getPPSINP16List
@@ -87,6 +106,13 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  importI101TablExcel(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/importExcelPPSI101`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   // I116 delI116Tab1Data 刪除資料
   delI116Tab1Data(_ID) {
     let queryUrl = this.APIURL + `/FCP/I116/delI116Tab1Data/${_ID}`;
@@ -330,6 +356,16 @@ export class PPSService {
     return this.http.post(queryUrl, "", this.httpOptions);
   }
 
+  //importI107Excel
+  importI107Excel(_type, _data) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/importExcelPPSI107`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  
+
   // 8.非線速
   //Get getPPSINP08List 取得08tab data
   getPPSINP08List(_type) {
@@ -449,6 +485,27 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  // I110 刪除所有資料
+  deleteI110AllData() {
+    let endpointUrl = this.APIURL + `/FCP/I110/deleteI110AllData`;
+    console.log("刪除「直棒桶槽式工時」所有資料")
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 : 無`);
+    return this.http.delete<any>(endpointUrl);
+  }
+
+   // I110 批次新增資料
+   batchSaveI110Data(_data) {
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/I110/batchSaveI110Data`;
+    console.log("批次新增「直棒桶槽式工時」資料")
+    console.log(`請求API Endpoint Url:${endpointUrl}`);
+    console.log(`請求API 參數:${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+
   // 17.小調機
   //Get getPPSINP17List 取得17tab data
   getPPSINP17List() {
@@ -506,6 +563,25 @@ export class PPSService {
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  // I120 刪除所有資料
+  deleteI120AllData() {
+    let endpointUrl = this.APIURL + `/FCP/I120/deleteI120AllData`;
+    console.log("刪除「清洗站設備能力表」所有資料")
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 : 無`);
+    return this.http.delete<any>(endpointUrl);
+  }
+
+   // I120 批次新增資料
+   batchSaveI120Data(_data) {
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/I120/batchSaveI120Data`;
+    console.log("批次新增「清洗站設備能力表」資料")
+    console.log(`請求API Endpoint Url:${endpointUrl}`);
+    console.log(`請求API 參數:${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
 

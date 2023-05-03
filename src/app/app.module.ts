@@ -17,6 +17,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { LoginComponent } from './login/login.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -80,7 +81,6 @@ import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 
-
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -90,7 +90,8 @@ import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 
-
+import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
+import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
 import { AgGridModule } from "ag-grid-angular";
 
 registerLocaleData(zh);
@@ -165,11 +166,12 @@ registerLocaleData(zh);
     
     SPAP100component,
     SPAP101component,
-    InactivityTimerComponent
-    ,
+    InactivityTimerComponent,
     MSHI001Component,
     MSHI002Component,
-    MSHP001Component
+    MSHP001Component,
+    LABI001Component,
+    LABP100Component
    ],
   imports: [
     BrowserModule,
@@ -182,6 +184,7 @@ registerLocaleData(zh);
     ZorroCompomentModule,
     NgxJsonViewerModule,
     AgGridModule,
+    NzTimelineModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')

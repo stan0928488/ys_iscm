@@ -34,7 +34,7 @@
       <div  style="background: rgb(255, 255, 255); width:auto; min-height: 1200px;">
         <table>
           <tr>
-            <td>
+            <td style="text-align:left;width:70%">
               <button
               nz-button
               style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
@@ -43,6 +43,29 @@
               (click)="openCapabilityInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
+              </button>
+            </td>
+            <td  style="text-align:right;width:30%">
+              &nbsp;&nbsp;
+              <input hidden type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="Upload()"
+                [hidden] = "true"
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+              </button>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="convertToExcel()"
+                [hidden] = "true"
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
               </button>
             </td>
           </tr>

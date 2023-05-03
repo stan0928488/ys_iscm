@@ -43,6 +43,38 @@
                 新增
               </button>
             </td>
+            <div class="excel-control">
+              <td>
+                  <input hidden type="file" id="fileupload" 
+                         style="display: inline-block;"
+                         [(ngModel)] = "inputFileUseInUpload" 
+                         (change)="incomingfile($event)" 
+                         placeholder="Upload file" 
+                         accept=".xlsx, .xls, .csv">
+              </td>
+              <td>
+              <button
+              nz-button
+              nzType="primary"
+              style = "margin-right:1vw;"
+              [nzSize]="'large'"
+              (click)="Upload()"
+              [hidden] = "true"
+              ><span nz-icon nzType="plus" nzTheme="outline"></span>
+                匯入 Excel
+              </button>
+            </td><td>
+              <button
+              nz-button
+              nzType="primary"
+              [nzSize]="'large'"
+              (click)="convertToExcel()"
+              [hidden] = "true"
+              ><span nz-icon nzType="plus" nzTheme="outline"></span>
+                匯出 Excel
+              </button>
+            </td>
+            </div>
           </tr>
 
         </table>
