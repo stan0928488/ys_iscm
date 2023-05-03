@@ -180,7 +180,7 @@ category = '' ;
     //當月月底
     //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //一個月後
-    this.searchV0.endDate = moment(new Date()).add(1, "months").format(this.mdateFormat) ;
+    this.searchV0.endDate = moment(new Date()).add(2, "months").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -221,7 +221,8 @@ category = '' ;
   }
   onChangeEndDate(result): void {
     console.log('onChange: ', result);
-   
+    this.searchV0.endDate = moment(result).format(this.mdateFormat)
+    console.log('onChange: ', this.searchV0.endDate);
   }
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
@@ -268,6 +269,7 @@ category = '' ;
   getTableData() {
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
     //初始化原始数据
     this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
