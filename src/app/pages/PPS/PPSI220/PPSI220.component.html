@@ -109,8 +109,8 @@
 
               <p> {{ data.PLAN_STATU_NA}}
                   <label *ngIf="data.PLAN_STATU === 'Plan'" style="color: rgb(48, 84, 229);"> - 執行中
-                    <button *ngIf="byUserShow" nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button>
-                    </label>
+                    <a *ngIf="byUserShow"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
+                  </label>
                   <label *ngIf="data.PLAN_STATU === 'Fail'" style="color: red;"> - 執行失敗</label>
               </p>
               <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">

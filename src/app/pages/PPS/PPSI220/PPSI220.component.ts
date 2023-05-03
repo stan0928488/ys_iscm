@@ -34,7 +34,7 @@ export class PPSI220Component implements AfterViewInit {
   isVisibleSelPlan = false;
   isVisibleUpd = false;
   isCommon = false;
-  byUserShow = true;
+  byUserShow = false;
 
   PlanDataList;           //規劃案清單
   PlanDataDtlList     //規劃案清單 (執行歷程)
@@ -117,9 +117,11 @@ export class PPSI220Component implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getPlanDataList();
     this.getRunFCPCount();
-    if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'ur10369' || this.USERNAME === 'UR11994') {
-      this.byUserShow = false;
+    
+    if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'UR10369' || this.USERNAME === 'UR11994') {
+      this.byUserShow = true;
     }
+
   }
 
 
@@ -129,8 +131,8 @@ export class PPSI220Component implements AfterViewInit {
     this.getPPSService.getRunFCPCount().subscribe(res => {
       console.log("getRunFCPCount success");
       if(res > 0) this.isRunFCP = true;
-
     });
+    
   }
 
   //Get Data

@@ -30,7 +30,7 @@ export class PPSI205Component implements AfterViewInit {
   isErrorMsg = false;
 
   titleArray1 = ["月份","站別","機台","產出型態","產出尺寸","現況尺寸","最終製程","鋼種群組","製程碼"];
-  titleArray2 = ["站別","機台","下一站站別","天數","最大值的EPST或LPST","生產開始日","生產結束日","COMPAIGN_ID"];
+  titleArray2 = ["站別","機台","下一站站別","天數","最大值的EPST或LPST","生產開始日","生產結束日","TC頻率升降冪","COMPAIGN_ID"];
 
   datetime = moment();
   arrayBuffer:any;
@@ -184,6 +184,7 @@ export class PPSI205Component implements AfterViewInit {
           MAX_DATE: _.get(item, "MAX_DATE"),
           STARTDATE: _.get(item, "STARTDATE"),
           ENDDATE: _.get(item, "ENDDATE"),
+          TC_FREQUENCE_LIFT: _.get(item, "TC_FREQUENCE_LIFT") === 'ASC' ? '升冪' : _.get(item, "TC_FREQUENCE_LIFT") === 'DESC' ? '降冪' : '',
           COMPAIGN_ID: _.get(item, "COMPAIGN_ID")//,
           // EXPORTDATETIME: _.get(item, "EXPORTDATETIME")
         });
@@ -264,12 +265,12 @@ export class PPSI205Component implements AfterViewInit {
     } else if(_type === '2') {
       console.log("incomingfile e5 : " + _type);
       if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-         worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined) {
+         worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || worksheet.I1 === undefined) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
       } else if(worksheet.A1.v !== "站別" || worksheet.B1.v !== "機台" || worksheet.C1.v !== "下一站站別" || worksheet.D1.v !== "天數" || worksheet.E1.v !== "最大值的EPST或LPST" ||
-                worksheet.F1.v !== "生產開始日" || worksheet.G1.v !== "生產結束日" || worksheet.H1.v !== "COMPAIGN_ID") {
+                worksheet.F1.v !== "生產開始日" || worksheet.G1.v !== "生產結束日" || worksheet.H1.v !== "TC頻率升降冪" || worksheet.I1.v !== "COMPAIGN_ID") {
         this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
@@ -379,7 +380,8 @@ export class PPSI205Component implements AfterViewInit {
       let days = _data[i].天數;
       let maxDate = this.dateFormat(this.ExcelDateExchange(_data[i].最大值的EPST或LPST), 2);
       let startDate = this.dateFormat(this.ExcelDateExchange(_data[i].生產開始日), 2);
-
+      let tcFrequenceLeft = _data[i].TC頻率升降冪;
+      
       if (maxDate === 'Invalid date') {
         maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
       }
@@ -387,7 +389,7 @@ export class PPSI205Component implements AfterViewInit {
         startDate = this.dateFormat(_data[i].生產開始日, 2);
       }
 
-      if(shopCode === undefined || equipCode === undefined || nextShopCode === undefined || days === undefined || maxDate === undefined || startDate === undefined) {
+      if(shopCode === undefined || equipCode === undefined || nextShopCode === undefined || days === undefined || maxDate === undefined || startDate === undefined || tcFrequenceLeft === undefined) {
         let col = i+2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
         this.isERROR = true;
@@ -410,19 +412,16 @@ export class PPSI205Component implements AfterViewInit {
         let days = _data[i].天數.toString();
         let maxDate = this.dateFormat(this.ExcelDateExchange(_data[i].最大值的EPST或LPST), 2);
         let startDate = this.dateFormat(this.ExcelDateExchange(_data[i].生產開始日), 2);
+        let tcFrequenceLeft = _data[i].TC頻率升降冪.toString() === '升冪' ? 'ASC' : _data[i].TC頻率升降冪.toString() === '降冪' ? 'DESC' : null;
 
-        console.log(_data[i].下一站站別)
         if (maxDate === 'Invalid date') {
           maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
         }
         if (startDate === 'Invalid date') {
           startDate = this.dateFormat(_data[i].生產開始日, 2);
         }
-        this.importdata_new.push({shopCode: shopCode , equipCode: equipCode, nextShopCode: nextShopCode, days: days, maxDate: maxDate, startDate: startDate});
+        this.importdata_new.push({shopCode: shopCode , equipCode: equipCode, nextShopCode: nextShopCode, days: days, maxDate: maxDate, startDate: startDate, tcFrequenceLeft: tcFrequenceLeft});
       }
-
-      console.log("this.importdata_new")
-      console.log(this.importdata_new)
 
       return new Promise((resolve, reject) => {
         this.LoadingPage = true;
@@ -437,9 +436,6 @@ export class PPSI205Component implements AfterViewInit {
         })
         myObj.getPPSService.importI205Excel(obj).subscribe(res => {
           if(res[0].MSG === "Y") {
-            this.importdata = [];
-            this.importdata_new = [];
-            this.errorTXT = [];
             this.loading = false;
             this.LoadingPage = false;
 
@@ -449,15 +445,16 @@ export class PPSI205Component implements AfterViewInit {
           } else {
             this.errorMSG("匯入錯誤", res[0].MSG);
             this.clearFile();
-            this.importdata_new = [];
             this.LoadingPage = false;
           }
         },err => {
           reject('upload fail');
           this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
-          this.importdata_new = [];
           this.LoadingPage = false;
         })
+        this.importdata = [];
+        this.importdata_new = [];
+        this.errorTXT = [];
       });
     }
   }
@@ -556,9 +553,10 @@ export class PPSI205Component implements AfterViewInit {
   
   // 修改模式
   upd_dtlRow(i, data) {
-    console.log("--------upd_dtlRow-----");
+    if(data.TC_FREQUENCE_LIFT === undefined) data.TC_FREQUENCE_LIFT = 'ASC'
+
     this.oldlist = {...data};
-    let colsed = false;
+    let colsed = false;    
     if(this.EditMode.length > 0) {
       for(let i=0 ; i < this.EditMode.length; i++) {
         if(this.EditMode[i]) {
@@ -592,8 +590,9 @@ export class PPSI205Component implements AfterViewInit {
     let maxDate = this.newlist.MAX_DATE;
     let days = this.newlist.DAYS;
     let startDate = this.newlist.STARTDATE;
+    let tcFrequenceLeft = this.newlist.TC_FREQUENCE_LIFT;
 
-    if(nextShopCode === '' || maxDate === '' || days === '' || startDate === '') {
+    if(nextShopCode === '' || maxDate === '' || days === '' || startDate === '' || tcFrequenceLeft === '') {
       this.errorMSG("錯誤", "有欄位尚未填寫完畢，請檢查");
       return;
     } else {
@@ -662,6 +661,7 @@ export class PPSI205Component implements AfterViewInit {
     this.tbppsm102List[i].DAYS = this.oldlist['DAYS'];
     this.tbppsm102List[i].MAX_DATE = this.dateFormat(this.oldlist['MAX_DATE'], 6);
     this.tbppsm102List[i].STARTDATE = this.dateFormat(this.oldlist['STARTDATE'], 2);
+    this.tbppsm102List[i].TC_FREQUENCE_LIFT = this.oldlist['TC_FREQUENCE_LIFT'];
   }
 
 
