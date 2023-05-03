@@ -61,7 +61,7 @@ export class PPSI105Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab4ID","機台","產出尺寸最小值","產出尺寸最大直","產出型態","大調機代碼","小調機公差標準","爐批數量"];
+  titleArray = ["機台","產出尺寸最小值","產出尺寸最大值","產出型態","大調機代碼","小調機公差標準","爐批數量"];
   importdata_repeat = [];
   constructor(
     private PPSService: PPSService,
@@ -89,7 +89,7 @@ export class PPSI105Component implements AfterViewInit {
   getPPSINP04List() {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP04List().subscribe(res => {
+    this.PPSService.getPPSINP04List('1').subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP04List_tmp = res;
 
@@ -248,7 +248,7 @@ export class PPSI105Component implements AfterViewInit {
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
-      myObj.PPSService.insertI104Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.insertI104Tab1Save('1', obj).subscribe(res => {
 
         console.log(res)
         if(res[0].MSG === "Y") {
@@ -292,7 +292,7 @@ export class PPSI105Component implements AfterViewInit {
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
-      myObj.PPSService.updateI104Tab1Save(obj).subscribe(res => {
+      myObj.PPSService.updateI104Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE_4 = undefined;
           this.DIA_MIN_4 = undefined;
@@ -324,7 +324,7 @@ export class PPSI105Component implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       let _ID = this.editCache4[_id].data.tab4ID;
-      myObj.PPSService.delI104Tab1Data(_ID).subscribe(res => {
+      myObj.PPSService.delI104Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE_4 = undefined;
           this.DIA_MIN_4 = undefined;
@@ -453,6 +453,7 @@ export class PPSI105Component implements AfterViewInit {
     this.ppsInp04ListFilter("FURANCE_BATCH_QTY_4", this.searchFuranceBatchQty4Value);
   }
 
+  
    // excel檔名
    incomingfile(event) {
     this.file = event.target.files[0]; 
@@ -467,11 +468,9 @@ export class PPSI105Component implements AfterViewInit {
 
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
-
   }
 
   Upload() {
-  
     let getFileNull = this.inputFileUseInUpload;
     if(getFileNull === undefined){
       this.errorMSG('請選擇檔案', '');
@@ -479,8 +478,6 @@ export class PPSI105Component implements AfterViewInit {
     }
 
     let lastname = this.file.name.split('.').pop();
-    console.log("this.file.name: "+this.file.name);
-    console.log("incomingfile e : " + this.file);
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
       this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
       this.clearFile();
@@ -498,58 +495,25 @@ export class PPSI105Component implements AfterViewInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet:any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-  
-        
-          console.log("importExcel")
-          console.log(this.importdata)
-          this.importExcel(this.importdata);
-        
+        this.importExcel(this.importdata);
       }
       fileReader.readAsArrayBuffer(this.file);
     }
   }
 
   importExcel(_data) {
-
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
-
-      let allData = JSON.stringify(_data[i]);
-
-      
-        this.importdata_repeat.push(allData);
-
-        if(_data[i]['機台名稱'] == undefined)
-          _data[i]['機台名稱'] = '';
-        if(_data[i]['機台群組'] == undefined)
-          _data[i]['機台群組'] = '';
-        if(_data[i]['機台'] == undefined)
-          _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
-
-        upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
-          PLANT: _data[i]['工廠別'],
-          SHOP_CODE: _data[i]['站別代碼'],
-          SHOP_NAME: _data[i]['站別名稱'],
-          VALID: _data[i]['有效碼'],
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-          USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
-        })
-      
+      upload_data.push({
+        EQUIP_CODE: _data[i]['機台'],
+        DIA_MIN: _data[i]['產出尺寸最小值'],
+        DIA_MAX: _data[i]['產出尺寸最大值'],
+        SHAPE_TYPE: _data[i]['產出型態'],
+        BIG_ADJUST_CODE: _data[i]['大調機代碼'],
+        SMALL_ADJUST_TOLERANCE: _data[i]['小調機公差標準'],
+        FURANCE_BATCH_QTY: _data[i]['爐批數量']
+      })
     }
     
     console.log(upload_data);
@@ -562,12 +526,8 @@ export class PPSI105Component implements AfterViewInit {
         EXCELDATA: upload_data
       };
 
-      console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
-        console.log("importExcelPPSI105");
+      myObj.PPSService.importI104Excel('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") { 
-          
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -587,18 +547,29 @@ export class PPSI105Component implements AfterViewInit {
         this.loading = false;
         this.LoadingPage = false;
       })
+      this.getPPSINP04List();
     });
-    this.getPPSINP04List();
-
   }
 
   convertToExcel() {
-    console.log("convertToExcel");
-    let ID_List = [];
+    let fileName = `調機狀態_直棒`;
     let arr = [];
-    console.log(JSON.stringify(this.displayPPSINP04List[0]));
-    let fileName = `大調機 - 直棒`;
     
-    this.excelService.exportAsExcelFile(this.displayPPSINP04List, fileName, this.titleArray);
+    for(let i=0 ; i < this.displayPPSINP04List.length ; i++){
+      var ppsInp04 = {
+        EQUIP_CODE : this.displayPPSINP04List[i].EQUIP_CODE_4,
+        DIA_MIN : this.displayPPSINP04List[i].DIA_MIN_4,
+        DIA_MAX: this.displayPPSINP04List[i].DIA_MAX_4,
+        SHAPE_TYPE : this.displayPPSINP04List[i].SHAPE_TYPE_4,
+        BIG_ADJUST_CODE : this.displayPPSINP04List[i].BIG_ADJUST_CODE_4,
+        SMALL_ADJUST_TOLERANCE : this.displayPPSINP04List[i].SMALL_ADJUST_TOLERANCE_4,
+        FURANCE_BATCH_QTY: this.displayPPSINP04List[i].FURANCE_BATCH_QTY_4
+      }
+      arr.push(ppsInp04);
+    }
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
+
+
+
 }
