@@ -38,18 +38,17 @@
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
         <table>
           <tr>
-            <td style="text-align:left;width:70%">
+            <td>
               <button
                 nz-button
                 style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
                 nzType="primary"
-                [nzSize]="'large'"
                 (click)="openYieldInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
               </button>
             </td>
-            <td style="text-align:right;width:30%">
+            <td style="text-align:right;width:35%">
               <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
               <button
                 nz-button
