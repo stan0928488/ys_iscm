@@ -53,7 +53,7 @@
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
           <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" (click)="recoverDataBtn()">恢複數據</button>
           <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="dataSortedModal()">微調確認</button>
-          <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')">確認</button>
+          <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
 
         </p>
       </nz-collapse-panel>
