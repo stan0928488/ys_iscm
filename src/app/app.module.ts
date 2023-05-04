@@ -93,10 +93,11 @@ import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
 import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
 import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
 import { AgGridModule } from "ag-grid-angular";
+import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
+import { CalendarModule } from 'primeng/calendar';
+import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 
 registerLocaleData(zh);
-
-
 
 
 @NgModule({
@@ -171,7 +172,9 @@ registerLocaleData(zh);
     MSHI002Component,
     MSHP001Component,
     LABI001Component,
-    LABP100Component
+    LABP100Component,
+    MSHI003Component,
+    PrimeDatePickerCellEditorComponent
    ],
   imports: [
     BrowserModule,
@@ -185,13 +188,16 @@ registerLocaleData(zh);
     NgxJsonViewerModule,
     AgGridModule,
     NzTimelineModule,
+    CalendarModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     })
     ///////
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
