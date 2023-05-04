@@ -530,11 +530,11 @@ export class PPSI104Component implements AfterViewInit {
   }
 
   Upload() {
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {

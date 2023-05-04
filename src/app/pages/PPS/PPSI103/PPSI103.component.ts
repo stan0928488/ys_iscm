@@ -705,11 +705,11 @@ export class PPSI103Component implements AfterViewInit {
   }
 
   Upload() {
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
@@ -740,7 +740,7 @@ export class PPSI103Component implements AfterViewInit {
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
       upload_data.push({
-        // PLANT_CODE : this.PLANT_CODE,
+        PLANT_CODE : this.PLANT_CODE,
         SHOP_CODE: _data[i]['站別'],
         EQUIP_GROUP: _data[i]['機台群組'] === undefined ? null : _data[i]['機台群組'],
         EQUIP_CODE: _data[i]['機台'],
