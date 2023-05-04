@@ -94,7 +94,7 @@ export class PPSI103Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab2ID","站號","機台群組","EQUIP_CODE_2","機台","製程碼","形狀","投入尺寸上限","設備能力最小尺寸","設備能力最大尺寸","設備能力最小長度","設備能力最大長度","最佳能力最小尺寸","最佳能力最大尺寸","最佳能力最小長度","最佳能力最大長度","替代機台順位1","替代機台順位2","替代機台順位3"];
+  titleArray = ["站別","機台群組","機台","製程碼","鋼種類別","形狀","投入尺寸上限","設備能力最小尺寸","設備能力最大尺寸","設備能力最小長度","設備能力最大長度","最佳能力最小尺寸","最佳能力最大尺寸","最佳能力最小長度","最佳能力最大長度","替代機台順位1","替代機台順位2","替代機台順位3"];
   importdata_repeat = [];
   constructor(
     private PPSService: PPSService,
@@ -702,20 +702,16 @@ export class PPSI103Component implements AfterViewInit {
 
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
-
   }
 
   Upload() {
-  
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
-    console.log("this.file.name: "+this.file.name);
-    console.log("incomingfile e : " + this.file);
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
       this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
       this.clearFile();
@@ -733,58 +729,37 @@ export class PPSI103Component implements AfterViewInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet:any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-  
-        
-          console.log("importExcel")
-          console.log(this.importdata)
-          this.importExcel(this.importdata);
-        
+        this.importExcel(this.importdata);
       }
       fileReader.readAsArrayBuffer(this.file);
     }
   }
 
   importExcel(_data) {
-
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
-
-      let allData = JSON.stringify(_data[i]);
-
-      
-        this.importdata_repeat.push(allData);
-
-        if(_data[i]['機台名稱'] == undefined)
-          _data[i]['機台名稱'] = '';
-        if(_data[i]['機台群組'] == undefined)
-          _data[i]['機台群組'] = '';
-        if(_data[i]['機台'] == undefined)
-          _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
-
-        upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
-          PLANT: _data[i]['工廠別'],
-          SHOP_CODE: _data[i]['站別代碼'],
-          SHOP_NAME: _data[i]['站別名稱'],
-          VALID: _data[i]['有效碼'],
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-          USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
-        })
-      
+      upload_data.push({
+        PLANT_CODE : this.PLANT_CODE,
+        SHOP_CODE: _data[i]['站別'],
+        EQUIP_GROUP: _data[i]['機台群組'] === undefined ? null : _data[i]['機台群組'],
+        EQUIP_CODE: _data[i]['機台'],
+        PROCESS_CODE: _data[i]['製程碼'] === undefined ? null : _data[i]['製程碼'],
+        GRADE_GROUP: _data[i]['鋼種類別'] === undefined ? null : _data[i]['鋼種類別'],
+        SHAPE_TYPE: _data[i]['形狀'] === undefined ? null : _data[i]['形狀'],
+        INPUT_DIA_MAX: _data[i]['投入尺寸上限'],
+        CAPABILITY_DIA_MIN: _data[i]['設備能力最小尺寸'],
+        CAPABILITY_DIA_MAX: _data[i]['設備能力最大尺寸'],
+        CAPABILITY_LENGTH_MIN: _data[i]['設備能力最小長度'],
+        CAPABILITY_LENGTH_MAX: _data[i]['設備能力最大長度'],
+        OPTIMAL_DIA_MIN: _data[i]['最佳能力最小尺寸'],
+        OPTIMAL_DIA_MAX: _data[i]['最佳能力最大尺寸'],
+        OPTIMAL_LENGTH_MIN: _data[i]['最佳能力最小長度'],
+        OPTIMAL_LENGTH_MAX: _data[i]['最佳能力最大長度'],
+        OPTION_EQUIP_1: _data[i]['替代機台順位1'] === undefined ? null : _data[i]['替代機台順位1'],
+        OPTION_EQUIP_2: _data[i]['替代機台順位2'] === undefined ? null : _data[i]['替代機台順位2'],
+        OPTION_EQUIP_3: _data[i]['替代機台順位3'] === undefined ? null : _data[i]['替代機台順位3']
+      })
     }
     
     console.log(upload_data);
@@ -797,12 +772,8 @@ export class PPSI103Component implements AfterViewInit {
         EXCELDATA: upload_data
       };
 
-      console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel(obj).subscribe(res => {
-        console.log("importExcelPPSI102");
+      myObj.PPSService.importI102Excel('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") { 
-          
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -822,18 +793,37 @@ export class PPSI103Component implements AfterViewInit {
         this.loading = false;
         this.LoadingPage = false;
       })
+      this.getPPSINP02List();
     });
-    this.getPPSINP02List();
-
   }
 
   convertToExcel() {
-    console.log("convertToExcel");
-    let ID_List = [];
+    let fileName = `設備能力_直棒`;
     let arr = [];
-    console.log(JSON.stringify(this.displayPPSINP02List[0]));
-    let fileName = `設備能力 - 直棒`;
-    
-    this.excelService.exportAsExcelFile(this.displayPPSINP02List, fileName, this.titleArray);
+    for(let i=0 ; i < this.displayPPSINP02List.length ; i++){
+      var ppsInp02 = {
+        SHOP_CODE : this.displayPPSINP02List[i].SHOP_CODE_2,
+        EQUIP_GROUP: this.displayPPSINP02List[i].EQUIP_GROUP_2,
+        EQUIP_CODE : this.displayPPSINP02List[i].EQUIP_CODE_2,
+        PROCESS_CODE : this.displayPPSINP02List[i].PROCESS_CODE_2,
+        GRADE_GROUP : this.displayPPSINP02List[i].GRADE_GROUP_2,
+        SHAPE_TYPE : this.displayPPSINP02List[i].SHAPE_TYPE_2,
+        INPUT_DIA_MAX : this.displayPPSINP02List[i].INPUT_DIA_MAX_2,
+        CAPABILITY_DIA_MIN: this.displayPPSINP02List[i].CAPABILITY_DIA_MIN_2,
+        CAPABILITY_DIA_MAX : this.displayPPSINP02List[i].CAPABILITY_DIA_MAX_2,
+        CAPABILITY_LENGTH_MIN : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MIN_2,
+        CAPABILITY_LENGTH_MAX : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MAX_2,
+        OPTIMAL_DIA_MIN : this.displayPPSINP02List[i].OPTIMAL_DIA_MIN_2,
+        OPTIMAL_DIA_MAX : this.displayPPSINP02List[i].OPTIMAL_DIA_MAX_2,
+        OPTIMAL_LENGTH_MIN : this.displayPPSINP02List[i].OPTIMAL_LENGTH_MIN_2,
+        OPTIMAL_LENGTH_MAX: this.displayPPSINP02List[i].OPTIMAL_LENGTH_MAX_2,
+        OPTION_EQUIP_1 : this.displayPPSINP02List[i].OPTION_EQUIP_1_2,
+        OPTION_EQUIP_2 : this.displayPPSINP02List[i].OPTION_EQUIP_2_2,
+        OPTION_EQUIP_3 : this.displayPPSINP02List[i].OPTION_EQUIP_3_2
+      }
+      arr.push(ppsInp02);
+    }
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
+
 }

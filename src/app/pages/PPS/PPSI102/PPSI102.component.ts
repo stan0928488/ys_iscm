@@ -452,11 +452,11 @@ export class PPSI102Component implements AfterViewInit {
     }
 
     Upload() {
-      let getFileNull = this.inputFileUseInUpload;
-      if(getFileNull === undefined){
-        this.errorMSG('請選擇檔案', '');
-        return;
-      }
+      // let getFileNull = this.inputFileUseInUpload;
+      // if(getFileNull === undefined){
+      //   this.errorMSG('請選擇檔案', '');
+      //   return;
+      // }
   
       let lastname = this.file.name.split('.').pop();
       console.log("this.file.name: "+this.file.name);
@@ -537,7 +537,6 @@ export class PPSI102Component implements AfterViewInit {
         
       }
       
-      console.log(upload_data);
       return new Promise((resolve, reject) => {
         console.log("匯入開始");
         this.LoadingPage = true;
@@ -547,9 +546,7 @@ export class PPSI102Component implements AfterViewInit {
           EXCELDATA: upload_data
         };
 
-        console.log("EXCELDATA:"+ obj);
-        myObj.PPSService.importI107Excel(obj).subscribe(res => {
-          console.log("importExcelPPSI102");
+        myObj.PPSService.importI107Excel('1', obj).subscribe(res => {
           if(res[0].MSG === "Y") {
             this.loading = false;
             this.LoadingPage = false;
@@ -573,10 +570,7 @@ export class PPSI102Component implements AfterViewInit {
     }
 
     convertToExcel() {
-      console.log("convertToExcel");
-      let ID_List = [];
       let arr = [];
-      console.log(JSON.stringify(this.displayPPSINP07List[1]));
       let fileName = `站別機台關聯表_直棒`;
       for(let i=0 ; i < this.displayPPSINP07List.length ; i++){
         var ppsIn107 = {
@@ -588,11 +582,8 @@ export class PPSI102Component implements AfterViewInit {
           EQUIP_GROUP : this.displayPPSINP07List[i].EQUIP_GROUP,
           VALID : this.displayPPSINP07List[i].VALID
         }
-
         arr.push(ppsIn107);
       }
-
-      console.log(arr);
       this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
     }
 }

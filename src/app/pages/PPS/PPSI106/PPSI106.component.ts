@@ -464,11 +464,11 @@ resetByFuranceBatchQty17() : void {
 
   Upload() {
   
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
@@ -555,7 +555,7 @@ resetByFuranceBatchQty17() : void {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
         console.log("importExcelPPSI105");
         if(res[0].MSG === "Y") { 
           

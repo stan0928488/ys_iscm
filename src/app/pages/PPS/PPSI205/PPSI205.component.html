@@ -154,6 +154,7 @@
                 <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">max(EPST/ASAP)</th>
                 <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">生產開始日</th>
                 <th nzWidth="4%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">生產結束日</th>
+                <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">TC頻率升降冪</th>
                 <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMPAIGN_ID</th>
                 <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">轉入COMPAIGN表<br>時間</th>
                 <th nzWidth="4%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
@@ -172,6 +173,7 @@
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.MAX_DATE }}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.STARTDATE  }}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.ENDDATE  }}</td>
+                  <td style="text-align:center; padding: 5px; height: 40px;">{{ data.TC_FREQUENCE_LIFT === 'ASC' ? '升冪' : data.TC_FREQUENCE_LIFT === 'DESC' ? '降冪' : ''}}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.COMPAIGN_ID }}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.EXPORTDATETIME | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">
@@ -198,8 +200,13 @@
                   <td style="text-align:center; padding: 5px; height: 40px;">
                     <nz-date-picker [(ngModel)]="data.STARTDATE" (ngModelChange)="onChange('2', i, $event)"></nz-date-picker>
                   </td>
-
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.ENDDATE }}</td>
+                  <td style="text-align:center; padding: 5px; height: 40px;">
+                    <nz-radio-group [(ngModel)]="data.TC_FREQUENCE_LIFT" nzButtonStyle="solid">
+                      <label nz-radio-button nzValue="ASC">升冪</label>
+                      <label nz-radio-button nzValue="DESC">降冪</label>
+                    </nz-radio-group>
+                  </td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.COMPAIGN_ID }}</td>
                   <td style="text-align:center; padding: 5px; height: 40px;">{{ data.EXPORTDATETIME | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                   <td style="width: 120px; text-align:center;">

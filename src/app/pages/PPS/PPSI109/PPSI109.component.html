@@ -28,36 +28,6 @@
       <a *nzTabLink nz-tab-link [routerLink]="['.']">
         直棒
       </a>
-      <div class="excel-control">
-        <td>
-            <input type="file" id="fileupload" 
-                   style="display: inline-block;"
-                   [(ngModel)] = "inputFileUseInUpload" 
-                   (change)="incomingfile($event)" 
-                   placeholder="Upload file" 
-                   accept=".xlsx, .xls, .csv">
-        </td>
-        <td>
-        <button
-        nz-button
-        nzType="primary"
-        style = "margin-right:1vw;"
-        [nzSize]="'large'"
-        (click)="Upload()"
-        ><span nz-icon nzType="plus" nzTheme="outline"></span>
-          匯入 Excel
-        </button>
-      </td><td>
-        <button
-        nz-button
-        nzType="primary"
-        [nzSize]="'large'"
-        (click)="convertToExcel()"
-        ><span nz-icon nzType="plus" nzTheme="outline"></span>
-          匯出 Excel
-        </button>
-      </td>
-      </div>
       <div style="background: rgb(255, 255, 255); min-height: 1200px;">
         <div nz-col [nzSpan]="8">
           <nz-table #RowTable14 nzBordered [nzData]="displayTbppsm012List" [nzPageSize]="15" [nzScroll]="{ y: '650px' }">

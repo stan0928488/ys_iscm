@@ -43,9 +43,8 @@ export class LABI001Component implements AfterViewInit {
   USERNAME;
   PLANT_CODE;
 
-  // 整備時間
-  CUSO4_TEST = '';
-  IMPACT_TEST = '';
+  CUSO4_TEST = 'N';
+  IMPACT_TEST = 'N';
   DIA_MIN = 0;
   DIA_MAX = 0;
   SHAPE = '';
@@ -74,9 +73,9 @@ export class LABI001Component implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
   data = [];
+  
   constructor(
     private LABService : LABService,
-    private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -94,15 +93,14 @@ export class LABI001Component implements AfterViewInit {
   }
   
   onInit() {
-    this.CUSO4_TEST = '';
-    this.IMPACT_TEST = '';
+    this.CUSO4_TEST = 'N';
+    this.IMPACT_TEST = 'N';
     this.DIA_MIN = 0;
     this.DIA_MAX = 0;
     this.SHAPE = '';
     this.MECHANICAL_PROPERTIES_CODE = '';
     this.GRADE_NO = '';
     this.EXPERIMENT_DAYS = 0;
-    this.OTHER_TIME = '';
 
     this.isVisiblePrepare = false;
     this.LoadingPage = false;
@@ -115,7 +113,6 @@ export class LABI001Component implements AfterViewInit {
     this.searchByMechanicalPropertiesCodeValue = '';
     this.searchByGradeNoValue = '';
     this.searchByExperimentDaysValue = '';
-    this.searchCoolingTimeValue = '';
     
     this.isErrorMsg = false;
     this.importdata = [];
@@ -125,10 +122,10 @@ export class LABI001Component implements AfterViewInit {
   }
 
   
-  PPSINP03List_tmp;
-  PPSINP03List: ItemData[] = [];
+  tblabm001_tmp;
+  tblabm001: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
-  displayPPSINP03List: ItemData[] = [];
+  displaytblabm001: ItemData[] = [];
   
   getLabI001List() {
     this.loading = true;
@@ -138,33 +135,33 @@ export class LABI001Component implements AfterViewInit {
     myObj.LABService.getLab001Data().subscribe(res => {
 
       let result:any = res;
-      this.PPSINP03List_tmp = result.data;
+      this.tblabm001_tmp = result.data;
 
       const data = [];
-      for (let i = 0; i < this.PPSINP03List_tmp.length ; i++) {
+      for (let i = 0; i < this.tblabm001_tmp.length ; i++) {
         
         data.push({
-          idx: this.PPSINP03List_tmp[i].id,
-          id: this.PPSINP03List_tmp[i].id,
-          plant_code: this.PPSINP03List_tmp[i].plantCode,
-          cuso4_test: this.PPSINP03List_tmp[i].cuso4Test,
-          impact_test: this.PPSINP03List_tmp[i].impactTest,
-          sale_order_dia: this.PPSINP03List_tmp[i].saleOrderDia,
-          dia_min: this.PPSINP03List_tmp[i].diaMin,
-          dia_max: this.PPSINP03List_tmp[i].diaMax,
-          shape: this.PPSINP03List_tmp[i].shape,
-          mechanical_properties_code: this.PPSINP03List_tmp[i].mechanicalPropertiesCode,
-          grade_no: this.PPSINP03List_tmp[i].gradeNo,
-          experiment_days: this.PPSINP03List_tmp[i].experimentDays,
-          del_status: this.PPSINP03List_tmp[i].delStatus,
-          date_create: this.PPSINP03List_tmp[i].dateCreate == null ? null:moment(this.PPSINP03List_tmp[i].dateCreate),
-          user_create: this.PPSINP03List_tmp[i].userCreate,
-          date_update: this.PPSINP03List_tmp[i].dateUpdate == null ? null : moment(this.PPSINP03List_tmp[i].dateUpdate),
-          user_update: this.PPSINP03List_tmp[i].userUpdate
+          idx: this.tblabm001_tmp[i].id,
+          id: this.tblabm001_tmp[i].id,
+          plant_code: this.tblabm001_tmp[i].plantCode,
+          cuso4_test: this.tblabm001_tmp[i].cuso4Test,
+          impact_test: this.tblabm001_tmp[i].impactTest,
+          sale_order_dia: this.tblabm001_tmp[i].saleOrderDia,
+          dia_min: this.tblabm001_tmp[i].diaMin,
+          dia_max: this.tblabm001_tmp[i].diaMax,
+          shape: this.tblabm001_tmp[i].shape,
+          mechanical_properties_code: this.tblabm001_tmp[i].mechanicalPropertiesCode,
+          grade_no: this.tblabm001_tmp[i].gradeNo,
+          experiment_days: this.tblabm001_tmp[i].experimentDays,
+          del_status: this.tblabm001_tmp[i].delStatus,
+          date_create: this.tblabm001_tmp[i].dateCreate == null ? null:moment(this.tblabm001_tmp[i].dateCreate),
+          user_create: this.tblabm001_tmp[i].userCreate,
+          date_update: this.tblabm001_tmp[i].dateUpdate == null ? null : moment(this.tblabm001_tmp[i].dateUpdate),
+          user_update: this.tblabm001_tmp[i].userUpdate
         });
       }
       this.data = data;
-      this.displayPPSINP03List = this.PPSINP03List;
+      this.displaytblabm001 = this.tblabm001;
       this.updateEditCache();
       myObj.loading = false;
       
@@ -179,16 +176,13 @@ export class LABI001Component implements AfterViewInit {
   insertTab() {
     let myObj = this;
 
-    if(this.CUSO4_TEST == ''){
+    if(this.CUSO4_TEST === ''){
       myObj.message.create("新增錯誤","硫酸銅試驗 不可為空");
       return ;
-    }else if(this.IMPACT_TEST = ''){
+    }else if(this.IMPACT_TEST === ''){
       myObj.message.create("新增錯誤","衝擊試驗 不可為空");
       return ;
-    }else if(this.DIA_MIN == 0){
-      myObj.message.create("新增錯誤","尺寸MIN 不可為0");
-      return ;
-    }else if(this.DIA_MAX == 0){
+    }else if(this.DIA_MAX === 0){
       myObj.message.create("新增錯誤","尺寸MAX 不可為0");
       return ;
     }else if (this.EXPERIMENT_DAYS === 0 ) {
@@ -242,20 +236,17 @@ export class LABI001Component implements AfterViewInit {
 
     let myObj = this;
 
-    if(this.editCache[id].data.cuso4_test == ''){
-      myObj.message.create("新增錯誤","硫酸銅試驗 不可為空");
+    if(this.editCache[id].data.cuso4_test === ''){
+      myObj.message.create("修改錯誤","硫酸銅試驗 不可為空");
       return ;
-    }else if(this.editCache[id].data.impact_test = ''){
-      myObj.message.create("新增錯誤","衝擊試驗 不可為空");
+    }else if(this.editCache[id].data.impact_test === ''){
+      myObj.message.create("修改錯誤","衝擊試驗 不可為空");
       return ;
-    }else if(this.editCache[id].data.dia_min == '0'){
-      myObj.message.create("新增錯誤","尺寸MIN 不可為0");
-      return ;
-    }else if(this.editCache[id].data.dia_max == '0'){
-      myObj.message.create("新增錯誤","尺寸MAX 不可為0");
+    }else if(this.editCache[id].data.dia_max === '0'){
+      myObj.message.create("修改錯誤","尺寸MAX 不可為0");
       return ;
     }else if (this.editCache[id].data.experiment_days === '0') {
-      myObj.message.create("新增錯誤", "「實驗天數」不可為0天");
+      myObj.message.create("修改錯誤", "「實驗天數」不可為0天");
       return;  
     }else {
       this.Modal.confirm({
@@ -274,13 +265,13 @@ export class LABI001Component implements AfterViewInit {
   // update
   updateEditCache(): void {
     this.data.forEach(item => {
-      console.log(item)
+      // console.log(item)
       this.editCache[item.idx] = {
         edit: false,
         data: { ...item }
       };
     });
-    console.log(this.editCache);
+    // console.log(this.editCache);
   }
 
 
@@ -291,6 +282,7 @@ export class LABI001Component implements AfterViewInit {
     
     return new Promise((resolve, reject) => {
       let obj = {};
+      
       _.extend(obj, {
         cuso4Test:this.CUSO4_TEST,
         impactTest:this.IMPACT_TEST,
@@ -305,7 +297,6 @@ export class LABI001Component implements AfterViewInit {
         plantCode : this.PLANT_CODE,
         delStatus : 0
       })
-      console.log(obj)
       myObj.LABService.saveLab001Data(obj).subscribe(res => {
 
         let result:any = res;
@@ -410,7 +401,7 @@ export class LABI001Component implements AfterViewInit {
     let titleArray = [];
     if(this.data.length > 0) {
       data = this.formatDataForExcel(this.data);
-      fileName = `直棒_實驗室靜態資料`;
+      fileName = `實驗室靜態資料_直棒`;
       titleArray = ['硫酸銅試驗', '衝擊試驗', '尺寸MIN', '尺寸MAX', '型態', '機械性質碼', '鋼種', '實驗天數'];
     } else {
       this.errorMSG("匯出失敗", "直棒實驗室靜態資料目前無資料");
@@ -636,7 +627,7 @@ export class LABI001Component implements AfterViewInit {
 
 // ============= 過濾資料之menu ========================
   // 4.(資料過濾)整備時間
-  ppsInp03ListFilter(property:string, keyWord:string){
+  tblabm001Filter(property:string, keyWord:string){
     console.log('filter');
     const filterFunc = item => {
       let propertyValue = _.get(item, property);
@@ -651,76 +642,76 @@ export class LABI001Component implements AfterViewInit {
     this.data = data;
   }
 
-  // 資料過濾---整備時間 --> 硫酸銅試驗
+  // 資料過濾 --> 硫酸銅試驗
   searchCuso4Test() : void{
-    this.ppsInp03ListFilter("cuso4_test", this.searchCuso4TestValue);
+    this.tblabm001Filter("cuso4_test", this.searchCuso4TestValue);
   } 
   resetByCuso4Test() : void{
     this.searchCuso4TestValue = '';
-    this.ppsInp03ListFilter("cuso4_test", this.searchCuso4TestValue);
+    this.tblabm001Filter("cuso4_test", this.searchCuso4TestValue);
   }
 
-  // 資料過濾---整備時間 --> 衝擊試驗
+  // 資料過濾 --> 衝擊試驗
   searchImpactTest() : void{
-    this.ppsInp03ListFilter("impact_test", this.searchImpactTestValue);
+    this.tblabm001Filter("impact_test", this.searchImpactTestValue);
   } 
   resetByImpactTest() : void{
     this.searchImpactTestValue = '';
-    this.ppsInp03ListFilter("impact_test", this.searchImpactTestValue);
+    this.tblabm001Filter("impact_test", this.searchImpactTestValue);
   }
-  // 資料過濾---整備時間 --> 尺寸MIN
+  // 資料過濾 --> 尺寸MIN
   searchDiaMin() : void{
-    this.ppsInp03ListFilter("dia_min", this.searchDiaMinValue);
+    this.tblabm001Filter("dia_min", this.searchDiaMinValue);
   } 
   resetByDiaMin() : void{
     this.searchDiaMinValue = '';
-    this.ppsInp03ListFilter("dia_min", this.searchDiaMinValue);
+    this.tblabm001Filter("dia_min", this.searchDiaMinValue);
   }
 
-  // 資料過濾---整備時間 --> 尺寸Max
+  // 資料過濾 --> 尺寸Max
   searchDiaMax() : void{
-    this.ppsInp03ListFilter("dia_max", this.searchDiaMaxValue);
+    this.tblabm001Filter("dia_max", this.searchDiaMaxValue);
   } 
   resetByDiaMax() : void{
     this.searchDiaMaxValue = '';
-    this.ppsInp03ListFilter("dia_max", this.searchDiaMaxValue);
+    this.tblabm001Filter("dia_max", this.searchDiaMaxValue);
   }
 
-  // 資料過濾---整備時間 --> 型態
+  // 資料過濾 --> 型態
   searchByShape() : void{
     console.log(this.searchByShapeValue);
-    this.ppsInp03ListFilter("shape", this.searchByShapeValue);
+    this.tblabm001Filter("shape", this.searchByShapeValue);
   } 
   resetByShape() : void{
     this.searchByShapeValue = '';
-    this.ppsInp03ListFilter("shape", this.searchByShapeValue);
+    this.tblabm001Filter("shape", this.searchByShapeValue);
   }
 
-  // 資料過濾---整備時間 --> 機械性質碼
+  // 資料過濾 --> 機械性質碼
   searchByMechanicalPropertiesCode() : void{
-    this.ppsInp03ListFilter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
+    this.tblabm001Filter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
   } 
   resetByMechanicalPropertiesCode() : void{
     this.searchByMechanicalPropertiesCodeValue = '';
-    this.ppsInp03ListFilter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
+    this.tblabm001Filter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
   }
 
-  // 資料過濾---整備時間 --> 鋼種
+  // 資料過濾 --> 鋼種
   searchByGradeNo() : void{
-    this.ppsInp03ListFilter("grade_no", this.searchByGradeNoValue);
+    this.tblabm001Filter("grade_no", this.searchByGradeNoValue);
   } 
   resetByGradeNo() : void{
     this.searchByGradeNoValue = '';
-    this.ppsInp03ListFilter("grade_no", this.searchByGradeNoValue);
+    this.tblabm001Filter("grade_no", this.searchByGradeNoValue);
   }
 
-  // 資料過濾---整備時間 --> 實驗天數
+  // 資料過濾 --> 實驗天數
   searchByExperimentDays() : void{
-    this.ppsInp03ListFilter("experiment_days", this.searchByExperimentDaysValue);
+    this.tblabm001Filter("experiment_days", this.searchByExperimentDaysValue);
   } 
   resetByExperimentDays() : void{
     this.searchByExperimentDaysValue = '';
-    this.ppsInp03ListFilter("experiment_days", this.searchByExperimentDaysValue);
+    this.tblabm001Filter("experiment_days", this.searchByExperimentDaysValue);
   }
   
 

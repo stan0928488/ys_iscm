@@ -21,8 +21,8 @@ interface ItemData05 {
   SPEED_TYPE_5: string;
   REDUCTION_RATE_MIN_5: number;
   REDUCTION_RATE_MAX_5: number;
-  DIA_MAX_5: number;
   DIA_MIN_5: number;
+  DIA_MAX_5: number;
   SPEED_5: number;
   EQUIP_CAP_5: number;
 }
@@ -49,8 +49,8 @@ export class PPSI107Component implements AfterViewInit {
   SPEED_TYPE_5;
   REDUCTION_RATE_MIN_5;
   REDUCTION_RATE_MAX_5;
-  DIA_MAX_5;
   DIA_MIN_5;
+  DIA_MAX_5;
   SPEED_5;
   EQUIP_CAP_5;
   isVisibleSpeed = false;
@@ -61,8 +61,8 @@ export class PPSI107Component implements AfterViewInit {
   searchSpeedType5Value = '';
   searchReductionRateMin5Value = '';
   searchReductionRateMax5Value = '';
-  searchDiaMax5Value = '';
   searchDiaMin5Value = '';
+  searchDiaMax5Value = '';
   searchSpeed5Value = '';
   searchEquipCap5Value = '';
 
@@ -116,8 +116,8 @@ export class PPSI107Component implements AfterViewInit {
           SPEED_TYPE_5: this.PPSINP05List_tmp[i].SPEED_TYPE,
           REDUCTION_RATE_MIN_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MIN,
           REDUCTION_RATE_MAX_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MAX,
-          DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
           DIA_MIN_5: this.PPSINP05List_tmp[i].DIA_MIN,
+          DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
           SPEED_5: this.PPSINP05List_tmp[i].SPEED,
           EQUIP_CAP_5: this.PPSINP05List_tmp[i].EQUIP_CAP
         });
@@ -154,11 +154,11 @@ export class PPSI107Component implements AfterViewInit {
     }   else if (this.REDUCTION_RATE_MAX_5 === undefined) {
       myObj.message.create("error", "「減面率最大值」不可為空");
       return;
-    }   else if (this.DIA_MAX_5 === undefined) {
-      myObj.message.create("error", "「產出最大尺寸」不可為空");
-      return;
     } else if (this.DIA_MIN_5 === undefined) {
       myObj.message.create("error", "「產出最小尺寸」不可為空");
+      return;
+    } else if (this.DIA_MAX_5 === undefined) {
+      myObj.message.create("error", "「產出最大尺寸」不可為空");
       return;
     } else if (this.SPEED_5 === undefined) {
       myObj.message.create("error", "「線速」不可為空");
@@ -229,11 +229,11 @@ export class PPSI107Component implements AfterViewInit {
     }   else if (this.editCache05[id].data.REDUCTION_RATE_MAX_5 === undefined) {
       myObj.message.create("error", "「減面率MAX」不可為空");
       return;
-    }   else if (this.editCache05[id].data.DIA_MAX_5 === undefined) {
-      myObj.message.create("error", "「最大產出尺寸」不可為空");
-      return;
-    } else if (this.editCache05[id].data.DIA_MIN_5 === undefined) {
+    }  else if (this.editCache05[id].data.DIA_MIN_5 === undefined) {
       myObj.message.create("error", "「最小產出尺寸不可為空");
+      return;
+    } else if (this.editCache05[id].data.DIA_MAX_5 === undefined) {
+      myObj.message.create("error", "「最大產出尺寸」不可為空");
       return;
     } else if (this.editCache05[id].data.SPEED_5 === undefined) {
       myObj.message.create("error", "「線速」不可為空");
@@ -280,8 +280,8 @@ export class PPSI107Component implements AfterViewInit {
         SPEED_TYPE:this.SPEED_TYPE_5,
         REDUCTION_RATE_MIN:this.REDUCTION_RATE_MIN_5,
         REDUCTION_RATE_MAX:this.REDUCTION_RATE_MAX_5,
-        DIA_MAX:this.DIA_MAX_5,
         DIA_MIN:this.DIA_MIN_5,
+        DIA_MAX:this.DIA_MAX_5,
         SPEED:this.SPEED_5,
         EQUIP_CAP:this.EQUIP_CAP_5,
         USERNAME : this.USERNAME,
@@ -298,8 +298,8 @@ export class PPSI107Component implements AfterViewInit {
           this.SPEED_TYPE_5 = undefined;
           this.REDUCTION_RATE_MIN_5 = undefined;
           this.REDUCTION_RATE_MAX_5 = undefined;
-          this.DIA_MAX_5 = undefined;
           this.DIA_MIN_5 = undefined;
+          this.DIA_MAX_5 = undefined;
           this.SPEED_5 = undefined;
           this.EQUIP_CAP_5 = undefined;
           this.getPPSINP05List();
@@ -332,10 +332,10 @@ export class PPSI107Component implements AfterViewInit {
         SPEED_TYPE: this.editCache05[_id].data.SPEED_TYPE_5,
         REDUCTION_RATE_MIN: this.editCache05[_id].data.REDUCTION_RATE_MIN_5,
         REDUCTION_RATE_MAX: this.editCache05[_id].data.REDUCTION_RATE_MAX_5,
-        DIA_MAX: this.editCache05[_id].data.DIA_MAX_5,
         DIA_MIN: this.editCache05[_id].data.DIA_MIN_5,
-        SPEED: this.editCache05[_id].data.DIA_MAX_5,
-        EQUIP_CAP: this.editCache05[_id].data.DIA_MIN_5,
+        DIA_MAX: this.editCache05[_id].data.DIA_MAX_5,
+        SPEED: this.editCache05[_id].data.SPEED_5,
+        EQUIP_CAP: this.editCache05[_id].data.EQUIP_CAP_5,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')})
       
@@ -349,8 +349,8 @@ export class PPSI107Component implements AfterViewInit {
             this.SPEED_TYPE_5 = undefined;
             this.REDUCTION_RATE_MIN_5 = undefined;
             this.REDUCTION_RATE_MAX_5 = undefined;
-            this.DIA_MAX_5 = undefined;
             this.DIA_MIN_5 = undefined;
+            this.DIA_MAX_5 = undefined;
             this.SPEED_5 = undefined;
             this.EQUIP_CAP_5 = undefined;
             this.getPPSINP05List();
@@ -390,8 +390,8 @@ export class PPSI107Component implements AfterViewInit {
           this.SPEED_TYPE_5 = undefined;
           this.REDUCTION_RATE_MIN_5 = undefined;
           this.REDUCTION_RATE_MAX_5 = undefined;
-          this.DIA_MAX_5 = undefined;
           this.DIA_MIN_5 = undefined;
+          this.DIA_MAX_5 = undefined;
           this.SPEED_5 = undefined;
           this.EQUIP_CAP_5 = undefined;
           this.sucessMSG("刪除成功", ``);
@@ -512,21 +512,21 @@ export class PPSI107Component implements AfterViewInit {
   }
 
   // 資料過濾---線速 --> 產出最小尺寸
-  searchByDiaMax5() : void {
-    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
-  } 
-  resetByDiaMax5() : void {
-    this.searchDiaMax5Value = '';
-    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
-  }
-
-  // 資料過濾---線速 --> 產出最大尺寸
   searchByDiaMin5() : void {
     this.ppsInp05ListFilter("DIA_MIN_5", this.searchDiaMin5Value);
   } 
   resetByDiaMin5() : void {
     this.searchDiaMin5Value = '';
     this.ppsInp05ListFilter("DIA_MIN_5", this.searchDiaMin5Value);
+  }
+
+  // 資料過濾---線速 --> 產出最大尺寸
+  searchByDiaMax5() : void {
+    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
+  } 
+  resetByDiaMax5() : void {
+    this.searchDiaMax5Value = '';
+    this.ppsInp05ListFilter("DIA_MAX_5", this.searchDiaMax5Value);
   }
 
   // 資料過濾---線速 --> 線速(m/min)
@@ -655,7 +655,7 @@ export class PPSI107Component implements AfterViewInit {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel(obj).subscribe(res => {
+      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
         console.log("importExcelPPSI105");
         if(res[0].MSG === "Y") { 
           

@@ -5,193 +5,177 @@
     <nz-breadcrumb-item>實驗室靜態資料</nz-breadcrumb-item>
   </nz-breadcrumb>
   
-  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
-        直棒
-      </a>
-      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
-        <table>
+    <div style="background: rgb(255, 255, 255); min-height: 1200px;">
+      <table>
+        <tr>
+          <td style="text-align:left; width:65%;">
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+              nzType="primary"
+              [nzSize]="'large'"
+              (click)="openPrepareInput()"
+            ><span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增
+            </button>
+          </td>
+          <td style="text-align:right;width:35%">
+            <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              nzType="primary"
+              (click)="Upload()"
+            ><span nz-icon nzType="upload" nzTheme="outline"></span>
+            E X C E L 匯入
+            </button>
+            &nbsp;&nbsp;
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              nzType="primary"
+              (click)="convertToExcel()"
+            ><span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+            </button>
+          </td>
+        </tr>
+      </table>
+      <p></p><p></p>
+
+      <div nz-col [nzSpan]="25">
+        <nz-table #RowTable nzBordered [nzData]="data" [nzPageSize]="20" [nzScroll]="{y: '500px' }">
+          <thead>
           <tr>
-            <td style="text-align:left">
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-                nzType="primary"
-                [nzSize]="'large'"
-                (click)="openPrepareInput()"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                新增
-              </button>
-            </td>
-            <td style="text-align:right;width:50%">
-              &nbsp;&nbsp;
-              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-                nzType="primary"
-                (click)="Upload()"
-              ><span nz-icon nzType="upload" nzTheme="outline"></span>
-              E X C E L 匯入
-              </button>
-              &nbsp;&nbsp;
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-                nzType="primary"
-                (click)="convertToExcel()"
-              ><span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-              </button>
-            </td>
-          </tr>
-        </table>
-        <p></p><p></p>
-
-        <div nz-col [nzSpan]="25">
-          <nz-table #RowTable nzBordered [nzData]="data" [nzPageSize]="20" [nzScroll]="{y: '500px' }">
-            <thead>
-            <tr>
-              
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >硫酸銅試驗
-                            <nz-filter-trigger 
-                            [nzActive]="searchCuso4TestValue.length > 0" 
-                            [nzDropdownMenu]="cuso4TestMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >衝擊試驗
-                            <nz-filter-trigger 
-                            [nzActive]="searchImpactTestValue.length > 0" 
-                            [nzDropdownMenu]="impactTestMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >尺寸MIN
-                            <nz-filter-trigger 
-                            [nzActive]="searchDiaMinValue.length > 0" 
-                            [nzDropdownMenu]="diaMinMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >尺寸MAX
-                            <nz-filter-trigger 
-                            [nzActive]="searchDiaMaxValue.length > 0" 
-                            [nzDropdownMenu]="diaMaxMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >型態
-                            <nz-filter-trigger 
-                            [nzActive]="searchByShapeValue.length > 0" 
-                            [nzDropdownMenu]="shapeMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >機械性質碼
-                            <nz-filter-trigger 
-                            [nzActive]="searchByMechanicalPropertiesCodeValue.length > 0" 
-                            [nzDropdownMenu]="mechanicalPropertiesCodeMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >鋼種
-                            <nz-filter-trigger 
-                            [nzActive]="searchByGradeNoValue.length > 0" 
-                            [nzDropdownMenu]="gradeNoMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-                            >實驗天數
-                            <nz-filter-trigger 
-                            [nzActive]="searchByExperimentDaysValue.length > 0" 
-                            [nzDropdownMenu]="experimentDaysMenu">
-                            <span nz-icon nzType="search"></span>
-                            </nz-filter-trigger>
-                            </th>
             
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row">
-              <ng-container *ngIf="!editCache[data.idx].edit; else editTemplate">
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.cuso4_test }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.impact_test }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dia_min }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dia_max }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.shape  }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.mechanical_properties_code }}</td>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >硫酸銅試驗
+                          <nz-filter-trigger 
+                          [nzActive]="searchCuso4TestValue.length > 0" 
+                          [nzDropdownMenu]="cuso4TestMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >衝擊試驗
+                          <nz-filter-trigger 
+                          [nzActive]="searchImpactTestValue.length > 0" 
+                          [nzDropdownMenu]="impactTestMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >尺寸MIN
+                          <nz-filter-trigger 
+                          [nzActive]="searchDiaMinValue.length > 0" 
+                          [nzDropdownMenu]="diaMinMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >尺寸MAX
+                          <nz-filter-trigger 
+                          [nzActive]="searchDiaMaxValue.length > 0" 
+                          [nzDropdownMenu]="diaMaxMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >型態
+                          <nz-filter-trigger 
+                          [nzActive]="searchByShapeValue.length > 0" 
+                          [nzDropdownMenu]="shapeMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >機械性質碼
+                          <nz-filter-trigger 
+                          [nzActive]="searchByMechanicalPropertiesCodeValue.length > 0" 
+                          [nzDropdownMenu]="mechanicalPropertiesCodeMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >鋼種
+                          <nz-filter-trigger 
+                          [nzActive]="searchByGradeNoValue.length > 0" 
+                          [nzDropdownMenu]="gradeNoMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
+                          >實驗天數
+                          <nz-filter-trigger 
+                          [nzActive]="searchByExperimentDaysValue.length > 0" 
+                          [nzDropdownMenu]="experimentDaysMenu">
+                          <span nz-icon nzType="search"></span>
+                          </nz-filter-trigger>
+                          </th>
+          
+            <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row">
+            <ng-container *ngIf="!editCache[data.idx].edit; else editTemplate">
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.cuso4_test }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.impact_test }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dia_min }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dia_max }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.shape  }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.mechanical_properties_code }}</td>
 
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.grade_no  }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.experiment_days | number }}</td>
-                <td style="text-align:center; padding: 0px; height: 60px;">
-                  <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.idx)">刪除</a>
-                </td>
-              </ng-container>
-              <ng-template #editTemplate>
-                <td>
-                  <nz-radio-group [(ngModel)]="editCache[data.idx].data.cuso4_test">
-                    <label nz-radio nzValue="Y">Y</label>
-                    <label nz-radio nzValue="N">N</label>
-                  </nz-radio-group>
-                </td>
-                <td>
-                  <nz-radio-group [(ngModel)]="editCache[data.idx].data.impact_test">
-                    <label nz-radio nzValue="Y">Y</label>
-                    <label nz-radio nzValue="N">N</label>
-                  </nz-radio-group>
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="尺寸MIN" [(ngModel)]="editCache[data.idx].data.dia_min" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="尺寸MAX" [(ngModel)]="editCache[data.idx].data.dia_max" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="型態" [(ngModel)]="editCache[data.idx].data.shape" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="機械性質碼" [(ngModel)]="editCache[data.idx].data.mechanical_properties_code" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="鋼種" [(ngModel)]="editCache[data.idx].data.grade_no" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="實驗天數" [(ngModel)]="editCache[data.idx].data.experiment_days" />
-                </td>
-                
-                <td>
-                  <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.idx)">取消</a>
-                </td>
-              </ng-template>
-            </tr>
-            </tbody>
-          </nz-table>
-        </div>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.grade_no  }}</td>
+              <td style="text-align:center; padding: 5px; height: 60px;">{{ data.experiment_days | number }}</td>
+              <td style="text-align:center; padding: 0px; height: 60px;">
+                <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.idx)">刪除</a>
+              </td>
+            </ng-container>
+            <ng-template #editTemplate>
+              <td>
+                <nz-radio-group [(ngModel)]="editCache[data.idx].data.cuso4_test" nzButtonStyle="solid">
+                  <label nz-radio-button nzValue="Y">Y</label>
+                  <label nz-radio-button nzValue="N">N</label>
+                </nz-radio-group>
+              </td>
+              <td>
+                <nz-radio-group [(ngModel)]="editCache[data.idx].data.impact_test" nzButtonStyle="solid">
+                  <label nz-radio-button nzValue="Y">Y</label>
+                  <label nz-radio-button nzValue="N">N</label>
+                </nz-radio-group>
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="尺寸MIN" [(ngModel)]="editCache[data.idx].data.dia_min" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="尺寸MAX" [(ngModel)]="editCache[data.idx].data.dia_max" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="型態" [(ngModel)]="editCache[data.idx].data.shape" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="機械性質碼" [(ngModel)]="editCache[data.idx].data.mechanical_properties_code" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="鋼種" [(ngModel)]="editCache[data.idx].data.grade_no" />
+              </td>
+              <td>
+                <input nz-width="20%" nz-input placeholder="實驗天數" [(ngModel)]="editCache[data.idx].data.experiment_days" />
+              </td>
+              
+              <td>
+                <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
+                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.idx)">取消</a>
+              </td>
+            </ng-template>
+          </tr>
+          </tbody>
+        </nz-table>
       </div>
-    </nz-tab>
-
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['./111111']" style="color: gray">
-        非直棒
-      </a>
-    </nz-tab>
-  </nz-tabset>
-
-
-</nz-content>
+    </div>
+  </nz-content>
 
 
 
@@ -211,47 +195,47 @@
         <tr>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;硫酸銅試驗</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <nz-radio-group [(ngModel)]="CUSO4_TEST">
-              <label nz-radio nzValue="Y">Y</label>
-              <label nz-radio nzValue="N">N</label>
+            <nz-radio-group [(ngModel)]="CUSO4_TEST" nzButtonStyle="solid">
+              <label nz-radio-button nzValue="Y">Y</label>
+              <label nz-radio-button nzValue="N">N</label>
             </nz-radio-group>
           </td>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;衝擊試驗</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <nz-radio-group [(ngModel)]="IMPACT_TEST">
-              <label nz-radio nzValue="Y">Y</label>
-              <label nz-radio nzValue="N">N</label>
+          <td style = "width: 600px; background-color: #eee;" colspan="3">&nbsp;
+            <nz-radio-group [(ngModel)]="IMPACT_TEST" nzButtonStyle="solid">
+              <label nz-radio-button nzValue="Y">Y</label>
+              <label nz-radio-button nzValue="N">N</label>
             </nz-radio-group>
-          </td>
-          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;尺寸MIN</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入尺寸MIN" [(ngModel)]="DIA_MIN" />
           </td>
         </tr>
 
         <tr>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;尺寸MIN</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <nz-input-number placeholder="輸入尺寸MIN" [(ngModel)]="DIA_MIN" [nzMin]="0" [nzMax]="999" [nzStep]="1"></nz-input-number>
+          </td>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;尺寸MAX</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入尺寸MAX" [(ngModel)]="DIA_MAX" />
+            <nz-input-number placeholder="輸入尺寸MAX" [(ngModel)]="DIA_MAX" [nzMin]="0" [nzMax]="999" [nzStep]="1"></nz-input-number>
           </td>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;型態</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入型態" [(ngModel)]="SHAPE" />
           </td>
+        </tr>
+
+        <tr>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機械性質碼</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入機械性質碼" [(ngModel)]="MECHANICAL_PROPERTIES_CODE" />
           </td>
-        </tr>
-
-        <tr>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼種</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入鋼種" [(ngModel)]="GRADE_NO" />
           </td>
           <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;實驗天數</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入實驗天數" [(ngModel)]="EXPERIMENT_DAYS" />
+            <nz-input-number placeholder="輸入實驗天數" [(ngModel)]="EXPERIMENT_DAYS" [nzMin]="0" [nzMax]="999" [nzStep]="1"></nz-input-number>
           </td>
           <td style = "width: 600px; background-color: #eee;" colspan="2"></td>
         </tr>

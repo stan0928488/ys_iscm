@@ -134,6 +134,8 @@ category = '' ;
 
   //所有站點機台配置狀況 
   shopCodeSaveStatusList = [] ;
+  //保存的狀態
+  saveLoading = false ;
 
   constructor( 
     private mshService:MSHService,
@@ -180,7 +182,7 @@ category = '' ;
     //當月月底
     //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //一個月後
-    this.searchV0.endDate = moment(new Date()).add(1, "months").format(this.mdateFormat) ;
+    this.searchV0.endDate = moment(new Date()).add(2, "months").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -221,7 +223,8 @@ category = '' ;
   }
   onChangeEndDate(result): void {
     console.log('onChange: ', result);
-   
+    this.searchV0.endDate = moment(result).format(this.mdateFormat)
+    console.log('onChange: ', this.searchV0.endDate);
   }
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
@@ -268,6 +271,7 @@ category = '' ;
   getTableData() {
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
     //初始化原始数据
     this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
@@ -717,6 +721,9 @@ category = '' ;
       this.nzMessageService.error("必須是鎖定版本才能保存！") ;
       return ;
      }
+     this.saveLoading = true ;
+     this.isLoading = true ;
+
      //調整接收數據
      this.finalChangeDataIds = [] ;
      //原始數據調取
@@ -737,6 +744,8 @@ category = '' ;
     // console.log("使用："+this.finalChangeDataIds)
    // let _param = {ids:this.finalChangeDataIds.toString()}
     this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+      this.saveLoading = false ;
+      this.isLoading = false ;
       if(flag === '1') {
 
       } else if(flag === '2') 
@@ -755,7 +764,8 @@ category = '' ;
       }
      
     })
-
+    // this.saveLoading = false ;
+    // this.isLoading = false ;
    }
   /****
    * 查看當前版次狀態
