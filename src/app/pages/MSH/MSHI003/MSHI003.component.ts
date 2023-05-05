@@ -6,10 +6,10 @@ import {MSHI003} from "./MSHI003.model";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
-import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { PrimeDatePickerCellEditorComponent } from './prime-date-picker-cell-editor';
-import { DataTransferService } from 'src/app/services/MSH/Data.transfer.service';
 import { CookieService } from 'src/app/services/config/cookie.service';
+import { DataTransferService } from 'src/app/services/MSH/Data.transfer.service';
 
 class MSHI003Payload {
   shopCode : string[];
@@ -34,7 +34,7 @@ class MSHI003Payload {
   providers:[NzMessageService]
 })
 export class MSHI003Component implements AfterViewInit {
-
+  
   USERNAME;
   PLANTCODE;
 
@@ -63,6 +63,8 @@ export class MSHI003Component implements AfterViewInit {
 
   MSHI003DataList : MSHI003[] = [];
 
+  MSHI003DataListDeepClone : MSHI003[] = [];
+
   // 存放待更新或新增的row資料
   MSHI003PendingDataList : MSHI003[] = [];
 
@@ -71,7 +73,7 @@ export class MSHI003Component implements AfterViewInit {
 
   gridOptions = {
     defaultColDef : {
-      sortable: true,
+      sortable: false,
       resizable: true,
     },
     components: {
@@ -88,23 +90,38 @@ export class MSHI003Component implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANTCODE = this.cookieService.getCookie("plantCode");
 
-    this.dataTransferService.getData().subscribe((rowData) => {
-      console.log('Data received: ==> ', JSON.stringify(rowData));
+    this.dataTransferService.getData().subscribe((node) => {
+        this.isSpinning = true;
 
-      if(_.isNil(rowData.id)) return;
+      // 判斷使用者經過一連串的編輯後，是否仍然與原資料相同
+      // 若相同該筆資料則不進行儲存
+      const isSame = _.isEqual(this.MSHI003DataListDeepClone[node.rowIndex], node.data);
 
-      if(_.isEmpty(this.MSHI003PendingDataList)){
-        this.MSHI003PendingDataList.push(rowData);
+      // 資料一樣，若之前有放到MSHI003PendingDataList之中則進行移除
+      if(isSame){
+        const isSameIndex = this.MSHI003PendingDataList.findIndex(data => data === node.data);
+        if(isSameIndex > -1){
+          this.MSHI003PendingDataList.splice(isSameIndex, 1);
+        }
+        this.isSpinning = false;
         return;
       }
 
-      const existIndex = this.MSHI003PendingDataList.findIndex(item => item.id === rowData.id);
+      if(_.isEmpty(this.MSHI003PendingDataList)){
+        this.MSHI003PendingDataList.push(node.data);
+        this.isSpinning = false;
+        return;
+      }
+      
+      // 判斷該筆資料是否已存在於this.MSHI003PendingDataList
+      // 若存在則不需要再進行push
+      const isExist = this.MSHI003PendingDataList.some(data => data === node.data);
 
       // 找不到同樣id的資料則進行push
-      if(existIndex < 0){
-        this.MSHI003PendingDataList.push(rowData);
+      if(!isSame && !isExist) {
+        this.MSHI003PendingDataList.push(node.data);
       }
-
+      this.isSpinning = false;
     });
 
   }
@@ -114,22 +131,24 @@ export class MSHI003Component implements AfterViewInit {
   }
 
   columnDefs : ColDef[]   = [
-    {headerName: 'MO', field: 'idNo', width: 100},
-    {headerName: '現況站別', field: 'shopCode', width: 100},
-    {headerName: '訂單號碼', field: 'saleOrder', width: 100},
-    {headerName: '項次', field: 'saleItem', width: 100},
-    {headerName: '客戶', field: 'custAbbr', width: 100},
+    {headerName: 'MO', field: 'idNo', width: 100, filter: true},
+    {headerName: '現況站別', field: 'shopCode', width: 120, filter: true},
+    {headerName: '訂單號碼', field: 'saleOrder', width: 120, filter: true},
+    {headerName: '項次', field: 'saleItem', width: 100, filter: true},
+    {headerName: '客戶', field: 'custAbbr', width: 100, filter: true},
     {headerName: '放行碼', field: 'procStatus', width: 100},
     {headerName: '現況尺寸', field: 'sfcDia', width: 100},
     {headerName: '現況MIC', field: 'finalMicNo', width: 100},
-    {headerName: '製成碼', field: 'processCode', width: 100},
-    {headerName: 'EPST', field: 'epst', width: 100},
+    {headerName: '製程碼', field: 'processCode', width: 100},
+    {headerName: 'EPST', field: 'epst', width: 120},
     { 
       headerName: '調整日期', 
       field: 'newEpst', 
-      width: 100, 
+      width: 120, 
       editable: true, 
       cellEditor: 'primeDatePickerCellEditorComponent',
+      headerClass: 'header-editable-color',
+      cellClass: 'cell-editable-color',
     },
     {
       headerName: '備註', 
@@ -137,6 +156,8 @@ export class MSHI003Component implements AfterViewInit {
       width: 100,
       editable: true,
       cellEditor: 'agLargeTextCellEditor',
+      headerClass: 'header-editable-color',
+      cellClass: 'cell-editable-color',
       cellEditorParams: {
         maxLength: 50,
         cols: '50',
@@ -147,17 +168,14 @@ export class MSHI003Component implements AfterViewInit {
           event.data.comment = null;
         }
 
-       if(!_.isNil(event.data.id)){
-          this.dataTransferService.setData(event.data);
-        }
-        console.log("編輯完備註了，內容為:" + JSON.stringify(event.data));
+        this.dataTransferService.setData(event.node);
         
       }
     },
     {headerName: '建立人員', field: 'userCreate', width: 100},
-    {headerName: '建立日期', field: 'dateCreate', width: 100},
+    {headerName: '建立日期', field: 'dateCreate', width: 180},
     {headerName: '更新人員', field: 'userUpdate', width: 100},
-    {headerName: '更新日期', field: 'dateUpdate', width: 100}
+    {headerName: '更新日期', field: 'dateUpdate', width: 180}
   ];
 
   
@@ -213,11 +231,29 @@ export class MSHI003Component implements AfterViewInit {
       this.equipCodeLoading = false;
     });
 
-
-
   }
 
   serach(isUserClick : boolean) : void {
+    
+     // 若存在編輯過的資料
+     if(!_.isEmpty(this.MSHI003PendingDataList) && isUserClick){
+      this.Modal.confirm({
+        nzTitle: '資料尚未儲存，是否放棄儲存執行搜尋?',
+        nzOnOk: () => {
+          this.serachEPST(isUserClick);
+        },
+        nzOnCancel: () =>
+          console.log("取消搜尋EPST資料")
+      });
+     }
+     else{
+      this.serachEPST(isUserClick);
+     }
+
+  }
+
+
+  serachEPST(isUserClick : boolean) : void {
     this.isSpinning = true;
     let payloads = null;
 
@@ -274,6 +310,7 @@ export class MSHI003Component implements AfterViewInit {
                 });
 
               this.MSHI003DataList = resultDataList;
+              this.MSHI003DataListDeepClone = _.cloneDeep(this.MSHI003DataList);
             } else{
               this.message.success(res.message);
             }
@@ -292,9 +329,11 @@ export class MSHI003Component implements AfterViewInit {
     })
     .then(success =>{
       this.payloadcache = payloads;
+      this.MSHI003PendingDataList = [];
       this.isSpinning = false;
     }).catch(error =>{
       this.payloadcache = payloads;
+      this.MSHI003PendingDataList = [];
       this.isSpinning = false;
     });
     
@@ -302,42 +341,36 @@ export class MSHI003Component implements AfterViewInit {
 
   confirm() :void {
 
-      this.isSpinning = true;
-
       if(_.isEmpty(this.MSHI003DataList)){
-        this.message.error('請更換搜尋條件，目前無資料可新增或更新');
+        this.message.error('請更換搜尋條件，目前無資料可儲存');
         this.isSpinning = false;
         return;
       }
 
-     // 將需要發送回後端進行新增的資料過濾出來
-     const pendingInsertDataList = this.MSHI003DataList.filter(item => _.isNil(item.id))
-    
-     // 將需要新增的資料設定使用者名稱跟廠區別
-      pendingInsertDataList.forEach(item =>{
-        item.userCreate = this.USERNAME;
-        item.plantCode = this.PLANTCODE;
-      });
-
-      // 將需要更新的資料設定異動者名稱
-      this.MSHI003PendingDataList.forEach(item =>{
-        item.userUpdate = this.USERNAME;
-      });
-
-     // 將需要進行新增的資料與MSHI003PendingDataList中需要更新的資料合併
-     this.MSHI003PendingDataList= this.MSHI003PendingDataList.concat(pendingInsertDataList);
-
      if(_.isEmpty(this.MSHI003PendingDataList)){
-      this.message.error('現有的資料沒有需要新增或更新');
+      this.message.error('尚無資料經過編輯，無法儲存資料');
       this.isSpinning = false;
       return;
      }
 
-
-
     this.Modal.confirm({
-      nzTitle: '是否確定新增或更新資料?',
+      nzTitle: '是否確定儲存資料?',
       nzOnOk: () => {
+
+        this.isSpinning = true;
+
+        // 1.將需要新增的資料設定建立者名稱與廠區別
+        // 2.將需要更新的資料設定異動者名稱
+        this.MSHI003PendingDataList.forEach(item =>{
+          if(_.isNil(item.id)){
+            item.userCreate = this.USERNAME;
+            item.plantCode = this.PLANTCODE;
+          }
+          else{
+            item.userUpdate = this.USERNAME;
+          }
+        });
+
         new Promise<boolean>((resolve, reject) => {
           this.mshService.batchInsertOrUpdateEPST(this.MSHI003PendingDataList).subscribe(res => {
             if(res.code === 200){
@@ -357,24 +390,26 @@ export class MSHI003Component implements AfterViewInit {
           this.serach(false);
           this.isSpinning = false;
         }).catch(error =>{
+          this.MSHI003PendingDataList = [];
+          this.serach(false);
           this.isSpinning = false;
         });
       },
       nzOnCancel: () =>
-        console.log("取消儲存資料")
+        console.log("取消EPST變更作業")
     });
   }
 
   importExcel() : void {
-
+    this.message.info('開發中');
   }
 
   exportExcel() : void {
-
+    this.message.info('開發中');
   }
 
   onGridReady(params: GridReadyEvent) {
-    const gridApi = params.api;
+    //this.gridApi = params.api;
     //gridApi.sizeColumnsToFit();
   }
 
@@ -391,6 +426,5 @@ export class MSHI003Component implements AfterViewInit {
 			nzContent: `${_plan}`
 		});
 	}
-
 
 }

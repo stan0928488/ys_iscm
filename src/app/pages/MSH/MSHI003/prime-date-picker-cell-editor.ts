@@ -68,21 +68,15 @@ export class PrimeDatePickerCellEditorComponent implements AgEditorComponent, Af
     onSelect(event) {
         // 呼叫stopEditing傳入false表示保存資料到row中的調整日期欄位
         this.params.api.stopEditing(false);
-        console.log("Data==>" + JSON.stringify(this.params.node.data));
-        // 存放編輯過的row資料(需要發送到後端進行更新)
-        if(!_.isNil(this.params.node.data.id)){
-            this.dataTransferService.setData(this.params.node.data);
-        }
+        // 存放編輯過的row資料(需要發送到後端進行新增或更新)
+        this.dataTransferService.setData(this.params.node);
     }
 
     onClearClick(event){
         this.value = null;
         this.params.api.stopEditing(false);
-        console.log("onClearClick Data==>" + JSON.stringify(this.params.node.data));
         // 存放編輯過的row資料(需要發送到後端進行更新)
-        if(!_.isNil(this.params.node.data.id)){
-            this.dataTransferService.setData(this.params.node.data);
-        }
+        this.dataTransferService.setData(this.params.node);
     }
 
     getValue() {

@@ -14,3 +14,11 @@
 ::ng-deep .ag-cell-value {
 	text-align: center;
 }
+
+::ng-deep .header-editable-color { 
+    background-color: gold;
+}
+
+::ng-deep .cell-editable-color{
+    background-color: lightblue;
+}
