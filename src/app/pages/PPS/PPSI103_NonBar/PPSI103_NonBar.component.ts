@@ -157,6 +157,8 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
       myObj.message.create("error", "「尺寸MIN」不可為空")
     } else if (this.DIA_MAX === undefined) {
       myObj.message.create("error", "「尺寸MAX」不可為空")
+    } else if (this.PACK_CODE === undefined) {
+      myObj.message.create("error", "「包裝碼」不可為空")
     } else if (this.BEST_MACHINE === "") {
       myObj.message.create("error", "「最佳機台」不可為空")
     } else {
@@ -213,6 +215,9 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
       return;
     } else if (this.editCache[id].data.DIA_MAX === undefined) {
       myObj.message.create("error", "「尺寸MAX」不可為空");
+      return;
+    } else if (this.editCache[id].data.PACK_CODE === undefined) {
+      myObj.message.create("error", "「包裝碼」不可為空");
       return;
     } else if (this.editCache[id].data.BEST_MACHINE === undefined) {
       myObj.message.create("error", "「最佳機台」不可為空");
