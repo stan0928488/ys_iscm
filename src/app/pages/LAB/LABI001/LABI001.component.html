@@ -255,18 +255,25 @@
 <nz-dropdown-menu #cuso4TestMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchCuso4TestValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchCuso4Test()" class="search-button">查詢</button>
+      <nz-radio-group [(ngModel)]="searchCuso4TestValue">
+      <label nz-radio nzValue="Y">Y</label>
+      <label nz-radio nzValue="N">N</label>
+      <button nz-button nzSize="small" nzType="primary" (click)="searchCuso4Test()" style = "margin-top:10px;">查詢</button>
       <button nz-button nzSize="small" (click)="resetByCuso4Test()">重設</button>
+    </nz-radio-group>
+
     </div>
   </div>
 </nz-dropdown-menu>
 <nz-dropdown-menu #impactTestMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchImpactTestValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchImpactTest()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByImpactTest()">重設</button>
+      <nz-radio-group [(ngModel)]="searchImpactTestValue">
+        <label nz-radio nzValue="Y">Y</label>
+        <label nz-radio nzValue="N">N</label>
+        <button nz-button nzSize="small" nzType="primary" (click)="searchImpactTest()" style = "margin-top:10px;">查詢</button>
+        <button nz-button nzSize="small" (click)="resetByImpactTest()">重設</button>
+      </nz-radio-group>
     </div>
   </div>
 </nz-dropdown-menu>
