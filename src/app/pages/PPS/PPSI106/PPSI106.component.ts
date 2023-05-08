@@ -464,11 +464,11 @@ resetByFuranceBatchQty17() : void {
 
   Upload() {
   
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);

@@ -1,0 +1,78 @@
+<nz-content style="margin:0 16px;">
+    <nz-breadcrumb style="margin:16px 0;">
+      <nz-breadcrumb-item>工廠排程</nz-breadcrumb-item>
+      <nz-breadcrumb-item>排序設定</nz-breadcrumb-item>
+      <nz-breadcrumb-item>EPST變更作業</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
+        
+        <div>
+            <button style="margin-left:20px;" (click) = "serach(true)" nz-button nzType="primary" >
+                <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+            </button>
+
+            <button style="margin-left:20px;" (click) = "confirm()" nz-button nzType="primary" >
+                <span nz-icon nzType="check-circle" nzTheme="outline"></span>確認
+            </button>
+
+            <button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px; background-color:#4CAF50; border:2px none;"
+            nz-button
+            nzType="primary"
+            (click)="importExcel()"
+            >
+                <span nz-icon nzType="upload" nzTheme="outline"></span>EXCEL匯入
+            </button>
+
+            <button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px; background-color:#4CAF50; border:2px none;"
+            nz-button
+            nzType="primary"
+            (click)="exportExcel()"
+            >
+                <span nz-icon nzType="download" nzTheme="outline"></span>EXCEL轉出
+            </button>
+        </div>
+
+        <div class="flex">
+            <span style ="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px;">&nbsp;&nbsp;站別</span>
+            <nz-select nzPlaceHolder="請選擇站別" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="shopCodeInputList" nzShowSearch nzAllowClear (nzOpenChange) = "getShopCodeList()">
+                <nz-option *ngFor="let shopCode of shopCodeOfOption" [nzLabel]="shopCode" [nzValue]="shopCode"></nz-option>
+                <nz-option *ngIf="shopCodeLoading" nzDisabled nzCustomContent>
+                    <span nz-icon nzType="loading" class="loading-icon"></span>
+                    站別清單載入中...
+                </nz-option>
+            </nz-select>
+
+            <span style ="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; margin-left:30px;">&nbsp;&nbsp;機台</span>
+            <nz-select nzPlaceHolder="請選擇機台" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="equipCodeInputList" nzShowSearch nzAllowClear (nzOpenChange) = "getEquipCodeList()">
+                <nz-option *ngFor="let equipCode of equipCodeOfOption" [nzLabel]="equipCode" [nzValue]="equipCode"></nz-option>
+                <nz-option *ngIf="equipCodeLoading" nzDisabled nzCustomContent>
+                    <span nz-icon nzType="loading" class="loading-icon"></span>
+                    機台清單載入中...
+                </nz-option>
+            </nz-select>
+
+            <span style="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; margin-left:30px;">&nbsp;&nbsp;MO</span>
+            <input nz-input style="width:150px; margin-left:5px;" placeholder="MO" [(ngModel)]="moInput"/>
+
+            <label style="margin-left:30px;" nz-checkbox [(ngModel)]="holeChecked">
+                <td style="font-weight:bold;">HOLD狀態</td>
+            </label>
+        </div>
+
+        <ag-grid-angular
+            style="width:100%; height:100%; margin-bottom: 200px; margin-top: 50px;"
+            class="ag-theme-alpine"
+            [rowData]="MSHI003DataList"
+            [columnDefs]="columnDefs"
+            [gridOptions]="gridOptions"
+            [domLayout]="'autoHeight'"
+            [pagination]="true"
+            [paginationPageSize]="20"
+            (gridReady)="onGridReady($event)">
+    </ag-grid-angular>
+
+    </nz-spin>
+</nz-content>

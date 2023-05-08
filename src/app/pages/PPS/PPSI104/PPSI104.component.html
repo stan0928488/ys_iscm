@@ -37,43 +37,30 @@
               nz-button
               style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
               nzType="primary"
-              [nzSize]="'large'"
               (click)="openPrepareInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
               </button>
-              <div class="excel-control">
-                <td>
-                    <input hidden type="file" id="fileupload" 
-                           style="display: inline-block;"
-                           [(ngModel)] = "inputFileUseInUpload" 
-                           (change)="incomingfile($event)" 
-                           placeholder="Upload file" 
-                           accept=".xlsx, .xls, .csv">
-                </td>
-                <td>
-                <button
+            </td>
+            <td style="text-align:right;width:35%">
+              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+              <button
                 nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
                 nzType="primary"
-                style = "margin-right:1vw;"
-                [nzSize]="'large'"
                 (click)="Upload()"
-                [hidden] = "true"
-                ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                  匯入 Excel
-                </button>
-              </td><td>
-                <button
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+              </button>
+              &nbsp;&nbsp;
+              <button
                 nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
                 nzType="primary"
-                [nzSize]="'large'"
                 (click)="convertToExcel()"
-                [hidden] = "true"
-                ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                  匯出 Excel
-                </button>
-              </td>
-              </div>
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
+              </button>
             </td>
           </tr>
         </table>
@@ -84,10 +71,26 @@
             <thead>
             <tr>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+              >站別
+              <nz-filter-trigger 
+              [nzActive]="searchShopCodeValue.length > 0" 
+              [nzDropdownMenu]="shopCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
               >機台
               <nz-filter-trigger 
               [nzActive]="searchEquipCodeValue.length > 0" 
               [nzDropdownMenu]="equipCodeMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
+              >機群
+              <nz-filter-trigger 
+              [nzActive]="searchEquipGroupValue.length > 0" 
+              [nzDropdownMenu]="equipGroupMenu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
@@ -153,7 +156,9 @@
             <tbody>
             <tr *ngFor="let data of RowTable3.data;let i = index" class="editable-row">
               <ng-container *ngIf="!editCache3[data.id].edit; else editTemplate1">
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.SHOP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.EQUIP_GROUP }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.LOAD_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.TRANSFER_TIME | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.OTHER_TIME | number }}</td>
@@ -168,7 +173,13 @@
               </ng-container>
               <ng-template #editTemplate1>
                 <td>
+                  <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache3[data.id].data.SHOP_CODE" />
+                </td>
+                <td>
                   <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache3[data.id].data.EQUIP_CODE" />
+                </td>
+                <td>
+                  <input nz-width="20%" nz-input placeholder="輸入機群" [(ngModel)]="editCache3[data.id].data.EQUIP_GROUP" />
                 </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="上下料時間" [(ngModel)]="editCache3[data.id].data.LOAD_TIME" />
@@ -229,9 +240,21 @@
       <table style="border-collapse: separate;">
 
         <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入站別" [(ngModel)]="SHOP_CODE" />
+          </td>
+        </tr>
+        <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE" />
+          </td>
+        </tr>
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機群</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機群" [(ngModel)]="EQUIP_GROUP" />
           </td>
         </tr>
 
@@ -296,12 +319,30 @@
 
 </nz-modal>
 
+<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchShopCode()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
 <nz-dropdown-menu #equipCodeMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchEquipCodeValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchEquipCode()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipCode()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #equipGroupMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchEquipGroup()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByEquipGroup()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>

@@ -15,7 +15,9 @@ import { ExcelService } from "src/app/services/common/excel.service";
 interface ItemData3 {
   id: string;
   tab3ID: number;
+  SHOP_CODE: string;
   EQUIP_CODE: string;
+  EQUIP_GROUP: string;
   LOAD_TIME: number;
   TRANSFER_TIME: number;
   OTHER_TIME: number;
@@ -42,7 +44,9 @@ export class PPSI104Component implements AfterViewInit {
 
 
   // 整備時間
+  SHOP_CODE;
   EQUIP_CODE;
+  EQUIP_GROUP;
   LOAD_TIME;
   TRANSFER_TIME;
   OTHER_TIME;
@@ -51,7 +55,9 @@ export class PPSI104Component implements AfterViewInit {
   RETURN_TIME;
   COOLING_TIME;
   isVisiblePrepare = false;
+  searchShopCodeValue = '';
   searchEquipCodeValue = '';
+  searchEquipGroupValue = '';
   searchLoadTimeValue = '';
   searchTransferTimeValue = '';
   searchOtherTimeValue = '';
@@ -64,7 +70,7 @@ export class PPSI104Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab3ID","機台","上下料","搬運","其他整備","大調機","小調機","退料","冷卻"];
+  titleArray = ["站別","機台","機群","上下料","搬運","其他整備","大調機","小調機","退料","冷卻"];
   importdata_repeat = [];
   constructor(
     private PPSService: PPSService,
@@ -94,15 +100,15 @@ export class PPSI104Component implements AfterViewInit {
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP03List('1').subscribe(res => {
-      console.log("getFCPTB26List success");
       this.PPSINP03List_tmp = res;
-
       const data = [];
       for (let i = 0; i < this.PPSINP03List_tmp.length ; i++) {
         data.push({
           id: `${i}`,
           tab3ID: this.PPSINP03List_tmp[i].ID,
+          SHOP_CODE: this.PPSINP03List_tmp[i].SHOP_CODE,
           EQUIP_CODE: this.PPSINP03List_tmp[i].EQUIP_CODE,
+          EQUIP_GROUP: this.PPSINP03List_tmp[i].EQUIP_GROUP,
           LOAD_TIME: this.PPSINP03List_tmp[i].LOAD_TIME,
           TRANSFER_TIME: this.PPSINP03List_tmp[i].TRANSFER_TIME,
           OTHER_TIME: this.PPSINP03List_tmp[i].OTHER_TIME,
@@ -125,7 +131,10 @@ export class PPSI104Component implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.EQUIP_CODE === undefined) {
+    if (this.SHOP_CODE === undefined) {
+      myObj.message.create("error", "「站別」不可為空");
+      return;
+    } else if (this.EQUIP_CODE === undefined) {
       myObj.message.create("error", "「機台」不可為空");
       return;
     } else if (this.LOAD_TIME === undefined) {
@@ -193,7 +202,10 @@ export class PPSI104Component implements AfterViewInit {
   // update Save
   saveEdit(id: string): void {
     let myObj = this;
-    if (this.editCache3[id].data.EQUIP_CODE === undefined) {
+    if (this.editCache3[id].data.SHOP_CODE === undefined) {
+      myObj.message.create("error", "「站別」不可為空");
+      return;
+    } else if (this.editCache3[id].data.EQUIP_CODE === undefined) {
       myObj.message.create("error", "「機台」不可為空");
       return;
     } else if (this.editCache3[id].data.LOAD_TIME === undefined) {
@@ -249,7 +261,9 @@ export class PPSI104Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
+        SHOP_CODE : this.SHOP_CODE,
         EQUIP_CODE : this.EQUIP_CODE,
+        EQUIP_GROUP : this.EQUIP_GROUP === undefined ? null : this.EQUIP_GROUP ,
         LOAD_TIME : this.LOAD_TIME,
         TRANSFER_TIME : this.TRANSFER_TIME,
         OTHER_TIME : this.OTHER_TIME,
@@ -261,11 +275,13 @@ export class PPSI104Component implements AfterViewInit {
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
+      console.log(obj)
       myObj.PPSService.insertI103Tab1Save('1', obj).subscribe(res => {
-
         console.log(res)
         if(res[0].MSG === "Y") {
+          this.SHOP_CODE = undefined;
           this.EQUIP_CODE = undefined;
+          this.EQUIP_GROUP = undefined;
           this.LOAD_TIME = undefined;
           this.TRANSFER_TIME = undefined;
           this.OTHER_TIME = undefined;
@@ -296,7 +312,9 @@ export class PPSI104Component implements AfterViewInit {
       let obj = {};
       _.extend(obj, {
         ID : this.editCache3[_id].data.tab3ID,
+        SHOP_CODE : this.editCache3[_id].data.SHOP_CODE,
         EQUIP_CODE : this.editCache3[_id].data.EQUIP_CODE,
+        EQUIP_GROUP : this.editCache3[_id].data.EQUIP_GROUP === undefined ? null : this.editCache3[_id].data.EQUIP_GROUP ,
         LOAD_TIME : this.editCache3[_id].data.LOAD_TIME,
         TRANSFER_TIME : this.editCache3[_id].data.TRANSFER_TIME,
         OTHER_TIME : this.editCache3[_id].data.OTHER_TIME,
@@ -309,7 +327,9 @@ export class PPSI104Component implements AfterViewInit {
       })
       myObj.PPSService.updateI103Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
+          this.SHOP_CODE = undefined;
           this.EQUIP_CODE = undefined;
+          this.EQUIP_GROUP = undefined;
           this.LOAD_TIME = undefined;
           this.TRANSFER_TIME = undefined;
           this.OTHER_TIME = undefined;
@@ -342,7 +362,9 @@ export class PPSI104Component implements AfterViewInit {
       let _ID = this.editCache3[_id].data.tab3ID;
       myObj.PPSService.delI103Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
+          this.SHOP_CODE = undefined;
           this.EQUIP_CODE = undefined;
+          this.EQUIP_GROUP = undefined;
           this.LOAD_TIME = undefined;
           this.TRANSFER_TIME = undefined;
           this.OTHER_TIME = undefined;
@@ -402,6 +424,14 @@ export class PPSI104Component implements AfterViewInit {
     this.displayPPSINP03List = data;
   }
 
+  // 資料過濾---整備時間 --> 站別
+  searchShopCode() : void{
+    this.ppsInp03ListFilter("SHOP_CODE", this.searchShopCodeValue);
+  } 
+  resetByShopCode() : void{
+    this.searchShopCodeValue = '';
+    this.ppsInp03ListFilter("SHOP_CODE", this.searchShopCodeValue);
+  }
   // 資料過濾---整備時間 --> 機台
   searchEquipCode() : void{
     this.ppsInp03ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
@@ -409,6 +439,14 @@ export class PPSI104Component implements AfterViewInit {
   resetByEquipCode() : void{
     this.searchEquipCodeValue = '';
     this.ppsInp03ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
+  }
+  // 資料過濾---整備時間 --> 機群
+  searchEquipGroup() : void{
+    this.ppsInp03ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
+  } 
+  resetByEquipGroup() : void{
+    this.searchEquipGroupValue = '';
+    this.ppsInp03ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
   }
 
   // 資料過濾---整備時間 --> 上下料
@@ -474,6 +512,7 @@ export class PPSI104Component implements AfterViewInit {
     this.ppsInp03ListFilter("COOLING_TIME", this.searchCoolingTimeValue);
   }
 
+  
    // excel檔名
    incomingfile(event) {
     this.file = event.target.files[0]; 
@@ -488,20 +527,16 @@ export class PPSI104Component implements AfterViewInit {
 
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
-
   }
 
   Upload() {
-  
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
 
     let lastname = this.file.name.split('.').pop();
-    console.log("this.file.name: "+this.file.name);
-    console.log("incomingfile e : " + this.file);
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
       this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
       this.clearFile();
@@ -519,58 +554,29 @@ export class PPSI104Component implements AfterViewInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet:any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-  
-        
-          console.log("importExcel")
-          console.log(this.importdata)
-          this.importExcel(this.importdata);
-        
+        this.importExcel(this.importdata);
       }
       fileReader.readAsArrayBuffer(this.file);
     }
   }
 
   importExcel(_data) {
-
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
-
-      let allData = JSON.stringify(_data[i]);
-
-      
-        this.importdata_repeat.push(allData);
-
-        if(_data[i]['機台名稱'] == undefined)
-          _data[i]['機台名稱'] = '';
-        if(_data[i]['機台群組'] == undefined)
-          _data[i]['機台群組'] = '';
-        if(_data[i]['機台'] == undefined)
-          _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
-
-        upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
-          PLANT: _data[i]['工廠別'],
-          SHOP_CODE: _data[i]['站別代碼'],
-          SHOP_NAME: _data[i]['站別名稱'],
-          VALID: _data[i]['有效碼'],
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-          USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
-        })
-      
+      upload_data.push({
+        // PLANT_CODE : this.PLANT_CODE,
+        SHOP_CODE: _data[i]['站別'],
+        EQUIP_CODE: _data[i]['機台'],
+        EQUIP_GROUP: _data[i]['機群'] === undefined ? null : _data[i]['機群'],
+        INPUT_DIA_MAX: _data[i]['上下料'],
+        CAPABILITY_DIA_MIN: _data[i]['搬運'],
+        CAPABILITY_DIA_MAX: _data[i]['其他整備'],
+        CAPABILITY_LENGTH_MIN: _data[i]['大調機'],
+        CAPABILITY_LENGTH_MAX: _data[i]['小調機'],
+        OPTIMAL_DIA_MIN: _data[i]['退料'],
+        OPTIMAL_DIA_MAX: _data[i]['冷卻']
+      })
     }
     
     console.log(upload_data);
@@ -583,12 +589,8 @@ export class PPSI104Component implements AfterViewInit {
         EXCELDATA: upload_data
       };
 
-      console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
-        console.log("importExcelPPSI102");
+      myObj.PPSService.importI102Excel('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") { 
-          
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -608,18 +610,31 @@ export class PPSI104Component implements AfterViewInit {
         this.loading = false;
         this.LoadingPage = false;
       })
+      this.getPPSINP03List();
     });
-    this.getPPSINP03List();
-
   }
 
   convertToExcel() {
-    console.log("convertToExcel");
-    let ID_List = [];
+    let fileName = `整備時間_直棒`;
     let arr = [];
-    console.log(JSON.stringify(this.displayPPSINP03List[0]));
-    let fileName = `整備時間 - 直棒`;
     
-    this.excelService.exportAsExcelFile(this.displayPPSINP03List, fileName, this.titleArray);
+    for(let i=0 ; i < this.displayPPSINP03List.length ; i++){
+      var ppsInp03 = {
+        SHOP_CODE : this.displayPPSINP03List[i].SHOP_CODE,
+        EQUIP_CODE : this.displayPPSINP03List[i].EQUIP_CODE,
+        EQUIP_GROUP : this.displayPPSINP03List[i].EQUIP_GROUP,
+        LOAD_TIME: this.displayPPSINP03List[i].LOAD_TIME,
+        TRANSFER_TIME : this.displayPPSINP03List[i].TRANSFER_TIME,
+        OTHER_TIME : this.displayPPSINP03List[i].OTHER_TIME,
+        BIG_ADJUST_TIME : this.displayPPSINP03List[i].BIG_ADJUST_TIME,
+        SMALL_ADJUST_TIME : this.displayPPSINP03List[i].SMALL_ADJUST_TIME,
+        RETURN_TIME : this.displayPPSINP03List[i].RETURN_TIME,
+        COOLING_TIME: this.displayPPSINP03List[i].COOLING_TIME
+      }
+      arr.push(ppsInp03);
+    }
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
+
+
 }

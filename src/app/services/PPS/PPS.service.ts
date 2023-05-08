@@ -252,33 +252,50 @@ export class PPSService {
 
   // 4.大調機
   //Get getPPSINP04List 取得04tab data
-  getPPSINP04List() {
-    console.log("api service getPPSINP04List")
-    let queryUrl = this.APIURL + "/FCP/I104/getPPSINP04List";
-    console.log(queryUrl);
+  getPPSINP04List(_type) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/getPPSINP04List`;
     return this.http.get(queryUrl);
   }
   // I104 delI104Tab1Data 刪除資料
-  delI104Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I104/delI104Tab1Data/${_ID}`;
+  delI104Tab1Data(_type, _ID) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/delI104Tab1Data/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
   // I104 insertI104Tab1Save
-  insertI104Tab1Save(_data) {
+  insertI104Tab1Save(_type, _data) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104/insertI104Tab1Save`;
+    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I104 updateI104Tab1Save修改存檔
-  updateI104Tab1Save(_data) {
+  updateI104Tab1Save(_type, _data) {
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104/updateI104Tab1Save`;
+    let queryUrl = this.APIURL + `/FCP/I104/updateSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // I104 importI104Excel EXCEL匯入
+  importI104Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/importExcel`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+
 
   // 05.線速工時
   //Get getPPSINP05List 取得05tab data

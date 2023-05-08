@@ -34,47 +34,37 @@
           <tr>
             <td>
               <button
-              nz-button
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-              nzType="primary"
-              [nzSize]="'large'"
-              (click)="openSpeedInput()"
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                [nzSize]="'large'"
+                (click)="openSpeedInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
               </button>
             </td>
-            <div class="excel-control">
-              <td>
-                  <input hidden type="file" id="fileupload" 
-                         style="display: inline-block;"
-                         [(ngModel)] = "inputFileUseInUpload" 
-                         (change)="incomingfile($event)" 
-                         placeholder="Upload file" 
-                         accept=".xlsx, .xls, .csv">
-              </td>
-              <td>
+            <td style="text-align:right;width:35%">
+              <input hidden type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
               <button
-              nz-button
-              nzType="primary"
-              style = "margin-right:1vw;"
-              [nzSize]="'large'"
-              (click)="Upload()"
-              [hidden] = "true"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                匯入 Excel
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="Upload()"
+                hidden = "true"
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
               </button>
-            </td><td>
+              &nbsp;&nbsp;
               <button
-              nz-button
-              nzType="primary"
-              [nzSize]="'large'"
-              (click)="convertToExcel()"
-              [hidden] = "true"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                匯出 Excel
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="convertToExcel()"
+                hidden = "true"
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
               </button>
             </td>
-            </div>
           </tr>
 
         </table>
@@ -140,19 +130,19 @@
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-              >產出尺寸最小值
-              <nz-filter-trigger 
-              [nzActive]="searchDiaMax5Value.length > 0" 
-              [nzDropdownMenu]="diaMax5Menu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-              >產出尺寸最大值
+              >產出尺寸最小值
               <nz-filter-trigger 
               [nzActive]="searchDiaMin5Value.length > 0" 
               [nzDropdownMenu]="diaMin5Menu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
+              >產出尺寸最大值
+              <nz-filter-trigger 
+              [nzActive]="searchDiaMax5Value.length > 0" 
+              [nzDropdownMenu]="diaMax5Menu">
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
@@ -185,8 +175,8 @@
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SPEED_TYPE_5 }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.REDUCTION_RATE_MIN_5 | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.REDUCTION_RATE_MAX_5 | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_5 | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MIN_5 | number }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.DIA_MAX_5 | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SPEED_5 | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CAP_5 | number }}</td>
                 <td style="text-align:center; padding: 0px; height: 60px; width: 200px;">
@@ -316,17 +306,15 @@
         <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出最小尺寸</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最小尺寸" [(ngModel)]="DIA_MAX_5" />
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最小尺寸" [(ngModel)]="DIA_MIN_5" />
           </td>
         </tr>
-
         <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出最大尺寸</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最大尺寸" [(ngModel)]="DIA_MIN_5" />
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最大尺寸" [(ngModel)]="DIA_MAX_5" />
           </td>
         </tr>
-
         <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;線速(m/min)</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
@@ -423,22 +411,22 @@
   </div>
 </nz-dropdown-menu>
 
-<nz-dropdown-menu #diaMax5Menu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchDiaMax5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMax5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByDiaMax5()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
 <nz-dropdown-menu #diaMin5Menu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchDiaMin5Value" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMin5()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByDiaMin5()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #diaMax5Menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchDiaMax5Value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMax5()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByDiaMax5()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>

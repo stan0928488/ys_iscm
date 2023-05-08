@@ -35,47 +35,36 @@
           <tr>
             <td>
               <button
-              nz-button
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-              nzType="primary"
-              [nzSize]="'large'"
-              (click)="openNonSpeedInput()"
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="openNonSpeedInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
               </button>
             </td>
-            <div class="excel-control">
-              <td>
-                  <input hidden type="file" id="fileupload" 
-                         style="display: inline-block;"
-                         [(ngModel)] = "inputFileUseInUpload" 
-                         (change)="incomingfile($event)" 
-                         placeholder="Upload file" 
-                         accept=".xlsx, .xls, .csv">
-              </td>
-              <td>
+            <td style="text-align:right;width:35%">
+              <input hidden type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
               <button
-              nz-button
-              nzType="primary"
-              style = "margin-right:1vw;"
-              [nzSize]="'large'"
-              (click)="Upload()"
-              [hidden] = "true"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                匯入 Excel
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="Upload()"
+                hidden = "true"
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
               </button>
-            </td><td>
+              &nbsp;&nbsp;
               <button
-              nz-button
-              nzType="primary"
-              [nzSize]="'large'"
-              (click)="convertToExcel()"
-              [hidden] = "true"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                匯出 Excel
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="convertToExcel()"
+                hidden = "true"
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
               </button>
             </td>
-            </div>
           </tr>
 
         </table>

@@ -1,0 +1,24 @@
+
+.flex {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    margin-left: 20px;
+    align-items: center;
+}
+
+::ng-deep .ag-header-cell-label {
+	justify-content: center;
+}
+
+::ng-deep .ag-cell-value {
+	text-align: center;
+}
+
+::ng-deep .header-editable-color { 
+    background-color: gold;
+}
+
+::ng-deep .cell-editable-color{
+    background-color: lightblue;
+}

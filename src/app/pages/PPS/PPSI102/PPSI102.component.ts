@@ -452,11 +452,11 @@ export class PPSI102Component implements AfterViewInit {
     }
 
     Upload() {
-      let getFileNull = this.inputFileUseInUpload;
-      if(getFileNull === undefined){
-        this.errorMSG('請選擇檔案', '');
-        return;
-      }
+      // let getFileNull = this.inputFileUseInUpload;
+      // if(getFileNull === undefined){
+      //   this.errorMSG('請選擇檔案', '');
+      //   return;
+      // }
   
       let lastname = this.file.name.split('.').pop();
       console.log("this.file.name: "+this.file.name);
@@ -570,10 +570,7 @@ export class PPSI102Component implements AfterViewInit {
     }
 
     convertToExcel() {
-      console.log("convertToExcel");
-      let ID_List = [];
       let arr = [];
-      console.log(JSON.stringify(this.displayPPSINP07List[1]));
       let fileName = `站別機台關聯表_直棒`;
       for(let i=0 ; i < this.displayPPSINP07List.length ; i++){
         var ppsIn107 = {
