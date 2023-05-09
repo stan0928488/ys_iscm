@@ -144,4 +144,14 @@ findShopCodeSaveStatus(_param:any){
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
+  // Excel EPST 資料匯入
+  excelBatchInsertOrUpdateEPST(jsonExcelData){
+    console.log('Excel EPST 資料匯入');
+    let body = JSON.stringify(jsonExcelData);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/excelBatchInsertOrUpdateEPST`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
+  }
+
 }
