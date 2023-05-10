@@ -121,10 +121,7 @@ export class AppComponent {
       case "ys-pps.walsin.corp":
         env = " 驗證環境 ";
         break;
-      case "ys-webapt1.walsin.com":
-        env = " -- 開發環境 -- ";
-        break;
-      case "ys-webapp.walsin.com":
+      case "ys-ppsapp01.walsin.corp":
         env = "";
         break;
       case "localhost":
