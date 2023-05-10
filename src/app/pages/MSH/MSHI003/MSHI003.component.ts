@@ -118,6 +118,12 @@ export class MSHI003Component implements AfterViewInit {
 
       // 判斷使用者經過一連串的編輯後，是否仍然與原資料相同
       // 若相同該筆資料則不進行儲存
+      if(!_.isNil(this.MSHI003DataListDeepClone[node.rowIndex].newEpst)){
+        this.MSHI003DataListDeepClone[node.rowIndex].newEpst = moment(this.MSHI003DataListDeepClone[node.rowIndex].newEpst).format('YYYY-MM-DD');
+      }
+      if(!_.isNil(node.data.newEpst)){
+        node.data.newEpst = moment(node.data.newEpst).format('YYYY-MM-DD');
+      }
       const isSame = _.isEqual(this.MSHI003DataListDeepClone[node.rowIndex], node.data);
 
       // 資料一樣，若之前有放到MSHI003PendingDataList之中則進行移除
@@ -373,14 +379,26 @@ export class MSHI003Component implements AfterViewInit {
 
   confirm() :void {
 
-      if(_.isEmpty(this.MSHI003DataList)){
-        this.message.error('請更換搜尋條件，目前無資料可儲存');
-        this.isSpinning = false;
-        return;
-      }
+    if(_.isEmpty(this.MSHI003DataList)){
+      this.message.error('請更換搜尋條件，目前無資料可儲存');
+      this.isSpinning = false;
+      return;
+    }
 
      if(_.isEmpty(this.MSHI003PendingDataList)){
       this.message.error('尚無資料異動，無法儲存資料');
+      this.isSpinning = false;
+      return;
+     }
+
+    let missingNewEpst : MSHI003 = null;
+    let missingNewEpstFlag = this.MSHI003PendingDataList.some(element => {
+      missingNewEpst = element;
+      return _.isNil(element.newEpst);
+     });
+
+     if(missingNewEpstFlag){
+      this.message.error(`MO:「${missingNewEpst.idNo}」請填寫調整日期。`);
       this.isSpinning = false;
       return;
      }
