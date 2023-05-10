@@ -76,13 +76,7 @@ export class AppComponent {
     let className = "navBar ";
 
     switch (hostName) {
-      case "ys-webapp.walsin.com":
-        className += " nav-bar-prod";
-        break;
-      case "10.106.2.113":
-        className += " nav-bar-prod";
-        break;
-      case "10.106.2.114":
+      case "ys-ppsapt01.walsin.corp":
         className += " nav-bar-prod";
         break;
       case "localhost":
@@ -90,7 +84,6 @@ export class AppComponent {
         break;
       default:
         className += " nav-bar-tst";
-        console.log("測試區");
     }
 
     this.navClass = className;
@@ -122,7 +115,7 @@ export class AppComponent {
         env = " 驗證環境 ";
         break;
       case "ys-ppsapp01.walsin.corp":
-        env = "";
+        env = " 正式環境 ";
         break;
       case "localhost":
         env = " -- 本機環境 -- ";
