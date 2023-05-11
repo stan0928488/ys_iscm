@@ -76,7 +76,7 @@ export class AppComponent {
     let className = "navBar ";
 
     switch (hostName) {
-      case "ys-ppsapt01.walsin.corp":
+      case "ys-ppsapp01.walsin.corp":
         className += " nav-bar-prod";
         break;
       case "localhost":
