@@ -37,7 +37,7 @@
           <tr>
             <th nzWidth="4%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">Action</th>
             <th nzWidth="6%" nzLeft="80px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
-            <th nzWidth="15%" nzLeft="200px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+            <th nzWidth="16%" nzLeft="200px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
             <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
@@ -108,10 +108,16 @@
 
 
               <p> {{ data.PLAN_STATU_NA}}
-                  <label *ngIf="data.PLAN_STATU === 'Plan'" style="color: rgb(48, 84, 229);"> - 執行中
-                    <a *ngIf="byUserShow"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
-                  </label>
-                  <label *ngIf="data.PLAN_STATU === 'Fail'" style="color: red;"> - 執行失敗</label>
+                  <nz-tag *ngIf="data.PLAN_STATU === 'Plan'" nzColor="processing">
+                    <span nz-icon nzType="sync" nzSpin></span>
+                    <span>執行中</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.PLAN_STATU === 'Fail'" nzColor="error">
+                    <span nz-icon nzType="close-circle"></span>
+                    <span>執行失敗</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.PLAN_STATU !== 'Create'" nzColor="success">{{ data.CREATE_USER }}</nz-tag>
+                  <a *ngIf="byUserShow && data.PLAN_STATU === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
               </p>
               <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">
                 <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
@@ -165,7 +171,7 @@
         <thead>
           <tr>
             <th nzWidth="6%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
-            <th nzWidth="15%" nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+            <th nzWidth="16%" nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
             <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
@@ -187,8 +193,15 @@
             <td nzLeft="0px" style="font-size: 13px; padding: 4px;"><label>{{data.PLAN_EDITION}}</label><p> {{data.PLAN_START_TYPE_NA}}</td>
             <td nzLeft="120px" style="font-size: 11px; padding: 4px;">
               <p> {{ data.PLAN_STATU_NA}}
-                  <label *ngIf="data.PLAN_STATU === 'Plan'" style="color: rgb(48, 84, 229);"> - 執行中</label>
-                  <label *ngIf="data.PLAN_STATU === 'Fail'" style="color: red;"> - 執行失敗</label>
+                <nz-tag *ngIf="data.PLAN_STATU === 'Plan'" nzColor="processing">
+                  <span nz-icon nzType="sync" nzSpin></span>
+                  <span>執行中</span>
+                </nz-tag>
+                <nz-tag *ngIf="data.PLAN_STATU === 'Fail'" nzColor="error">
+                  <span nz-icon nzType="close-circle"></span>
+                  <span>執行失敗</span>
+                </nz-tag>
+                <nz-tag *ngIf="data.PLAN_STATU !== 'Create'" nzColor="success">{{ data.CREATE_USER }}</nz-tag>
               </p>
               <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">
                 <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
