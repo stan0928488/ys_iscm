@@ -134,6 +134,8 @@ category = '' ;
 
   //所有站點機台配置狀況 
   shopCodeSaveStatusList = [] ;
+  //保存的狀態
+  saveLoading = false ;
 
   constructor( 
     private mshService:MSHService,
@@ -719,6 +721,9 @@ category = '' ;
       this.nzMessageService.error("必須是鎖定版本才能保存！") ;
       return ;
      }
+     this.saveLoading = true ;
+     this.isLoading = true ;
+
      //調整接收數據
      this.finalChangeDataIds = [] ;
      //原始數據調取
@@ -739,6 +744,8 @@ category = '' ;
     // console.log("使用："+this.finalChangeDataIds)
    // let _param = {ids:this.finalChangeDataIds.toString()}
     this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+      this.saveLoading = false ;
+      this.isLoading = false ;
       if(flag === '1') {
 
       } else if(flag === '2') 
@@ -757,7 +764,8 @@ category = '' ;
       }
      
     })
-
+    // this.saveLoading = false ;
+    // this.isLoading = false ;
    }
   /****
    * 查看當前版次狀態

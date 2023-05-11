@@ -101,4 +101,57 @@ findShopCodeSaveStatus(_param:any){
   return this.http.get(queryUrl);
 }
 
+/////////////////////////////////////////////////
+// EPST變更作業
+/////////////////////////////////////////////////
+
+  // 搜尋EPST資料
+  searchEpstData(_parms){
+    console.log('搜尋EPST資料..');
+    const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/searchEPST`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  // 獲取站別清單
+  getShopCodeList(){
+    console.log('獲取站別清單..');
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getShopCodeList`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : 無`);
+    return this.http.get<any>(endpointUrl);
+  }
+
+  // 獲取機台清單
+  getEquipCodeList(shopCodeList){
+    console.log('獲取機台清單..');
+    let body = JSON.stringify({shopCodeList:shopCodeList});
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getEquipCodeList`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  // 批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料
+  batchInsertOrUpdateEPST(MSHI003PendingDataList){
+    console.log('批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料');
+    let body = JSON.stringify(MSHI003PendingDataList);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/batchInsertOrUpdateEPST`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  // Excel EPST 資料匯入
+  excelBatchInsertOrUpdateEPST(jsonExcelData){
+    console.log('Excel EPST 資料匯入');
+    let body = JSON.stringify(jsonExcelData);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/excelBatchInsertOrUpdateEPST`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
+  }
+
 }

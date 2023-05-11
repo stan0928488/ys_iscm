@@ -73,6 +73,7 @@ export class LABI001Component implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
   data = [];
+  tempData = [];
   
   constructor(
     private LABService : LABService,
@@ -161,6 +162,7 @@ export class LABI001Component implements AfterViewInit {
         });
       }
       this.data = data;
+      this.tempData = data;
       this.displaytblabm001 = this.tblabm001;
       this.updateEditCache();
       myObj.loading = false;
@@ -644,76 +646,90 @@ export class LABI001Component implements AfterViewInit {
 
   // 資料過濾 --> 硫酸銅試驗
   searchCuso4Test() : void{
-    this.tblabm001Filter("cuso4_test", this.searchCuso4TestValue);
+    this.filterAll();
   } 
   resetByCuso4Test() : void{
-    this.searchCuso4TestValue = '';
-    this.tblabm001Filter("cuso4_test", this.searchCuso4TestValue);
+    this.reset();
   }
 
   // 資料過濾 --> 衝擊試驗
   searchImpactTest() : void{
-    this.tblabm001Filter("impact_test", this.searchImpactTestValue);
+    this.filterAll();
   } 
   resetByImpactTest() : void{
-    this.searchImpactTestValue = '';
-    this.tblabm001Filter("impact_test", this.searchImpactTestValue);
+    this.reset();
   }
   // 資料過濾 --> 尺寸MIN
   searchDiaMin() : void{
-    this.tblabm001Filter("dia_min", this.searchDiaMinValue);
+    this.filterAll();
   } 
   resetByDiaMin() : void{
-    this.searchDiaMinValue = '';
-    this.tblabm001Filter("dia_min", this.searchDiaMinValue);
+    this.reset();
   }
 
   // 資料過濾 --> 尺寸Max
   searchDiaMax() : void{
-    this.tblabm001Filter("dia_max", this.searchDiaMaxValue);
+    this.filterAll();
   } 
   resetByDiaMax() : void{
-    this.searchDiaMaxValue = '';
-    this.tblabm001Filter("dia_max", this.searchDiaMaxValue);
+    this.reset();
   }
 
   // 資料過濾 --> 型態
   searchByShape() : void{
-    console.log(this.searchByShapeValue);
-    this.tblabm001Filter("shape", this.searchByShapeValue);
+    this.filterAll();
   } 
   resetByShape() : void{
-    this.searchByShapeValue = '';
-    this.tblabm001Filter("shape", this.searchByShapeValue);
+    this.reset();
   }
 
   // 資料過濾 --> 機械性質碼
   searchByMechanicalPropertiesCode() : void{
-    this.tblabm001Filter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
+    this.filterAll();
   } 
   resetByMechanicalPropertiesCode() : void{
-    this.searchByMechanicalPropertiesCodeValue = '';
-    this.tblabm001Filter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
+    this.reset();
   }
 
   // 資料過濾 --> 鋼種
   searchByGradeNo() : void{
-    this.tblabm001Filter("grade_no", this.searchByGradeNoValue);
+    this.filterAll();
   } 
   resetByGradeNo() : void{
-    this.searchByGradeNoValue = '';
-    this.tblabm001Filter("grade_no", this.searchByGradeNoValue);
+    this.reset();
   }
 
   // 資料過濾 --> 實驗天數
   searchByExperimentDays() : void{
-    this.tblabm001Filter("experiment_days", this.searchByExperimentDaysValue);
+    this.filterAll();
   } 
   resetByExperimentDays() : void{
-    this.searchByExperimentDaysValue = '';
-    this.tblabm001Filter("experiment_days", this.searchByExperimentDaysValue);
+    this.reset();
   }
   
+  filterAll(){
+    this.data = this.tempData;
+    this.tblabm001Filter("cuso4_test", this.searchCuso4TestValue);
+    this.tblabm001Filter("impact_test", this.searchImpactTestValue);
+    this.tblabm001Filter("dia_min", this.searchDiaMinValue);
+    this.tblabm001Filter("dia_max", this.searchDiaMaxValue);
+    this.tblabm001Filter("shape", this.searchByShapeValue);
+    this.tblabm001Filter("mechanical_properties_code", this.searchByMechanicalPropertiesCodeValue);
+    this.tblabm001Filter("grade_no", this.searchByGradeNoValue);
+    this.tblabm001Filter("experiment_days", this.searchByExperimentDaysValue);
+  }
 
+  reset(){
+    this.searchCuso4TestValue = '';   
+    this.searchImpactTestValue = '';
+    this.searchDiaMinValue = '';
+    this.searchDiaMaxValue = '';
+    this.searchByShapeValue = '';
+    this.searchByMechanicalPropertiesCodeValue = '';
+    this.searchByGradeNoValue = '';
+    this.searchByExperimentDaysValue = '';
+
+    this.data = this.tempData;
+  }
 
 }

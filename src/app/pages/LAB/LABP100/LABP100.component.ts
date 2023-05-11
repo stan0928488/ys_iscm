@@ -25,9 +25,8 @@ interface data {
   mechanicalPropertiesCode: string,
   gradeNo: string,
   sampleDate: string,
+  confirmDate : string,
   experimentDays: string,
-
-  
 }
 
 interface dataMain {
@@ -37,6 +36,9 @@ interface dataMain {
   idNo: string,
   custAbbr: string,
   sampleDate: string,
+  confirmDate : string,
+  experimentDoneDate: string,
+  experimentDays: string,
   saleOrderDia: string,
   shopCode: string,
   dia: string,
@@ -57,8 +59,6 @@ interface dataMain {
   impactTestDesc: string,
   sampleDateCreate: string,
   cuso4Test: string,
-  experimentDays: string,
-  experimentDoneDate: string,
   sampleStatus: string,
 }
 
@@ -126,6 +126,7 @@ export class LABP100Component implements AfterViewInit {
   date = '';
   status_list = [];
 
+  tooltipShowDelay = 0;
 
   constructor(
     private LABService : LABService,
@@ -145,9 +146,12 @@ export class LABP100Component implements AfterViewInit {
     { headerName:'MO版本',field: 'moEdition' , filter: false,width: 160 },
     { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 120 },
     { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 120 },
-    { headerName:'放樣ID',field: 'idNo' , filter: false,width: 120 },
+    { headerName:'放樣ID',field: 'idNo' , filter: false,width: 120, headerTooltip:'非取樣ID之母體ID'},
     { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
-    { headerName:'取樣時間',field: 'sampleDate' , filter: false,width: 170 },
+    { headerName:'現場取樣時間',field: 'sampleDate' , filter: false,width: 170 },
+    { headerName:'實驗室收樣時間', field:'confirmDate', filter:false, width:170},
+    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 },
+    { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },
     { headerName:'現況站別',field: 'shopCode' , filter: false,width: 100 },
     { headerName:'現況尺寸',field: 'dia' , filter: false,width: 100 },
@@ -168,8 +172,6 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '衝擊測試說明' ,field: 'impactTestDesc' , filter: false,width: 120 },
     { headerName: '取樣建立時間' ,field: 'sampleDateCreate' , filter: false,width: 170 },
     { headerName: '硫酸銅測試' ,field: 'cuso4Test' , filter: false,width: 120 },
-    { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 },
-    { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 },
     { headerName: '取樣狀態' ,field: 'sampleStatus' , filter: false,width: 100 }
   ];
 
@@ -183,7 +185,8 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '生產型態' ,field: 'shape' , filter: false,width: 100 },
     { headerName: '機械性質碼' ,field: 'mechanicalPropertiesCode' , filter: false,width: 120 },
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
-    { headerName: '取樣時間' ,field: 'sampleDate' , filter: false,width: 170 },
+    { headerName: '現場取樣時間' ,field: 'sampleDate' , filter: false,width: 170 },
+    { headerName:'實驗室收樣時間', field:'confirmDate', filter:false, width:170},
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 }
   ];
 
@@ -430,9 +433,12 @@ export class LABP100Component implements AfterViewInit {
         
         temp.forEach(element => {
           let sampleDate = _.get(element, "sampleDate");
+          let confirmDate = _.get(element, "confirmDate");
   
           const sampleDateStr = this.component.dateFormat(sampleDate, 1);
-          _.set(element, "sampleDate", sampleDateStr);       
+          const confirmDateStr = this.component.dateFormat(confirmDate, 1);
+          _.set(element, "sampleDate", sampleDateStr);
+          _.set(element, "confirmDate", confirmDateStr);        
         });
         
         this.rowDataTab2 = temp;
@@ -456,6 +462,7 @@ export class LABP100Component implements AfterViewInit {
       this.LoadingPage = false;
       this.queryBarActive1 = false;
       let result:any = res;
+
       if(result.code == 200) {
         var temp = result.data;
         temp.forEach(element => {
@@ -464,6 +471,7 @@ export class LABP100Component implements AfterViewInit {
           let dlvyDate = _.get(element, "dlvyDate");
           let sampleDateCreate = _.get(element, "sampleDateCreate");
           let experimentDoneDate = _.get(element, "experimentDoneDate");
+          let confirmDate = _.get(element, "confirmDate");
 
           // if(!_.isEmpty(String(dateDeliveryPp)) && dateRegex.test(String(dateDeliveryPp))){
           const sampleDateStr = this.component.dateFormat(sampleDate, 1);
@@ -471,11 +479,14 @@ export class LABP100Component implements AfterViewInit {
           const dlvyDateStr = this.component.dateFormat(dlvyDate, 2);
           const sampleDateCreateStr = moment(sampleDateCreate, 'YYYY-MM-DD HH').format('YYYY-MM-DD HH');
           const experimentDoneDateStr = this.component.dateFormat(experimentDoneDate, 1);
+          const confirmDateStr = this.component.dateFormat(confirmDate, 1);
+
           _.set(element, "sampleDate", sampleDateStr);
           _.set(element, "dateDeliveryPp", dateDeliveryPpStr);
           _.set(element, "dlvyDate", dlvyDateStr);
           _.set(element, "sampleDateCreate", sampleDateCreateStr);
           _.set(element, "experimentDoneDate", experimentDoneDateStr);
+          _.set(element, "confirmDate", confirmDateStr);
           // }          
         });
         this.rowDataTab1 = temp;          
@@ -550,9 +561,9 @@ export class LABP100Component implements AfterViewInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['MO版本', '取樣代號', '取樣ID', '放樣ID', '客戶','取樣時間', '訂單尺寸', '現況站別', '現況尺寸', '現況final_mic_no', '鋼種',
+    let header = [['MO版本', '取樣代號', '取樣ID', '放樣ID', '客戶','現場取樣時間','實驗室收樣時間', '預計實驗完成時間', '實驗天數', '訂單尺寸', '現況站別', '現況尺寸', '現況final_mic_no', '鋼種',
           '生產型態', '機械性質碼', '取樣流程', '生產流程', '取樣站別','現況訂單', '現況訂單項次', '生計交期', '允收截止日', '敏化測試', '敏化測試說明',
-            '衝擊測試', '衝擊測試說明', '取樣建立時間', '硫酸銅測試', '實驗天數', '預計實驗完成時間', '取樣狀態' ]];
+            '衝擊測試', '衝擊測試說明', '取樣建立時間', '硫酸銅測試', '取樣狀態' ]];
 
     var dataReSort = {
       data : []
@@ -567,6 +578,9 @@ export class LABP100Component implements AfterViewInit {
             "idNo" : item.idNo,
             "custAbbr" : item.custAbbr,
             "sampleDate" : item.sampleDate,
+            "confirmDate" : item.confirmDate,
+            "experimentDoneDate" : item.experimentDoneDate,
+            "experimentDays" : item.experimentDays,
             "saleOrderDia" : item.saleOrderDia,
             "shopCode" : item.shopCode,
             "dia" : item.dia,
@@ -587,8 +601,6 @@ export class LABP100Component implements AfterViewInit {
             "impactTestDesc" : item.impactTestDesc,
             "sampleDateCreate" : item.sampleDateCreate,
             "cuso4Test" : item.cuso4Test,
-            "experimentDays" : item.experimentDays,
-            "experimentDoneDate" : item.experimentDoneDate,
             "sampleStatus" : item.sampleStatus
         });
     }
@@ -607,7 +619,7 @@ export class LABP100Component implements AfterViewInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['MO版本', '取樣代號', '取樣ID', '訂單尺寸', '硫酸銅測試','衝擊測試', '生產型態', '機械性質碼', '鋼種', '取樣時間', '實驗天數']];
+    let header = [['MO版本', '取樣代號', '取樣ID', '訂單尺寸', '硫酸銅測試','衝擊測試', '生產型態', '機械性質碼', '鋼種', '現場取樣時間', '實驗室收樣時間', '實驗天數']];
 
     var dataReSort = {
       data : []
@@ -626,6 +638,7 @@ export class LABP100Component implements AfterViewInit {
             "mechanicalPropertiesCode" : item.mechanicalPropertiesCode,
             "gradeNo" : item.gradeNo,
             "sampleDate" : item.sampleDate,
+            "confirmDate" : item.confirmDate,
             "experimentDays" : item.experimentDays
         });
     }

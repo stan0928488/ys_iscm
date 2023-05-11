@@ -503,10 +503,14 @@ checkPreSave(){
     if(index === 0 && value.column_name !== "FROZAN_GROUP") {
       this.message.error("FCP下站順位必須在第一位,請您調整");
       this.saveCheckFg = false ;
-    } else if(index === 1 && value.column_name !== "SORT_GROUP") {
+    } 
+    
+    /** TODO  先拿掉，後面再補
+    else if(index === 1 && value.column_name !== "SORT_GROUP") {
       this.message.error("SORT群組必須在第二位,請您調整");
       this.saveCheckFg = false ;
     } 
+    */
     /** TODO  先拿掉，後面再補
     else if(index === 2 && (value.column_comment !=="PST" && value.column_comment !=="EPST" && value.column_comment !=="LPST" ) ) {
       this.message.error("PST、EPST 或者 LPST 必須在第三位，請您調整");
