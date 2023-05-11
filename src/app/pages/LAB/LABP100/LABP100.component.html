@@ -67,7 +67,7 @@
                     <input nz-input placeholder="" name="No" [(ngModel)]="sampleId"/>
                   </div>
       
-                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;放樣ID</td>   
+                  <td style = "width: 10%;height: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;" title="非取樣ID之母體ID">&nbsp;&nbsp;放樣ID</td>   
                   <div style="margin-left:10px;margin-right:30px; width: 135px;">
                     <input nz-input placeholder="" name="No" [(ngModel)]="idNo"/>
                   </div>
@@ -129,6 +129,7 @@
       [groupSelectsChildren]="true"
       [rowSelection]="'multiple'"
       [pagination]="true"
+      [tooltipShowDelay]="tooltipShowDelay"
       [animateRows]="true"
       (gridReady)="onGridReady($event)"
       (cellClicked)="onCellClicked($event)"
