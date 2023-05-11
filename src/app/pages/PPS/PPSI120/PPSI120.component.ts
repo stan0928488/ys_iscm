@@ -66,6 +66,8 @@ export class PPSI120Component implements AfterViewInit {
   searchSteelGradeMinValue = '';
   searchHeatMinValue = '';
   searchAlternateSetValue = '';
+  equipCodeOfOption = [];
+  equipCodeLoading = false;
 
   // 是否顯示「執行中」元件
   isSpinning = false;
@@ -814,6 +816,41 @@ incomingFile($event: any) {
     this.isSpinning = false;
     this.sucessMSG("匯出成功!", ``);
 
+  }
+  getEquipCodeList(event: any){
+    let myObj = this;
+     this.equipCodeLoading = true;
+    
+    return new Promise((resolve, reject) => {
+      let obj = {};
+      _.extend(obj, {
+        SHOP_CODE : this.SHOP_CODE,
+      })
+
+      myObj.PPSService.getEquipCodeList(obj).subscribe(res => {
+
+       let result: any = res;
+          
+      let newres = [];
+            for (let i = 0; i < result.length; i++) {
+                let options = [];
+                options["label"] = result[i].label;
+                options["value"] = result[i].value;
+                newres.push(options);
+            }
+            myObj.equipCodeOfOption = newres;
+            resolve(true)
+          
+      },err => {
+       myObj.message.error('請求獲取失敗');
+          reject(true);
+      })
+    }).then(success =>{
+      myObj.equipCodeLoading = false;
+    }).catch(error =>{
+      myObj.equipCodeLoading = false;
+    });;
+       
   }
 
 
