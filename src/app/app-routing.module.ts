@@ -73,6 +73,7 @@ import { LoginComponent } from "./login/login.component";
 import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.service";
 import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
 import { MSHI003Component } from "./pages/MSH/MSHI003/MSHI003.component";
+import { MSHI003CanDeactivateGuard } from "./pages/MSH/MSHI003/MSHI003.can.deactivate.guard";
 
 const routes: Routes = [
   {
@@ -221,7 +222,7 @@ const routes: Routes = [
       { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
       { path: "I001", component: MSHI001Component },
       { path: "I002", component: MSHI002Component },
-      { path: "I003", component: MSHI003Component}
+      { path: "I003", component: MSHI003Component, canDeactivate : [MSHI003CanDeactivateGuard]}
     ],
     canActivate: [AuthGuard]
   },
