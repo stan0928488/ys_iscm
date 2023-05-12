@@ -411,12 +411,17 @@ export class PPSI103Component implements AfterViewInit {
         CAPABILITY_DIA_MAX : this.editCache2[_id].data.CAPABILITY_DIA_MAX_2,
         CAPABILITY_LENGTH_MIN : this.editCache2[_id].data.CAPABILITY_LENGTH_MIN_2,
         CAPABILITY_LENGTH_MAX : this.editCache2[_id].data.CAPABILITY_LENGTH_MAX_2,
+        OPTIMAL_DIA_MIN : this.editCache2[_id].data.OPTIMAL_DIA_MIN_2,
+        OPTIMAL_DIA_MAX : this.editCache2[_id].data.OPTIMAL_DIA_MAX_2,
+        OPTIMAL_LENGTH_MIN : this.editCache2[_id].data.OPTIMAL_LENGTH_MIN_2,
+        OPTIMAL_LENGTH_MAX : this.editCache2[_id].data.OPTIMAL_LENGTH_MAX_2,
         OPTION_EQUIP_1 : this.editCache2[_id].data.OPTION_EQUIP_1_2,
         OPTION_EQUIP_2 : this.editCache2[_id].data.OPTION_EQUIP_2_2,
         OPTION_EQUIP_3 : this.editCache2[_id].data.OPTION_EQUIP_3_2,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
+      console.log(obj)
       myObj.PPSService.updateI102Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_2 = undefined;
