@@ -19,6 +19,9 @@ interface ItemData7 {
   SHOP_CODE: string;
   SHOP_NAME: string;
   VALID: string;
+  WIP_MIN : string;
+  WIP_MAX : string;
+
 }
 
 
@@ -42,6 +45,8 @@ export class PPSI102Component implements AfterViewInit {
   SHOP_NAME;
   EQUIP_CODE_1;
   EQUIP_NAME;
+  WIP_MIN;
+  WIP_MAX;
   EQUIP_GROUP;
   VALID = "Y";
   isVisibleShop = false;
@@ -52,12 +57,14 @@ export class PPSI102Component implements AfterViewInit {
   searchEquipNameValue = '';
   searchEquipGroupValue = '';
   searchValidValue = '';
+  searchWipMinValue = '';
+  searchWipMaxValue = '';
 
   file:File;
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ['工廠別','站別代碼','站別名稱','機台','機台名稱','機台群組','有效碼'];
+  titleArray = ['工廠別','站別代碼','站別名稱','機台','機台名稱', '設備庫存下限(單位:MT)', '設備庫存上限(單位:MT)', '機台群組','有效碼'];
   importdata_repeat = [];
 
   constructor(
@@ -102,6 +109,8 @@ export class PPSI102Component implements AfterViewInit {
           SHOP_CODE: this.PPSINP07List_tmp[i].SHOP_CODE,
           SHOP_NAME: this.PPSINP07List_tmp[i].SHOP_NAME,
           VALID: this.PPSINP07List_tmp[i].VALID,
+          WIP_MIN : this.PPSINP07List_tmp[i].WIP_MIN,
+          WIP_MAX : this.PPSINP07List_tmp[i].WIP_MAX
         });
       }
       this.PPSINP07List = data;
@@ -226,6 +235,8 @@ export class PPSI102Component implements AfterViewInit {
         EQUIP_CODE : this.EQUIP_CODE_1,
         EQUIP_NAME : this.EQUIP_NAME === undefined ? null : this.EQUIP_NAME,
         EQUIP_GROUP: this.EQUIP_GROUP === undefined ? null : this.EQUIP_GROUP,
+        WIP_MIN : this.WIP_MIN === undefined ? null : this.WIP_MIN,
+        WIP_MAX : this.WIP_MAX === undefined ? null : this.WIP_MAX,
         VALID: this.VALID,
         BALANCE_RULE: null,
         ORDER_SEQ: null,
@@ -242,6 +253,8 @@ export class PPSI102Component implements AfterViewInit {
           this.EQUIP_NAME = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
+          this.WIP_MIN = undefined;
+          this.WIP_MAX = undefined;
           this.getPPSINP07List();
           this.sucessMSG("新增成功", ``);
         } else {
@@ -269,6 +282,8 @@ export class PPSI102Component implements AfterViewInit {
         SHOP_NAME : this.editCache7[_id].data.SHOP_NAME === undefined ? null : this.editCache7[_id].data.SHOP_NAME,
         EQUIP_CODE : this.editCache7[_id].data.EQUIP_CODE_1,
         EQUIP_NAME : this.editCache7[_id].data.EQUIP_NAME === undefined ? null : this.editCache7[_id].data.EQUIP_NAME,
+        WIP_MIN : this.editCache7[_id].data.WIP_MIN === undefined ? null :  this.editCache7[_id].data.WIP_MIN,
+        WIP_MAX : this.editCache7[_id].data.WIP_MAX === undefined ? null :  this.editCache7[_id].data.WIP_MAX,
         EQUIP_GROUP : this.editCache7[_id].data.EQUIP_GROUP === undefined ? null : this.editCache7[_id].data.EQUIP_GROUP,
         VALID : this.editCache7[_id].data.VALID,
         BALANCE_RULE: null,
@@ -284,6 +299,8 @@ export class PPSI102Component implements AfterViewInit {
           this.EQUIP_NAME = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
+          this.WIP_MIN = undefined;
+          this.WIP_MAX = undefined;
 
           this.sucessMSG("修改成功", ``);
 
@@ -416,6 +433,24 @@ export class PPSI102Component implements AfterViewInit {
     this.ppsInp07ListFilter("EQUIP_NAME", this.searchEquipNameValue);
   }
 
+  // 資料過濾---站別機台關聯表 --> 設備庫存下限(單位:MT)
+  searchByWipMin() : void {
+    this.ppsInp07ListFilter("WIP_MIN", this.searchWipMinValue);
+  }
+  resetByWipMin() : void {
+    this.searchWipMinValue = '';
+    this.ppsInp07ListFilter("WIP_MIN", this.searchWipMinValue);
+  }
+
+   // 資料過濾---站別機台關聯表 --> 設備庫存下限(單位:MT)
+   searchByWipMax() : void {
+    this.ppsInp07ListFilter("WIP_MAX", this.searchWipMaxValue);
+  }
+  resetByWipMax() : void {
+    this.searchWipMaxValue = '';
+    this.ppsInp07ListFilter("WIP_MAX", this.searchWipMaxValue);
+  }
+
    // 資料過濾---站別機台關聯表 --> 機台群組
    searchByEquipGroup() : void {
     this.ppsInp07ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
@@ -526,6 +561,8 @@ export class PPSI102Component implements AfterViewInit {
             SHOP_NAME: _data[i]['站別名稱'],
             EQUIP_CODE: _data[i]['機台'] ,
             EQUIP_NAME: _data[i]['機台名稱'],
+            WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)']) ? null : _data[i]['設備庫存下限(單位:MT)'],
+            WIP_MAX:  _.isNil(_data[i]['設備庫存上限(單位:MT)']) ? null : _data[i]['設備庫存上限(單位:MT)'],
             EQUIP_GROUP: _data[i]['機台群組'],
             VALID: _data[i]['有效碼'],
             BALANCE_RULE: null,
@@ -536,7 +573,7 @@ export class PPSI102Component implements AfterViewInit {
           })
         
       }
-      
+
       return new Promise((resolve, reject) => {
         console.log("匯入開始");
         this.LoadingPage = true;
@@ -579,6 +616,8 @@ export class PPSI102Component implements AfterViewInit {
           SHOP_NAME : this.displayPPSINP07List[i].SHOP_NAME,
           EQUIP_CODE_1 : this.displayPPSINP07List[i].EQUIP_CODE_1,
           EQUIP_NAME : this.displayPPSINP07List[i].EQUIP_NAME,
+          WIP_MIN : this.displayPPSINP07List[i].WIP_MIN,
+          WIP_MAX : this.displayPPSINP07List[i].WIP_MAX,
           EQUIP_GROUP : this.displayPPSINP07List[i].EQUIP_GROUP,
           VALID : this.displayPPSINP07List[i].VALID
         }

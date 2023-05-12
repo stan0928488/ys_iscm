@@ -19,6 +19,8 @@ interface ItemData7 {
   SHOP_NAME: string;
   EQUIP_CODE: string;
   EQUIP_NAME: string;
+  WIP_MIN : string,
+  WIP_MAX : string,
   EQUIP_GROUP: string;
   BALANCE_RULE: string;
   ORDER_SEQ: string;
@@ -49,6 +51,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   SHOP_NAME;
   EQUIP_CODE;
   EQUIP_NAME;
+  WIP_MIN;
+  WIP_MAX;
   EQUIP_GROUP;
   WT_TYPE;
   VALID = "Y";
@@ -61,12 +65,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   searchEquipGroupValue = '';
   searchValidValue = '';
   searchWtTypeValue = '';
+  searchWipMinValue = '';
+  searchWipMaxValue = '';
 
   file:File;
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["工廠別","站別代碼","站別名稱","機台","機台名稱","機台群組","有效碼","工時計算分類"];
+  titleArray = ["工廠別","站別代碼","站別名稱","機台","機台名稱","設備庫存下限(單位:MT)","設備庫存上限(單位:MT)","機台群組","有效碼","工時計算分類"];
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -108,6 +114,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           SHOP_NAME: this.PPSINP07List_tmp[i].SHOP_NAME,
           EQUIP_CODE: this.PPSINP07List_tmp[i].EQUIP_CODE,
           EQUIP_NAME: this.PPSINP07List_tmp[i].EQUIP_NAME,
+          WIP_MIN : this.PPSINP07List_tmp[i].WIP_MIN,
+          WIP_MAX : this.PPSINP07List_tmp[i].WIP_MAX,
           EQUIP_GROUP: this.PPSINP07List_tmp[i].EQUIP_GROUP,
           BALANCE_RULE: this.PPSINP07List_tmp[i].BALANCE_RULE,
           ORDER_SEQ: this.PPSINP07List_tmp[i].ORDER_SEQ,
@@ -237,6 +245,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         SHOP_NAME : this.SHOP_NAME === undefined ? null : this.SHOP_NAME,
         EQUIP_CODE : this.EQUIP_CODE,
         EQUIP_NAME : this.EQUIP_NAME === undefined ? null : this.EQUIP_NAME,
+        WIP_MIN : this.WIP_MIN === undefined ? null : this.WIP_MIN,
+        WIP_MAX : this.WIP_MAX === undefined ? null : this.WIP_MAX,
         EQUIP_GROUP: this.EQUIP_GROUP === undefined ? null : this.EQUIP_GROUP,
         VALID: this.VALID,
         WT_TYPE: this.WT_TYPE === undefined ? null : this.WT_TYPE,
@@ -251,6 +261,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           this.SHOP_NAME = undefined;
           this.EQUIP_CODE = undefined;
           this.EQUIP_NAME = undefined;
+          this.WIP_MIN = undefined;
+          this.WIP_MAX = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
           this.WT_TYPE = undefined;
@@ -300,6 +312,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         SHOP_NAME : this.editCache7[_id].data.SHOP_NAME === undefined ? null : this.editCache7[_id].data.SHOP_NAME,
         EQUIP_CODE : this.editCache7[_id].data.EQUIP_CODE,
         EQUIP_NAME : this.editCache7[_id].data.EQUIP_NAME === undefined ? null : this.editCache7[_id].data.EQUIP_NAME,
+        WIP_MIN : this.editCache7[_id].data.WIP_MIN === undefined ? null : this.editCache7[_id].data.WIP_MIN,
+        WIP_MAX : this.editCache7[_id].data.WIP_MAX === undefined ? null : this.editCache7[_id].data.WIP_MAX,
         EQUIP_GROUP : this.editCache7[_id].data.EQUIP_GROUP === undefined ? null : this.editCache7[_id].data.EQUIP_GROUP,
         VALID : this.editCache7[_id].data.VALID,
         WT_TYPE : this.editCache7[_id].data.WT_TYPE === undefined ? null : this.editCache7[_id].data.WT_TYPE,
@@ -313,6 +327,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           this.SHOP_NAME = undefined;
           this.EQUIP_CODE = undefined;
           this.EQUIP_NAME = undefined;
+          this.WIP_MIN = undefined;
+          this.WIP_MAX = undefined;
           this.EQUIP_GROUP = undefined;
           this.VALID = undefined;
           this.WT_TYPE = undefined;
@@ -383,6 +399,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
 
   // 2.(資料過濾)站別機台關聯表
   ppsInp07ListFilter(property:string, keyWord:string){
+
     const filterFunc = item => {
       let propertyValue = _.get(item, property);
       if (keyWord == "") {
@@ -441,8 +458,26 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     this.ppsInp07ListFilter("EQUIP_NAME", this.searchEquipNameValue);
   }
 
-   // 資料過濾---站別機台關聯表 --> 機台群組
-   searchByEquipGroup() : void {
+  // 資料過濾---站別機台關聯表 --> 設備庫存下限(單位:MT)
+  searchByWipMin() :void {
+    this.ppsInp07ListFilter("WIP_MIN", this.searchWipMinValue);
+  }
+  resetByWipMin() :void {
+    this.searchWipMinValue = '';
+    this.ppsInp07ListFilter("WIP_MIN", this.searchWipMinValue);
+  }
+
+  // 資料過濾---站別機台關聯表 --> 設備庫存上限(單位:MT)
+  searchByWipMax() :void {
+    this.ppsInp07ListFilter("WIP_MAX", this.searchWipMaxValue);
+  }
+  resetByWipMax() :void {
+    this.searchWipMaxValue = '';
+    this.ppsInp07ListFilter("WIP_MAX", this.searchWipMaxValue);
+  }
+
+  // 資料過濾---站別機台關聯表 --> 機台群組
+  searchByEquipGroup() : void {
     this.ppsInp07ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
   }
   resetByEquipGroup() : void {
@@ -527,6 +562,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
 
   importExcel(_data) {
     var upload_data = [];
+
     for(let i=0 ; i < _data.length ; i++) {
       if (_data[i]['工廠別'] === undefined) {
         this.errorMSG('第'+ (i+1) +'筆檔案內容錯誤', '「工廠別」不可為空');
@@ -561,6 +597,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           EQUIP_CODE: _data[i]['機台'] ,
           EQUIP_GROUP: _data[i]['機台群組'],
           EQUIP_NAME: _data[i]['機台名稱'],
+          WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)']) ? null : _data[i]['設備庫存下限(單位:MT)'],
+          WIP_MAX: _.isNil(_data[i]['設備庫存上限(單位:MT)']) ? null : _data[i]['設備庫存上限(單位:MT)'],
           VALID: _data[i]['有效碼'],
           WT_TYPE: _data[i]['工時計算分類'] ==='線速' ? '1' :_data[i]['工時計算分類'] ==='非線速' ? '2' : null,
           BALANCE_RULE: null,
@@ -626,6 +664,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         SHOP_NAME: _.get(item, "SHOP_NAME"),
         EQUIP_CODE: _.get(item, "EQUIP_CODE"),
         EQUIP_NAME: _.get(item, "EQUIP_NAME"),
+        WIP_MIN : _.get(item, "WIP_MIN"),
+        WIP_MAX : _.get(item, "WIP_MAX"),
         EQUIP_GROUP: _.get(item, "EQUIP_GROUP"),
         VALID: _.get(item, "VALID"),
         WT_TYPE: _.get(item, "WT_TYPE") ==='1' ? '線速' : _.get(item, "WT_TYPE")==='2' ? '非線速' : ''
