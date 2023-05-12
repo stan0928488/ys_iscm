@@ -49,6 +49,7 @@ export class PPSI203Component implements AfterViewInit {
 	dataDeliveryRangeMinForAdd;           // 交付區間最小日期 ForAdd
 	dataDeliveryRangeMaxForAdd;           // 交付區間最大日期 ForAdd
 	processCodeForAdd;                    // 製程碼 ForAdd
+  shopCodeForAdd;                    // 製程碼 ForAdd
 	scheTypeForAdd;                       // 抽數別 ForAdd
 	ASAPDateForAdd;                       // 最早可投產時間 ForAdd
 	custAbbreviationsForAdd;              // 客戶 ForAdd
@@ -61,6 +62,7 @@ export class PPSI203Component implements AfterViewInit {
 	dataDeliveryRangeMinForEdit;          // 交付區間最小日期 ForEdit
 	dataDeliveryRangeMaxForEdit;          // 交付區間最大日期 ForEdit
 	processCodeForEdit;                   // 製程碼 ForEdit
+  shopCodeForEdit;                   // 製程碼 ForEdit
 	scheTypeForEdit;                      // 抽數別 ForEdit
 	ASAPDateForEdit;                      // 最早可投產時間 ForEdit
 	custAbbreviationsForEdit;             // 客戶 ForEdit
@@ -90,12 +92,14 @@ export class PPSI203Component implements AfterViewInit {
   searchByDataDeliveryRangeMinValue = '';
   searchByDataDeliveryRangeMaxValue = '';
   searchByProcessCodeValue = '';
+  searchByShopCodeValue = '';
   searchByScheTypeValue = '';
   searchByASAPDateValue = '';
   
   visibleByDataDeliveryRangeMinValue = false;
   visibleByDataDeliveryRangeMaxValue = false;
   visibleByProcessCodeValue = false;
+  visibleByShopCodeValue = false;
   visibleByScheTypeValue = false;
   visibleByASAPDateValue = false;
   //----查詢區 屬性 宣告end   ----------------------
@@ -105,6 +109,7 @@ export class PPSI203Component implements AfterViewInit {
     "交期區間MIN",
     "交期區間MAX",
     "製程碼",
+    "站別",
     "抽數別",
     "最早可投產時間",
     "不包含客戶",
@@ -394,6 +399,25 @@ export class PPSI203Component implements AfterViewInit {
 
     this.displayPPSI203DataList = data;
   }
+
+  searchByShopCode(){
+    console.log("search click start:" + JSON.stringify(this.PPSI203DataList));
+    const filterFunc = item => {
+      let shopCode = _.get(item, "shopCode");
+      console.log("processCode:"+shopCode);
+      if (this.searchByShopCodeValue == "") {
+        return true;
+      } else {
+        console.log(_.startsWith(shopCode, this.searchByShopCodeValue));
+        return _.startsWith(shopCode, this.searchByShopCodeValue);
+      }
+    };
+    const data = this.PPSI203DataList.filter(item => filterFunc(item));
+    console.log("search click end:" + JSON.stringify(this.displayPPSI203DataList));
+
+    this.displayPPSI203DataList = data;
+  }
+
   searchByScheType(){
     console.log("search click start:" + JSON.stringify(this.PPSI203DataList));
     const filterFunc = item => {
@@ -441,6 +465,10 @@ export class PPSI203Component implements AfterViewInit {
   resetByProcessCode(){
     this.searchByProcessCodeValue = '';
     this.searchByProcessCode();
+  }
+  resetByShopCode(){
+    this.searchByProcessCodeValue = '';
+    this.searchByShopCode();
   }
   resetByScheType(){
     this.searchByScheTypeValue = '';
@@ -510,6 +538,7 @@ export class PPSI203Component implements AfterViewInit {
       return;
     } 
     
+
     let processCodeForAdd       = this.processCodeForAdd;
     let scheTypeForAdd          = this.scheTypeForAdd;
     let custAbbreviationsForAdd = this.listOfCustomerValueForAdd;
@@ -524,6 +553,12 @@ export class PPSI203Component implements AfterViewInit {
     if(processCodeForAdd === '' || processCodeForAdd === undefined){
       this.processCodeForAdd = '-';
     }
+
+    if(this.shopCodeForAdd == '' || this.shopCodeForAdd == undefined){
+      this.errorMSG("錯誤", "站別 不可為空");
+      return;
+    }
+
     if(scheTypeForAdd === '' || scheTypeForAdd === undefined){
       this.scheTypeForAdd = '-';
     }
@@ -540,6 +575,7 @@ export class PPSI203Component implements AfterViewInit {
       dataDeliveryRangeMax  :this.dateFormat(this.dataDeliveryRangeMaxForAdd,2),
       processCode           :this.processCodeForAdd,
       scheType              :this.scheTypeForAdd,
+      shopCode              :this.shopCodeForAdd,
       ASAPDate              :this.dateFormat(this.ASAPDateForAdd,2),
       custAbbreviations     :this.listOfCustomerValueForAdd,
       gradeGroup            :this.listOfSteelTypeValueForAdd,
@@ -605,6 +641,7 @@ export class PPSI203Component implements AfterViewInit {
       dataDeliveryRangeMin  : this.dateFormat(this.dataDeliveryRangeMinForEdit,2),
       dataDeliveryRangeMax  : this.dateFormat(this.dataDeliveryRangeMaxForEdit,2),
       processCode           : this.processCodeForEdit,
+      shopCOde              : this.shopCodeForEdit,
       scheType              : this.scheTypeForEdit,
       ASAPDate              : this.dateFormat(this.ASAPDateForEdit,2),
       custAbbreviations     : this.custAbbreviationsForEdit,
@@ -775,6 +812,7 @@ export class PPSI203Component implements AfterViewInit {
         dataDeliveryRangeMin  :this.dateFormat(item.dataDeliveryRangeMin,2),
         dataDeliveryRangeMax  :this.dateFormat(item.dataDeliveryRangeMax,2),
         processCode           :item.processCode,
+        shopCode              :item.shopCode,
         scheType              :item.scheType,
         ASAPDate              :this.dateFormat(item.ASAPDate,2),
         custAbbreviations     :item.custAbbreviations,
@@ -829,14 +867,15 @@ export class PPSI203Component implements AfterViewInit {
   
         if(worksheet.A1 === undefined || worksheet.B1 === undefined || 
            worksheet.C1 === undefined  || worksheet.D1 === undefined ||
-           worksheet.E1 === undefined || worksheet.F1 === undefined || worksheet.G1 === undefined) {
+           worksheet.E1 === undefined || worksheet.F1 === undefined || worksheet.G1 === undefined
+           || worksheet.H1 === undefined) {
           this.errorMSG('檔案樣板錯誤', '請先下載當月資料後，再透過該檔案調整上傳。');
           this.clearFile();
           return;
         } else if(worksheet.A1.v !== "交期區間MIN" || worksheet.B1.v !== "交期區間MAX" ||
-                  worksheet.C1.v !== "製程碼" || worksheet.D1.v !== "抽數別" || 
-                  worksheet.E1.v !== "最早可投產時間" || worksheet.F1.v !== "不包含客戶" ||
-                  worksheet.G1.v !== "不包含鋼種類別") {
+                  worksheet.C1.v !== "製程碼" || worksheet.D1.v !== "站別" 
+                  || worksheet.E1.v !== "抽數別" || worksheet.F1.v !== "最早可投產時間" 
+                  || worksheet.G1.v !== "不包含客戶" ||worksheet.H1.v !== "不包含鋼種類別") {
           this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載當月資料後，再透過該檔案調整上傳。');
           this.clearFile();
           return;
@@ -857,6 +896,7 @@ export class PPSI203Component implements AfterViewInit {
       let dataDeliveryRangeMin  = this.dateFormat(this.ExcelDateExchange(_data[i].交期區間MIN), 2);
       let dataDeliveryRangeMax  = this.dateFormat(this.ExcelDateExchange(_data[i].交期區間MAX), 2);
       let processCode           = _data[i].製程碼;
+      let shopCode              = _data[i].站別;
       let scheType              = _data[i].抽數別;
       let ASAPDate              = this.dateFormat(this.ExcelDateExchange(_data[i].最早可投產時間), 2);
       let custAbbreviations     = _data[i].不包含客戶;
@@ -902,6 +942,9 @@ export class PPSI203Component implements AfterViewInit {
       } else if(processCode === ''       && scheType === '' &&
                 custAbbreviations === '' && gradeGroup === ''){
         this.errorTXT.push({row: i+2, msg:"[製程碼][抽數別][不包含客戶][不包含鋼種類別]不可同時為空"});
+        this.isERROR = true;
+      }else if(shopCode === '' || shopCode === undefined){
+        this.errorTXT.push({row: i+2, msg:"[站別]不可為空"});
         this.isERROR = true;
       }else if(processCode.length > 8){
         this.errorTXT.push({row: i+2, msg:"[製程碼]字串超過長度"});
@@ -952,6 +995,7 @@ export class PPSI203Component implements AfterViewInit {
         let dataDeliveryRangeMin  = this.dateFormat(this.ExcelDateExchange(_data[i].交期區間MIN), 2).toString();
         let dataDeliveryRangeMax  = this.dateFormat(this.ExcelDateExchange(_data[i].交期區間MAX), 2).toString();
         let processCode           = _data[i].製程碼.toString();
+        let shopCode              = _data[i].站別.toString();
         let scheType              = _data[i].抽數別.toString();
         let ASAPDate              = this.dateFormat(this.ExcelDateExchange(_data[i].最早可投產時間), 2).toString();
         let custAbbreviations     = _data[i].不包含客戶.toString();
@@ -972,6 +1016,7 @@ export class PPSI203Component implements AfterViewInit {
         this.importdata_new.push({dataDeliveryRangeMin: dataDeliveryRangeMin,
                                   dataDeliveryRangeMax: dataDeliveryRangeMax,
                                   processCode: processCode,
+                                  shopCode: shopCode,
                                   scheType: scheType,
                                   ASAPDate: ASAPDate,
                                   custAbbreviations: custAbbreviations,
@@ -999,6 +1044,7 @@ export class PPSI203Component implements AfterViewInit {
             this.dataDeliveryRangeMinForAdd = undefined;           // 交付區間最小日期
             this.dataDeliveryRangeMaxForAdd = undefined;           // 交付區間最大日期
             this.processCodeForAdd          = undefined;           // 製程碼
+            this.shopCodeForAdd             = undefined;
             this.scheTypeForAdd             = undefined;           // 抽數別
             this.ASAPDateForAdd             = undefined;           // 最早可投產時間
             this.custAbbreviationsForAdd    = undefined;           // 客戶
@@ -1058,6 +1104,7 @@ export class PPSI203Component implements AfterViewInit {
     this.dataDeliveryRangeMinForEdit = data.dataDeliveryRangeMin;
     this.dataDeliveryRangeMaxForEdit = data.dataDeliveryRangeMax;
     this.processCodeForEdit          = data.processCode;
+    this.shopCodeForEdit             = data.shopCode;
     this.scheTypeForEdit             = data.scheType;
     this.ASAPDateForEdit             = data.ASAPDate;
 
@@ -1074,6 +1121,7 @@ export class PPSI203Component implements AfterViewInit {
     this.dataDeliveryRangeMinForEdit = undefined;
     this.dataDeliveryRangeMaxForEdit = undefined;
     this.processCodeForEdit          = undefined;
+    this.shopCodeForEdit          = undefined;
     this.scheTypeForEdit             = undefined;
     this.ASAPDateForEdit             = undefined;
     this.custAbbreviationsForEdit    = undefined;
@@ -1163,6 +1211,11 @@ export class PPSI203Component implements AfterViewInit {
     if(scheTypeForEdit === '' || scheTypeForEdit === undefined){
       this.scheTypeForEdit = '-';
     }
+    if(this.shopCodeForEdit == '' || this.shopCodeForEdit == undefined){
+      this.errorMSG("錯誤", "站別不可為空");
+        return;
+    }
+    
     // -----修改資料檢核 end-----------------------------------------
 
     let obj = {
@@ -1170,6 +1223,7 @@ export class PPSI203Component implements AfterViewInit {
       dataDeliveryRangeMin  :this.dateFormat(this.dataDeliveryRangeMinForEdit,2),
       dataDeliveryRangeMax  :this.dateFormat(this.dataDeliveryRangeMaxForEdit,2),
       processCode           :this.processCodeForEdit,
+      shopCode              :this.shopCodeForEdit,
       scheType              :this.scheTypeForEdit,
       ASAPDate              :this.dateFormat(this.ASAPDateForEdit,2),
       UPDATE_USER           :this.USERNAME,
