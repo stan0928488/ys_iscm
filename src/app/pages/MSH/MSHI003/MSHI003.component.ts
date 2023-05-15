@@ -254,6 +254,12 @@ export class MSHI003Component implements AfterViewInit {
 
   }
 
+  shopCodeChange() : void {
+    if(!_.isEmpty(this.shopCodeInputList)){
+      this.equipCodeInputList = [];
+    }
+  }
+
   getEquipCodeList() : void {
     this.equipCodeLoading = true;
 
@@ -398,7 +404,7 @@ export class MSHI003Component implements AfterViewInit {
      });
 
      if(missingNewEpstFlag){
-      this.message.error(`MO:「${missingNewEpst.idNo}」請填寫調整日期。`);
+      this.errorMSG('無法儲存', `MO:「${missingNewEpst.idNo}」有編輯過備註，需填寫調整日期。<br>若需要放棄儲存編輯過的資料，請再重新執行「查詢」即可。`);
       this.isSpinning = false;
       return;
      }
