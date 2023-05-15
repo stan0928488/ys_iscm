@@ -1581,6 +1581,13 @@ listTbppsm014AllData(){
   return this.http.get<any>(endpointUrl);
 }
 
-
+getEquipCodeList(_data){
+  console.log("查詢「站別機台關聯表」所有資料");
+  const body = JSON.stringify(_data);
+  let endpointUrl = this.APIURL + `/FCP/I109/getEquipCodeList`;
+  console.log(`請求API Endpoint Url : ${endpointUrl}`);
+  console.log(`請求API 參數 :${body}`);
+  return this.http.post<any>(endpointUrl, body, this.httpOptions);
+}
 
 }

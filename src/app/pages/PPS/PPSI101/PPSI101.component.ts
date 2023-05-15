@@ -391,6 +391,8 @@ export class PPSI101Component implements AfterViewInit {
         this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
         this.clearFile();
         return;
+      }else{
+        this.Upload();
       }
     }
 

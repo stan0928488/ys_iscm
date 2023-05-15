@@ -116,6 +116,25 @@
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
+
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"
+              >設備庫存下限(單位:MT)
+              <nz-filter-trigger 
+              [nzActive]="searchWipMinValue.length > 0" 
+              [nzDropdownMenu]="wipMinMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+
+              <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"
+              >設備庫存上限(單位:MT)
+              <nz-filter-trigger 
+              [nzActive]="searchWipMaxValue.length > 0" 
+              [nzDropdownMenu]="wipMaxMenu">
+              <span nz-icon nzType="search"></span>
+              </nz-filter-trigger>
+              </th>
+
               <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px"
               >機台群組
               <nz-filter-trigger 
@@ -151,6 +170,8 @@
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHOP_NAME }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CODE }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_NAME }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WIP_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WIP_MAX }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_GROUP }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.wtTypeName }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.validName }}</td>
@@ -177,6 +198,12 @@
                 </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="輸入設備名" [(ngModel)]="editCache7[data.id].data.EQUIP_NAME" />
+                </td>
+                <td>
+                  <nz-input-number nz-width="20%" nz-input placeholder="輸入設備庫存下限" [(ngModel)]="editCache7[data.id].data.WIP_MIN"></nz-input-number>
+                </td>
+                <td>
+                  <nz-input-number nz-width="20%" nz-input placeholder="輸入設備庫存上限" [(ngModel)]="editCache7[data.id].data.WIP_MAX"></nz-input-number>
                 </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="機台群組" [(ngModel)]="editCache7[data.id].data.EQUIP_GROUP" />
@@ -258,6 +285,20 @@
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設備名</td>
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 22%; color: darkblue;" nz-input placeholder="設備名" [(ngModel)]="EQUIP_NAME" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 180px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設備庫存下限(單位:MT)</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <nz-input-number style="width: 22%;" nzPlaceHolder = "設備庫存下限" [(ngModel)]="WIP_MIN" [nzMin]="0" [nzMax]="100000" [nzStep]="1"></nz-input-number>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 180px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設備庫存上限(單位:MT)</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <nz-input-number style="width: 22%;" nzPlaceHolder = "設備庫存上限" [(ngModel)]="WIP_MAX" [nzMin]="0" [nzMax]="100000" [nzStep]="1"></nz-input-number>
           </td>
         </tr>
 
@@ -346,6 +387,26 @@
       <input type="text" nz-input [(ngModel)]="searchEquipNameValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipName()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipName()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #wipMinMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchWipMinValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByWipMin()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByWipMin()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #wipMaxMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="searchWipMaxValue" />
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByWipMax()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByWipMax()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>
