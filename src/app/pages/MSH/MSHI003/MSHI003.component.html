@@ -17,7 +17,7 @@
             </button>
             
             <!-- 匯入EXCEL功能 -->
-            <div style="margin-left:20px;">
+            <div style="margin-left:50px;">
 
                 <input style="width:180px;" type="file" name="file" id="importExcelFile" required (change)="incomingFile($event)"
                 accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
@@ -43,7 +43,7 @@
 
         <div class="flex">
             <span style ="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px;">&nbsp;&nbsp;站別</span>
-            <nz-select nzPlaceHolder="請選擇站別" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="shopCodeInputList" nzShowSearch nzAllowClear (nzOpenChange) = "getShopCodeList()">
+            <nz-select nzPlaceHolder="請選擇站別" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="shopCodeInputList" (ngModelChange)="shopCodeChange()" nzAllowClear (nzOpenChange) = "getShopCodeList()">
                 <nz-option *ngFor="let shopCode of shopCodeOfOption" [nzLabel]="shopCode" [nzValue]="shopCode"></nz-option>
                 <nz-option *ngIf="shopCodeLoading" nzDisabled nzCustomContent>
                     <span nz-icon nzType="loading" class="loading-icon"></span>
