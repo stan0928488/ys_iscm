@@ -101,13 +101,13 @@ export class PPSI101Component implements AfterViewInit {
   // insert1
   insertTab1() {
     let myObj = this;
-    if (this.GRADE_NO === undefined) {
+    if (this.GRADE_NO === undefined || "" === this.GRADE_NO) {
       myObj.message.create("error", "「設定鋼種」不可為空");
       return;
-    } else if (this.SPECIAL_EQUIP_CODE === undefined) {
+    } else if (this.SPECIAL_EQUIP_CODE === undefined || "" === this.SPECIAL_EQUIP_CODE) {
       myObj.message.create("error", "「特殊機台使用」不可為空");
       return;
-    }  else if (this.GRADE_GROUP === undefined) {
+    }  else if (this.GRADE_GROUP === undefined || "" === this.GRADE_GROUP) {
       myObj.message.create("error", "「鋼種類別」不可為空");
       return;
     } else {
@@ -165,13 +165,13 @@ export class PPSI101Component implements AfterViewInit {
       console.log(this.editCache1[id])
 
       let myObj = this;
-      if (this.editCache1[id].data.GRADE_NO === undefined) {
+      if (this.editCache1[id].data.GRADE_NO === undefined || "" === this.editCache1[id].data.GRADE_NO) {
         myObj.message.create("error", "「鋼種」不可為空");
         return;
-      } else if (this.editCache1[id].data.SPECIAL_EQUIP_CODE === undefined) {
+      } else if (this.editCache1[id].data.SPECIAL_EQUIP_CODE === undefined || "" === this.editCache1[id].data.SPECIAL_EQUIP_CODE) {
         myObj.message.create("error", "「特殊機台使用」不可為空");
         return;
-      } else if (this.editCache1[id].data.GRADE_GROUP === undefined) {
+      } else if (this.editCache1[id].data.GRADE_GROUP === undefined || "" === this.editCache1[id].data.GRADE_GROUP) {
         myObj.message.create("error", "「鋼種類別」不可為空");
         return;
       } else {
@@ -391,8 +391,6 @@ export class PPSI101Component implements AfterViewInit {
         this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
         this.clearFile();
         return;
-      }else{
-        this.Upload();
       }
     }
 
@@ -521,9 +519,9 @@ export class PPSI101Component implements AfterViewInit {
       for(let i = 0 ; i<this.displayPPSINP01List.length ; i++ ){
 
         var ppsInP01 = {
-          GRADE_NO: this.displayPPSINP01List[i].GRADE_NO,
-          GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP,
-          SPECIAL_EQUIP_CODE: this.displayPPSINP01List[i].SPECIAL_EQUIP_CODE
+          GRADE_NO: this.displayPPSINP01List[i].GRADE_NO,         
+          SPECIAL_EQUIP_CODE: this.displayPPSINP01List[i].SPECIAL_EQUIP_CODE,
+          GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP
         }
         arr.push(ppsInP01);
       }
