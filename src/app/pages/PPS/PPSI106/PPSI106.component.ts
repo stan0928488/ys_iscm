@@ -178,25 +178,25 @@ export class PPSI106Component implements AfterViewInit {
   // update Save
   saveEdit(id: string): void {
     let myObj = this;
-    if (this.editCache17[id].data.EQUIP_CODE_17 === undefined) {
+    if (this.editCache17[id].data.EQUIP_CODE_17 === undefined || "" === this.editCache17[id].data.EQUIP_CODE_17) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache17[id].data.DIA_MIN_17 === undefined) {
+    } else if (this.editCache17[id].data.DIA_MIN_17 === undefined || "" === this.editCache17[id].data.DIA_MIN_17.toString()) {
       myObj.message.create("error", "「產出尺寸最小值」不可為空");
       return;
-    } else if (this.editCache17[id].data.DIA_MAX_17 === undefined) {
+    } else if (this.editCache17[id].data.DIA_MAX_17 === undefined || "" === this.editCache17[id].data.DIA_MAX_17.toString()) {
       myObj.message.create("error", "「產出尺寸最大值」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SHAPE_TYPE_17 === undefined) {
+    }  else if (this.editCache17[id].data.SHAPE_TYPE_17 === undefined || "" === this.editCache17[id].data.SHAPE_TYPE_17) {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SMALL_ADJUST_CODE_17 === undefined) {
+    }  else if (this.editCache17[id].data.SMALL_ADJUST_CODE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_CODE_17) {
       myObj.message.create("error", "「大調機代碼」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17 === undefined) {
+    }  else if (this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17) {
       myObj.message.create("error", "「小調機公差標準」不可為空");
       return;
-    }   else if (this.editCache17[id].data.FURANCE_BATCH_QTY_17 === undefined) {
+    }   else if (this.editCache17[id].data.FURANCE_BATCH_QTY_17 === undefined || "" === this.editCache17[id].data.FURANCE_BATCH_QTY_17.toString()) {
       myObj.message.create("error", "「爐批數量」不可為空");
       return;
     } else {

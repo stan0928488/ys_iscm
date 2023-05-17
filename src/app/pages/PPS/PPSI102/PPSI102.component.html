@@ -147,16 +147,16 @@
             <tbody>
             <tr *ngFor="let data of RowTable7.data;let i = index" class="editable-row">
               <ng-container *ngIf="!editCache7[data.id].edit; else editTemplate7">
-                <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.PLANT }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.SHOP_CODE }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.SHOP_NAME }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_CODE_1 }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_NAME }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WIP_MIN }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.WIP_MAX }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.EQUIP_GROUP }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.VALID }}</td>
-                <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
+                <td style="text-align:center; padding: 5px; height: 40px; width: 100px;">{{ data.PLANT }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 150px;">{{ data.SHOP_CODE }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.SHOP_NAME }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.EQUIP_CODE_1 }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.EQUIP_NAME }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.WIP_MIN }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.WIP_MAX }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.EQUIP_GROUP }}</td>
+                <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.VALID }}</td>
+                <td style="text-align:center; padding: 0px; height: 40px; width: 120px;">
                   <a (click)="editRow(data.id)">修改</a>&nbsp;
                   <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
                 </td>
