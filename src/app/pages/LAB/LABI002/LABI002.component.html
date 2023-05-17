@@ -1,0 +1,264 @@
+<nz-content style="margin:0 16px;">
+    <nz-breadcrumb style="margin:16px 0;">
+      <nz-breadcrumb-item>實驗室工時</nz-breadcrumb-item>
+      <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+      <nz-breadcrumb-item>實驗室取樣時間設定</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
+        <div class="wrap">
+            <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-top: 20px; margin-left: 20px;"
+                nzType="primary"
+                [nzSize]="'large'"
+                (click)="openSampleTimeSettingInput()"
+        ><span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+        </button>
+        </div>
+
+        <nz-table #tblabm002RowTable nzBordered  [nzData]="displayTblabm002List" [nzPageSize]="20" [nzScroll]="{ y: '1200px'}" style="margin-top: 50px; margin-bottom: 200px; border:3px #cccccc solid;" cellpadding="10" border='1'>
+            <thead>
+                <tr>
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                      <font size="3.5"><b>ID</b></font>
+                              <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                <span nz-icon nzType="search"></span>
+                              </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>星期起</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                  <span nz-icon nzType="search"></span>
+                            </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                    <font size="3.5"><b>時間起</b></font>
+                            <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                <span nz-icon nzType="search"></span>
+                            </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>星期迄</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>時間迄</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>天數</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let data of tblabm002RowTable.data;let i = index">
+                    <ng-container *ngIf="!editCache[data.id].isEdit; else editTemplate">
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.id }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.startWeekDay }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.startTime | date:'HH:mm:ss' }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.endWeekDay }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.endTime | date:'HH:mm:ss'}}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.days }}</td>
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a id="revise" (click)="editRowData(data.id)">
+                              <span nz-icon nzType="edit" nzTheme="outline"></span>
+                              修改
+                            </a>|
+                            <a id="delete" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRowData(data.id)">
+                              <span nz-icon nzType="delete" nzTheme="outline"></span>
+                              刪除
+                            </a>
+                          </td>
+                    </ng-container>
+
+                    <ng-template #editTemplate>
+
+                        <td nzWidth="3%" style="text-align:center; padding: 5px; height: 60px;">
+                            {{ editCache[data.id].data.id }}
+                        </td>
+
+                        <td>
+                            <nz-select style="width: 120px;"
+                                [(ngModel)]="editCache[data.id].data.startWeekDay"
+                                nzPlaceHolder="星期起"
+                                (ngModelChange)="editStartWeekDayChange(editCache[data.id].data.startWeekDay, data.id)" 
+                                nzAllowClear
+                                [nzOptions]="editStartWeekDayList">
+                            </nz-select>
+                        </td>    
+                        
+                        <td>
+                            <nz-time-picker 
+                                [(ngModel)]="editCache[data.id].data.startTime" 
+                                nzPlaceHolder="時間起"
+                                nzFormat="H:m"
+                                [nzMinuteStep]="30"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                (ngModelChange)="startTimeChange(data.id, editCache[data.id].data.startTime)"
+                                [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                            </nz-time-picker>
+                        </td>
+
+                        <td>
+                            <nz-select style="width: 120px;"
+                                [(ngModel)]="editCache[data.id].data.endWeekDay"
+                                nzPlaceHolder="星期迄"
+                                nzAllowClear
+                                (ngModelChange)="endWeekDayChange(data.id, editCache[data.id].data.endWeekDay)" 
+                                [nzOptions]="editEndWeekDayList">
+                            </nz-select>
+                        </td>
+
+                        <td>
+                            <nz-time-picker 
+                                [(ngModel)]="editCache[data.id].data.endTime" 
+                                nzPlaceHolder="時間迄"
+                                nzFormat="H:m"
+                                [nzMinuteStep]="30"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                [nzDisabledHours]="disabledHours"
+                                [nzDisabledMinutes]="disabledMinutes"
+                                [nzDisabled]="endTimeDisabled"
+                                [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                            </nz-time-picker>
+                        </td>
+
+                        <td>
+                            <nz-input-number 
+                                style="width: 110px; margin-left:10px;" 
+                                nzPlaceHolder = "請輸入天數" 
+                                [(ngModel)]="editCache[data.id].data.days" 
+                                [nzMin]="0" [nzMax]="100" 
+                                [nzStep]="1">
+                            </nz-input-number>
+                        </td>
+
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a (click)="saveEdit(data.id)">
+                              <span nz-icon nzType="save" nzTheme="outline"></span>
+                              確認
+                            </a>|
+                            <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              取消
+                            </a>
+                          </td>
+                    </ng-template>
+                </tr>
+            </tbody>
+
+        </nz-table>
+
+
+
+
+    </nz-spin>
+
+    <!-- 新增實驗室靜態資料 -->
+    <nz-modal
+        [(nzVisible)]="isVisibleSampleTimeSetting"
+        [nzOkLoading]="isOkLoading"
+        [nzWidth]="850" 
+        [nzTitle]="repareTitle" 
+        [nzContent]="SampleTimeSettingInputContent" 
+        [nzMaskClosable]="false"
+        (nzOnOk)="insertSampleTimeSetting()"
+        [nzOkText]="'確認新增'"
+        (nzOnCancel)="cancelSampleTimeSettingInput()">
+
+    <ng-template #repareTitle>新增實驗室取樣時間設定</ng-template>
+    <ng-template #SampleTimeSettingInputContent>
+
+        <div class="wrapInput">
+            <div class="txt">
+                <span>取樣時間設定</span> 
+            </div>
+            <div class="select">
+
+                <nz-select style="width: 120px; margin-left:10px; margin-right: 5px;"
+                    [(ngModel)]="startWeekDay"
+                    nzPlaceHolder="星期起"
+                    (ngModelChange)="startWeekDayChange(startWeekDay)" 
+                    nzAllowClear
+                    [nzOptions]="startWeekDayList">
+                </nz-select>
+
+                <nz-time-picker 
+                    [(ngModel)]="startTime" 
+                    nzPlaceHolder="時間起"
+                    nzFormat="H:m"
+                    [nzMinuteStep]="30"
+                    [nzNowText]="'Now'"
+                    [nzOkText]="'確認'"
+                    (ngModelChange)="startTimeChange(null, null)"
+                    [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                </nz-time-picker>
+
+                <span style="margin: 0 20px;">~</span> 
+
+                <nz-select style="width: 120px; margin-left:10px; margin-right: 5px;"
+                    [(ngModel)]="endWeekDay"
+                    nzPlaceHolder="星期迄"
+                    nzAllowClear
+                    (ngModelChange)="endWeekDayChange(null, null)" 
+                    [nzOptions]="endWeekDayList">
+                </nz-select>
+
+                <nz-time-picker 
+                    [(ngModel)]="endTime" 
+                    nzPlaceHolder="時間迄"
+                    nzFormat="H:m"
+                    [nzMinuteStep]="30"
+                    [nzNowText]="'Now'"
+                    [nzOkText]="'確認'"
+                    [nzDisabledHours]="disabledHours"
+                    [nzDisabledMinutes]="disabledMinutes"
+                    [nzDisabled]="endTimeDisabled"
+                    [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                </nz-time-picker>
+                
+            </div>
+
+        </div>
+
+        <div class="wrapInput"  style="margin-top: 10px;">
+            <div class="txt">
+                <span>天數</span>
+            </div>
+            <div class="select">
+                <nz-input-number 
+                    style="width: 110px; margin-left:10px;" 
+                    nzPlaceHolder = "請輸入天數" 
+                    [(ngModel)]="days" 
+                    [nzMin]="0" [nzMax]="100" 
+                    [nzStep]="1">
+                </nz-input-number>
+            </div>
+        </div>
+
+
+
+    </ng-template>
+
+    </nz-modal>
+</nz-content>

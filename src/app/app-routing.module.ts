@@ -74,6 +74,7 @@ import { AuthGuardService as AuthGuard } from "./services/auth/auth-guard.servic
 import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
 import { MSHI003Component } from "./pages/MSH/MSHI003/MSHI003.component";
 import { MSHI003CanDeactivateGuard } from "./pages/MSH/MSHI003/MSHI003.can.deactivate.guard";
+import { LABI002Component } from "./pages/LAB/LABI002/LABI002.component";
 
 const routes: Routes = [
   {
@@ -238,7 +239,8 @@ const routes: Routes = [
     path: "LABSet",
     children: [   
       { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
-      { path: "I001", component: LABI001Component }
+      { path: "I001", component: LABI001Component },
+      { path: "I002", component: LABI002Component } // 實驗室取樣時間設定
     ],
     canActivate: [AuthGuard]
   },
