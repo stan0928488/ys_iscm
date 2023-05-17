@@ -112,22 +112,22 @@ export class PPSI108Component implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.SHOP_CODE_8 === undefined) {
+    if (this.SHOP_CODE_8 === undefined || "" === this.SHOP_CODE_8) {
       myObj.message.create("error", "「站號」不可為空");
       return;
-    } else if (this.EQUIP_CODE_8 === undefined) {
+    } else if (this.EQUIP_CODE_8 === undefined || "" === this.EQUIP_CODE_8) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.SHAPE_TYPE_8 === undefined) {
+    } else if (this.SHAPE_TYPE_8 === undefined || "" === this.SHAPE_TYPE_8) {
       myObj.message.create("error", "「產出形狀」不可為空");
       return;
-    }  else if (this.DIA_MIN_8 === undefined) {
+    }  else if (this.DIA_MIN_8 === undefined || "" === this.DIA_MIN_8) {
       myObj.message.create("error", "「產出尺寸最小值」不可為空");
       return;
-    }  else if (this.DIA_MAX_8 === undefined) {
+    }  else if (this.DIA_MAX_8 === undefined || "" === this.DIA_MAX_8) {
       myObj.message.create("error", "「產出尺寸最大值」不可為空");
       return;
-    }   else if (this.MINS_8 === undefined) {
+    }   else if (this.MINS_8 === undefined || "" === this.MINS_8) {
       myObj.message.create("error", "「加工時間」不可為空");
       return;
     }else {

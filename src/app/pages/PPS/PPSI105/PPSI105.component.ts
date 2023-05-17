@@ -184,25 +184,25 @@ export class PPSI105Component implements AfterViewInit {
   // update Save
   saveEdit(id: string): void {
     let myObj = this;
-    if (this.editCache4[id].data.EQUIP_CODE_4 === undefined) {
+    if (this.editCache4[id].data.EQUIP_CODE_4 === undefined || "" === this.editCache4[id].data.EQUIP_CODE_4) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache4[id].data.DIA_MIN_4 === undefined) {
+    } else if (this.editCache4[id].data.DIA_MIN_4 === undefined || "" === this.editCache4[id].data.DIA_MIN_4.toString()) {
       myObj.message.create("error", "「產出尺寸最小值」不可為空");
       return;
-    } else if (this.editCache4[id].data.DIA_MAX_4 === undefined) {
+    } else if (this.editCache4[id].data.DIA_MAX_4 === undefined || "" === this.editCache4[id].data.DIA_MAX_4.toString()) {
       myObj.message.create("error", "「產出尺寸最大值」不可為空");
       return;
-    } else if (this.editCache4[id].data.SHAPE_TYPE_4 === undefined) {
+    } else if (this.editCache4[id].data.SHAPE_TYPE_4 === undefined || "" === this.editCache4[id].data.SHAPE_TYPE_4) {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
-    } else if (this.editCache4[id].data.BIG_ADJUST_CODE_4 === undefined) {
+    } else if (this.editCache4[id].data.BIG_ADJUST_CODE_4 === undefined || "" === this.editCache4[id].data.BIG_ADJUST_CODE_4) {
       myObj.message.create("error", "「大調機代碼」不可為空");
       return;
-    } else if (this.editCache4[id].data.SMALL_ADJUST_TOLERANCE_4 === undefined) {
+    } else if (this.editCache4[id].data.SMALL_ADJUST_TOLERANCE_4 === undefined || "" === this.editCache4[id].data.SMALL_ADJUST_TOLERANCE_4) {
       myObj.message.create("error", "「小調機公差標準」不可為空");
       return;
-    } else if (this.editCache4[id].data.FURANCE_BATCH_QTY_4 === undefined) {
+    } else if (this.editCache4[id].data.FURANCE_BATCH_QTY_4 === undefined || "" === this.editCache4[id].data.FURANCE_BATCH_QTY_4.toString()) {
       myObj.message.create("error", "「爐批數量」不可為空");
       return;
     } else {
