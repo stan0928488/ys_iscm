@@ -396,7 +396,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = "";
     if(_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/insertI108Tab1Save`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I108 updateI108Save
@@ -404,14 +404,14 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = "";
     if(_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/updateI108Tab1Save`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I108 delI108Data 刪除資料
   delI108Data(_type, _ID) {
     let nonbarUrl = "";
     if(_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
+    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/delI108Tab1Data/${_ID}`;
     return this.http.post(queryUrl, "", this.httpOptions);
   }
   // I108 importI108Excel EXCEL匯入

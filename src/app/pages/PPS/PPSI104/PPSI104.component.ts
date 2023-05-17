@@ -202,31 +202,31 @@ export class PPSI104Component implements AfterViewInit {
   // update Save
   saveEdit(id: string): void {
     let myObj = this;
-    if (this.editCache3[id].data.SHOP_CODE === undefined) {
+    if (this.editCache3[id].data.SHOP_CODE === undefined || "" === this.editCache3[id].data.SHOP_CODE) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache3[id].data.EQUIP_CODE === undefined) {
+    } else if (this.editCache3[id].data.EQUIP_CODE === undefined || "" === this.editCache3[id].data.EQUIP_CODE) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache3[id].data.LOAD_TIME === undefined) {
+    } else if (this.editCache3[id].data.LOAD_TIME === undefined || "" === this.editCache3[id].data.LOAD_TIME.toString()) {
       myObj.message.create("error", "「上下料」不可為空");
       return;
-    } else if (this.editCache3[id].data.TRANSFER_TIME === undefined) {
+    } else if (this.editCache3[id].data.TRANSFER_TIME === undefined || "" === this.editCache3[id].data.TRANSFER_TIME.toString()) {
       myObj.message.create("error", "「搬運」不可為空");
       return;
-    }  else if (this.editCache3[id].data.OTHER_TIME === undefined) {
+    }  else if (this.editCache3[id].data.OTHER_TIME === undefined || "" === this.editCache3[id].data.OTHER_TIME.toString()) {
       myObj.message.create("error", "「其他整備」不可為空");
       return;
-    }  else if (this.editCache3[id].data.BIG_ADJUST_TIME === undefined) {
+    }  else if (this.editCache3[id].data.BIG_ADJUST_TIME === undefined || "" === this.editCache3[id].data.BIG_ADJUST_TIME.toString()) {
       myObj.message.create("error", "「大調機」不可為空");
       return;
-    }  else if (this.editCache3[id].data.SMALL_ADJUST_TIME === undefined) {
+    }  else if (this.editCache3[id].data.SMALL_ADJUST_TIME === undefined || "" === this.editCache3[id].data.SMALL_ADJUST_TIME.toString()) {
       myObj.message.create("error", "「小調機」不可為空");
       return;
-    }  else if (this.editCache3[id].data.RETURN_TIME === undefined) {
+    }  else if (this.editCache3[id].data.RETURN_TIME === undefined || "" === this.editCache3[id].data.RETURN_TIME.toString()) {
       myObj.message.create("error", "「退料」不可為空");
       return;
-    }   else if (this.editCache3[id].data.COOLING_TIME === undefined) {
+    }   else if (this.editCache3[id].data.COOLING_TIME === undefined || "" === this.editCache3[id].data.COOLING_TIME.toString())  {
       myObj.message.create("error", "「冷卻」不可為空");
       return;
     } else {

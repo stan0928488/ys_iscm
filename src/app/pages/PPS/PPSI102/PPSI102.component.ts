@@ -184,16 +184,16 @@ export class PPSI102Component implements AfterViewInit {
   // update Save
   saveEdit(id: string): void {
     let myObj = this;
-    if (this.editCache7[id].data.PLANT === undefined) {
+    if (this.editCache7[id].data.PLANT === undefined || "" === this.editCache7[id].data.PLANT) {
       myObj.message.create("error", "「工廠別」不可為空");
       return;
-    } else if (this.editCache7[id].data.SHOP_CODE === undefined) {
+    } else if (this.editCache7[id].data.SHOP_CODE === undefined || "" === this.editCache7[id].data.SHOP_CODE) {
       myObj.message.create("error", "「站別代碼」不可為空");
       return;
-    } else if (this.editCache7[id].data.EQUIP_CODE_1 === undefined) {
+    } else if (this.editCache7[id].data.EQUIP_CODE_1 === undefined || "" === this.editCache7[id].data.EQUIP_CODE_1) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache7[id].data.VALID === undefined) {
+    } else if (this.editCache7[id].data.VALID === undefined || "" === this.editCache7[id].data.VALID) {
       myObj.message.create("error", "「有效碼」不可為空");
       return;
     }else {

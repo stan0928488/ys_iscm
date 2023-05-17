@@ -211,34 +211,34 @@ export class PPSI107Component implements AfterViewInit {
   saveEdit(id: string): void {
     console.log("更改線速表");
     let myObj = this;
-    if (this.editCache05[id].data.SHOP_CODE_5 === undefined) {
+    if (this.editCache05[id].data.SHOP_CODE_5 === undefined || "" === this.editCache05[id].data.SHOP_CODE_5) {
       myObj.message.create("error", "「線別」不可為空");
       return;
-    } else if (this.editCache05[id].data.EQUIP_CODE_5 === undefined) {
+    } else if (this.editCache05[id].data.EQUIP_CODE_5 === undefined || "" === this.editCache05[id].data.EQUIP_CODE_5) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    }  else if (this.editCache05[id].data.SHAPE_TYPE_5 === undefined) {
+    }  else if (this.editCache05[id].data.SHAPE_TYPE_5 === undefined || "" === this.editCache05[id].data.SHAPE_TYPE_5) {
       myObj.message.create("error", "「產品型態」不可為空");
       return;
-    }   else if (this.editCache05[id].data.GRADE_GROUP_5 === undefined) {
+    }   else if (this.editCache05[id].data.GRADE_GROUP_5 === undefined || "" === this.editCache05[id].data.GRADE_GROUP_5) {
       myObj.message.create("error", "「鋼種群組」不可為空");
       return;
-    } else if (this.editCache05[id].data.REDUCTION_RATE_MIN_5 === undefined) {
+    } else if (this.editCache05[id].data.REDUCTION_RATE_MIN_5 === undefined || "" === this.editCache05[id].data.REDUCTION_RATE_MIN_5.toString()) {
       myObj.message.create("error", "「減面率MIN」不可為空");
       return;
-    }   else if (this.editCache05[id].data.REDUCTION_RATE_MAX_5 === undefined) {
+    }   else if (this.editCache05[id].data.REDUCTION_RATE_MAX_5 === undefined || "" === this.editCache05[id].data.REDUCTION_RATE_MAX_5.toString()) {
       myObj.message.create("error", "「減面率MAX」不可為空");
       return;
-    }  else if (this.editCache05[id].data.DIA_MIN_5 === undefined) {
+    }  else if (this.editCache05[id].data.DIA_MIN_5 === undefined || "" === this.editCache05[id].data.DIA_MIN_5.toString()) {
       myObj.message.create("error", "「最小產出尺寸不可為空");
       return;
-    } else if (this.editCache05[id].data.DIA_MAX_5 === undefined) {
+    } else if (this.editCache05[id].data.DIA_MAX_5 === undefined || "" === this.editCache05[id].data.DIA_MAX_5.toString()) {
       myObj.message.create("error", "「最大產出尺寸」不可為空");
       return;
-    } else if (this.editCache05[id].data.SPEED_5 === undefined) {
+    } else if (this.editCache05[id].data.SPEED_5 === undefined || "" === this.editCache05[id].data.SPEED_5.toString()) {
       myObj.message.create("error", "「線速」不可為空");
       return;
-    } else if (this.editCache05[id].data.EQUIP_CAP_5 === undefined) {
+    } else if (this.editCache05[id].data.EQUIP_CAP_5 === undefined || "" === this.editCache05[id].data.EQUIP_CAP_5.toString()) {
       myObj.message.create("error", "「日產出量」不可為空");
       return;}
       else {

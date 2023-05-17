@@ -105,6 +105,16 @@
               </nz-filter-trigger>
             </th>
             <th nzCustomFilter
+            style="width: 50px;  text-align:center; background-color: #eee; padding: 0px; height: 55px;"
+            >站別
+            <nz-filter-trigger 
+              [(nzVisible)]="visibleByShopCodeValue" 
+              [nzActive]="searchByShopCodeValue.length > 0" 
+              [nzDropdownMenu]="menu06">
+              <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
+          </th>
+            <th nzCustomFilter
               style="width: 50px;  text-align:center; background-color: #eee; padding: 0px; height: 55px;"
               >抽數別
               <nz-filter-trigger 
@@ -145,7 +155,9 @@
             <td style="width: 50px; height:min-content; padding: 0px; text-align:center;">
               {{data.processCode}}
             </td>
-
+            <td style="width: 50px; height:min-content; padding: 0px; text-align:center;">
+              {{data.shopCode}}
+            </td>
             <td style="width: 50px; height:min-content; padding: 0px; text-align:center;">
               {{data.scheType}}
             </td>
@@ -201,6 +213,15 @@
             <input type="text" nz-input [(ngModel)]="searchByProcessCodeValue" />
             <button nz-button nzSize="small" nzType="primary" (click)="searchByProcessCode()" class="search-button">查詢</button>
             <button nz-button nzSize="small" (click)="resetByProcessCode()">重設</button>
+          </div>
+        </div>
+      </nz-dropdown-menu>
+      <nz-dropdown-menu #menu06="nzDropdownMenu">
+        <div class="ant-table-filter-dropdown">
+          <div class="search-box">
+            <input type="text" nz-input [(ngModel)]="searchByShopCodeValue" />
+            <button nz-button nzSize="small" nzType="primary" (click)="searchByShopCode()" class="search-button">查詢</button>
+            <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
           </div>
         </div>
       </nz-dropdown-menu>
@@ -265,6 +286,17 @@
             <input style="width: 22%; color: darkblue; margin-left:10px;" 
                    nz-input [disabled]="false" 
                    [(ngModel)]="processCodeForAdd"
+                   maxlength="8" />
+          </td>
+        </tr>
+        <tr style="background-color: #eee;">
+          <td style = "width: 100px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">
+            &nbsp;&nbsp;站別
+          </td>
+          <td style = "width: 600px;">
+            <input style="width: 22%; color: darkblue; margin-left:10px;" 
+                   nz-input [disabled]="false" 
+                   [(ngModel)]="shopCodeForAdd"
                    maxlength="8" />
           </td>
         </tr>
@@ -424,7 +456,7 @@
           <td style = "width: 68px; background-color: #eee; font-weight: bold;">
             &nbsp;&nbsp;交期區間
           </td>
-          <td>
+          <td style = "width:150px;">
             <nz-date-picker
               nzFormat="yyyy-MM-dd"
               [(ngModel)]="dataDeliveryRangeMinForEdit"
@@ -443,6 +475,16 @@
             <input style="width: 68px; color: darkblue;" 
                   nz-input 
                   [(ngModel)]="processCodeForEdit"
+                  [disabled] = " UpdateModDisabledFlag ? true : false "
+                  maxlength="8" />
+          </td>
+          <td style = "width: 66px; background-color: #eee; font-weight: bold; text-align: center;">
+            站別
+          </td>
+          <td>
+            <input style="width: 68px; color: darkblue;" 
+                  nz-input 
+                  [(ngModel)]="shopCodeForEdit"
                   [disabled] = " UpdateModDisabledFlag ? true : false "
                   maxlength="8" />
           </td>

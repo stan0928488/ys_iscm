@@ -245,58 +245,58 @@ export class PPSI103Component implements AfterViewInit {
     console.log(this.editCache2[id])
 
     let myObj = this;
-    if (this.editCache2[id].data.SHOP_CODE_2 === undefined) {
+    if (this.editCache2[id].data.SHOP_CODE_2 === undefined || "" === this.editCache2[id].data.SHOP_CODE_2) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache2[id].data.EQUIP_GROUP_2 === undefined) {
+    } else if (this.editCache2[id].data.EQUIP_GROUP_2 === undefined || "" === this.editCache2[id].data.EQUIP_GROUP_2) {
       myObj.message.create("error", "「機台群組」不可為空");
       return;
-    } else if (this.editCache2[id].data.EQUIP_CODE_2 === undefined) {
+    } else if (this.editCache2[id].data.EQUIP_CODE_2 === undefined || "" === this.editCache2[id].data.EQUIP_CODE_2) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache2[id].data.PROCESS_CODE_2 === undefined) {
+    } else if (this.editCache2[id].data.PROCESS_CODE_2 === undefined || "" === this.editCache2[id].data.PROCESS_CODE_2) {
       myObj.message.create("error", "「製程碼」不可為空");
       return;
-    } else if (this.editCache2[id].data.GRADE_GROUP_2 === undefined) {
+    } else if (this.editCache2[id].data.GRADE_GROUP_2 === undefined || "" === this.editCache2[id].data.GRADE_GROUP_2) {
       myObj.message.create("error", "「鋼種類別」不可為空");
       return;
-    } else if (this.editCache2[id].data.SHAPE_TYPE_2 === undefined) {
+    } else if (this.editCache2[id].data.SHAPE_TYPE_2 === undefined || "" === this.editCache2[id].data.SHAPE_TYPE_2) {
       myObj.message.create("error", "「形狀」不可為空");
       return;
-    } else if (this.editCache2[id].data.INPUT_DIA_MAX_2 === undefined) {
+    } else if (this.editCache2[id].data.INPUT_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.INPUT_DIA_MAX_2.toString()) {
       myObj.message.create("error", "「投入尺寸上限」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_DIA_MIN_2 === undefined) {
+    } else if (this.editCache2[id].data.CAPABILITY_DIA_MIN_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MIN_2.toString()) {
       myObj.message.create("error", "「設備能力最小尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_DIA_MAX_2 === undefined) {
+    } else if (this.editCache2[id].data.CAPABILITY_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MAX_2.toString()) {
       myObj.message.create("error", "「設備能力最大尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MIN_2 === undefined) {
+    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MIN_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MIN_2.toString()) {
       myObj.message.create("error", "「設備能力最小長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MAX_2 === undefined) {
+    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MAX_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MAX_2.toString()) {
       myObj.message.create("error", "「設備能力最大長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_DIA_MIN_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTIMAL_DIA_MIN_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MIN_2.toString()) {
       myObj.message.create("error", "「最佳能力最小尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_DIA_MAX_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTIMAL_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MAX_2.toString()) {
       myObj.message.create("error", "「最佳能力最大尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MIN_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MIN_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MIN_2.toString()) {
       myObj.message.create("error", "「最佳能力最小長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MAX_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MAX_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MAX_2.toString())  {
       myObj.message.create("error", "「上最佳能力最大長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_1_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTION_EQUIP_1_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_1_2.toString()) {
       myObj.message.create("error", "「替代機台順位1」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_2_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTION_EQUIP_2_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_2_2.toString()) {
       myObj.message.create("error", "「替代機台順位2」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_3_2 === undefined) {
+    } else if (this.editCache2[id].data.OPTION_EQUIP_3_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_3_2.toString()) {
       myObj.message.create("error", "「替代機台順位3」不可為空");
       return;
     } 
