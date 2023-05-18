@@ -63,7 +63,9 @@
           <tr [class] ="itemindex%2 === 0 ? '':'tr-bg'">
             <ng-container *ngFor="let i of item let iindex = index" >
               <!-- <ng-container *ngIf="itemindex%2 === 0 && iindex > 2 ; else content"> -->
-              <td nzWidth="5%" *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
+              <td nzWidth="5%" *ngIf="i.showCell && i.value !== 'last'"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>
+              <td nzWidth="5%" *ngIf="i.showCell && i.value === 'last'"  >
+                <button nz-button nzType="primary" (click) = "openDtl(item)">明細</button></td>
               <!-- </ng-container> -->
               <!-- <ng-template #content >
                 <td style="width: 80px;"    *ngIf="i.showCell"    [attr.colspan] = "i.mergeCol > 0 ? i.mergeCol : 1 "  [attr.rowspan] = "i.mergeRow > 0 ? i.mergeRow : 1 "  >{{i.value === null ? '-' : i.value}}</td>

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { registerLocaleData, DatePipe } from '@angular/common';
-//import { zh_TW, NzI18nService,NzInputModule,NzTimePickerModule,NzDatePickerModule,NzSelectModule , NzMessageService ,NzSpinModule   } from "ng-zorro-antd";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
@@ -351,7 +350,7 @@ export class PPSR301Component implements OnInit {
     hoverContent:'機台負荷'
   },
   {
-    value : '' ,
+    value : '顯示明細' ,
     mergeRow: 2 ,
     mergeCol: 0,
     showCell : true
@@ -827,8 +826,14 @@ export class PPSR301Component implements OnInit {
     this.isVisibleUse = false;
   }
 
-
-
+  // 展開明細第二層
+  openDtl(i) {
+    
+    this.message.create("error", "開發中，還沒寫完");
+    console.log(i[0].value);
+    console.log(i[2].value);
+    console.log(i[3].value);
+  }
 
 
 

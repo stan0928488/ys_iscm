@@ -119,7 +119,7 @@ export class PPSI220Component implements AfterViewInit {
     this.getRunFCPCount();
     
     if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'UR10369' || this.USERNAME === 'UR11994' ||
-       this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084') {
+       this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084' || this.USERNAME === 'UR11118') {
       this.byUserShow = true;
     }
 
