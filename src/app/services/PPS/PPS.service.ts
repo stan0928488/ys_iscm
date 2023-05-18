@@ -1449,6 +1449,7 @@ export class PPSService {
     const body = JSON.stringify('');
     console.log("PublishDataToMES");
     let queryUrl = `http://${hostName}:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&${_code}`;
+    // let queryUrl = `http:///ys-pps.walsin.corp:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&${_code}`;
     return this.http.post(queryUrl, body, {});
   }
 

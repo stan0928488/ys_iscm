@@ -159,6 +159,18 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true
     },
+    {
+      value : 'V' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : ' -明細- ' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
 
   ] ;
   theadList = [
@@ -193,6 +205,14 @@ export class PPSR301Component implements OnInit {
     showCell : true,
     hoverTitle:'說明',
     hoverContent:'計算當月往後，共三個月'
+  },
+  {
+    value : '已生產量' ,
+    mergeRow: 2 ,
+    mergeCol: 0,
+    showCell : true,
+    hoverTitle:'說明',
+    hoverContent:'MES代入已過機量'
   },
   {
     value : '最大負荷量' ,
@@ -250,7 +270,38 @@ export class PPSR301Component implements OnInit {
     hoverTitle:'說明',
     hoverContent:'負荷量'
   },
-
+  {
+    value : '庫存分佈' ,
+    mergeRow: 0 ,
+    mergeCol: 4,
+    showCell : true,
+    hoverTitle:'說明',
+    hoverContent:'庫存分佈'
+  },
+  {
+    value : '庫存分佈' ,
+    mergeRow: 0 ,
+    mergeCol: 4,
+    showCell : false,
+    hoverTitle:'說明',
+    hoverContent:'庫存分佈'
+  },
+  {
+    value : '庫存分佈' ,
+    mergeRow: 0 ,
+    mergeCol: 4,
+    showCell : false,
+    hoverTitle:'說明',
+    hoverContent:'庫存分佈'
+  },
+  {
+    value : '庫存分佈' ,
+    mergeRow: 0 ,
+    mergeCol: 4,
+    showCell : false,
+    hoverTitle:'說明',
+    hoverContent:'庫存分佈'
+  },
   {
     value : '機台負荷' ,
     mergeRow: 0 ,
@@ -300,36 +351,10 @@ export class PPSR301Component implements OnInit {
     hoverContent:'機台負荷'
   },
   {
-    value : '庫存分佈' ,
-    mergeRow: 0 ,
-    mergeCol: 4,
-    showCell : true,
-    hoverTitle:'說明',
-    hoverContent:'庫存分佈'
-  },
-  {
-    value : '庫存分佈' ,
-    mergeRow: 0 ,
-    mergeCol: 4,
-    showCell : false,
-    hoverTitle:'說明',
-    hoverContent:'庫存分佈'
-  },
-  {
-    value : '庫存分佈' ,
-    mergeRow: 0 ,
-    mergeCol: 4,
-    showCell : false,
-    hoverTitle:'說明',
-    hoverContent:'庫存分佈'
-  },
-  {
-    value : '庫存分佈' ,
-    mergeRow: 0 ,
-    mergeCol: 4,
-    showCell : false,
-    hoverTitle:'說明',
-    hoverContent:'庫存分佈'
+    value : '' ,
+    mergeRow: 2 ,
+    mergeCol: 0,
+    showCell : true
   },
   ],[
     {
@@ -358,12 +383,17 @@ export class PPSR301Component implements OnInit {
       hoverTitle:'說明'
     },
     {
+      value : '已生產量' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : false
+    },
+    {
       value : '最大負荷量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : false
     },
-
     {
       value : '剩餘負荷量' ,
       mergeRow: 0 ,
@@ -413,6 +443,39 @@ export class PPSR301Component implements OnInit {
       hoverContent:'來源：FCP結果表，總工時(不含停機)，換算成天'
     },
     {
+      value : '軋欠' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true,
+      hoverTitle:'說明',
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=1 的總重，依機台、交期月份顯示'
+    },
+    {
+      value : '已軋未到料' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true,
+      hoverTitle:'說明',
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=0 & 合併單號開頭=0C 的總重，依機台、交期月份顯示'
+    },
+
+    {
+      value : 'WIP未到站' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true,
+      hoverTitle:'說明',
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別不等於現況站別 的總重，依機台、交期月份顯示'
+    },
+    {
+      value : 'WIP已到站' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true,
+      hoverTitle:'說明',
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別 = 現況站別 & SORT群組=1 的總重，依機台、交期月份顯示',
+    },
+    {
       value : 'R' ,
       mergeRow: 0 ,
       mergeCol: 0,
@@ -453,45 +516,12 @@ export class PPSR301Component implements OnInit {
       hoverContent:'來源：FCP結果表，不含跨天的總重，型態限定為 I，依機台、交期月份顯示'
     },
     {
-      value : '截捲' ,
+      value : '解捲' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
       hoverContent:'來源：FCP結果表，不含跨天的總重，製程碼限定為 J，依機台、交期月份顯示'
-    },
-    {
-      value : '軋欠' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true,
-      hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=1 的總重，依機台、交期月份顯示'
-    },
-    {
-      value : '已軋未到料' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true,
-      hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=0 & 合併單號開頭=0C 的總重，依機台、交期月份顯示'
-    },
-
-    {
-      value : 'WIP未到站' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true,
-      hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別不等於現況站別 的總重，依機台、交期月份顯示'
-    },
-    {
-      value : 'WIP已到站' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true,
-      hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別 = 現況站別 & SORT群組=1 的總重，依機台、交期月份顯示',
     },
 
   ]];
@@ -524,12 +554,17 @@ export class PPSR301Component implements OnInit {
       showCell : true
     },
     {
+      value : '由MES取得直棒各工站/機台實際過機量(區分生產訂單交期月份)' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
       value : '依據剩餘負荷量與可再負荷量加總顯示交期月份的最大負荷量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
-
     {
       value : '依據交期月份角度計算目前剩餘負荷量' ,
       mergeRow: 0 ,
@@ -567,6 +602,31 @@ export class PPSR301Component implements OnInit {
       showCell : true
     },
     {
+      value : '交期月份中訂單的軋鋼尚未產出之欠量' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : '交期月份中訂單於軋鋼已產出但尚未到直棒廠重量' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+
+    {
+      value : '交期月份中訂單中來料已到直棒廠生產，但尚未到該站生產的重量' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : '交期月份中訂單中來料已到直棒廠生產，且已到站待生產的重量' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
       value : '計算交期月份現況各機台生產的產品型態分布量' ,
       mergeRow: 0 ,
       mergeCol: 0,
@@ -597,33 +657,14 @@ export class PPSR301Component implements OnInit {
       showCell : true
     },
     {
-      value : '交期月份於當站為截捲製程的重量' ,
+      value : '交期月份於當站為解捲製程的重量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : '交期月份中訂單的軋鋼尚未產出之欠量' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : '交期月份中訂單於軋鋼已產出但尚未到直棒廠重量' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-
-    {
-      value : '交期月份中訂單中來料已到直棒廠生產，但尚未到該站生產的重量' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : '交期月份中訂單中來料已到直棒廠生產，且已到站待生產的重量' ,
-      mergeRow: 0 ,
+      value : 'a' ,
+      mergeRow: 0,
       mergeCol: 0,
       showCell : true
     },
@@ -659,7 +700,7 @@ export class PPSR301Component implements OnInit {
 
   }
   ngOnInit() {
-    //this.theadList.push(this.testHeader);
+    // this.theadList.push(this.testHeader);
     this.getVerList();
     this.initDate();
     this.getShopList();
@@ -699,9 +740,9 @@ export class PPSR301Component implements OnInit {
     this.MonOne = moment(result).format('YYYY-MM') ;
     this.Montwo = moment(result).add(1,'months').format('YYYY-MM') ;
     this.MonThree = moment(result).add(2,'months').format('YYYY-MM') ;
-    this.theadList[1][7].value = this.MonOne ;
-    this.theadList[1][8].value = this.Montwo ;
-    this.theadList[1][9].value = this.MonThree ;
+    this.theadList[1][8].value = this.MonOne ;
+    this.theadList[1][9].value = this.Montwo ;
+    this.theadList[1][10].value = this.MonThree ;
     this.thead = this.theadList ;
     console.log("表格头部：" + JSON.stringify(this.thead)) ;
   }
@@ -711,9 +752,9 @@ export class PPSR301Component implements OnInit {
     this.MonOne = moment(result).format('YYYY-MM') ;
     this.Montwo = moment(result).add(1,'months').format('YYYY-MM') ;
     this.MonThree = moment(result).add(2,'months').format('YYYY-MM') ;
-    this.theadList[1][7].value = this.MonOne ;
-    this.theadList[1][8].value = this.Montwo ;
-    this.theadList[1][9].value = this.MonThree ;
+    this.theadList[1][8].value = this.MonOne ;
+    this.theadList[1][9].value = this.Montwo ;
+    this.theadList[1][10].value = this.MonThree ;
     this.thead = this.theadList ;
     //console.log("theadList : "+ JSON.stringify(this.theadList));
     //console.log('onChange: ', this.datePipe.transform(result,'yyyy-MM'));

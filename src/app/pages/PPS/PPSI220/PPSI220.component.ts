@@ -1363,7 +1363,7 @@ export class PPSI220Component implements AfterViewInit {
               this.LoadingPage = false;
             }
           },err => {
-            myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗`);
+            myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗_FCP`);
             myObj.loading = false;
             this.LoadingPage = false;
             reject('Publish fail');
@@ -1374,7 +1374,7 @@ export class PPSI220Component implements AfterViewInit {
           this.LoadingPage = false;
         }
       },err => {
-        myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗`);
+        myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗_WEB`);
         myObj.loading = false;
         this.LoadingPage = false;
         reject('Publish fail');
