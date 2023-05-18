@@ -35,18 +35,16 @@
               nz-button
               style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
               nzType="primary"
-              [nzSize]="'large'"
               (click)="openShopInput()"
               ><span nz-icon nzType="plus" nzTheme="outline"></span>
                 新增
               </button>
               &nbsp;&nbsp;
-              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+              <input type="file" id="fileupload" style="display: inline-block;margin-left: 550px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
               <button
                 nz-button
                 style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
                 nzType="primary"
-                [nzSize]="'large'"
                 (click)="Upload()"
               ><span nz-icon nzType="upload" nzTheme="outline"></span>
               E X C E L 匯入
@@ -56,7 +54,6 @@
                 nz-button
                 style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
                 nzType="primary"
-                [nzSize]="'large'"
                 (click)="convertToExcel()"
               ><span nz-icon nzType="download" nzTheme="outline"></span>
               E X C E L 匯出

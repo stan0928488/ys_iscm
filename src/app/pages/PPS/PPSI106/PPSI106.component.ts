@@ -58,7 +58,7 @@ export class PPSI106Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab4ID","機台","產出尺寸最小值","產出尺寸最大直","產出型態","小調機代碼","小調機公差標準","爐批數量"];
+  titleArray = ["機台","產出尺寸最小值","產出尺寸最大值","產出型態","小調機代碼","小調機公差標準","爐批數量"];
   importdata_repeat = [];
   constructor(
     private PPSService: PPSService,
@@ -191,7 +191,7 @@ export class PPSI106Component implements AfterViewInit {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
     }  else if (this.editCache17[id].data.SMALL_ADJUST_CODE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_CODE_17) {
-      myObj.message.create("error", "「大調機代碼」不可為空");
+      myObj.message.create("error", "「小調機代碼」不可為空");
       return;
     }  else if (this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17) {
       myObj.message.create("error", "「小調機公差標準」不可為空");
@@ -508,39 +508,24 @@ resetByFuranceBatchQty17() : void {
     for(let i=0 ; i < _data.length ; i++) {
       console.log(_data[i]);
 
-      let allData = JSON.stringify(_data[i]);
-
-      
+      let allData = JSON.stringify(_data[i]);     
+      if (this.importdata_repeat.includes(allData)){
+        this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
+        this.clearFile();
+        return;
+      }
+      else{
         this.importdata_repeat.push(allData);
-
-        if(_data[i]['機台名稱'] == undefined)
-          _data[i]['機台名稱'] = '';
-        if(_data[i]['機台群組'] == undefined)
-          _data[i]['機台群組'] = '';
-        if(_data[i]['機台'] == undefined)
-          _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
-
         upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
-          PLANT: _data[i]['工廠別'],
-          SHOP_CODE: _data[i]['站別代碼'],
-          SHOP_NAME: _data[i]['站別名稱'],
-          VALID: _data[i]['有效碼'],
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-          USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
+          EQUIP_CODE : _data[i]['機台'],
+          DIA_MIN : _data[i]['產出尺寸最小值'],
+          DIA_MAX : _data[i]['產出尺寸最大值'],
+          SHAPE_TYPE : _data[i]['產出型態'],
+          SMALL_ADJUST_CODE : _data[i]['小調機代碼'],
+          SMALL_ADJUST_TOLERANCE : _data[i]['小調機公差標準'],
+          FURANCE_BATCH_QTY : _data[i]['爐批數量'],
         })
+      }
       
     }
     
@@ -555,8 +540,8 @@ resetByFuranceBatchQty17() : void {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
-        console.log("importExcelPPSI105");
+      myObj.PPSService.importI117Excel('1',obj).subscribe(res => {
+        console.log("importExcelPPSI107");
         if(res[0].MSG === "Y") { 
           
 
@@ -589,8 +574,21 @@ resetByFuranceBatchQty17() : void {
     let ID_List = [];
     let arr = [];
     console.log(JSON.stringify(this.displayPPSINP17List[0]));
-    let fileName = `小調機 - 直棒`;
+    for(let i = 0 ; i<this.displayPPSINP17List.length ; i++ ){
+
+      var ppsInP17 = {
+        EQUIP_CODE_17: this.PPSINP17List_tmp[i].EQUIP_CODE,
+        DIA_MIN_17: this.PPSINP17List_tmp[i].DIA_MIN,
+        DIA_MAX_17: this.PPSINP17List_tmp[i].DIA_MAX,
+        SHAPE_TYPE_17: this.PPSINP17List_tmp[i].SHAPE_TYPE,
+        SMALL_ADJUST_CODE_17: this.PPSINP17List_tmp[i].SMALL_ADJUST_CODE,
+        SMALL_ADJUST_TOLERANCE_17: this.PPSINP17List_tmp[i].SMALL_ADJUST_TOLERANCE,
+        FURANCE_BATCH_QTY_17: this.PPSINP17List_tmp[i].FURANCE_BATCH_QTY
+      }
+      arr.push(ppsInP17);
+    }
     
-    this.excelService.exportAsExcelFile(this.displayPPSINP17List, fileName, this.titleArray);
+    let fileName = `小調機 - 直棒`;  
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
 }
