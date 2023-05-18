@@ -552,6 +552,15 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // I117 importI106Excel EXCEL匯入
+  importI117Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = "";
+    if(_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I117` + nonbarUrl + `/importExcel`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   // 20.清洗站設備能力表
   //Get getPPSINP20List 取得20tab data
   getPPSINP20List() {

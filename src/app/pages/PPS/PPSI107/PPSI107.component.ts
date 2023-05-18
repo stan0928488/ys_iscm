@@ -70,7 +70,7 @@ export class PPSI107Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["id","tab4ID","站號","機台","產出型態","鋼種類別","線速分類","減面率MIN","減面率MAX","產出尺寸最小值","產出尺寸最大值","線速(公尺/分)","日產出量"];
+  titleArray = ["站號","機台","產出型態","鋼種類別","線速分類","減面率MIN","減面率MAX","產出尺寸最小值","產出尺寸最大值","線速(公尺/分)","日產出量"];
   importdata_repeat = [];
   constructor(
     private PPSService: PPSService,
@@ -212,16 +212,16 @@ export class PPSI107Component implements AfterViewInit {
     console.log("更改線速表");
     let myObj = this;
     if (this.editCache05[id].data.SHOP_CODE_5 === undefined || "" === this.editCache05[id].data.SHOP_CODE_5) {
-      myObj.message.create("error", "「線別」不可為空");
+      myObj.message.create("error", "「站號」不可為空");
       return;
     } else if (this.editCache05[id].data.EQUIP_CODE_5 === undefined || "" === this.editCache05[id].data.EQUIP_CODE_5) {
       myObj.message.create("error", "「機台」不可為空");
       return;
     }  else if (this.editCache05[id].data.SHAPE_TYPE_5 === undefined || "" === this.editCache05[id].data.SHAPE_TYPE_5) {
-      myObj.message.create("error", "「產品型態」不可為空");
+      myObj.message.create("error", "「產出型態」不可為空");
       return;
     }   else if (this.editCache05[id].data.GRADE_GROUP_5 === undefined || "" === this.editCache05[id].data.GRADE_GROUP_5) {
-      myObj.message.create("error", "「鋼種群組」不可為空");
+      myObj.message.create("error", "「鋼種類別」不可為空");
       return;
     } else if (this.editCache05[id].data.REDUCTION_RATE_MIN_5 === undefined || "" === this.editCache05[id].data.REDUCTION_RATE_MIN_5.toString()) {
       myObj.message.create("error", "「減面率MIN」不可為空");
@@ -564,11 +564,11 @@ export class PPSI107Component implements AfterViewInit {
 
   Upload() {
   
-    let getFileNull = this.inputFileUseInUpload;
-    if(getFileNull === undefined){
-      this.errorMSG('請選擇檔案', '');
-      return;
-    }
+    //let getFileNull = this.inputFileUseInUpload;
+    //if(getFileNull === undefined){
+    //this.errorMSG('請選擇檔案', '');
+    //return;
+    //}
 
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
@@ -610,37 +610,29 @@ export class PPSI107Component implements AfterViewInit {
 
       let allData = JSON.stringify(_data[i]);
 
-      
-        this.importdata_repeat.push(allData);
-
-        if(_data[i]['機台名稱'] == undefined)
-          _data[i]['機台名稱'] = '';
-        if(_data[i]['機台群組'] == undefined)
-          _data[i]['機台群組'] = '';
-        if(_data[i]['機台'] == undefined)
-          _data[i]['機台'] = '';
-        if(_data[i]['BALANCE_RULE'] == undefined)
-          _data[i]['BALANCE_RULE'] = '';
-        if(_data[i]['ORDER_SEQ'] == undefined)
-          _data[i]['ORDER_SEQ'] = '';
-
-        upload_data.push({
-          id : _data[i].id,
-          tab1ID : _data[i].tab1ID,
-          BALANCE_RULE: _data[i]['BALANCE_RULE'],
-          EQUIP_CODE: _data[i]['機台'] ,
-          EQUIP_GROUP: _data[i]['機台群組'],
-          EQUIP_NAME: _data[i]['機台名稱'],
-          ORDER_SEQ: _data[i]['ORDER_SEQ'],
-          PLANT: _data[i]['工廠別'],
-          SHOP_CODE: _data[i]['站別代碼'],
-          SHOP_NAME: _data[i]['站別名稱'],
-          VALID: _data[i]['有效碼'],
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-          USERNAME : this.USERNAME,
-          WT_TYPE : "",
-          PLANT_CODE : this.PLANT_CODE,
-        })
+        if (this.importdata_repeat.includes(allData)){
+          this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
+          this.clearFile();
+          return;
+        }
+        else{
+          this.importdata_repeat.push(allData);         
+          upload_data.push({
+            SHOP_CODE:_data[i]['站號'],
+            EQUIP_CODE:_data[i]['機台'],
+            SHAPE_TYPE:_data[i]['產出型態'],
+            GRADE_GROUP:_data[i]['鋼種類別'],
+            SPEED_TYPE:_data[i]['線速分類'],
+            REDUCTION_RATE_MIN:_data[i]['減面率MIN'],
+            REDUCTION_RATE_MAX:_data[i]['減面率MAX'],
+            DIA_MIN:_data[i]['產出尺寸最小值'],
+            DIA_MAX:_data[i]['產出尺寸最大值'],
+            SPEED:_data[i]['線速(公尺/分)'],
+            EQUIP_CAP:_data[i]['日產出量'],
+            USERNAME : this.USERNAME,
+            DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+          })
+        }
       
     }
     
@@ -655,7 +647,7 @@ export class PPSI107Component implements AfterViewInit {
       };
 
       console.log("EXCELDATA:"+ obj);
-      myObj.PPSService.importI107Excel('1',obj).subscribe(res => {
+      myObj.PPSService.importI105Excel('1',obj).subscribe(res => {
         console.log("importExcelPPSI105");
         if(res[0].MSG === "Y") { 
           
@@ -690,7 +682,24 @@ export class PPSI107Component implements AfterViewInit {
     let arr = [];
     console.log(JSON.stringify(this.displayPPSINP05List[0]));
     let fileName = `線速 - 直棒`;
+    for(let i = 0 ; i<this.displayPPSINP05List.length ; i++ ){
+
+      var ppsInP05 = {
+        SHOP_CODE_5:this.PPSINP05List_tmp[i].SHOP_CODE,
+          EQUIP_CODE_5: this.PPSINP05List_tmp[i].EQUIP_CODE,
+          SHAPE_TYPE_5: this.PPSINP05List_tmp[i].SHAPE_TYPE,
+          GRADE_GROUP_5: this.PPSINP05List_tmp[i].GRADE_GROUP,
+          SPEED_TYPE_5: this.PPSINP05List_tmp[i].SPEED_TYPE,
+          REDUCTION_RATE_MIN_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MIN,
+          REDUCTION_RATE_MAX_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MAX,
+          DIA_MIN_5: this.PPSINP05List_tmp[i].DIA_MIN,
+          DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
+          SPEED_5: this.PPSINP05List_tmp[i].SPEED,
+          EQUIP_CAP_5: this.PPSINP05List_tmp[i].EQUIP_CAP
+      }
+      arr.push(ppsInP05);
+    }
     
-    this.excelService.exportAsExcelFile(this.displayPPSINP05List, fileName, this.titleArray);
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
 }
