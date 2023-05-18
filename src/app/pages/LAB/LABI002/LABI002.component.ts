@@ -30,9 +30,7 @@ export class LABI002Component implements AfterViewInit {
   PLANT_CODE;
   weekDayConvertMap : Map<string, string> = null;
   weekDayReverseConvertMap : Map<string, string> = null;
-  isEditing = false;
-  isEditingId : number = null;
-  isClickedEditButton = false;
+  isEditingList : number[] = [];
 
   startWeekDayList = [
     { label: '星期日', value: 6, disabled: false },
@@ -90,8 +88,8 @@ export class LABI002Component implements AfterViewInit {
   isOkLoading = false;
 
   displayTblabm002List : Tblabm002[] = [];
-  editCache: { [id: string]: { isEdit: boolean; data: Tblabm002 } } = {};
-  cloneDeepTblabm002List : { [id: string]: { isEdit: boolean; data: Tblabm002 } } = {};
+  editCache: { [id: string]: { isEdit: boolean, data: Tblabm002, editEndWeekDayList:{label: string, value: string, disabled: boolean}[] }} = {};
+  cloneDeepTblabm002List : { [id: string]: { isEdit: boolean, data: Tblabm002, editEndWeekDayList:{label: string, value: string, disabled: boolean}[] } } = {};
 
   constructor(private Modal : NzModalService,
               private LABService : LABService,
@@ -138,6 +136,8 @@ export class LABI002Component implements AfterViewInit {
           if(res.code === 200){
             if(res.data.length <= 0){
               this.sucessMSG('查無資料', '目前查無資料');
+              this.displayTblabm002List = [];
+              this.setupUpdateEditCache();
               resolve(true);
               return;
             }
@@ -198,45 +198,22 @@ export class LABI002Component implements AfterViewInit {
       let newCloneItem01 : Tblabm002 = _.cloneDeep(item);
       let newCloneItem02 : Tblabm002 = _.cloneDeep(item);
       this.editCache[item.id] = {
-        isEdit: false,
-        data: newCloneItem01
+        isEdit: _.includes(this.isEditingList, item.id),
+        data: newCloneItem01,
+        editEndWeekDayList : _.cloneDeep(this.editEndWeekDayList)
+        
       };
       this.cloneDeepTblabm002List[item.id] = {
         isEdit: false,
-        data: newCloneItem02
+        data: newCloneItem02,
+        editEndWeekDayList : _.cloneDeep(this.editEndWeekDayList)
       };
     });
   }
 
 
   openSampleTimeSettingInput() : void {
-  
-    if(this.isClickedEditButton){
-      this.startWeekDay = null;
-      this.endWeekDay = null;
-      this.startTime = null;
-      this.endTime = null;
-      this.isClickedEditButton = false;
-    }
-
-    if(this.isEditing){
-      this.Modal.confirm({
-        nzTitle: '編輯中的資料將不會儲存，繼續執行新增資料嗎？',
-        nzOnOk: () => { 
-          this.isVisibleSampleTimeSetting = true;
-          this.isEditing = false;
-          this.editCache[this.isEditingId].isEdit = false;
-          return;
-        },
-        nzOnCancel: () => {
-          console.log("cancel")
-          return;
-        }
-      })
-    }
-    else{
-      this.isVisibleSampleTimeSetting = true;
-    }
+    this.isVisibleSampleTimeSetting = true;
   }
 
   cancelSampleTimeSettingInput() : void {
@@ -257,17 +234,17 @@ export class LABI002Component implements AfterViewInit {
     });
   }
 
-  editStartWeekDayChange(editStartWeekDay : string, id : number) : void {
-    const startWeekDayNum = Number(this.weekDayReverseConvertMap.get(editStartWeekDay));
-    this.startWeekDay = startWeekDayNum;
+  editStartWeekDayChange(isClickEditButton : boolean, id : number) : void {
 
-    if(!_.isNil(id)){
-      this.editCache[id].data.endWeekDay = null, 
+    if(!isClickEditButton){
+      this.editCache[id].data.endWeekDay = null;
       this.editCache[id].data.endTime = null;
     }
 
+    const startWeekDayNum = Number(this.weekDayReverseConvertMap.get(this.editCache[id].data.startWeekDay));
+
     this.endTimeDisabled = false;
-    this.editEndWeekDayList = this.editStartWeekDayList.map( weekDay =>  {
+    this.editCache[id].editEndWeekDayList = this.editStartWeekDayList.map( weekDay =>  {
       let cloneDeepWeekDay = _.cloneDeep(weekDay);
       let weekDayValue = Number(this.weekDayReverseConvertMap.get(cloneDeepWeekDay.value));
       if(weekDayValue < startWeekDayNum){
@@ -277,18 +254,11 @@ export class LABI002Component implements AfterViewInit {
     });
   }
 
-  endWeekDayChange(id : number, _endWeekDay) : void{
-    if(!_.isNil(_endWeekDay)){
-      this.endWeekDay = Number(this.weekDayReverseConvertMap.get(_endWeekDay));
-    }
-    this.startTimeChange(id, null);
+  endWeekDayChange(id : number) : void{
+    this.startTimeChange(id);
   }
 
-  startTimeChange(id : number, _stratTime) : void {
-
-    if(!_.isNil(_stratTime)){
-      this.startTime = _stratTime;
-    }
+  startTimeChange(id : number) : void {
 
     if(!_.isNil(id)){
       this.editCache[id].data.endTime = null;
@@ -300,57 +270,92 @@ export class LABI002Component implements AfterViewInit {
   }
 
 
-  disabledHours = () =>{
+  disabledHours(id : number){
+    
+    return () : number[] =>{
 
-    if(!_.isNil(this.startWeekDay) && !_.isNil(this.endWeekDay) &&
-       this.startWeekDay === this.endWeekDay &&
-       !_.isNil(this.startTime)){
+      let _startWeekDay : any = null;
+      let _endWeekDay : any  = null;
+      let _startTime : Date = null;
 
-      let startHour = this.startTime.getHours();
-      let startMinute = this.startTime.getMinutes();
-
-      if(startMinute < 30) startHour -= 1;
-
-      let disabledHoursNums : number[] = [];
-
-      for (let i = 0; i <= startHour; i++) {
-        disabledHoursNums.push(i);
+      if(_.isNil(id)){
+        _startWeekDay = this.startWeekDay;
+        _endWeekDay = this.endWeekDay;
+        _startTime = this.startTime;
       }
+      else{
+        _startWeekDay = this.editCache[id].data.startWeekDay;
+        _endWeekDay = this.editCache[id].data.endWeekDay;
+        _startTime = this.editCache[id].data.startTime;
+      }
+     
 
-      return disabledHoursNums;
+      if(!_.isNil(_startWeekDay) && !_.isNil(_endWeekDay) &&
+         _startWeekDay === _endWeekDay &&
+         !_.isNil(_startTime)){
 
-    }
-    else{
-      return [];
+        let startHour = _startTime.getHours();
+        let startMinute = _startTime.getMinutes();
+
+        if(startMinute < 30) startHour -= 1;
+
+        let disabledHoursNums : number[] = [];
+
+        for (let i = 0; i <= startHour; i++) {
+          disabledHoursNums.push(i);
+        }
+
+        return disabledHoursNums;
+
+      }
+      else{
+        return [];
+      }
     }
   };
 
-  disabledMinutes = (hour: number) => {
+  disabledMinutes(id : number){
     
-    if(!_.isNil(this.startWeekDay) && !_.isNil(this.endWeekDay) &&
-       this.startWeekDay === this.endWeekDay &&
-       !_.isNil(this.startTime)){
-       
-        let startHour = this.startTime.getHours();
-        let startMinute = this.startTime.getMinutes();
+    return (hour: number) : number[] => {
 
-        let disabledMinutesNums : number[] = [];
-        if(startHour === hour || (startHour === 23 && startMinute >= 30)){
-          for (let i = 0; i <= startMinute; i++) {
-            disabledMinutesNums.push(i);
-          }
-        }
+      let _startWeekDay = null;
+      let _endWeekDay = null;
+      let _startTime = null;
 
-        if(startHour === 23 && startMinute >= 30){
-          this.endTimeDisabled = true;
-        }
-
-        return disabledMinutesNums;
-      
+      if(_.isNil(id)){
+        _startWeekDay = this.startWeekDay;
+        _endWeekDay = this.endWeekDay;
+        _startTime = this.startTime;
       }
+      else{
+        _startWeekDay = this.editCache[id].data.startWeekDay;
+        _endWeekDay = this.editCache[id].data.endWeekDay;
+        _startTime = this.editCache[id].data.startTime;
+      }
+    
+      if(!_.isNil(_startWeekDay) && !_.isNil(_endWeekDay) &&
+         _startWeekDay === _endWeekDay &&
+         !_.isNil(_startTime)){
+        
+          let startHour = _startTime.getHours();
+          let startMinute = _startTime.getMinutes();
 
-    return [];
+          let disabledMinutesNums : number[] = [];
+          if(startHour === hour || (startHour === 23 && startMinute >= 30)){
+            for (let i = 0; i <= startMinute; i++) {
+              disabledMinutesNums.push(i);
+            }
+          }
 
+          if(startHour === 23 && startMinute >= 30){
+            this.endTimeDisabled = true;
+          }
+
+          return disabledMinutesNums;
+        }
+
+      return [];
+    }
   }
   
 
@@ -372,8 +377,13 @@ export class LABI002Component implements AfterViewInit {
       this.errorMSG('新增失敗', '「迄(時間)」不得為空');
       return;
     } 
-    else if(_.isNil(this.days)){
+    else if(_.isNil(this.days) || _.isEmpty(String(this.days))){
       this.errorMSG('新增失敗', '「天數」不得為空');
+      console.log('this.days===>' + this.days);
+      return;
+    }
+    else if(this.days === 0){
+      this.errorMSG('新增失敗', '「天數」不得為零');
       return;
     }
 
@@ -430,50 +440,10 @@ export class LABI002Component implements AfterViewInit {
   }
 
   editRowData(id : number){
-
-    if(this.isEditing){
-      this.Modal.confirm({
-        nzTitle: '上個編輯將不會儲存，繼續執行編輯此筆資料嗎？',
-        nzOnOk: () => { 
-          this.editRowDataHandler(id);
-          this.isEditing = true;
-          this.isEditingId = id;
-          return;
-        },
-        nzOnCancel: () => {
-          console.log("cancel")
-          return;
-        }
-      })
-    }
-    else{
-      this.editRowDataHandler(id);
-    }
-
-  }
-
-  editRowDataHandler(id : number){
-
-    this.isSpinning = true;
-    this.isEditing = true;
-    this.isEditingId = id;
-    this.isClickedEditButton = true;
-
     this.editCache[id].data = _.cloneDeep(this.cloneDeepTblabm002List[id].data);
+    this.editStartWeekDayChange(true, id);
     this.editCache[id].isEdit = true;
-
-    this.displayTblabm002List.forEach(item => {
-      if(item.id !== id)
-      this.editCache[item.id].isEdit = false;
-    });
-
-    this.editStartWeekDayChange(this.editCache[id].data.startWeekDay, null);
-
-    this.startWeekDay = Number(this.weekDayReverseConvertMap.get(this.editCache[id].data.startWeekDay));
-    this.endWeekDay = Number(this.weekDayReverseConvertMap.get(this.editCache[id].data.endWeekDay));
-    this.startTime = this.editCache[id].data.startTime;
-
-    this.isSpinning = false;
+    this.isEditingList.push(id);
   }
 
   deleteRowData(id : number){
@@ -530,8 +500,12 @@ export class LABI002Component implements AfterViewInit {
         this.errorMSG('更新失敗', '「迄(時間)」不得為空');
         return;
       } 
-      else if(_.isNil(this.editCache[id].data.days)){
-        this.errorMSG('更新失敗', '「天數」不得為空');
+      else if(_.isNil(this.editCache[id].data.days) || _.isEmpty(String(this.editCache[id].data.days))){
+        this.errorMSG('更新失敗', '「天數」不得為空');        
+        return;
+      }
+      else if(Number(this.editCache[id].data.days) === 0){
+        this.errorMSG('更新失敗', '「天數」不得為零');
         return;
       }
 
@@ -546,9 +520,9 @@ export class LABI002Component implements AfterViewInit {
         id : id,
         plantCode : this.PLANT_CODE,
         timeStart : `${startHour}:${startMinute}`,
-        weekIndexStart : this.startWeekDay,
+        weekIndexStart : this.weekDayReverseConvertMap.get(this.editCache[id].data.startWeekDay),
         timeEnd : `${endHour}:${endMinute}`,
-        weekIndexEnd : this.endWeekDay,
+        weekIndexEnd : this.weekDayReverseConvertMap.get(this.editCache[id].data.endWeekDay),
         setDays: this.editCache[id].data.days,
         userUpdate : this.USERNAME
       };
@@ -576,9 +550,7 @@ export class LABI002Component implements AfterViewInit {
       })
       .then(success =>{
         this.isSpinning = false;
-        this.editCache[id].isEdit = false;
-        this.isEditing = false;
-        this.isEditingId = null;
+        _.remove(this.isEditingList, n => n === id)
         this.getTblabm002List();
       }).catch(error =>{
         this.isSpinning = false;
@@ -587,8 +559,7 @@ export class LABI002Component implements AfterViewInit {
 
   cancelEdit(id : number){
     this.editCache[id].isEdit = false;
-    this.isEditing = false;
-    this.isEditingId = null;
+    _.remove(this.isEditingList, id);
   }
 
   sucessMSG(_title, _plan): void {

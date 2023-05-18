@@ -16,6 +16,7 @@
         ><span nz-icon nzType="plus" nzTheme="outline"></span>
             新增
         </button>
+
         </div>
 
         <nz-table #tblabm002RowTable nzBordered  [nzData]="displayTblabm002List" [nzPageSize]="20" [nzScroll]="{ y: '1200px'}" style="margin-top: 50px; margin-bottom: 200px; border:3px #cccccc solid;" cellpadding="10" border='1'>
@@ -99,7 +100,7 @@
                             <nz-select style="width: 120px;"
                                 [(ngModel)]="editCache[data.id].data.startWeekDay"
                                 nzPlaceHolder="星期起"
-                                (ngModelChange)="editStartWeekDayChange(editCache[data.id].data.startWeekDay, data.id)" 
+                                (ngModelChange)="editStartWeekDayChange(false, data.id)" 
                                 nzAllowClear
                                 [nzOptions]="editStartWeekDayList">
                             </nz-select>
@@ -113,7 +114,7 @@
                                 [nzMinuteStep]="30"
                                 [nzNowText]="'Now'"
                                 [nzOkText]="'確認'"
-                                (ngModelChange)="startTimeChange(data.id, editCache[data.id].data.startTime)"
+                                (ngModelChange)="startTimeChange(data.id)"
                                 [nzDefaultOpenValue]="timePickerDefaultOpenValue">
                             </nz-time-picker>
                         </td>
@@ -123,8 +124,8 @@
                                 [(ngModel)]="editCache[data.id].data.endWeekDay"
                                 nzPlaceHolder="星期迄"
                                 nzAllowClear
-                                (ngModelChange)="endWeekDayChange(data.id, editCache[data.id].data.endWeekDay)" 
-                                [nzOptions]="editEndWeekDayList">
+                                (ngModelChange)="endWeekDayChange(data.id)" 
+                                [nzOptions]="editCache[data.id].editEndWeekDayList">
                             </nz-select>
                         </td>
 
@@ -136,8 +137,8 @@
                                 [nzMinuteStep]="30"
                                 [nzNowText]="'Now'"
                                 [nzOkText]="'確認'"
-                                [nzDisabledHours]="disabledHours"
-                                [nzDisabledMinutes]="disabledMinutes"
+                                [nzDisabledHours]="disabledHours(data.id)"
+                                [nzDisabledMinutes]="disabledMinutes(data.id)"
                                 [nzDisabled]="endTimeDisabled"
                                 [nzDefaultOpenValue]="timePickerDefaultOpenValue">
                             </nz-time-picker>
@@ -168,8 +169,6 @@
             </tbody>
 
         </nz-table>
-
-
 
 
     </nz-spin>
@@ -210,7 +209,7 @@
                     [nzMinuteStep]="30"
                     [nzNowText]="'Now'"
                     [nzOkText]="'確認'"
-                    (ngModelChange)="startTimeChange(null, null)"
+                    (ngModelChange)="startTimeChange(null)"
                     [nzDefaultOpenValue]="timePickerDefaultOpenValue">
                 </nz-time-picker>
 
@@ -220,7 +219,7 @@
                     [(ngModel)]="endWeekDay"
                     nzPlaceHolder="星期迄"
                     nzAllowClear
-                    (ngModelChange)="endWeekDayChange(null, null)" 
+                    (ngModelChange)="endWeekDayChange(null)" 
                     [nzOptions]="endWeekDayList">
                 </nz-select>
 
@@ -231,8 +230,8 @@
                     [nzMinuteStep]="30"
                     [nzNowText]="'Now'"
                     [nzOkText]="'確認'"
-                    [nzDisabledHours]="disabledHours"
-                    [nzDisabledMinutes]="disabledMinutes"
+                    [nzDisabledHours]="disabledHours(null)"
+                    [nzDisabledMinutes]="disabledMinutes(null)"
                     [nzDisabled]="endTimeDisabled"
                     [nzDefaultOpenValue]="timePickerDefaultOpenValue">
                 </nz-time-picker>
