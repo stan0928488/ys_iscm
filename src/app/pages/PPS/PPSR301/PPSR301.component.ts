@@ -32,135 +32,141 @@ export class PPSR301Component implements OnInit {
   thead = [] ;
   testHeader = [
     {
-      value : 'A 0' ,
+      value : 'A' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'B 1' ,
+      value : 'B' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'C 2' ,
+      value : 'C' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'D 3' ,
+      value : 'D' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'E 4' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-
-    {
-      value : 'F 5 E' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'G 6 F' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'H 7 G' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'I 8 H' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value :'J 9 I' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'K 10 J' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'L 11 K' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'M 12 R' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'N 13 S' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'O 14 T ' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'P 15 U' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'Q 16 L' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'R 17 M' ,
-      mergeRow: 0 ,
-      mergeCol: 0,
-      showCell : true
-    },
-    {
-      value : 'S 18 N' ,
+      value : 'E' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
 
     {
-      value : 'T 19 O' ,
+      value : 'F' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'U 20 P' ,
+      value : 'G' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : 'V 21 Q' ,
+      value : 'H' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'I' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value :'J' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'K' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'L' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'M' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'N' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'O' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'P' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'Q' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'R' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'S' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+
+    {
+      value : 'T' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'U' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : 'V' ,
+      mergeRow: 0 ,
+      mergeCol: 0,
+      showCell : true
+    },
+    {
+      value : ' -明細- ' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
@@ -343,6 +349,12 @@ export class PPSR301Component implements OnInit {
     showCell : false,
     hoverTitle:'說明',
     hoverContent:'機台負荷'
+  },
+  {
+    value : '' ,
+    mergeRow: 2 ,
+    mergeCol: 0,
+    showCell : true
   },
   ],[
     {
@@ -650,6 +662,12 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true
     },
+    {
+      value : 'a' ,
+      mergeRow: 0,
+      mergeCol: 0,
+      showCell : true
+    },
 
   ] ;
 
@@ -682,7 +700,7 @@ export class PPSR301Component implements OnInit {
 
   }
   ngOnInit() {
-    this.theadList.push(this.testHeader);
+    // this.theadList.push(this.testHeader);
     this.getVerList();
     this.initDate();
     this.getShopList();
