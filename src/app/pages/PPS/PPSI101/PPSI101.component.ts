@@ -104,10 +104,7 @@ export class PPSI101Component implements AfterViewInit {
     if (this.GRADE_NO === undefined || "" === this.GRADE_NO) {
       myObj.message.create("error", "「設定鋼種」不可為空");
       return;
-    } else if (this.SPECIAL_EQUIP_CODE === undefined || "" === this.SPECIAL_EQUIP_CODE) {
-      myObj.message.create("error", "「特殊機台使用」不可為空");
-      return;
-    }  else if (this.GRADE_GROUP === undefined || "" === this.GRADE_GROUP) {
+    } else if (this.GRADE_GROUP === undefined || "" === this.GRADE_GROUP) {
       myObj.message.create("error", "「鋼種類別」不可為空");
       return;
     } else {
@@ -167,9 +164,6 @@ export class PPSI101Component implements AfterViewInit {
       let myObj = this;
       if (this.editCache1[id].data.GRADE_NO === undefined || "" === this.editCache1[id].data.GRADE_NO) {
         myObj.message.create("error", "「鋼種」不可為空");
-        return;
-      } else if (this.editCache1[id].data.SPECIAL_EQUIP_CODE === undefined || "" === this.editCache1[id].data.SPECIAL_EQUIP_CODE) {
-        myObj.message.create("error", "「特殊機台使用」不可為空");
         return;
       } else if (this.editCache1[id].data.GRADE_GROUP === undefined || "" === this.editCache1[id].data.GRADE_GROUP) {
         myObj.message.create("error", "「鋼種類別」不可為空");
