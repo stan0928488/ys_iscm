@@ -137,6 +137,210 @@ category = '' ;
   //保存的狀態
   saveLoading = false ;
 
+ /***更換作業代碼 */
+ changeOpCodeIsVisible = false ;
+ handleOpCodeModal(){
+  let idsTemp = "" ;
+  this.rowSelectData.forEach((item,index,array)=>{
+    if(index == 0) {
+      idsTemp += item.ID
+    } else {
+      idsTemp += ',' + item.ID
+    }
+  })
+  //console.log("ids: " + idsTemp) 
+  this.getEquipOpCode(idsTemp) ;
+  this.changeOpCodeIsVisible = !this.changeOpCodeIsVisible 
+
+ }
+ //获取可替换作業代碼数据
+ getEquipOpCode(ids){
+  this.mshService.getEquipOpCode(ids).subscribe(res=>{
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.changeOpCodeTable.tbData = result.data ;
+      this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+        // 新增選擇作業碼
+        this.changeOpCodeTable.tbData[index].selectedOpCode = "" 
+        // 選擇作業碼列表 
+        if(item.NEW_OP_CODE.toString() === "") {
+          this.changeOpCodeTable.tbData[index].selectedOpCodeList = [] ;
+        } else{
+          this.changeOpCodeTable.tbData[index].selectedOpCodeList = item.NEW_OP_CODE.toString().split(',') ;
+        }
+        // 選擇配車
+        this.changeOpCodeTable.tbData[index].selectedCarId = ""
+      })
+      //console.log("this.changeOpCodeTable.tbData: " + JSON.stringify(this.changeOpCodeTable.tbData)) 
+
+    }
+  })
+ }
+ //選擇新的ID  用於選車時候修改數據
+ selectNewID = ""
+// 選擇車輛
+ selectCarClick(id,selectedCarId){
+
+  let newOpCode = "" ;
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+    if(item.ID === id) {
+      newOpCode = item.selectedOpCode ;
+     // this.changeOpCodeTable.tbData[index].selectedCarId = selectedCarId ;
+    }
+  })
+  if(newOpCode === "" ) {
+    this.nzMessageService.error("請先選擇要替換的作業代碼") 
+    return 
+  }
+  let para = "id="+id +"&opCode="+newOpCode ;
+  this.selectCarTable.tbData = [] ;
+  this.selectNewID = ""
+  this.mshService.getFcpCarInfo(para).subscribe(res=>{
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.selectNewID = id 
+      this.selectCarTable.tbData = result.data ;
+      //將配車選項重置false 
+      this.selectCarTable.tbData.forEach((item, index, array)=>{
+        if(item.BATCH_411_CAR_ID === selectedCarId) {
+          this.selectCarTable.tbData[index].checked = true ;
+        } else {
+          this.selectCarTable.tbData[index].checked = false ;
+        }
+        
+      })
+  
+    }
+  })
+  //開啟關閉選擇
+  this.handleSelectCarModal() ;
+ }
+ selectOpCodeFun(){
+  console.log("this.changeOpCodeTable.tbData: " + JSON.stringify(this.changeOpCodeTable.tbData)) 
+
+ }
+ // 確認保存
+ comitHandleOpCodeModal(){
+  //批量存檔
+  console.log("批量存檔:" + JSON.stringify(this.changeOpCodeTable.tbData));
+  let saveOpCodeAndCarData = []
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+   if(item.selectedOpCode !== "" && item.selectedCarId  !== "") {
+    let saveOpCodeAndCarDataTemp = {id:item.ID ,newOpCode:item.selectedOpCode,carId:item.selectedCarId}
+    saveOpCodeAndCarData.push(saveOpCodeAndCarDataTemp)
+   }
+  })
+  if(saveOpCodeAndCarData.length < 1){
+    this.nzMessageService.error("未選擇作業代碼及車次")
+    return
+  }
+  this.handleOpCodeIsConfirmLoading = true
+  console.log("有效存檔:" + JSON.stringify(saveOpCodeAndCarData));
+  this.mshService.saveChangeOpCode(saveOpCodeAndCarData).subscribe(res=>{
+    this.handleOpCodeIsConfirmLoading = false
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.nzMessageService.success(result.message);
+    }
+  })
+  
+ }
+ //保存修改作業代碼及配車 
+ saveChangeOpCodeAndCar(){
+
+ }
+ // 保存狀態
+ handleOpCodeIsConfirmLoading = false 
+ // 更換機台數據
+ changeOpCodeData = [] ;
+
+ changeOpCodeTable = {
+  header:[
+    {label:"", value:""},
+  ] ,
+  tbData:[] 
+
+ }
+
+ carList = [] ;
+/**選車Modal可見性 */
+selectCarIsVisible = false 
+// 選車Modal關閉開啟
+handleSelectCarModal(){
+  this.selectCarIsVisible = !this.selectCarIsVisible
+}
+// 選車表數據
+selectCarTable = {
+  header :[] ,
+  tbData:[] 
+}
+//選車事件 
+handleSelectCarCheckFun(carId){
+  this.selectCarTable.tbData.forEach((item, index, array)=>{
+    if(item.BATCH_411_CAR_ID !== carId) {
+      this.selectCarTable.tbData[index].checked = false ;
+    }
+    
+  })
+
+}
+handleSelectCarIsConfirmLoading = false
+// 確認車輛選擇
+comitHandleSelectCarModal(){
+  let selectCarIdTemp = ""
+   
+  this.selectCarTable.tbData.forEach((item, index, array)=>{
+   if(item.checked === true) {
+     //選擇當前車次
+     selectCarIdTemp = item.BATCH_411_CAR_ID ;
+   }
+ })
+ if(selectCarIdTemp === "") {
+   this.nzMessageService.error("尚未選擇配車編號")
+ }
+
+ if(this.selectNewID === "") {
+   this.nzMessageService.error("選擇作業丟失，請關閉重新選擇")
+ }
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+   if(item.ID === this.selectNewID) {
+     this.changeOpCodeTable.tbData[index].selectedCarId = selectCarIdTemp
+   }
+ })
+ this.handleSelectCarModal() ;
+
+
+}
+
+   /***更換機台 */
+   changeEquipIsVisible = false ;
+   handleEquipModal(){
+    this.changeEquipIsVisible = !this.changeEquipIsVisible 
+   }
+   // 確認保存
+   comitHandleEquipModal(){
+
+   }
+   // 保存狀態
+   handleEquipIsConfirmLoading = false 
+   // 更換機台數據
+   changeEquipData = [] ;
+
+    changeEquipTable = {
+      header:[
+        {label:"", value:""},
+      ] ,
+      tbData:[] 
+    }
+
+
+
   constructor( 
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
@@ -163,6 +367,9 @@ category = '' ;
       rowDragMultiRow: true,
       rowDragManaged: true, 
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
+      onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
+        this.doubleClickConfigCar(event) ;
+      } 
     }
     this.gridOptionsRowDataModal = {
       rowDragMultiRow:true,
@@ -174,9 +381,12 @@ category = '' ;
 
   ngOnInit() {
    /// this.gridApi.setSuppressRowDrag(true) ;
-    this.getShopCodes() ;
-    //this.getSetColumByUser() ;
+    //獲取版本訊息
     this.getFcpVerList();
+    //獲取戰備機台訊息
+    //this.getShopCodes() ;
+    //this.getSetColumByUser() ;
+   
     
     this.searchV0.startDate = moment().format(this.mdateFormat) ;
     //當月月底
@@ -216,6 +426,10 @@ category = '' ;
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
 
+  }
+
+  doubleClickConfigCar(row) {
+    console.log(row) ;
   }
   onChangeStartDate(result): void {
     console.log('onChange: ', result);
@@ -272,6 +486,7 @@ category = '' ;
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
     this.searchV0.equipCode = this.selectEquipCode ;
+    this.searchV0.fcpVer = this.selectFcpVer
     //初始化原始数据
     this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
@@ -303,6 +518,8 @@ category = '' ;
         localStorage.setItem("originalData",JSON.stringify(this.rowData))
         this.originalData =  JSON.parse(localStorage.getItem("originalData"))  ;
         //console.log("this.originalData :" + JSON.stringify(this.originalData)) ;
+        //數據生成完畢
+        this.groupBtn() ;
       }
       } else {
         this.category = '';
@@ -314,25 +531,35 @@ category = '' ;
   }
 
 //獲取站別分群配置
-  getSetColumGroupData(){
-    this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
-      let result:any = res ;
-      this.groupColumList = result.data ;
-      if(result.code !== 200) {
-        this.nzMessageService.error(result.message)
-      } else {
-        this.getSetColumByUser() ;
-      }
+  // getSetColumGroupData(){
+  //   this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
+  //     let result:any = res ;
+  //     this.groupColumList = result.data ;
+  //     if(result.code !== 200) {
+  //       this.nzMessageService.error(result.message)
+  //     } else {
+  //       this.getSetColumByUser() ;
+  //     }
      
-    })
-  }
+  //   })
+  // }
 
-///User設定的欄位
+///User設定的欄位 包含分群數據
   getSetColumByUser(){
     this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
-      
+      //直接在所有欄位中過濾出分群數據
+      let groupColumListTemp = [] ;
+      this.allColumList.forEach((item,index,array)=>{
+        if(item.category === 1) {
+          //分群默認選擇
+          item.checked = true ;
+          groupColumListTemp.push(item) ;
+        }
+      })
+      // 分群欄位
+      this.groupColumList = groupColumListTemp ;
       this.columnDefs = [] ;
       let exportHeader = [] ;
       this.columKeyType = {} ;
@@ -384,21 +611,49 @@ category = '' ;
       }
     })
   }
+  //調用站別機台訊息
   getShopCodes(){
     this.mshService.getShopCodes().subscribe(res=>{
       let result:any = res ;
       this.shopCodeList = result.data ;
       this.initSelectShop();
-      this.getSetColumGroupData();
+      //this.getSetColumGroupData();
+      //開始調用數據部分
+      this.getSOPData() ;
     })
   }
-
+  /**1.查詢客戶設置欄位 
+   * 2.默認分群設置
+   * 3.獲取表格數據
+   * 4.調用分群方法
+  */
+ getSOPData(){
+  //調用客戶欄位配置訊息
+  this.getSetColumByUser() ;
+ }
+ /**
+  * 獲取版本訊息
+  */
   getFcpVerList(){
     this.mshService.getFcpVerList().subscribe(res=>{
       let result:any = res ;
       this.fcpVerList = result.data ;
-      console.log("this.fcpVerList:" + JSON.stringify(this.fcpVerList))
-      this.inintLockBtn() ;
+    //console.log("this.fcpVerList:" + JSON.stringify(this.fcpVerList))
+    // 默認版本號
+    this.fcpVerList.forEach((item,index,array)=>{
+      if(index === 0){
+        this.selectFcpVer = item.fcpVer
+      } else {
+        if(item.fcpLockStatus === '1'){
+          this.selectFcpVer = item.fcpVer
+        }
+      }
+
+    })
+    //初始化選擇的版本
+    this.inintLockBtn() ;
+    //調用站別機台訊息
+    this.getShopCodes() ;
     })
   }
   //當選擇的的版本狀態不是'1'時候，顯示鎖定的按鈕
@@ -481,7 +736,7 @@ category = '' ;
     this.originalData = [] ;
     this.rowData = [] ;
     //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
-    this.getSetColumGroupData();
+    this.getSetColumByUser();
   }
 
   selectEquipCodeFunc(){
@@ -760,7 +1015,7 @@ category = '' ;
       if(result.code !== 200) {
         this.nzMessageService.error(result.message)
       } else {
-        this.getSetColumGroupData() ;
+        this.getSetColumByUser() ;
       }
      
     })

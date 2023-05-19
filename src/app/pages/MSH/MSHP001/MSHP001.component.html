@@ -7,6 +7,9 @@
       <nz-collapse-panel [nzHeader]="panels1.name" [nzActive]="panels1.active">
         <p>
           
+          <button *ngIf="showLockBtn" style=" background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
+
+          <button *ngIf="!showLockBtn && selectFcpVer !=='' " style=" background-color: #FF9900; border-color: #FF9900;  color: #fff;" nz-button nzType="primary" (click)="queryFcpVerStatusBtn()">查看狀態</button>
           <nz-select style="width:300px;"  nzPlaceHolder="請選擇版本號" [(ngModel)]="selectFcpVer"  (ngModelChange)="changeFcpVer()">
             <ng-container  *ngFor="let item3 of fcpVerList" >
             <nz-option *ngIf="item3.fcpLockStatus === '1'; else unlockTemplate"  [nzLabel]="item3.fcpVer + '(' +item3.fcpLockStatusLabel + ')'" [nzValue]="item3.fcpVer"></nz-option>
@@ -15,14 +18,13 @@
             </ng-template>
           </ng-container>
           </nz-select>
-          <button *ngIf="showLockBtn" style="margin-left: 20px; background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
-
-          <button *ngIf="!showLockBtn && selectFcpVer !=='' " style="margin-left: 30px; background-color: #FF9900; border-color: #FF9900;  color: #fff;" nz-button nzType="primary" (click)="queryFcpVerStatusBtn()">查看狀態</button>
-
-
-        
+         
+          <nz-date-picker style="margin-left: 20px;" [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
+          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)"></nz-date-picker>
+          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
+          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
       </p>
-
+        <!--站別機台選擇-->
         <p> <nz-radio-group [(ngModel)]="selectShopCode" nzButtonStyle="solid" (ngModelChange)="selectShopCodeFunc()">
           <label *ngFor="let item of shopCodeList" nz-radio-button [nzValue]="item.value">{{item.label}}</label>
         </nz-radio-group></p>
@@ -30,13 +32,11 @@
         <p> <nz-radio-group [(ngModel)]="selectEquipCode" nzButtonStyle="solid" (ngModelChange)="selectEquipCodeFunc()">
           <label *ngFor="let item1 of equipCodeList" nz-radio-button [nzValue]="item1.value">{{item1.label}}</label>
         </nz-radio-group></p>
-
+        <!---原始位置-->
         <p *ngIf="selectFcpVerObj">
-          <nz-date-picker [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
-          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)"></nz-date-picker>
-          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
-          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
+         
         </p>
+
       </nz-collapse-panel>
     </nz-collapse>
 
@@ -123,6 +123,10 @@
       </div>
     </div>
     <div *nzModalFooter>
+      <button style="float:left" nz-button nzType="primary" (click)="handleOpCodeModal()">更换作業代碼</button>
+
+      <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
+
       <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('2')">確認</button>
 
       <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
@@ -218,4 +222,115 @@ nzWidth="300"
 </nz-modal>
 
 
+<!---更換作業碼-->
+<nz-modal
+[(nzVisible)]="changeOpCodeIsVisible"
+[nzTitle]="changeOpCodeModalTitle"
+[nzContent]="opCodeModalContent"
+[nzFooter]="opCodeModalFooter"
+(nzOnCancel)="handleOpCodeModal()"
+nzWidth="300"
+>
+<ng-template #changeOpCodeModalTitle>作業碼更換</ng-template>
+
+<ng-template #opCodeModalContent>
+  <nz-table #basicTable [nzData]="changeOpCodeTable.tbData" [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>MO</th>
+        <th>作業代碼</th>
+        <th>可替換作業</th>
+        <th>選擇替換作業代碼</th>
+        <th>車次編號</th>
+        <th>選擇配車</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{data.ID_NO}}</td>
+        <td>{{data.OP_CODE}}</td>
+        <td>{{data.NEW_OP_CODE}}</td>
+        <td>
+          <nz-radio-group *ngIf="data.selectedOpCodeList.length > 0 " [(ngModel)]="data.selectedOpCode" nzName="radiogroup" (ngModelChange)="selectOpCodeFun()">
+            <label *ngFor="let s of data.selectedOpCodeList "  nz-radio [nzValue]="s">{{s}}</label>
+          </nz-radio-group>
+        </td>
+        <td>{{data.selectedCarId}}</td>
+        <td><a (click)="selectCarClick(data.ID,data.selectedCarId)">選車</a></td>
+        <!-- <td>
+        
+          <a>保存</a>
+        </td> -->
+      </tr>
+    </tbody>
+  </nz-table>
+  
+</ng-template>
+
+<ng-template #opCodeModalFooter>
+  <button nz-button nzType="default" (click)="handleOpCodeModal()">關閉</button>
+  <button nz-button nzType="primary" (click)="comitHandleOpCodeModal()" [nzLoading]="handleOpCodeIsConfirmLoading">存檔</button>
+</ng-template>
+</nz-modal>
+
+<!---選車-->
+<nz-modal
+[(nzVisible)]="selectCarIsVisible"
+[nzTitle]="selectCarModalTitle"
+[nzContent]="selectCarModalContent"
+[nzFooter]="selectCarModalFooter"
+(nzOnCancel)="handleSelectCarModal()"
+nzWidth="300"
+>
+<ng-template #selectCarModalTitle>請選擇車輛</ng-template>
+
+<ng-template #selectCarModalContent>
+  <nz-table #basicTable  [nzData]="selectCarTable.tbData" [nzFrontPagination]="false"  >
+    <thead>
+      <tr>
+        <th>選擇車次</th>
+        <th>MO</th>
+        <th>作業代碼</th>
+        <th>總重</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td><label nz-checkbox [(ngModel)]="data.checked"  (ngModelChange)="handleSelectCarCheckFun(data.BATCH_411_CAR_ID)">{{data.BATCH_411_CAR_ID}}</label></td>
+        <td>{{data.MOS}}</td>
+        <td>{{data.OP_CODE}}</td>
+        <td>{{data.TOTALWEIGHT}}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+  
+</ng-template>
+
+<ng-template #selectCarModalFooter>
+  <button nz-button nzType="default" (click)="handleSelectCarModal()">關閉</button>
+  <button nz-button nzType="primary" (click)="comitHandleSelectCarModal()" [nzLoading]="handleSelectCarIsConfirmLoading">確定</button>
+</ng-template>
+</nz-modal>
+
+
+<!---更換機台-->
+   <nz-modal
+      [(nzVisible)]="changeEquipIsVisible"
+      [nzTitle]="changeEquipModalTitle"
+      [nzContent]="equipModalContent"
+      [nzFooter]="equipModalFooter"
+      (nzOnCancel)="handleEquipModal()"
+    >
+      <ng-template #changeEquipModalTitle>機台更換</ng-template>
+
+      <ng-template #equipModalContent>
+      
+      </ng-template>
+
+      <ng-template #equipModalFooter>
+        <span>...</span>
+        <button nz-button nzType="default" (click)="handleEquipModal()">關閉</button>
+        <button nz-button nzType="primary" (click)="comitHandleEquipModal()" [nzLoading]="handleEquipIsConfirmLoading">存檔</button>
+      </ng-template>
+    </nz-modal>
 </div>
