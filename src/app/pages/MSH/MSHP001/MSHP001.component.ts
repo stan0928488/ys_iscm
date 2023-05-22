@@ -392,7 +392,7 @@ comitHandleSelectCarModal(){
     //當月月底
     //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //一個月後
-    this.searchV0.endDate = moment(new Date()).add(2, "months").format(this.mdateFormat) ;
+    this.searchV0.endDate = moment(new Date()).add(7, "days").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -465,13 +465,21 @@ comitHandleSelectCarModal(){
   }
 
   exportBtn(){
-    this.isLoading = true ;
+    
     let tableName = this.export.title + "_" + this.selectShopCode  ;
+    if(this.export.data.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.isLoading = true ;
+    // console.log("this.export.data length :" + this.export.data.length)
+    // console.log("this.export.header length :" + this.export.header.length)
     this.excelService.exportAsExcelFile(this.export.data, tableName,this.export.header);
     this.isLoading = false ;
   }
   //選擇分組
   checkedChange(value: string[]): void {
+   // console.log("选择的分群栏位:" + value) ;
     //選擇當前站別
     this.searchV0.shopCode = this.selectShopCode ;
     //選中分群數組
@@ -551,15 +559,22 @@ comitHandleSelectCarModal(){
       this.allColumList = result.data ;
       //直接在所有欄位中過濾出分群數據
       let groupColumListTemp = [] ;
+      //分群默认选择
+      let groupArrayTemp = [] ;
       this.allColumList.forEach((item,index,array)=>{
-        if(item.category === 1) {
+        if(item.isGroup === 1) {
           //分群默認選擇
           item.checked = true ;
           groupColumListTemp.push(item) ;
+          //默认选择所有的分群
+          groupArrayTemp.push(item.columValue);
         }
       })
       // 分群欄位
       this.groupColumList = groupColumListTemp ;
+      // 分群栏位 checked
+      this.groupArray = groupArrayTemp ;
+
       this.columnDefs = [] ;
       let exportHeader = [] ;
       this.columKeyType = {} ;
@@ -586,7 +601,7 @@ comitHandleSelectCarModal(){
         exportHeader.push("END_DATE_C")
         this.columnDefs.push(index4);
         //数据类型
-        this.columKeyType["START_DATE_C"] = 0 ;
+        this.columKeyType["END_DATE_C"] = 0 ;
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
@@ -743,6 +758,7 @@ comitHandleSelectCarModal(){
     console.log("選擇站別 :" + this.selectEquipCode)
     this.originalData = [] ;
     this.rowData = [] ;
+    this.getTableData() ;
   }
 
 
@@ -785,9 +801,10 @@ comitHandleSelectCarModal(){
       itemsToUpdate.push(rowNode.data);
     })
     console.log('onRowDragEndRowDataModal:', JSON.stringify(itemsToUpdate) );
-    this.rowSortedData = [...itemsToUpdate];
+    //this.rowSortedData = [...itemsToUpdate];
+    this.rowSortedData = itemsToUpdate;
     this.gridOptionsRowDataModal.api.setRowData(this.rowSortedData)
-    console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
+    //console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
   }
   onRowDragMove(event: RowDragMoveEvent) {
     var movingNode = event.node;
@@ -811,7 +828,7 @@ comitHandleSelectCarModal(){
     let preGroupString = "" ;
     let preGroupObject = {} ;
     this.originalData = JSON.parse(localStorage.getItem("originalData"))
-    console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
+    //console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
     let originalDataTemp:any[] = [...this.originalData]
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
@@ -848,9 +865,13 @@ comitHandleSelectCarModal(){
                   if(key === 'sortId') {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
-                  } else {
-                    let newStr =  item[key] ;
+                  } else if(key === 'START_DATE_C' || key === 'END_DATE_C')  {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
+                  }
+                  else {
+                    let newStr =  item[key] ;
+                      preGroupObject[key] = newStr
                   }
                  
                  /*
@@ -867,6 +888,10 @@ comitHandleSelectCarModal(){
                //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
                   //preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2)
                   preGroupObject[key] +=  item[key];  
+                   //結束時間顯示
+                   if(key === 'END_DATE_C') {
+                    console.log("結束時間2END_DATE_C ：" + item[key]) 
+                  }
                  
                 }
 
@@ -901,18 +926,36 @@ comitHandleSelectCarModal(){
   }
 //写入之前需要处理数据
  pushDataBeforeFormat(preGroupObject:any) {
+  // console.log("寫入數據分群：" + JSON.stringify(preGroupObject) )
   Object.keys(preGroupObject).forEach((key)=>{
     //处理不是id的栏位
     if(key !== 'sortId') {
     //当前栏位不是数字
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
-      //如果当前不为空
+      //如果当前值不为空
       if(preGroupObject[key] !== null) {
-        let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
-        preGroupObject[key] = newStr
+      
+        if(key === 'START_DATE_C') {
+         // preGroupObject[key] = ""
+        let  startDateArray =   preGroupObject[key].toString().split(',')[0]
+        preGroupObject[key] = startDateArray
+        } else if(key === 'END_DATE_C'){
+          let endDateArrayLen = preGroupObject[key].toString().split(',').length ;
+          let  endDateArray =   preGroupObject[key].toString().split(',')[endDateArrayLen - 1]
+          preGroupObject[key] = endDateArray
+         // preGroupObject[key] = ""
+        } else {
+          let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
       } else {
-        let newStr = preGroupObject[key]//.toString().replace("null","");
-        preGroupObject[key] = newStr
+       // 當前值為空
+        if(key === 'START_DATE_C' || key === 'END_DATE_C') {
+          preGroupObject[key] = "" 
+        } else {
+          let newStr = preGroupObject[key]//.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
       }
      //当前栏位是数字
     } else {
@@ -983,13 +1026,21 @@ comitHandleSelectCarModal(){
      this.finalChangeDataIds = [] ;
      //原始數據調取
      this.originalData = JSON.parse(localStorage.getItem("originalData"))
-     //遍歷分群數據
-     this.rowData.forEach((item,index,array)=>{
-       let ids = item.sortId.split(',')
-       ids.forEach((val)=>{
-        this.finalChangeDataIds.push(this.originalData[val-1].ID) 
-       })
-     })
+     // 微调确认
+     if(flag === '3') {
+      this.rowSortedData.forEach((item,index,array)=>{
+        this.finalChangeDataIds.push(item.ID) ;
+      })
+     } else {  //内外层 遍歷分群數據
+      this.rowData.forEach((item,index,array)=>{
+        let ids = item.sortId.split(',')
+        ids.forEach((val)=>{
+         this.finalChangeDataIds.push(this.originalData[val-1].ID) 
+        })
+      })
+     }
+    
+    
      let finalChangeDataTemp = [] ;
      this.finalChangeDataIds.forEach((item,index,array)=>{
       finalChangeDataTemp.push({id:item,sort:index + 1})
