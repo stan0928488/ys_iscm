@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 
 import * as _ from "lodash";
@@ -118,5 +118,46 @@ export class LABService {
     let queryUrl = this.APIURL + `/lab/samplingRun?plantCode=${plantCode}&&moEdition=${moEdition}&&userName=${userName}`;
   
       return this.http.get(queryUrl);
+  }
+
+  // 新增實驗室取樣時間設定
+  saveTblabm002(payload){
+    console.log('新增實驗室取樣時間設定');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/saveTblabm002`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.post<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+   // 查找實驗室取樣時間設定
+   findAllTblabm002(){
+    console.log('查找實驗室取樣時間設定');
+    let endpointUrl = `${this.APIURL}/LAB001/findAllTblabm002`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : 無`);
+    return this.http.get<any>(endpointUrl);
+  }
+
+   // 更新實驗室取樣時間設定
+   updateTblabm002(payload){
+    console.log('更新實驗室取樣時間設定');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/updateTblabm002`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.put<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+  // 更新實驗室取樣時間設定
+  deleteTblabm002(id:number, plantCode:string){
+    console.log('更新實驗室取樣時間設定');
+    const httpParams = new HttpParams()
+      .set('id', id)
+      .set('plantCode', plantCode);
+    let endpointUrl = `${this.APIURL}/LAB001/deleteTblabm002`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+    return this.http.delete<any>(endpointUrl, { params: httpParams });
   }
 }

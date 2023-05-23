@@ -621,7 +621,7 @@ export class MSHI003Component implements AfterViewInit {
         return false;
       }
 
-      if(_.isNull(item[this.SALE_ORDER])){
+      /*if(_.isNull(item[this.SALE_ORDER])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SALE_ORDER}」不得為空，請修正。`);
         return false;
       }
@@ -631,10 +631,10 @@ export class MSHI003Component implements AfterViewInit {
         return false;
       }
 
-     /* if(_.isNull(item[this.CUST_ABBR])){
+      if(_.isNull(item[this.CUST_ABBR])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.CUST_ABBR}」不得為空，請修正。`);
         return false;
-      }*/
+      }
 
       if(_.isNull(item[this.PROC_STATUS])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.PROC_STATUS}」不得為空，請修正。`);
@@ -659,8 +659,8 @@ export class MSHI003Component implements AfterViewInit {
       if(_.isNull(item[this.EPST])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.EPST}」不得為空，請修正。`);
         return false;
-      }
-      else{
+      }*/
+      if(!_.isNull(item[this.EPST])){
         const isVerifyEpstDate = this.verifyDate(item, rowNumberInExcel, this.EPST);
         if(isVerifyEpstDate === false) return false;
       }
