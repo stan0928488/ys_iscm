@@ -1,17 +1,42 @@
 import { Component, OnInit } from '@angular/core';
 import { registerLocaleData, DatePipe } from '@angular/common';
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {NzModalService} from "ng-zorro-antd/modal"
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { AppComponent } from "src/app/app.component";
+import { PPSService } from "src/app/services/PPS/PPS.service";
+import { NzModalService } from "ng-zorro-antd/modal";
+import { CellClickedEvent, ColDef, GridReadyEvent } from 'ag-grid-community';
 import zh from '@angular/common/locales/zh';
 registerLocaleData(zh);
 import * as moment from 'moment';
-import { PPSService } from "src/app/services/PPS/PPS.service";
+import * as XLSX from 'xlsx';
+import * as _ from "lodash";
+import { forEach } from 'lodash';
+
+interface data {
+  fcpEdition: String,
+  schShopCode: String,
+  sfcShopCode: String,
+  saleAreaGroup: String,
+  custAbbreviations: String,
+  idNo: String,
+  saleOrder: String,
+  saleItem: String,
+  dateDeliveryPP: String,
+  steelType: String,
+  lineupProcess: String,
+  finalProcess: String,
+  scheType: String,
+  planWeightI: number,
+  saleItemLength: number,
+  actualLength: number,
+  cycleNo: String,
+  mergeNo: String,
+  inputDia: String,
+  outDia: String,
+  datePlanInStorage: String,
+  remarkPlanInStorage: String,
+  kindType: String
+}
 
 
 @Component({
@@ -23,6 +48,8 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 export class PPSR301Component implements OnInit {
   date = new Date(); // new Date();
   isVisibleUse = false;
+  isVisibleDtl = false;
+  loadMachineDtlLoading = false;
   // content = "style={ p { word-break:break-all; }}"
   queryDate = "" ;
   MonOne = ""
@@ -670,8 +697,8 @@ export class PPSR301Component implements OnInit {
 
   ] ;
 
-
-
+  // 展開明細表頭
+  modalTitle = "";
 
   optionList = [];
   selectedValue = {};
@@ -688,16 +715,54 @@ export class PPSR301Component implements OnInit {
   log(value: { label: string; value: string }): void {
     //console.log(value);
   }
+  
+  tooltipShowDelay = 0;
+
   constructor(
-    private nzInputModule:NzInputModule ,
-    private  NzTimePickerModule:NzTimePickerModule,
-    private  nzDatePickerModule:NzDatePickerModule,
     private datePipe : DatePipe,
     private getPPSService: PPSService,
-    private message:NzMessageService ,
+    private message:NzMessageService,
+    private Modal: NzModalService,
+    private component: AppComponent
     ) {
 
   }
+
+  
+  columnDefs: ColDef<data>[] = [
+    { headerName: '站別' ,field: 'schShopCode' , filter: false,width: 100 },
+    { headerName: '現況站別',field: 'sfcShopCode' , filter: false,width: 100 },
+    { headerName: '銷售區別' ,field: 'saleAreaGroup' , filter: false,width: 120 },
+    { headerName: '客戶名稱',field: 'custAbbreviations' , filter: false,width: 120},
+    { headerName: 'MO',field: 'idNo' , filter: false,width: 120 },
+    { headerName: '訂單號碼' ,field: 'saleOrder' , filter: false,width: 100 },
+    { headerName: '訂單項次' ,field: 'saleItem' , filter: false,width: 100 },
+    { headerName: '交期',field: 'dateDeliveryPP' , filter: false,width: 120 },
+    { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 120 },
+    { headerName: '現況流程' ,field: 'lineupProcess' , filter: false,width: 150},
+    { headerName: 'FINAL_生產流程',field: 'finalProcess' , filter: false,width: 150 },
+    { headerName: '抽數別', field:'scheType', filter:false, width:120},
+    { headerName: '計畫重量' ,field: 'planWeightI' , filter: false,width: 100 },
+    { headerName: '訂單長度' ,field: 'saleItemLength' , filter: false,width: 120 },
+    { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 100 },
+    { headerName: 'CYCLE_NO',field: 'cycleNo' , filter: false,width: 120 },
+    { headerName: '合併單號',field: 'mergeNo' , filter: false,width: 120 },
+    { headerName: '投入尺寸' ,field: 'inputDia' , filter: false,width: 100 },
+    { headerName: '產出尺寸',field: 'outDia' , filter: false,width: 100 },
+    { headerName: '允收截止日' ,field: 'datePlanInStorage' , filter: false,width: 120 },
+    { headerName: '入庫日的備註' ,field: 'remarkPlanInStorage' , filter: false,width: 120 },
+    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 }
+  ];
+  
+  rowData: data[] = [];    
+
+  public defaultColDef: ColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+  };
+
+
   ngOnInit() {
     // this.theadList.push(this.testHeader);
     this.getVerList();
@@ -743,7 +808,7 @@ export class PPSR301Component implements OnInit {
     this.theadList[1][9].value = this.Montwo ;
     this.theadList[1][10].value = this.MonThree ;
     this.thead = this.theadList ;
-    console.log("表格头部：" + JSON.stringify(this.thead)) ;
+    // console.log("表格头部：" + JSON.stringify(this.thead)) ;
   }
 
   onChange(result: Date): void {
@@ -826,14 +891,162 @@ export class PPSR301Component implements OnInit {
     this.isVisibleUse = false;
   }
 
+  // EXCEL 匯出
+  loadMachineExport() {
+    if (this.tbodyList.length < 1) {
+      this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
+      return;
+    }
+
+    let title = [];
+    
+    // this.theadList.forEach(item => {
+    //   const value = item.value;
+    //   console.log(value);
+    // });
+
+    // console.log(title)
+    // for (let a of this.theadList) {
+    //   // title.push([this.theadList[a].value])
+    // }
+    // let header = [[this.theadList.value]];
+    // console.log(this.theadList.value)
+    var dataLoadMachine = {
+      data : []
+    };
+
+    for(var i in this.tbodyList) {
+        var item = this.tbodyList[i];
+        dataLoadMachine.data.push({
+            "fcpEdition" : item.fcpVer
+        });
+    }
+
+    
+    // 创建工作簿和工作表
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    
+    // 添加合并单元格的定义
+    const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
+                        { s: { r: 0, c: 1 }, e: { r: 1, c: 0 }} 
+                       ];
+    
+    // 转换合并单元格数据为二维数组
+    const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
+      { r: range.s.r, c: range.s.c },
+      { r: range.e.r, c: range.e.c }
+    ]);
+
+    // 合并列
+    XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
+
+    // XLSX.utils.sheet_add_aoa(worksheet,header);
+    XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
+
+    const book: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+    XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+  }
+
   // 展開明細第二層
   openDtl(i) {
-    
-    this.message.create("error", "開發中，還沒寫完");
-    console.log(i[0].value);
-    console.log(i[2].value);
-    console.log(i[3].value);
+    this.isVisibleDtl = true ;
+    this.loadMachineDtlLoading = true;
+    let shopCode = i[0].value;
+    let pstMachine = i[2].value;
+    let showMonth = i[3].value;
+    this.modalTitle = "站別: " + shopCode + "-機台: " + pstMachine + "-交期月份: " + showMonth;
+
+    let obj = { fcpVer: this.fcpVer, shopCode: shopCode, pstMachine: pstMachine, showMonth: showMonth }
+    let myObj = this ;
+    const dateRegex = /^\d{4}[\/-]\d{2}[\/-]\d{2}$|^\d{4}[\/-]\d{2}[\/-]\d{2}\s\d{2}:\d{2}:\d{2}$/;
+
+    myObj.getPPSService.getR301DtlList(obj).subscribe(res => {
+      this.loadMachineDtlLoading = false;
+      let result:any = res ;
+      if(result.length > 0) {
+        this.rowData = JSON.parse(JSON.stringify(result));
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+
+    },err => {
+      this.loadMachineDtlLoading = false ;
+      this.message.error('網絡請求失敗');
+    })
+
+    // this.message.create("error", title);
   }
+
+  // 展開明細第二層EXCEL匯出
+  loadMachineDtlExport() {
+    if (this.rowData.length < 1) {
+      this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
+      return;
+    }
+    let header = [['站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類']];
+    var dataLoadMachineDtl = {
+      data : []
+    };
+
+    for(var i in this.rowData) {
+        var item = this.rowData[i];
+        dataLoadMachineDtl.data.push({
+            "fcpEdition" : item.fcpEdition,
+            "schShopCode" : item.schShopCode,
+            "sfcShopCode" : item.sfcShopCode,
+            "saleAreaGroup" : item.saleAreaGroup,
+            "custAbbreviations" : item.custAbbreviations,
+            "idNo" : item.idNo,
+            "saleOrder" : item.saleOrder,
+            "saleItem" : item.saleItem,
+            "dateDeliveryPP" : item.dateDeliveryPP,
+            "steelType" : item.steelType,
+            "lineupProcess" : item.lineupProcess,
+            "finalProcess" : item.finalProcess,
+            "scheType" : item.scheType,
+            "planWeightI" : item.planWeightI,
+            "saleItemLength" : item.saleItemLength,
+            "actualLength" : item.actualLength,
+            "cycleNo" : item.cycleNo,
+            "mergeNo" : item.mergeNo,
+            "inputDia" : item.inputDia,
+            "outDia" : item.outDia,
+            "datePlanInStorage" : item.datePlanInStorage,
+            "remarkPlanInStorage" : item.remarkPlanInStorage,
+            "kindType" : item.kindType
+        });
+    }
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    XLSX.utils.sheet_add_aoa(worksheet,header);
+    XLSX.utils.sheet_add_json(worksheet, dataLoadMachineDtl.data,{ origin: 'A2', skipHeader: true });//origin => started row
+
+    const book: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+    XLSX.writeFile(book, '機台負荷表明細清單_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+  }
+
+  loadMachineDtlCancel() {
+    this.isVisibleDtl = false;
+  }
+
+  // Example of consuming Grid Event
+  onCellClicked( e: CellClickedEvent): void {
+    console.log('cellClicked', e);
+  }
+  
+  // Example load data from sever
+  onGridReady(params: GridReadyEvent) {
+  }
+
+  errorMSG(_title, _context): void {
+		this.Modal.error({
+			nzTitle: _title,
+			nzContent: `${_context}`
+	  });
+	}
 
 
 
