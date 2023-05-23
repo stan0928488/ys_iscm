@@ -893,60 +893,61 @@ export class PPSR301Component implements OnInit {
 
   // EXCEL 匯出
   loadMachineExport() {
-    if (this.tbodyList.length < 1) {
-      this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
-      return;
-    }
-
-    let title = [];
-    
-    // this.theadList.forEach(item => {
-    //   const value = item.value;
-    //   console.log(value);
-    // });
-
-    // console.log(title)
-    // for (let a of this.theadList) {
-    //   // title.push([this.theadList[a].value])
+    this.message.error('還沒寫完');
+    // if (this.tbodyList.length < 1) {
+    //   this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
+    //   return;
     // }
-    // let header = [[this.theadList.value]];
-    // console.log(this.theadList.value)
-    var dataLoadMachine = {
-      data : []
-    };
 
-    for(var i in this.tbodyList) {
-        var item = this.tbodyList[i];
-        dataLoadMachine.data.push({
-            "fcpEdition" : item.fcpVer
-        });
-    }
+    // let title = [];
+    
+    // // this.theadList.forEach(item => {
+    // //   const value = item.value;
+    // //   console.log(value);
+    // // });
+
+    // // console.log(title)
+    // // for (let a of this.theadList) {
+    // //   // title.push([this.theadList[a].value])
+    // // }
+    // // let header = [[this.theadList.value]];
+    // // console.log(this.theadList.value)
+    // var dataLoadMachine = {
+    //   data : []
+    // };
+
+    // for(var i in this.tbodyList) {
+    //     var item = this.tbodyList[i];
+    //     dataLoadMachine.data.push({
+    //         "fcpEdition" : item.fcpVer
+    //     });
+    // }
 
     
-    // 创建工作簿和工作表
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    // // 创建工作簿和工作表
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
     
-    // 添加合并单元格的定义
-    const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
-                        { s: { r: 0, c: 1 }, e: { r: 1, c: 0 }} 
-                       ];
+    // // 添加合并单元格的定义
+    // const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
+    //                     { s: { r: 0, c: 1 }, e: { r: 1, c: 0 }} 
+    //                    ];
     
-    // 转换合并单元格数据为二维数组
-    const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
-      { r: range.s.r, c: range.s.c },
-      { r: range.e.r, c: range.e.c }
-    ]);
+    // // 转换合并单元格数据为二维数组
+    // const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
+    //   { r: range.s.r, c: range.s.c },
+    //   { r: range.e.r, c: range.e.c }
+    // ]);
 
-    // 合并列
-    XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
+    // // 合并列
+    // XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
 
-    // XLSX.utils.sheet_add_aoa(worksheet,header);
-    XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
+    // // XLSX.utils.sheet_add_aoa(worksheet,header);
+    // XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
 
-    const book: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-    XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+    // const book: XLSX.WorkBook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+    // XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
   }
 
   // 展開明細第二層
