@@ -527,13 +527,14 @@ comitHandleSelectCarModal(){
         this.originalData =  JSON.parse(localStorage.getItem("originalData"))  ;
         //console.log("this.originalData :" + JSON.stringify(this.originalData)) ;
         //數據生成完畢
+        this.export.data = this.rowData ;
         this.groupBtn() ;
       }
       } else {
         this.category = '';
         this.nzMessageService.error(result.message) ;
       }
-      this.export.data = this.rowData ;
+    
     })
   
   }
