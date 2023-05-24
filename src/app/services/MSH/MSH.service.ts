@@ -119,11 +119,6 @@ saveChangeOpCode(_param) {
   return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
-<<<<<<< HEAD
-/////////////////////////////////////////////////
-// EPST變更作業
-/////////////////////////////////////////////////
-
   // 搜尋EPST資料
   searchEpstData(_parms){
     console.log('搜尋EPST資料..');
@@ -172,7 +167,5 @@ saveChangeOpCode(_param) {
     console.log(`Body參數 : ${body}`);
     return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
   }
-=======
->>>>>>> Jane-1.0
 
 }
