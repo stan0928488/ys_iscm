@@ -746,7 +746,7 @@ export class PPSI103Component implements AfterViewInit {
     for(let i=0 ; i < _data.length ; i++) {
       upload_data.push({
         PLANT_CODE : this.PLANT_CODE,
-        SHOP_CODE: _data[i]['站別'],
+        SHOP_CODE: _data[i]['站別'].toString(),
         EQUIP_GROUP: _data[i]['機台群組'] === undefined ? null : _data[i]['機台群組'],
         EQUIP_CODE: _data[i]['機台'],
         PROCESS_CODE: _data[i]['製程碼'] === undefined ? null : _data[i]['製程碼'],
