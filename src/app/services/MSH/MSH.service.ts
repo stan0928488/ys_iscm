@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
-
+import { CookieService } from "../config/cookie.service";
 import * as _ from "lodash";
 
 @Injectable({
@@ -10,17 +10,18 @@ import * as _ from "lodash";
 export class MSHService {
   APIURL: string = "";
   httpOptions = {
-    headers: new HttpHeaders({ "Content-Type": "application/json" })
+    headers: new HttpHeaders({ "Content-Type": "application/json", 
+    "accept-user": this.cookieService.getCookie("USERNAME") })
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(private http: HttpClient, private configService: ConfigService, private cookieService : CookieService) {
     this.APIURL = this.configService.getAPIURL("1");
   }
 /***獲取站點 */
   getShopCodes(){
     let queryUrl = this.APIURL + "/msh/getShopCodes";
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl,this.httpOptions);
   }
  /**
   * 獲取版本號
@@ -28,7 +29,7 @@ export class MSHService {
   */
   getFcpVerList(){
     let queryUrl = this.APIURL + "/msh/getFcpVerList";
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl,this.httpOptions);
   }
 
   //获取所有列表 FcpTb16所有列，用於管理員初步賽選
@@ -36,71 +37,89 @@ export class MSHService {
      console.log("api service getPPSINP13List")
      let queryUrl = this.APIURL + "/msh/MSHI001/getAllColum";
      console.log(queryUrl);
-     return this.http.get(queryUrl);
+     return this.http.get(queryUrl,this.httpOptions);
      }
 //獲取管理員設定序列
   getSetColumByAdmin(){
     let queryUrl = this.APIURL + "/msh/MSHI001/getSetColumData";
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl,this.httpOptions);
   }
 //獲取User設定序列
 getSetColumByUser(_param:any){
   let queryUrl = this.APIURL + "/msh/MSHI002/getSetColumData/"+_param;
-  return this.http.get(queryUrl);
+  return this.http.get(queryUrl,this.httpOptions);
 }
 
 //管理員保存 msh/MSHI001/saveShopColum
 saveDataByAdmin(_param) {
   let queryUrl = this.APIURL + "/msh/MSHI001/saveShopColum";
-  return this.http.post(queryUrl,_param);
+  return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
 //User保存 msh/MSHI001/saveShopColum
 saveDataByUser(_param) {
   let queryUrl = this.APIURL + "/msh/MSHI002/saveShopColum";
-  return this.http.post(queryUrl,_param);
+  return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
 //获取ADMIN针对User的数据
 getSetColumByAdminForUser(_param) {
   let queryUrl = this.APIURL + "/msh/MSHI002/getSetColumForUser/"+_param;
-  return this.http.get(queryUrl,_param);
+  return this.http.get(queryUrl,this.httpOptions);
 }
 
 //獲取已分群數據
 getSetColumGroupData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/getSetColumGroupData/"+_param;
-  return this.http.get(queryUrl,_param);
+  return this.http.get(queryUrl,this.httpOptions);
 }
 //獲取User配置並下載數據
 getTableData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/getTableData";
-  return this.http.post(queryUrl,_param);
+  return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
 //管理員保存 msh/MSHI001/saveShopColum
 saveSortData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/saveSortData";
-  return this.http.post(queryUrl,_param);
+  return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
 //查看當前是否存在未送出的版本
 checkDataStatus(){
   let queryUrl = this.APIURL + "/msh/MSHI002/checkDataStatus";
-  return this.http.get(queryUrl);
+  return this.http.get(queryUrl,this.httpOptions);
 }
 //鎖定版本
 lockFcpVer(_param) {
   let queryUrl = this.APIURL + "/msh/MSHI002/lockFcpVer/"+_param;
-  return this.http.get(queryUrl,_param);
+  return this.http.get(queryUrl,this.httpOptions);
 }
 
 //查看當前版次狀態
 findShopCodeSaveStatus(_param:any){
   let queryUrl = this.APIURL + "/msh/MSHP001/findShopCodeSaveStatus/"+_param;
-  return this.http.get(queryUrl);
+  return this.http.get(queryUrl,this.httpOptions);
+}
+//获取可替换机台数据
+
+//获取可替换作業代碼数据 msh/MSHP001/getEquipOpCode
+getEquipOpCode(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getEquipOpCode?ids=" + _param;
+  return this.http.post(queryUrl,null,this.httpOptions);
+}
+//获取當前版本最新批次的配車數據
+getFcpCarInfo(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getFcpCarInfo?" +_param ;
+  return this.http.post(queryUrl,null,this.httpOptions);
+}
+//获取當前版本最新批次的配車數據 msh/MSHP001/saveChangeOpCode
+saveChangeOpCode(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeOpCode";
+  return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
+<<<<<<< HEAD
 /////////////////////////////////////////////////
 // EPST變更作業
 /////////////////////////////////////////////////
@@ -153,5 +172,7 @@ findShopCodeSaveStatus(_param:any){
     console.log(`Body參數 : ${body}`);
     return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
   }
+=======
+>>>>>>> Jane-1.0
 
 }
