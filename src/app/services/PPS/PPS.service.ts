@@ -9,6 +9,7 @@ import * as _ from "lodash";
 })
 export class PPSService {
   APIURL: string = "";
+  APINEWURL : string = "";
   httpOptions = {
     headers: new HttpHeaders({ "Content-Type": "application/json" })
   };
@@ -16,6 +17,7 @@ export class PPSService {
 
   constructor(private http: HttpClient, private configService: ConfigService) {
     this.APIURL = this.configService.getAPIURL();
+    this.APINEWURL = this.configService.getAPIURL("1");
   }
 
 
@@ -837,9 +839,41 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getR303AllFirstData(edition){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllFirstData?edition=${edition}`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
 
+  getR303AllFirstErrorData(edition){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllFirstErrorData?edition=${edition}`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
 
+  getR303EditionList(){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllEdition`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
 
+  getR303SecondData(idNo , isError){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllSecondData?idNo=${idNo}&isError=${isError}`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
+
+  getR303FCPEditionList(){
+    let queryUrl =this.APINEWURL + `/ppsout001temp/getAllEdition`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
+
+  getR303FCPData(edition){
+    let queryUrl =this.APINEWURL + `/ppsout001temp/getAllFirstData?edition=${edition}`;
+    console.log(queryUrl)
+    return this.http.get(queryUrl);
+  }
 
     /* 之後要刪掉 */
     /*
