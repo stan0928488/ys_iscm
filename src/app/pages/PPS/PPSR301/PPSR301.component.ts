@@ -9,8 +9,9 @@ import zh from '@angular/common/locales/zh';
 registerLocaleData(zh);
 import * as moment from 'moment';
 import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs/dist/exceljs.min.js';
+import * as FileSaver from 'file-saver';
 import * as _ from "lodash";
-import { forEach } from 'lodash';
 
 interface data {
   fcpEdition: String,
@@ -698,7 +699,7 @@ export class PPSR301Component implements OnInit {
   ] ;
 
   // 展開明細表頭
-  modalTitle = "";
+  dtlModalTitle = "";
 
   optionList = [];
   selectedValue = {};
@@ -893,62 +894,117 @@ export class PPSR301Component implements OnInit {
 
   // EXCEL 匯出
   loadMachineExport() {
-    this.message.error('還沒寫完');
-    // if (this.tbodyList.length < 1) {
-    //   this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
-    //   return;
-    // }
+      this.message.error('還沒寫完');
+    // // 建立Workbook物件
+    // const workbook = new ExcelJS.Workbook();
 
-    // let title = [];
+    // // 建立Worksheet物件
+    // const worksheet = workbook.addWorksheet('Sheet1');
+
+    // // 設定合併儲存格
+    // worksheet.mergeCells('A1:A2');
+    // worksheet.mergeCells('B1:B2');
+    // worksheet.mergeCells('C1:C2');
+    // worksheet.mergeCells('D1:D2');
+    // worksheet.mergeCells('E1:E2');
+    // worksheet.mergeCells('F1:F2');
+
+    // // 設定儲存格值
+    // worksheet.getCell('A1').value = '站別';
+    // worksheet.getCell('B1').value = '機群';
+    // worksheet.getCell('C1').value = '機台';
+    // worksheet.getCell('D1').value = '交期月份';
+    // worksheet.getCell('E1').value = '已生產量';
+    // worksheet.getCell('F1').value = '最大負荷量';
     
-    // // this.theadList.forEach(item => {
-    // //   const value = item.value;
-    // //   console.log(value);
-    // // });
-
-    // // console.log(title)
-    // // for (let a of this.theadList) {
-    // //   // title.push([this.theadList[a].value])
-    // // }
-    // // let header = [[this.theadList.value]];
-    // // console.log(this.theadList.value)
-    // var dataLoadMachine = {
-    //   data : []
-    // };
-
-    // for(var i in this.tbodyList) {
-    //     var item = this.tbodyList[i];
-    //     dataLoadMachine.data.push({
-    //         "fcpEdition" : item.fcpVer
-    //     });
-    // }
-
+    // // 設定表頭
+    // // const headerRow = worksheet.addRow(['Name', 'Age', 'City']);
     
-    // // 创建工作簿和工作表
-    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    // // 設定表頭樣式
+    // // headerRow.font = { bold: true };
     
-    // // 添加合并单元格的定义
-    // const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
-    //                     { s: { r: 0, c: 1 }, e: { r: 1, c: 0 }} 
-    //                    ];
-    
-    // // 转换合并单元格数据为二维数组
-    // const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
-    //   { r: range.s.r, c: range.s.c },
-    //   { r: range.e.r, c: range.e.c }
-    // ]);
+    // // 填入資料
+    // this.tbodyList.forEach(item => {
+    //   const row = worksheet.addRow([item.fcpVer, item.shopCode]);
+    //   // 設定其他儲存格樣式或格式...
+    // });
 
-    // // 合并列
-    // XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
+    // // 生成Excel檔案
+    // workbook.xlsx.writeBuffer().then((buffer: ArrayBuffer) => {
+    //   // 建立檔案名稱
+    //   const fileName = 'export.xlsx';
 
-    // // XLSX.utils.sheet_add_aoa(worksheet,header);
-    // XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
-
-    // const book: XLSX.WorkBook = XLSX.utils.book_new();
-    // XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-    // XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+    //   // 下載Excel檔案
+    //   this.saveAsExcelFile(buffer, fileName);
+    // });
+  
   }
+
+    // 下載Excel檔案
+    private saveAsExcelFile(buffer: ArrayBuffer, fileName: string): void {
+      const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+      FileSaver.saveAs(data, fileName);
+    }
+
+
+  // loadMachineExport() {
+  //   // this.message.error('還沒寫完');
+  //   // if (this.tbodyList.length < 1) {
+  //   //   this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
+  //   //   return;
+  //   // }
+
+  //   let title = [];
+    
+  //   // this.theadList.forEach(item => {
+  //   //   const value = item.value;
+  //   //   console.log(value);
+  //   // });
+
+  //   // console.log(title)
+  //   // for (let a of this.theadList) {
+  //   //   // title.push([this.theadList[a].value])
+  //   // }
+  //   // let header = [[this.theadList.value]];
+  //   // console.log(this.theadList.value)
+  //   var dataLoadMachine = {
+  //     data : []
+  //   };
+
+  //   for(var i in this.tbodyList) {
+  //       var item = this.tbodyList[i];
+  //       dataLoadMachine.data.push({
+  //           "fcpEdition" : item.fcpVer
+  //       });
+  //   }
+
+    
+  //   // 创建工作簿和工作表
+  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    
+  //   // 添加合并单元格的定义
+  //   const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
+  //                       { s: { r: 1, c: 1 }, e: { r: 2, c: 0 }} ,
+  //                       { s: { r: 2, c: 1 }, e: { r: 3, c: 0 }} ,
+  //                      ];
+    
+  //   // 转换合并单元格数据为二维数组
+  //   const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
+  //     { r: range.s.r, c: range.s.c },
+  //     { r: range.e.r, c: range.e.c }
+  //   ]);
+
+  //   // 合并列
+  //   XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
+
+  //   // XLSX.utils.sheet_add_aoa(worksheet,header);
+  //   XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
+
+  //   const book: XLSX.WorkBook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+  //   XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+  // }
 
   // 展開明細第二層
   openDtl(i) {
@@ -957,7 +1013,7 @@ export class PPSR301Component implements OnInit {
     let shopCode = i[0].value;
     let pstMachine = i[2].value;
     let showMonth = i[3].value;
-    this.modalTitle = "站別: " + shopCode + "-機台: " + pstMachine + "-交期月份: " + showMonth;
+    this.dtlModalTitle = "版次: " + this.fcpVer + "-站別: " + shopCode + "-機台: " + pstMachine + "-交期月份: " + showMonth;
 
     let obj = { fcpVer: this.fcpVer, shopCode: shopCode, pstMachine: pstMachine, showMonth: showMonth }
     let myObj = this ;
@@ -987,7 +1043,7 @@ export class PPSR301Component implements OnInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類']];
+    let header = [['FCP版次', '站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類']];
     var dataLoadMachineDtl = {
       data : []
     };
