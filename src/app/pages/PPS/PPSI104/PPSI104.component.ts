@@ -569,13 +569,13 @@ export class PPSI104Component implements AfterViewInit {
         SHOP_CODE: _data[i]['站別'],
         EQUIP_CODE: _data[i]['機台'],
         EQUIP_GROUP: _data[i]['機群'] === undefined ? null : _data[i]['機群'],
-        INPUT_DIA_MAX: _data[i]['上下料'],
-        CAPABILITY_DIA_MIN: _data[i]['搬運'],
-        CAPABILITY_DIA_MAX: _data[i]['其他整備'],
-        CAPABILITY_LENGTH_MIN: _data[i]['大調機'],
-        CAPABILITY_LENGTH_MAX: _data[i]['小調機'],
-        OPTIMAL_DIA_MIN: _data[i]['退料'],
-        OPTIMAL_DIA_MAX: _data[i]['冷卻']
+        LOAD_TIME: _data[i]['上下料'],
+        TRANSFER_TIME: _data[i]['搬運'],
+        OTHER_TIME: _data[i]['其他整備'],
+        BIG_ADJUST_TIME: _data[i]['大調機'],
+        SMALL_ADJUST_TIME: _data[i]['小調機'],
+        RETURN_TIME: _data[i]['退料'],
+        COOLING_TIME: _data[i]['冷卻']
       })
     }
     
@@ -589,7 +589,7 @@ export class PPSI104Component implements AfterViewInit {
         EXCELDATA: upload_data
       };
 
-      myObj.PPSService.importI102Excel('1', obj).subscribe(res => {
+      myObj.PPSService.importI103Excel('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") { 
           this.loading = false;
           this.LoadingPage = false;
