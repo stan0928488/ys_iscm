@@ -247,6 +247,9 @@ category = '' ;
       this.nzMessageService.error(result.message) ;
     } else {
       this.nzMessageService.success(result.message);
+      this.changeOpCodeIsVisible = false ;
+      this.modalTableVisible = false ;
+      this.getTableData() ;
     }
   })
   
@@ -495,6 +498,13 @@ comitHandleSelectCarModal(){
     this.searchV0.shopCode = this.selectShopCode ;
     this.searchV0.equipCode = this.selectEquipCode ;
     this.searchV0.fcpVer = this.selectFcpVer
+    // 如果是RF 的，结束时间为3个月之后
+    if(this.selectEquipCode === 'RF') {
+      console.log("RF")
+      this.searchV0.endDate = moment(new Date()).add(3, "months").format(this.mdateFormat) ;
+      console.log("endDate ：" + this.searchV0.endDate)
+    }
+    
     //初始化原始数据
     this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
@@ -562,6 +572,12 @@ comitHandleSelectCarModal(){
       let groupColumListTemp = [] ;
       //分群默认选择
       let groupArrayTemp = [] ;
+      //如果是 RF 需要CARID
+      if(this.selectEquipCode === 'RF'){
+        let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
+        groupColumListTemp.push(itemTemp) ;
+        groupArrayTemp.push(itemTemp.columValue) ;
+      }
       this.allColumList.forEach((item,index,array)=>{
         if(item.isGroup === 1) {
           //分群默認選擇
@@ -593,16 +609,39 @@ comitHandleSelectCarModal(){
         this.columKeyType["ID"] = 0 ;
 
         let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
-        exportHeader.push("START_DATE_C")
+        exportHeader.push("開始")
         this.columnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
         let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
-        exportHeader.push("END_DATE_C")
+        exportHeader.push("結束")
         this.columnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
+        if(this.selectEquipCode === 'RF') {
+        // 411 CARID
+        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CAR_ID_ADD")
+        this.columnDefs.push(index5);
+        //数据类型
+        this.columKeyType["CAR_ID_ADD"] = 0 ;
+
+        // 411 CAREPST
+        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CAREPST")
+        this.columnDefs.push(index6);
+        //数据类型
+        this.columKeyType["CAR_EPST_ADD"] = 0 ;
+        // 411 CARLPST
+        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CARLPST")
+        this.columnDefs.push(index7);
+        //数据类型
+        this.columKeyType["CAR_LPST_ADD"] = 0 ;
+      }
+
+
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;

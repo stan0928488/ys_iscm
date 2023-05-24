@@ -20,7 +20,7 @@
           </nz-select>
          
           <nz-date-picker style="margin-left: 20px;" [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
-          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)"></nz-date-picker>
+          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" ></nz-date-picker>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
       </p>
@@ -46,13 +46,16 @@
         <p *ngIf="selectFcpVerObj">
           <nz-checkbox-wrapper style="width: 70%;"  (nzOnChange)="checkedChange($event)">
             <div nz-row>
-              <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
+              <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList">
+                <label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"  [nzDisabled]="item2.columValue === 'CAR_ID_ADD'"
+                >{{item2.columLabel}}</label>
+              </div>
               
             </div>
           </nz-checkbox-wrapper>
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" (click)="recoverDataBtn()">恢複數據</button>
-          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="dataSortedModal()">微調確認</button>
+          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF'" (click)="recoverDataBtn()">恢複數據</button>
+          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF'" (click)="dataSortedModal()">微調確認</button>
           <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
 
         </p>
@@ -123,7 +126,7 @@
       </div>
     </div>
     <div *nzModalFooter>
-      <button style="float:left" nz-button nzType="primary"  *ngIf="selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更换作業代碼</button>
+      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
