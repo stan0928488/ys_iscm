@@ -16,6 +16,8 @@ import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
+import * as XLSX from 'xlsx';
+import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -26,21 +28,22 @@ import { isDataSource } from '@angular/cdk/collections';
 export class MSHP001Component implements OnInit {
   private gridApi: GridApi<any>;
   private gridColumnApi!: ColumnApi;
+  // 外層拖拽表格
   public gridOptions: GridOptions;
+  // 內層拖拽表格
   public gridOptionsModal: GridOptions;
+  // 微調拖拽表格
   public gridOptionsRowDataModal: GridOptions;
+  // excel 模式表格 
+  public excelModelGridOptions: GridOptions;
+  // excel 模式表格數據
+  rowExcelModelData = [] ;
+  // 表格頭
+  columnDefs: ColDef[] = [];
 
-  columnDefs: ColDef[] = [
-   
-];
+  rowData = [];
 
-rowData = [
-    
-];
-
-rowData1 = [
- 
-];
+  rowData1 = [];
 
 onCellClicked(value:any){
   console.log(value.data)
@@ -136,6 +139,9 @@ category = '' ;
   shopCodeSaveStatusList = [] ;
   //保存的狀態
   saveLoading = false ;
+
+  //保存的狀態2
+  saveLoading2 = false ;
 
  /***更換作業代碼 */
  changeOpCodeIsVisible = false ;
@@ -342,7 +348,25 @@ comitHandleSelectCarModal(){
       tbData:[] 
     }
 
+    /**EXCEL model START parameter */
+    //上傳的資料數據 rowExcelModelData
+    upLoadExcelData = [] ;
 
+    //excelModelModal 顯示 
+    excelModelModalIsVisible = false ;
+    //確認按鈕 loading 
+    handlecomitExcelModelConfirmLoading = false ;
+    excelModelModal = {
+      tbHeader:[],
+      tbData:[]
+    }
+    //exportFileName
+    exportFileName = "" ;
+    uploadFile:File;
+    acceptType = ['.xlsx','.xls','.csv']
+    arrayBuffer:any;
+  
+    /**EXCEL model END */
 
   constructor( 
     private mshService:MSHService,
@@ -374,10 +398,17 @@ comitHandleSelectCarModal(){
         this.doubleClickConfigCar(event) ;
       } 
     }
+    // 微調確認拖拽表格
     this.gridOptionsRowDataModal = {
       rowDragMultiRow:true,
       rowDragManaged: true,
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
+    }
+    // excel模式表格
+    this.excelModelGridOptions = {
+      rowDragMultiRow:true,
+      rowDragManaged: true,
+      onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataOnExcelModal(event);},
     }
      
    }
@@ -468,8 +499,8 @@ comitHandleSelectCarModal(){
   }
 
   exportBtn(){
-    
-    let tableName = this.export.title + "_" + this.selectShopCode  ;
+    let tableName = this.export.title + "_" + this.selectShopCode + "_" + this.selectEquipCode ;
+    this.exportFileName = tableName ;
     if(this.export.data.length < 1) {
       this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
       return 
@@ -816,7 +847,8 @@ comitHandleSelectCarModal(){
 
    /***分组明细拖拽 */
    onRowDragEndModal(e: RowDragEndEvent) {
-    console.log("test")
+    console.log("分组明细拖拽")
+    this.saveLoading2 = true ;
     var itemsToUpdate = [];
     let ids = "" ;
     this.gridOptionsModal.api.forEachNode((rowNode,index)=>{
@@ -830,6 +862,7 @@ comitHandleSelectCarModal(){
     this.rowSelectData = itemsToUpdate;
     this.rowData[this.selectRowIndex].sortId = ids ;
     this.gridOptions.api.setRowData(this.rowData)
+    this.saveLoading2 = false ;
     //console.log('onRowDragEndModal', JSON.stringify(this.rowSelectData) );
   }
  /**微调明细 */
@@ -844,6 +877,22 @@ comitHandleSelectCarModal(){
     //this.rowSortedData = [...itemsToUpdate];
     this.rowSortedData = itemsToUpdate;
     this.gridOptionsRowDataModal.api.setRowData(this.rowSortedData)
+    //console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
+  }
+  /***
+   *excel模式微調
+   */
+   onRowDragEndRowDataOnExcelModal(e: RowDragEndEvent) {
+    console.log("微调明细test")
+    var itemsToUpdate = [];
+    this.excelModelGridOptions.api.forEachNode((rowNode,index)=>{
+     // console.log("index: " + index + ",rowNode:" +JSON.stringify(rowNode.data))
+      itemsToUpdate.push(rowNode.data);
+    })
+    console.log('onRowDragEndRowDataModal:', JSON.stringify(itemsToUpdate) );
+    //this.rowSortedData = [...itemsToUpdate];
+    this.rowExcelModelData = itemsToUpdate;
+    this.excelModelGridOptions.api.setRowData(this.rowExcelModelData)
     //console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
   }
   onRowDragMove(event: RowDragMoveEvent) {
@@ -1166,6 +1215,121 @@ comitHandleSelectCarModal(){
    handleShopStatusModal(){
     this.shopStatusModalVisiable = !this.shopStatusModalVisiable ;
    }
+
+
+    /**EXCEL FUNCTION START parameter */
+
+    // ExcelModelModal 顯示模式
+    handleExcelModelModal(){
+      this.rowExcelModelData = [] ;
+      this.excelModelModalIsVisible = !this.excelModelModalIsVisible ;
+    }
+    //確認使用當前排程
+    comitExcelModelModal(){
+      if(this.rowExcelModelData.length < 1) {
+        this.nzMessageService.error("請先匯入排程數據")
+        return ;
+      }
+      let finalChangeDataTemp = [] ;
+      this.rowExcelModelData.forEach((item,index,array)=>{
+        finalChangeDataTemp.push({id:item.ID,sort:index + 1})
+      }) 
+      this.handlecomitExcelModelConfirmLoading = true
+      this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+        this.handlecomitExcelModelConfirmLoading  = false ;
+        let result:any = res ;
+        if(result.code == 200) {
+          this.nzMessageService.success(result.message)
+          this.excelModelModalIsVisible = false
+          this.uploadFile = null
+          this.getTableData()
+        } else{
+          this.nzMessageService.error(result.message)
+        }
+      })
+
+    }
+
+    importBtn(){
+
+    }
+    // excel檔名
+    incomingfile(event) {
+      this.uploadFile = event.target.files[0]; 
+      console.log("incomingfile e : " + this.uploadFile);
+      let lastname = this.uploadFile.name.split('.').pop();
+      console.log("lastname:" + lastname)
+      console.log("exportFileName:" + this.exportFileName)
+      if(!this.uploadFile.name.includes(this.exportFileName)) {
+        this.nzMessageService.error('請使用同一份文件檔案。');
+      }
+      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+        this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
+        this.clearFile();
+        return;
+      }
+    }
+    //清除文件
+    clearFile() {
+      document.getElementsByTagName('input')[0].value = '';
+  
+    }
+
+    handleUploadFile(){
+      console.log(this.uploadFile)
+      if(this.uploadFile === null || this.uploadFile === undefined) {
+        this.nzMessageService.error("請先上傳檔案")
+        return
+      }
+      let lastname = this.uploadFile.name.split('.').pop();
+      console.log("this.file.name: "+this.uploadFile.name);
+      console.log("incomingfile e : " + this.uploadFile);
+      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+        this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
+        this.clearFile();
+        return;
+      } else {
+        console.log("上傳檔案格式沒有錯誤");
+        let fileReader = new FileReader();
+        fileReader.onload = (e) => {
+          this.arrayBuffer = fileReader.result;
+          var data = new Uint8Array(this.arrayBuffer);
+          var arr = new Array();
+          for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+          var bstr = arr.join("");
+          var workbook = XLSX.read(bstr, {type:"binary"});
+          var first_sheet_name = workbook.SheetNames[0];
+          var worksheet:any = workbook.Sheets[first_sheet_name];
+          this.upLoadExcelData = XLSX.utils.sheet_to_json(worksheet, {raw:true});
+    
+          
+            console.log("importExcel")
+            console.log(this.upLoadExcelData)
+            this.importExcel(this.upLoadExcelData);
+          
+        }
+        fileReader.readAsArrayBuffer(this.uploadFile);
+      }
+    }
+
+    importExcel(_data) {
+      console.log("EXCEL 資料上傳檢核開始");
+      var upload_data = [];
+      for(let i=0 ; i < _data.length ; i++) {
+        console.log("數據： " + JSON.stringify(_data[i]));
+        let dataTemp = _data[i];
+        const myObject = {};
+        this.columnDefs.forEach((item2,index2,array2)=>{
+          myObject[item2.field] = dataTemp[item2.headerName] 
+        })
+        upload_data.push(myObject);
+      }
+      this.rowExcelModelData = upload_data ;
+      this.excelModelGridOptions.api.setRowData(this.rowExcelModelData) ;
+
+    }
+
+    /**EXCEL FUNCTION END */
 
 
 }
