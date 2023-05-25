@@ -926,14 +926,12 @@ export class PPSR301Component implements OnInit {
     worksheet.getCell('I1').value = '負荷量';
     worksheet.getCell('Q1').value = '庫存分佈';
     worksheet.getCell('M1').value = '機台負荷';
-
     worksheet.getCell('G2').value = '剩餘負荷量';
     worksheet.getCell('H2').value = '可再負荷量';
     worksheet.getCell('I2').value = this.MonOne;
     worksheet.getCell('J2').value = this.Montwo;
     worksheet.getCell('K2').value = this.MonThree;
     worksheet.getCell('L2').value = '總工時(天)';
-
     worksheet.getCell('M2').value = '軋欠';
     worksheet.getCell('N2').value = '已軋未到料';
     worksheet.getCell('O2').value = 'WIP未到站';
@@ -945,17 +943,15 @@ export class PPSR301Component implements OnInit {
     worksheet.getCell('U2').value = 'I';
     worksheet.getCell('V2').value = '解捲';
     
-    // 設定表頭
-    // const headerRow = worksheet.addRow(['Name', 'Age', 'City']);
-    
-    // 設定表頭樣式
-    // headerRow.font = { bold: true };
-    
     // 填入資料
     this.tbodyList.forEach(item => {
-      const row = worksheet.addRow([item.fcpVer, item.shopCode]);
-      // 設定其他儲存格樣式或格式...
+      const row = worksheet.addRow([item[0].value, item[1].value, item[2].value, item[3].value, item[4].value, item[5].value, item[6].value,
+        item[7].value, item[8].value, item[9].value, item[10].value, item[11].value, item[12].value, item[13].value, item[14].value, item[15].value,
+        item[16].value, item[17].value, item[18].value, item[19].value, item[20].value, item[21].value]);
     });
+
+    // 設定樣式
+    // headerRow.font = { bold: true };
 
     // 生成Excel檔案
     workbook.xlsx.writeBuffer().then((buffer: ArrayBuffer) => {
@@ -970,6 +966,8 @@ export class PPSR301Component implements OnInit {
 
     // 下載Excel檔案
     private saveAsExcelFile(buffer: ArrayBuffer, fileName: string): void {
+      console.log(buffer);
+
       const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
       FileSaver.saveAs(data, fileName);
     }
