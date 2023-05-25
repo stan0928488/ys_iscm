@@ -1,0 +1,76 @@
+<nz-content  style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+    <nz-breadcrumb-item>異常MO表</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div>
+    <div style = "margin : 10px;">
+      <nz-select style=" margin-left:10px; margin-right:10px; width: 160px;" nzShowSearch nzAllowClear nzPlaceHolder="Select a edition" [(ngModel)]="edition" (ngModelChange)="changeEdition()">
+        <nz-option *ngFor="let edition of editionList ;let i = index" [nzLabel]="edition" [nzValue]="edition"></nz-option>
+        
+      </nz-select>
+      <button nz-button nzType="primary" nzDanger (click) = "exportExcelTab1()" style ="margin-right:10px;">
+        EXCEL匯出
+      </button>
+      <button nz-button nzType="primary"  (click) = "showFCP()">
+        FCP_MO遺失明細
+      </button>
+      <label style = "float: right;" nz-checkbox [(ngModel)]="checked" (ngModelChange) = "onlyShowError()">僅顯示異常資料</label> 
+    </div>
+    <nz-spin [nzTip]="spinType" [nzSize] ="'large'" [nzSpinning]="isLoading">
+
+        <ag-grid-angular
+        style="width: 100% ; height:700px; overflow: scroll"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefsTab1"
+        [defaultColDef]="defaultColDefTab1"
+        [rowData]="displayRowData"
+        [suppressRowClickSelection]="true"
+        [groupSelectsChildren]="true"
+        [rowSelection]="'multiple'"
+        [pagination]="true"
+        [tooltipShowDelay]="tooltipShowDelay"
+        [autoGroupColumnDef]="autoGroupColumnDef"
+        [animateRows]="true"
+        (cellClicked)="onCellClicked($event)"
+      ></ag-grid-angular>
+      
+      <nz-modal  [(nzVisible)]="isShowTable2"  nzWidth = "800" (nzOnCancel)="handleCancel()" [nzFooter] = null >
+        <ng-container *nzModalContent >  
+          <button style = "margin:10px ; " nz-button nzType="primary" nzDanger (click) = "exportExcelTab2()">
+            EXCEL匯出
+          </button>
+        <ag-grid-angular
+          style="width: 100% ; height:700px; overflow: scroll"
+          class="ag-theme-alpine"
+          [columnDefs]="columnDefsTab2"
+          [defaultColDef]="defaultColDefTab1"
+          [rowData]="rowDataTab2"
+          [suppressRowClickSelection]="true"
+          [groupSelectsChildren]="true"
+          [rowSelection]="'multiple'"
+          [pagination]="true"
+          [tooltipShowDelay]="tooltipShowDelay"
+          [autoGroupColumnDef]="autoGroupColumnDef"
+          [animateRows]="true"
+          (cellClicked)="onCellClicked($event)"
+        ></ag-grid-angular>
+      </ng-container>
+      </nz-modal>
+
+      <nz-modal  [(nzVisible)]="isShowFCPMo"  (nzOnCancel)="handleCancel()" [nzFooter] = null >
+        <ng-container *nzModalContent >  
+          <nz-select style=" margin-left:10px; margin-right:10px; width: 160px;" nzShowSearch nzAllowClear nzPlaceHolder="Select a edition" [(ngModel)]="fcpMo">
+            <nz-option *ngFor="let edition of FCPMoEdition ;let i = index" [nzLabel]="edition" [nzValue]="edition"></nz-option>
+            
+          </nz-select>
+          <button nz-button nzType="primary" nzDanger (click) = "exportExcelFCP()">
+            FCP_MO 下載
+          </button>
+        </ng-container>
+      </nz-modal>
+    </nz-spin>
+  </div>
+</nz-content>

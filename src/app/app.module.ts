@@ -80,6 +80,7 @@ import { PPSI220Component } from "./pages/PPS/PPSI220/PPSI220.component";
 import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
+import { PPSR303Component } from "./pages/PPS/PPSR303/PPSR303.component";
 
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
@@ -163,6 +164,7 @@ registerLocaleData(zh);
     PPSI230Component,
     PPSR301Component,
     PPSR302Component,
+    PPSR303Component,
 
     OIPP029component,
     

@@ -498,7 +498,7 @@ export class PPSI108Component implements AfterViewInit {
         else{
           this.importdata_repeat.push(allData);         
           upload_data.push({
-            SHOP_CODE : _data[i]['站號'],
+            SHOP_CODE : _data[i]['站號'].toString(),
             EQUIP_CODE : _data[i]['機台'],
             SHAPE_TYPE : _data[i]['產出形狀'],
             DIA_MIN : _data[i]['產出尺寸最小值'],

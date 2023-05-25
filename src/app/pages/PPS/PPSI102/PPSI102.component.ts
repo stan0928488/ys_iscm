@@ -557,7 +557,7 @@ export class PPSI102Component implements AfterViewInit {
           upload_data.push({            
             PLANT_CODE: 'YS',
             PLANT: _data[i]['工廠別'],
-            SHOP_CODE: _data[i]['站別代碼'],
+            SHOP_CODE: _data[i]['站別代碼'].toString(),
             SHOP_NAME: _data[i]['站別名稱'],
             EQUIP_CODE: _data[i]['機台'] ,
             EQUIP_NAME: _data[i]['機台名稱'],
