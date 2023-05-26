@@ -2,10 +2,158 @@
     <nz-breadcrumb style="margin:16px 0;">
       <nz-breadcrumb-item>實驗室工時</nz-breadcrumb-item>
       <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-      <nz-breadcrumb-item>實驗室取樣時間設定</nz-breadcrumb-item>
+      <nz-breadcrumb-item>實驗室取樣時間區間設定</nz-breadcrumb-item>
     </nz-breadcrumb>
 
-    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
+    <!-- 實驗室取樣時間設定(only time) -->
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinningForOnlyTime">
+        
+        <div class="wrap">
+            <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-top: 20px; margin-left: 20px;"
+                nzType="primary"
+                [nzSize]="'large'"
+                (click)="openSampleTimeSettingInputForOnlyTime()">
+                <span nz-icon nzType="plus" nzTheme="outline"></span>
+                新增
+            </button>
+        </div>
+
+        <nz-table #tblabm003RowTable nzBordered [nzData]="displayTblabm003List" [nzPageSize]="20" [nzScroll]="{ y: '1200px'}" style="margin-top: 50px; margin-bottom: 200px; border:3px #cccccc solid;" cellpadding="10" border='1'>
+            <thead>
+                <tr>
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                      <font size="3.5"><b>ID</b></font>
+                              <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                <span nz-icon nzType="search"></span>
+                              </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                    <font size="3.5"><b>時間起</b></font>
+                            <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                <span nz-icon nzType="search"></span>
+                            </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>時間迄</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>設定的時間</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>預設時段</b></font>
+                                <!-- <nz-filter-trigger [(nzVisible)]="itemIndexFilterVisible" [nzActive]="itemIndexSearchValue.length > 0" [nzDropdownMenu]="itemIndexFilterDropdownMenu">
+                                    <span nz-icon nzType="search"></span>
+                                </nz-filter-trigger>  -->
+                    </th>
+
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let data of tblabm003RowTable.data; let i = index">
+                    <ng-container *ngIf="!editCacheForOnlyTime[data.id].isEdit; else editTemplateForOnlyTime">
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.rowNumber }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.timeStart | date:'HH:mm:ss' }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.timeEnd | date:'HH:mm:ss'}}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.setTime | date:'HH:mm:ss' }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.defaultSet }}</td>
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a id="revise" (click)="editRowDataForOnlyTime(data.id)">
+                              <span nz-icon nzType="edit" nzTheme="outline"></span>
+                              修改
+                            </a>|
+                            <a id="delete" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRowDataForOnlyTime(data.id)">
+                              <span nz-icon nzType="delete" nzTheme="outline"></span>
+                              刪除
+                            </a>
+                          </td>
+                    </ng-container>
+
+                    <ng-template #editTemplateForOnlyTime>
+
+                        <td nzWidth="3%" style="text-align:center; padding: 5px; height: 60px;">
+                            {{ data.rowNumber }}
+                        </td>
+
+                        
+                        <td style="text-align:center;">
+                            <nz-time-picker 
+                                [(ngModel)]="editCacheForOnlyTime[data.id].data.timeStart" 
+                                nzPlaceHolder="時間起"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                            </nz-time-picker>
+                        </td>
+
+                        <td style="text-align:center;">
+                            <nz-time-picker 
+                                [(ngModel)]="editCacheForOnlyTime[data.id].data.timeEnd" 
+                                nzPlaceHolder="時間迄"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                            </nz-time-picker>
+                        </td>
+
+                        <td style="text-align:center;"> 
+                            <nz-time-picker 
+                                [(ngModel)]="editCacheForOnlyTime[data.id].data.setTime" 
+                                nzPlaceHolder="設定的時間"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                            </nz-time-picker>
+                        </td>
+
+                        <td style="text-align:center;">
+                            <label
+                                nz-tooltip 
+                                [nzTooltipTitle]="editCacheForOnlyTime[data.id].data.defaultTimeTooltip"
+                                nz-checkbox 
+                                [nzDisabled]="editCacheForOnlyTime[data.id].data.isDefaultTimecheckboxDisabled"
+                                [(ngModel)]="editCacheForOnlyTime[data.id].data.isSetDefaultTime"
+                                (ngModelChange)="setDefaultTimeHandler(data.id)">
+                            </label>
+                        </td>
+
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a (click)="saveEditForOnlyTime(data.id)">
+                              <span nz-icon nzType="save" nzTheme="outline"></span>
+                              確認
+                            </a>|
+                            <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEditForOnlyTime(data.id)">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              取消
+                            </a>
+                          </td>
+                    </ng-template>
+                </tr>
+            </tbody>
+
+        </nz-table>
+
+    </nz-spin>
+
+
+
+
+    <!-- 實驗室取樣時間設定(weekday+time) -->
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" style="display: none;">
         <div class="wrap">
             <button
                 nz-button
@@ -173,7 +321,7 @@
 
     </nz-spin>
 
-    <!-- 新增實驗室靜態資料 -->
+    <!-- 新增實驗室靜態資料(weekday+time) -->
     <nz-modal
         [(nzVisible)]="isVisibleSampleTimeSetting"
         [nzOkLoading]="isOkLoading"
@@ -260,4 +408,76 @@
     </ng-template>
 
     </nz-modal>
+
+       <!-- 新增實驗室靜態資料(only time) -->
+    <nz-modal
+        [(nzVisible)]="isVisibleSampleTimeSettingForOnlyTime"
+        [nzOkLoading]="isOkLoadingForOnlyTime"
+        [nzWidth]="850" 
+        [nzTitle]="repareTitleForOnlyTime" 
+        [nzContent]="sampleTimeSettingInputContentForOnlyTime" 
+        [nzMaskClosable]="false"
+        (nzOnOk)="insertSampleTimeSettingForOnlyTime()"
+        [nzOkText]="'確認新增'"
+        (nzOnCancel)="cancelSampleTimeSettingInputForOnlyTime()">
+
+    <ng-template #repareTitleForOnlyTime>新增實驗室取樣時段</ng-template>
+    <ng-template #sampleTimeSettingInputContentForOnlyTime>
+
+        <div class="wrapInput">
+            <div class="txt">
+                <span>取樣時段設定</span> 
+            </div>
+            <div class="select">
+
+                <nz-time-picker 
+                    [(ngModel)]="startTimeForOnlyTime" 
+                    nzPlaceHolder="時間起"
+                    [nzNowText]="'Now'"
+                    [nzOkText]="'確認'"
+                    [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                </nz-time-picker>
+
+                <span style="margin: 0 20px;">~</span> 
+
+                <nz-time-picker 
+                    [(ngModel)]="endTimeForOnlyTime" 
+                    nzPlaceHolder="時間迄"
+                    [nzNowText]="'Now'"
+                    [nzOkText]="'確認'"
+                    [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                </nz-time-picker>
+            </div>
+        </div>
+
+        <div class="wrapInput" style="margin-top: 10px;">
+            <div class="txt">
+                <span>設定時間</span>
+            </div>
+            <div class="select">
+                <nz-time-picker 
+                    [(ngModel)]="setTimeForOnlyTime" 
+                    nzPlaceHolder="設定時間"
+                    [nzNowText]="'Now'"
+                    [nzOkText]="'確認'"
+                    [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                </nz-time-picker>
+            </div>
+        </div>
+
+        <div class="wrapInput" style="margin-top: 10px;">
+            <div class="txt">
+                <span>預設時段</span>
+            </div>
+            <div class="select">
+                <label 
+                    nz-checkbox 
+                    [(ngModel)]="isSetDefaultTime">
+                </label>
+            </div>
+        </div>
+
+    </ng-template>
+   </nz-modal>
+
 </nz-content>
