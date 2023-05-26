@@ -765,7 +765,7 @@ export class PPSR301Component implements OnInit {
 
 
   ngOnInit() {
-    this.theadList.push(this.testHeader);
+    // this.theadList.push(this.testHeader);
     this.getVerList();
     this.initDate();
     this.getShopList();
