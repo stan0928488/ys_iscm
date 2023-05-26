@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { LABService } from "src/app/services/LAB/LAB.service";
 import * as _ from "lodash";
@@ -17,6 +17,20 @@ class Tblabm002{
     ){}
 }
 
+class Tblabm002Time{
+  constructor(
+    public rowNumber : number,
+    public id : number,
+    public plantCode : string,
+    public timeStart : Date,
+    public timeEnd : Date,
+    public setTime : Date,
+    public defaultSet : string,
+    public isSetDefaultTime : boolean,
+    public defaultTimeTooltip : string,
+    public isDefaultTimecheckboxDisabled : boolean
+    ){}
+}
 
 @Component({
   selector: 'app-LABI002',
@@ -26,6 +40,9 @@ class Tblabm002{
 })
 export class LABI002Component implements AfterViewInit {
 
+//////////////////////////////////////////////////////////////
+/// 實驗室取樣時間設定(weekday+time)
+/////////////////////////////////////////////////////////////
   USERNAME;
   PLANT_CODE;
   weekDayConvertMap : Map<string, string> = null;
@@ -95,6 +112,7 @@ export class LABI002Component implements AfterViewInit {
               private LABService : LABService,
               private cookieService: CookieService,
               private message: NzMessageService,
+              private changeDetectorRef: ChangeDetectorRef,
              ) {
 
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -122,6 +140,7 @@ export class LABI002Component implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.getTblabm002List();
+    this.getTblabm003List();
   }
 
   getTblabm002List() : void {
@@ -518,7 +537,7 @@ export class LABI002Component implements AfterViewInit {
 
       const payload = {
         id : id,
-        plantCode : this.PLANT_CODE,
+        plantCode : this.editCache[id].data.plantCode,
         timeStart : `${startHour}:${startMinute}`,
         weekIndexStart : this.weekDayReverseConvertMap.get(this.editCache[id].data.startWeekDay),
         timeEnd : `${endHour}:${endMinute}`,
@@ -560,6 +579,358 @@ export class LABI002Component implements AfterViewInit {
   cancelEdit(id : number){
     this.editCache[id].isEdit = false;
     _.remove(this.isEditingList, id);
+  }
+
+
+
+//////////////////////////////////////////////////////////////
+/// 實驗室取樣時間設定(only time)
+/////////////////////////////////////////////////////////////
+
+  isSpinningForOnlyTime = false;
+  isVisibleSampleTimeSettingForOnlyTime = false;
+  isOkLoadingForOnlyTime = false;
+  startTimeForOnlyTime : Date = null;
+  endTimeForOnlyTime : Date = null;
+  setTimeForOnlyTime : Date = null;
+
+  displayTblabm003List : Tblabm002Time[] = [];
+  editCacheForOnlyTime : { [id: string]: { isEdit: boolean, data: Tblabm002Time} } = {};
+
+  isSetDefaultTime = false;
+  setDefaultTimeTooltipTitle = '';
+
+  openSampleTimeSettingInputForOnlyTime() : void {
+    this.isVisibleSampleTimeSettingForOnlyTime = true;
+  }
+
+  cancelSampleTimeSettingInputForOnlyTime() : void {
+    this.isVisibleSampleTimeSettingForOnlyTime = false;
+  }
+
+  insertSampleTimeSettingForOnlyTime() : void {
+
+    if(_.isNil(this.startTimeForOnlyTime)){
+      this.errorMSG('新增失敗', '「時間起」不得為空');
+      return;
+    }
+    else if(_.isNil(this.endTimeForOnlyTime)){
+      this.errorMSG('新增失敗', '「時間迄」不得為空');
+      return;
+    }
+    else if(_.isNil(this.setTimeForOnlyTime)){
+      this.errorMSG('新增失敗', '「設定時間」不得為空');
+      return;
+    } 
+
+    if(this.isSetDefaultTime === true) {
+
+      this.Modal.confirm({
+        nzTitle: '確定新增資料，並將此時段設為唯一的預設時段?',
+        nzOnOk: () => {
+          this.addSampleTimeSettingPeriod();
+        },
+        nzOnCancel: () => {
+          console.log("取消勾選預設時段");
+          return;
+        }
+      }); // end confirm
+    }
+    else{
+      this.addSampleTimeSettingPeriod();
+    }
+  }
+
+  addSampleTimeSettingPeriod(){
+
+      this.isOkLoadingForOnlyTime = true;
+      let startHour = this.startTimeForOnlyTime.getHours().toString();
+      let startMinute = this.startTimeForOnlyTime.getMinutes().toString();
+      let stratSecond = this.startTimeForOnlyTime.getSeconds().toString();
+
+      let endHour = this.endTimeForOnlyTime.getHours().toString();
+      let endMinute = this.endTimeForOnlyTime.getMinutes().toString();
+      let endSecond  = this.endTimeForOnlyTime.getSeconds().toString();
+
+      let setHour = this.setTimeForOnlyTime.getHours().toString();
+      let setMinute = this.setTimeForOnlyTime.getMinutes().toString();
+      let setSecond  = this.setTimeForOnlyTime.getSeconds().toString();
+
+      const payload = {
+        plantCode : this.PLANT_CODE,
+        timeStart : `${startHour}:${startMinute}:${stratSecond}`,
+        timeEnd : `${endHour}:${endMinute}:${endSecond}`,
+        setTime : `${setHour}:${setMinute}:${setSecond}`,
+        defaultSet : this.isSetDefaultTime ? 'Y' : 'N',
+        userCreate : this.USERNAME,
+      };
+
+      new Promise<boolean>((resolve, reject) => {
+        this.LABService.saveTblabm002Time(payload).subscribe({
+          next : (res) =>{
+            if(res.code === 200){
+              this.sucessMSG('新增成功', res.message);
+            }else{
+              this.errorMSG('新增失敗', res.message);
+              reject(true);
+            }
+          },
+          error : (err) => {
+            this.errorMSG('發生系統錯誤', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+            reject(true);
+          },
+          complete : () => {
+            resolve(true);
+          }
+
+        });
+      })
+      .then(success =>{
+        this.isOkLoadingForOnlyTime = false;
+        this.isVisibleSampleTimeSettingForOnlyTime = false;
+        this.startTimeForOnlyTime = null;
+        this.endTimeForOnlyTime = null;
+        this.setTimeForOnlyTime = null;
+        this.isSetDefaultTime = false;
+        this.getTblabm003List();
+      }).catch(error =>{
+        this.isOkLoadingForOnlyTime = false;
+      });
+  }
+
+
+  getTblabm003List() : void {
+
+    this.isSpinningForOnlyTime = true;
+
+    new Promise<boolean>((resolve, reject) => {
+
+      this.LABService.findAllTblabm002Time().subscribe({
+
+        next : (res) =>{
+          if(res.code === 200){
+            if(res.data.length <= 0){
+              this.sucessMSG('查無資料', '目前查無資料');
+              this.displayTblabm003List = [];
+              this.setupUpdateEditCacheForOnlyTime();
+              resolve(true);
+              return;
+            }
+
+            const resultDataList : Tblabm002Time[] =
+              res.data.map(item => {
+
+                let timeStartArray : string[] = item.timeStart.split(':');
+                let timeEndArray : string[] = item.timeEnd.split(':');
+                let setTimeArray : string[] = item.setTime.split(':');
+
+                return new Tblabm002Time(
+                    item.rowNumber,
+                    item.id,
+                    item.plantCode,
+                    new Date(null,null,null,Number(timeStartArray[0]),Number(timeStartArray[1]),Number(timeStartArray[2])),
+                    new Date(null,null,null,Number(timeEndArray[0]),Number(timeEndArray[1]),Number(timeEndArray[2])),
+                    new Date(null,null,null,Number(setTimeArray[0]),Number(setTimeArray[1]),Number(setTimeArray[2])),
+                    item.defaultSet,
+                    _.isEqual(item.defaultSet, 'Y') ? true : false,
+                    _.isEqual(item.defaultSet, 'Y') ? '若欲修改預設時段，直接至其他時段進行修改即可' : '',
+                    _.isEqual(item.defaultSet, 'Y') ? true : false
+                  )
+              });
+
+              this.displayTblabm003List = resultDataList;
+              this.setupUpdateEditCacheForOnlyTime();
+
+          }else{
+            this.errorMSG('查詢失敗', res.message);
+            reject(true);
+          }
+        },
+        error : (err) => {
+          this.errorMSG('發生系統錯誤', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+          reject(true);
+        },
+        complete : () => {
+          resolve(true);
+        }
+      })
+    })
+    .then(success =>{
+      this.isSpinningForOnlyTime = false;
+
+    }).catch(error =>{
+      this.isSpinningForOnlyTime = false;
+    })
+
+  }
+
+   // 複製一份資料到編輯專用的資料list
+   setupUpdateEditCacheForOnlyTime(): void {
+      this.displayTblabm003List.forEach(item => {
+        let _data = _.cloneDeep(item);
+        this.editCacheForOnlyTime[item.id] = {
+          isEdit : false,
+          data : _data
+        }
+      });
+   }
+
+   setDefaultTimeHandler(id : number){
+
+      let _isSetDefaultTime = null;
+      if(!_.isNil(id)){
+        _isSetDefaultTime = this.editCacheForOnlyTime[id].data.isSetDefaultTime;
+      }
+      else{
+        return;
+      }
+
+      if(!_isSetDefaultTime) return;
+      
+      this.displayTblabm003List.forEach(item => {
+        if(item.id !== id && !item.isDefaultTimecheckboxDisabled){
+          this.editCacheForOnlyTime[item.id].data.isSetDefaultTime = false;
+        }
+      });
+   }
+
+  editRowDataForOnlyTime(id : number) : void {
+    this.editCacheForOnlyTime[id].isEdit = true;
+  }
+
+  cancelEditForOnlyTime(id : number){
+    this.editCacheForOnlyTime[id].isEdit = false;
+  }
+
+  saveEditForOnlyTime(id : number){
+
+    if(_.isNil(this.editCacheForOnlyTime[id].data.timeStart)){
+      this.errorMSG('更新失敗', '「時間起」不得為空');
+      return;
+    }
+    else if(_.isNil(this.editCacheForOnlyTime[id].data.timeEnd)){
+      this.errorMSG('更新失敗', '「時間迄」不得為空');
+      return;
+    }
+    else if(_.isNil(this.editCacheForOnlyTime[id].data.setTime)){
+      this.errorMSG('更新失敗', '「設定時間」不得為空');
+      return;
+    } 
+
+    if(this.editCacheForOnlyTime[id].data.isSetDefaultTime === true) {
+
+      this.Modal.confirm({
+        nzTitle: '確定更新資料，並將此時段設為唯一的預設時段?',
+        nzOnOk: () => {
+          this.updateSampleTimeSettingPeriod(id);
+        },
+        nzOnCancel: () => {
+          console.log("取消勾選預設時段");
+          return;
+        }
+      }); // end confirm
+    }
+    else{
+      this.updateSampleTimeSettingPeriod(id);
+    }
+
+    
+  }
+
+  updateSampleTimeSettingPeriod(id : number){
+    this.isSpinningForOnlyTime = true;
+
+    let startHour = this.editCacheForOnlyTime[id].data.timeStart.getHours().toString();
+    let startMinute = this.editCacheForOnlyTime[id].data.timeStart.getMinutes().toString();
+    let stratSecond = this.editCacheForOnlyTime[id].data.timeStart.getSeconds().toString();
+
+    let endHour = this.editCacheForOnlyTime[id].data.timeEnd.getHours().toString();
+    let endMinute = this.editCacheForOnlyTime[id].data.timeEnd.getMinutes().toString();
+    let endSecond  = this.editCacheForOnlyTime[id].data.timeEnd.getSeconds().toString();
+
+    let setHour = this.editCacheForOnlyTime[id].data.setTime.getHours().toString();
+    let setMinute = this.editCacheForOnlyTime[id].data.setTime.getMinutes().toString();
+    let setSecond  = this.editCacheForOnlyTime[id].data.setTime.getSeconds().toString();
+
+    const payload = {
+      id : id,
+      plantCode : this.editCacheForOnlyTime[id].data.plantCode,
+      timeStart : `${startHour}:${startMinute}:${stratSecond}`,
+      timeEnd : `${endHour}:${endMinute}:${endSecond}`,
+      setTime : `${setHour}:${setMinute}:${setSecond}`,
+      defaultSet : this.editCacheForOnlyTime[id].data.isSetDefaultTime ? 'Y' : 'N',
+      userCreate : this.USERNAME,
+    };
+
+    new Promise<boolean>((resolve, reject) => {
+        this.LABService.updateTblabm002Time(payload).subscribe({
+          next : (res) =>{
+            if(res.code === 200){
+              this.sucessMSG('更新成功', res.message);
+            }else{
+              this.errorMSG('更新失敗', res.message);
+              reject(true);
+            }
+          },
+          error : (err) => {
+            this.errorMSG('發生系統錯誤', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+            reject(true);
+          },
+          complete : () => {
+              resolve(true);
+            }
+
+          });
+      })
+      .then(success =>{
+        this.editCacheForOnlyTime[id].isEdit = false;
+        this.isSpinningForOnlyTime = false;
+        this.getTblabm003List();
+      }).catch(error =>{
+        this.isSpinningForOnlyTime = false;
+      });
+  }
+
+  deleteRowDataForOnlyTime(id : number) : void {
+
+    if(this.editCacheForOnlyTime[id].data.isSetDefaultTime){
+      this.errorMSG('刪除失敗', '該時段為預設時段無法刪除，需先將預設時段改為其他時段才能進行刪除該時段');
+      return;
+    }
+
+    this.isSpinningForOnlyTime = true;
+    new Promise<boolean>((resolve, reject) => {
+
+      const plantCode = this.editCacheForOnlyTime[id].data.plantCode; 
+
+      this.LABService.deleteTblabm002Time(id, plantCode).subscribe({
+
+        next : (res) =>{
+          if(res.code === 200){
+            this.sucessMSG('刪除成功', res.message);
+          }else{
+            this.errorMSG('刪除失敗', res.message);
+            reject(true);
+          }
+        },
+        error : (err) => {
+          this.errorMSG('發生系統錯誤', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+          reject(true);
+        },
+        complete : () => {
+          resolve(true);
+        }
+
+      });
+
+    }).then(success =>{
+      this.isSpinningForOnlyTime = false;
+      this.getTblabm003List();
+    }).catch(error =>{
+      this.isSpinningForOnlyTime = false;
+    });
+
+
   }
 
   sucessMSG(_title, _plan): void {

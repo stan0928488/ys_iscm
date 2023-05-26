@@ -137,7 +137,7 @@ export class LABService {
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Payload 參數 : 無`);
     return this.http.get<any>(endpointUrl);
-  }
+   }
 
    // 更新實驗室取樣時間設定
    updateTblabm002(payload){
@@ -149,13 +149,54 @@ export class LABService {
     return this.http.put<any>(endpointUrl, payload, this.httpOptions);
   }
 
-  // 更新實驗室取樣時間設定
+  // 刪除實驗室取樣時間設定
   deleteTblabm002(id:number, plantCode:string){
     console.log('更新實驗室取樣時間設定');
     const httpParams = new HttpParams()
       .set('id', id)
       .set('plantCode', plantCode);
     let endpointUrl = `${this.APIURL}/LAB001/deleteTblabm002`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+    return this.http.delete<any>(endpointUrl, { params: httpParams });
+  }
+
+   // 新增實驗室取樣時間設定(only time)
+   saveTblabm002Time(payload){
+    console.log('新增實驗室取樣時間設定(24小時制)設定');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/saveTblabm002Time`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.post<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+  // 查找實驗室取樣時間設定(only time)
+  findAllTblabm002Time(){
+    console.log('查找實驗室取樣時間設定(only time)');
+    let endpointUrl = `${this.APIURL}/LAB001/findAllTblabm002Time`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : 無`);
+    return this.http.get<any>(endpointUrl);
+   }
+
+   // 更新實驗室取樣時間設定(only time)
+   updateTblabm002Time(payload){
+    console.log('更新實驗室取樣時間設定(only time)');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/updateTblabm002Time`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.put<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+   // 刪除實驗室取樣時間設定(only time)
+   deleteTblabm002Time(id:number, plantCode:string){
+    console.log('更新實驗室取樣時間設定');
+    const httpParams = new HttpParams()
+      .set('id', id)
+      .set('plantCode', plantCode);
+    let endpointUrl = `${this.APIURL}/LAB001/deleteTblabm002Time`;
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
     return this.http.delete<any>(endpointUrl, { params: httpParams });
