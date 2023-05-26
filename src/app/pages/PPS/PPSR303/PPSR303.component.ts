@@ -44,7 +44,9 @@ export class PPSR303Component implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.getAllEdition();
+    
   }
   
   checked = false;
@@ -290,19 +292,19 @@ export class PPSR303Component implements OnInit {
     this.isLoading = true ;
 
     let myObj = this ;
-    myObj.getPPSService.getR303EditionList().subscribe(res => {
+    myObj.getPPSService.getR303EditionList().subscribe(async res => {
       let result:any = res ;
       
       this.edition = result.data[0];
       this.editionList = result.data;
 
       this.getR303Data(this.edition);
-      this.getR303ErrorData(this.edition);
+
     });
   }
 
 
-  getR303Data(edition : string){
+  async getR303Data(edition : string){
     let myObj = this ;
     myObj.getPPSService.getR303AllFirstData(edition).subscribe(res => {
       let result:any = res ;
@@ -313,12 +315,12 @@ export class PPSR303Component implements OnInit {
       console.log(this.rowDataTab1)
       if(this.rowDataTab1 !=null)
         this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
-
-      this.isLoading = false;
+        this.getR303ErrorData(this.edition);
+        
     });
   }
 
-  getR303ErrorData(edition : string){
+  async getR303ErrorData(edition : string){
     let myObj = this ;
     myObj.getPPSService.getR303AllFirstErrorData(edition).subscribe(res => {
       let result:any = res ;
@@ -328,7 +330,7 @@ export class PPSR303Component implements OnInit {
       if(this.rowDataTab4 !=null)
         this.displayRowData = this.displayRowData.concat(this.rowDataTab4);
 
-      this.isLoading = false;
+        this.isLoading = false;
     });
   }
 
@@ -338,7 +340,6 @@ export class PPSR303Component implements OnInit {
       this.isLoading = true;
 
       this.getR303Data(this.edition);
-      this.getR303ErrorData(this.edition);
     }
     
   }
