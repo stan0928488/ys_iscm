@@ -157,6 +157,9 @@ export class AppComponent {
       } else if (_flag == '6') {
         let date = moment(_dateString, "YYYY-MM").format("YYYY-MM");
         return date;
+      } else if (_flag == '7') {
+        let date = moment(_dateString, "YYYYMMDDHHmmss").format("YYYYMMDDHHmmss");
+        return date;
       }
     }
   }
