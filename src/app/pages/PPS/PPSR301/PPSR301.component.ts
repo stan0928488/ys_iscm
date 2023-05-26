@@ -869,6 +869,7 @@ export class PPSR301Component implements OnInit {
       this.tbodyList = [] ;
       if(result.code === 1) {
         this.tbodyList = result.data ;
+        console.log("tbodyList :" + JSON.stringify(this.tbodyList)) ;
         //this.message.info(result.message) ;
       } else {
         //this.message.error(result.message) ;
@@ -894,54 +895,79 @@ export class PPSR301Component implements OnInit {
 
   // EXCEL 匯出
   loadMachineExport() {
-      this.message.error('還沒寫完');
-    // // 建立Workbook物件
-    // const workbook = new ExcelJS.Workbook();
+    // this.message.error('還沒寫完');
 
-    // // 建立Worksheet物件
-    // const worksheet = workbook.addWorksheet('Sheet1');
+    // 建立Workbook物件
+    const workbook = new ExcelJS.Workbook();
 
-    // // 設定合併儲存格
-    // worksheet.mergeCells('A1:A2');
-    // worksheet.mergeCells('B1:B2');
-    // worksheet.mergeCells('C1:C2');
-    // worksheet.mergeCells('D1:D2');
-    // worksheet.mergeCells('E1:E2');
-    // worksheet.mergeCells('F1:F2');
+    // 建立Worksheet物件
+    const worksheet = workbook.addWorksheet('Sheet1');
 
-    // // 設定儲存格值
-    // worksheet.getCell('A1').value = '站別';
-    // worksheet.getCell('B1').value = '機群';
-    // worksheet.getCell('C1').value = '機台';
-    // worksheet.getCell('D1').value = '交期月份';
-    // worksheet.getCell('E1').value = '已生產量';
-    // worksheet.getCell('F1').value = '最大負荷量';
+    // 設定合併儲存格
+    worksheet.mergeCells('A1:A2');
+    worksheet.mergeCells('B1:B2');
+    worksheet.mergeCells('C1:C2');
+    worksheet.mergeCells('D1:D2');
+    worksheet.mergeCells('E1:E2');
+    worksheet.mergeCells('F1:F2');
+    worksheet.mergeCells('G1:H1');
+    worksheet.mergeCells('I1:L1');
+    worksheet.mergeCells('M1:P1');
+    worksheet.mergeCells('Q1:V1');
+
+    // 設定儲存格值
+    worksheet.getCell('A1').value = '站別';
+    worksheet.getCell('B1').value = '機群';
+    worksheet.getCell('C1').value = '機台';
+    worksheet.getCell('D1').value = '交期月份';
+    worksheet.getCell('E1').value = '已生產量';
+    worksheet.getCell('F1').value = '最大負荷量';
+    worksheet.getCell('G1').value = '機台狀況';
+    worksheet.getCell('I1').value = '負荷量';
+    worksheet.getCell('Q1').value = '庫存分佈';
+    worksheet.getCell('M1').value = '機台負荷';
+    worksheet.getCell('G2').value = '剩餘負荷量';
+    worksheet.getCell('H2').value = '可再負荷量';
+    worksheet.getCell('I2').value = this.MonOne;
+    worksheet.getCell('J2').value = this.Montwo;
+    worksheet.getCell('K2').value = this.MonThree;
+    worksheet.getCell('L2').value = '總工時(天)';
+    worksheet.getCell('M2').value = '軋欠';
+    worksheet.getCell('N2').value = '已軋未到料';
+    worksheet.getCell('O2').value = 'WIP未到站';
+    worksheet.getCell('P2').value = 'WIP已到站';
+    worksheet.getCell('Q2').value = 'R';
+    worksheet.getCell('R2').value = 'H';
+    worksheet.getCell('S2').value = 'S';
+    worksheet.getCell('T2').value = 'F';
+    worksheet.getCell('U2').value = 'I';
+    worksheet.getCell('V2').value = '解捲';
     
-    // // 設定表頭
-    // // const headerRow = worksheet.addRow(['Name', 'Age', 'City']);
-    
-    // // 設定表頭樣式
-    // // headerRow.font = { bold: true };
-    
-    // // 填入資料
-    // this.tbodyList.forEach(item => {
-    //   const row = worksheet.addRow([item.fcpVer, item.shopCode]);
-    //   // 設定其他儲存格樣式或格式...
-    // });
+    // 填入資料
+    this.tbodyList.forEach(item => {
+      const row = worksheet.addRow([item[0].value, item[1].value, item[2].value, item[3].value, item[4].value, item[5].value, item[6].value,
+        item[7].value, item[8].value, item[9].value, item[10].value, item[11].value, item[12].value, item[13].value, item[14].value, item[15].value,
+        item[16].value, item[17].value, item[18].value, item[19].value, item[20].value, item[21].value]);
+    });
 
-    // // 生成Excel檔案
-    // workbook.xlsx.writeBuffer().then((buffer: ArrayBuffer) => {
-    //   // 建立檔案名稱
-    //   const fileName = 'export.xlsx';
+    // 設定樣式
+    // headerRow.font = { bold: true };
 
-    //   // 下載Excel檔案
-    //   this.saveAsExcelFile(buffer, fileName);
-    // });
+    // 生成Excel檔案
+    workbook.xlsx.writeBuffer().then((buffer: ArrayBuffer) => {
+      // 建立檔案名稱
+      const fileName = '機台負荷表_' + this.component.dateFormat(moment(), 7) + '.xlsx';
+
+      // 下載Excel檔案
+      this.saveAsExcelFile(buffer, fileName);
+    });
   
   }
 
     // 下載Excel檔案
     private saveAsExcelFile(buffer: ArrayBuffer, fileName: string): void {
+      console.log(buffer);
+
       const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
       FileSaver.saveAs(data, fileName);
     }
@@ -1082,7 +1108,7 @@ export class PPSR301Component implements OnInit {
 
     const book: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-    XLSX.writeFile(book, '機台負荷表明細清單_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
+    XLSX.writeFile(book, '機台負荷表明細清單_'+this.component.dateFormat(moment(), 7)+'.xlsx');//filename => Date_
   }
 
   loadMachineDtlCancel() {

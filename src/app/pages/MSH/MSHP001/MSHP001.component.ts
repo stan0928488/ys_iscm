@@ -16,6 +16,8 @@ import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
+import * as XLSX from 'xlsx';
+import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -26,21 +28,22 @@ import { isDataSource } from '@angular/cdk/collections';
 export class MSHP001Component implements OnInit {
   private gridApi: GridApi<any>;
   private gridColumnApi!: ColumnApi;
+  // 外層拖拽表格
   public gridOptions: GridOptions;
+  // 內層拖拽表格
   public gridOptionsModal: GridOptions;
+  // 微調拖拽表格
   public gridOptionsRowDataModal: GridOptions;
+  // excel 模式表格 
+  public excelModelGridOptions: GridOptions;
+  // excel 模式表格數據
+  rowExcelModelData = [] ;
+  // 表格頭
+  columnDefs: ColDef[] = [];
 
-  columnDefs: ColDef[] = [
-   
-];
+  rowData = [];
 
-rowData = [
-    
-];
-
-rowData1 = [
- 
-];
+  rowData1 = [];
 
 onCellClicked(value:any){
   console.log(value.data)
@@ -137,6 +140,234 @@ category = '' ;
   //保存的狀態
   saveLoading = false ;
 
+  //保存的狀態2
+  saveLoading2 = false ;
+
+ /***更換作業代碼 */
+ changeOpCodeIsVisible = false ;
+ handleOpCodeModal(){
+  let idsTemp = "" ;
+  this.rowSelectData.forEach((item,index,array)=>{
+    if(index == 0) {
+      idsTemp += item.ID
+    } else {
+      idsTemp += ',' + item.ID
+    }
+  })
+  //console.log("ids: " + idsTemp) 
+  this.getEquipOpCode(idsTemp) ;
+  this.changeOpCodeIsVisible = !this.changeOpCodeIsVisible 
+
+ }
+ //获取可替换作業代碼数据
+ getEquipOpCode(ids){
+  this.mshService.getEquipOpCode(ids).subscribe(res=>{
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.changeOpCodeTable.tbData = result.data ;
+      this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+        // 新增選擇作業碼
+        this.changeOpCodeTable.tbData[index].selectedOpCode = "" 
+        // 選擇作業碼列表 
+        if(item.NEW_OP_CODE.toString() === "") {
+          this.changeOpCodeTable.tbData[index].selectedOpCodeList = [] ;
+        } else{
+          this.changeOpCodeTable.tbData[index].selectedOpCodeList = item.NEW_OP_CODE.toString().split(',') ;
+        }
+        // 選擇配車
+        this.changeOpCodeTable.tbData[index].selectedCarId = ""
+      })
+      //console.log("this.changeOpCodeTable.tbData: " + JSON.stringify(this.changeOpCodeTable.tbData)) 
+
+    }
+  })
+ }
+ //選擇新的ID  用於選車時候修改數據
+ selectNewID = ""
+// 選擇車輛
+ selectCarClick(id,selectedCarId){
+
+  let newOpCode = "" ;
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+    if(item.ID === id) {
+      newOpCode = item.selectedOpCode ;
+     // this.changeOpCodeTable.tbData[index].selectedCarId = selectedCarId ;
+    }
+  })
+  if(newOpCode === "" ) {
+    this.nzMessageService.error("請先選擇要替換的作業代碼") 
+    return 
+  }
+  let para = "id="+id +"&opCode="+newOpCode ;
+  this.selectCarTable.tbData = [] ;
+  this.selectNewID = ""
+  this.mshService.getFcpCarInfo(para).subscribe(res=>{
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.selectNewID = id 
+      this.selectCarTable.tbData = result.data ;
+      //將配車選項重置false 
+      this.selectCarTable.tbData.forEach((item, index, array)=>{
+        if(item.BATCH_411_CAR_ID === selectedCarId) {
+          this.selectCarTable.tbData[index].checked = true ;
+        } else {
+          this.selectCarTable.tbData[index].checked = false ;
+        }
+        
+      })
+  
+    }
+  })
+  //開啟關閉選擇
+  this.handleSelectCarModal() ;
+ }
+ selectOpCodeFun(){
+  console.log("this.changeOpCodeTable.tbData: " + JSON.stringify(this.changeOpCodeTable.tbData)) 
+
+ }
+ // 確認保存
+ comitHandleOpCodeModal(){
+  //批量存檔
+  console.log("批量存檔:" + JSON.stringify(this.changeOpCodeTable.tbData));
+  let saveOpCodeAndCarData = []
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+   if(item.selectedOpCode !== "" && item.selectedCarId  !== "") {
+    let saveOpCodeAndCarDataTemp = {id:item.ID ,newOpCode:item.selectedOpCode,carId:item.selectedCarId}
+    saveOpCodeAndCarData.push(saveOpCodeAndCarDataTemp)
+   }
+  })
+  if(saveOpCodeAndCarData.length < 1){
+    this.nzMessageService.error("未選擇作業代碼及車次")
+    return
+  }
+  this.handleOpCodeIsConfirmLoading = true
+  console.log("有效存檔:" + JSON.stringify(saveOpCodeAndCarData));
+  this.mshService.saveChangeOpCode(saveOpCodeAndCarData).subscribe(res=>{
+    this.handleOpCodeIsConfirmLoading = false
+    let result:any = res ;
+    if(result.code !== 200) {
+      this.nzMessageService.error(result.message) ;
+    } else {
+      this.nzMessageService.success(result.message);
+      this.changeOpCodeIsVisible = false ;
+      this.modalTableVisible = false ;
+      this.getTableData() ;
+    }
+  })
+  
+ }
+ //保存修改作業代碼及配車 
+ saveChangeOpCodeAndCar(){
+
+ }
+ // 保存狀態
+ handleOpCodeIsConfirmLoading = false 
+ // 更換機台數據
+ changeOpCodeData = [] ;
+
+ changeOpCodeTable = {
+  header:[
+    {label:"", value:""},
+  ] ,
+  tbData:[] 
+
+ }
+
+ carList = [] ;
+/**選車Modal可見性 */
+selectCarIsVisible = false 
+// 選車Modal關閉開啟
+handleSelectCarModal(){
+  this.selectCarIsVisible = !this.selectCarIsVisible
+}
+// 選車表數據
+selectCarTable = {
+  header :[] ,
+  tbData:[] 
+}
+//選車事件 
+handleSelectCarCheckFun(carId){
+  this.selectCarTable.tbData.forEach((item, index, array)=>{
+    if(item.BATCH_411_CAR_ID !== carId) {
+      this.selectCarTable.tbData[index].checked = false ;
+    }
+    
+  })
+
+}
+handleSelectCarIsConfirmLoading = false
+// 確認車輛選擇
+comitHandleSelectCarModal(){
+  let selectCarIdTemp = ""
+   
+  this.selectCarTable.tbData.forEach((item, index, array)=>{
+   if(item.checked === true) {
+     //選擇當前車次
+     selectCarIdTemp = item.BATCH_411_CAR_ID ;
+   }
+ })
+ if(selectCarIdTemp === "") {
+   this.nzMessageService.error("尚未選擇配車編號")
+ }
+
+ if(this.selectNewID === "") {
+   this.nzMessageService.error("選擇作業丟失，請關閉重新選擇")
+ }
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+   if(item.ID === this.selectNewID) {
+     this.changeOpCodeTable.tbData[index].selectedCarId = selectCarIdTemp
+   }
+ })
+ this.handleSelectCarModal() ;
+
+
+}
+
+   /***更換機台 */
+   changeEquipIsVisible = false ;
+   handleEquipModal(){
+    this.changeEquipIsVisible = !this.changeEquipIsVisible 
+   }
+   // 確認保存
+   comitHandleEquipModal(){
+
+   }
+   // 保存狀態
+   handleEquipIsConfirmLoading = false 
+   // 更換機台數據
+   changeEquipData = [] ;
+
+    changeEquipTable = {
+      header:[
+        {label:"", value:""},
+      ] ,
+      tbData:[] 
+    }
+
+    /**EXCEL model START parameter */
+    //上傳的資料數據 rowExcelModelData
+    upLoadExcelData = [] ;
+
+    //excelModelModal 顯示 
+    excelModelModalIsVisible = false ;
+    //確認按鈕 loading 
+    handlecomitExcelModelConfirmLoading = false ;
+    excelModelModal = {
+      tbHeader:[],
+      tbData:[]
+    }
+    //exportFileName
+    exportFileName = "" ;
+    uploadFile:File;
+    acceptType = ['.xlsx','.xls','.csv']
+    arrayBuffer:any;
+  
+    /**EXCEL model END */
+
   constructor( 
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
@@ -163,26 +394,39 @@ category = '' ;
       rowDragMultiRow: true,
       rowDragManaged: true, 
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
+      onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
+        this.doubleClickConfigCar(event) ;
+      } 
     }
+    // 微調確認拖拽表格
     this.gridOptionsRowDataModal = {
       rowDragMultiRow:true,
       rowDragManaged: true,
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
+    }
+    // excel模式表格
+    this.excelModelGridOptions = {
+      rowDragMultiRow:true,
+      rowDragManaged: true,
+      onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataOnExcelModal(event);},
     }
      
    }
 
   ngOnInit() {
    /// this.gridApi.setSuppressRowDrag(true) ;
-    this.getShopCodes() ;
-    //this.getSetColumByUser() ;
+    //獲取版本訊息
     this.getFcpVerList();
+    //獲取戰備機台訊息
+    //this.getShopCodes() ;
+    //this.getSetColumByUser() ;
+   
     
     this.searchV0.startDate = moment().format(this.mdateFormat) ;
     //當月月底
     //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //一個月後
-    this.searchV0.endDate = moment(new Date()).add(2, "months").format(this.mdateFormat) ;
+    this.searchV0.endDate = moment(new Date()).add(7, "days").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -216,6 +460,10 @@ category = '' ;
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
 
+  }
+
+  doubleClickConfigCar(row) {
+    console.log(row) ;
   }
   onChangeStartDate(result): void {
     console.log('onChange: ', result);
@@ -251,13 +499,21 @@ category = '' ;
   }
 
   exportBtn(){
+    let tableName = this.export.title + "_" + this.selectShopCode + "_" + this.selectEquipCode ;
+    this.exportFileName = tableName ;
+    if(this.export.data.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
     this.isLoading = true ;
-    let tableName = this.export.title + "_" + this.selectShopCode  ;
+    // console.log("this.export.data length :" + this.export.data.length)
+    // console.log("this.export.header length :" + this.export.header.length)
     this.excelService.exportAsExcelFile(this.export.data, tableName,this.export.header);
     this.isLoading = false ;
   }
   //選擇分組
   checkedChange(value: string[]): void {
+   // console.log("选择的分群栏位:" + value) ;
     //選擇當前站別
     this.searchV0.shopCode = this.selectShopCode ;
     //選中分群數組
@@ -272,6 +528,14 @@ category = '' ;
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
     this.searchV0.equipCode = this.selectEquipCode ;
+    this.searchV0.fcpVer = this.selectFcpVer
+    // 如果是RF 的，结束时间为3个月之后
+    if(this.selectEquipCode === 'RF') {
+      console.log("RF")
+      this.searchV0.endDate = moment(new Date()).add(3, "months").format(this.mdateFormat) ;
+      console.log("endDate ：" + this.searchV0.endDate)
+    }
+    
     //初始化原始数据
     this.originalData = [] ;
     this.mshService.getTableData(this.searchV0).subscribe(res=>{
@@ -303,36 +567,62 @@ category = '' ;
         localStorage.setItem("originalData",JSON.stringify(this.rowData))
         this.originalData =  JSON.parse(localStorage.getItem("originalData"))  ;
         //console.log("this.originalData :" + JSON.stringify(this.originalData)) ;
+        //數據生成完畢
+        this.export.data = this.rowData ;
+        this.groupBtn() ;
       }
       } else {
         this.category = '';
         this.nzMessageService.error(result.message) ;
       }
-      this.export.data = this.rowData ;
+    
     })
   
   }
 
 //獲取站別分群配置
-  getSetColumGroupData(){
-    this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
-      let result:any = res ;
-      this.groupColumList = result.data ;
-      if(result.code !== 200) {
-        this.nzMessageService.error(result.message)
-      } else {
-        this.getSetColumByUser() ;
-      }
+  // getSetColumGroupData(){
+  //   this.mshService.getSetColumGroupData(this.selectShopCode).subscribe(res=>{
+  //     let result:any = res ;
+  //     this.groupColumList = result.data ;
+  //     if(result.code !== 200) {
+  //       this.nzMessageService.error(result.message)
+  //     } else {
+  //       this.getSetColumByUser() ;
+  //     }
      
-    })
-  }
+  //   })
+  // }
 
-///User設定的欄位
+///User設定的欄位 包含分群數據
   getSetColumByUser(){
     this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
       this.allColumList = result.data ;
-      
+      //直接在所有欄位中過濾出分群數據
+      let groupColumListTemp = [] ;
+      //分群默认选择
+      let groupArrayTemp = [] ;
+      //如果是 RF 需要CARID
+      if(this.selectEquipCode === 'RF'){
+        let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
+        groupColumListTemp.push(itemTemp) ;
+        groupArrayTemp.push(itemTemp.columValue) ;
+      }
+      this.allColumList.forEach((item,index,array)=>{
+        if(item.isGroup === 1) {
+          //分群默認選擇
+          item.checked = true ;
+          groupColumListTemp.push(item) ;
+          //默认选择所有的分群
+          groupArrayTemp.push(item.columValue);
+        }
+      })
+      // 分群欄位
+      this.groupColumList = groupColumListTemp ;
+      // 分群栏位 checked
+      this.groupArray = groupArrayTemp ;
+
       this.columnDefs = [] ;
       let exportHeader = [] ;
       this.columKeyType = {} ;
@@ -350,16 +640,39 @@ category = '' ;
         this.columKeyType["ID"] = 0 ;
 
         let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
-        exportHeader.push("START_DATE_C")
+        exportHeader.push("開始")
         this.columnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
         let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
-        exportHeader.push("END_DATE_C")
+        exportHeader.push("結束")
         this.columnDefs.push(index4);
         //数据类型
-        this.columKeyType["START_DATE_C"] = 0 ;
+        this.columKeyType["END_DATE_C"] = 0 ;
+        if(this.selectEquipCode === 'RF') {
+        // 411 CARID
+        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CAR_ID_ADD")
+        this.columnDefs.push(index5);
+        //数据类型
+        this.columKeyType["CAR_ID_ADD"] = 0 ;
+
+        // 411 CAREPST
+        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CAREPST")
+        this.columnDefs.push(index6);
+        //数据类型
+        this.columKeyType["CAR_EPST_ADD"] = 0 ;
+        // 411 CARLPST
+        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
+        exportHeader.push("CARLPST")
+        this.columnDefs.push(index7);
+        //数据类型
+        this.columKeyType["CAR_LPST_ADD"] = 0 ;
+      }
+
+
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
@@ -384,21 +697,49 @@ category = '' ;
       }
     })
   }
+  //調用站別機台訊息
   getShopCodes(){
     this.mshService.getShopCodes().subscribe(res=>{
       let result:any = res ;
       this.shopCodeList = result.data ;
       this.initSelectShop();
-      this.getSetColumGroupData();
+      //this.getSetColumGroupData();
+      //開始調用數據部分
+      this.getSOPData() ;
     })
   }
-
+  /**1.查詢客戶設置欄位 
+   * 2.默認分群設置
+   * 3.獲取表格數據
+   * 4.調用分群方法
+  */
+ getSOPData(){
+  //調用客戶欄位配置訊息
+  this.getSetColumByUser() ;
+ }
+ /**
+  * 獲取版本訊息
+  */
   getFcpVerList(){
     this.mshService.getFcpVerList().subscribe(res=>{
       let result:any = res ;
       this.fcpVerList = result.data ;
-      console.log("this.fcpVerList:" + JSON.stringify(this.fcpVerList))
-      this.inintLockBtn() ;
+    //console.log("this.fcpVerList:" + JSON.stringify(this.fcpVerList))
+    // 默認版本號
+    this.fcpVerList.forEach((item,index,array)=>{
+      if(index === 0){
+        this.selectFcpVer = item.fcpVer
+      } else {
+        if(item.fcpLockStatus === '1'){
+          this.selectFcpVer = item.fcpVer
+        }
+      }
+
+    })
+    //初始化選擇的版本
+    this.inintLockBtn() ;
+    //調用站別機台訊息
+    this.getShopCodes() ;
     })
   }
   //當選擇的的版本狀態不是'1'時候，顯示鎖定的按鈕
@@ -481,13 +822,14 @@ category = '' ;
     this.originalData = [] ;
     this.rowData = [] ;
     //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
-    this.getSetColumGroupData();
+    this.getSetColumByUser();
   }
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
     this.originalData = [] ;
     this.rowData = [] ;
+    this.getTableData() ;
   }
 
 
@@ -505,7 +847,8 @@ category = '' ;
 
    /***分组明细拖拽 */
    onRowDragEndModal(e: RowDragEndEvent) {
-    console.log("test")
+    console.log("分组明细拖拽")
+    this.saveLoading2 = true ;
     var itemsToUpdate = [];
     let ids = "" ;
     this.gridOptionsModal.api.forEachNode((rowNode,index)=>{
@@ -519,6 +862,7 @@ category = '' ;
     this.rowSelectData = itemsToUpdate;
     this.rowData[this.selectRowIndex].sortId = ids ;
     this.gridOptions.api.setRowData(this.rowData)
+    this.saveLoading2 = false ;
     //console.log('onRowDragEndModal', JSON.stringify(this.rowSelectData) );
   }
  /**微调明细 */
@@ -530,9 +874,26 @@ category = '' ;
       itemsToUpdate.push(rowNode.data);
     })
     console.log('onRowDragEndRowDataModal:', JSON.stringify(itemsToUpdate) );
-    this.rowSortedData = [...itemsToUpdate];
+    //this.rowSortedData = [...itemsToUpdate];
+    this.rowSortedData = itemsToUpdate;
     this.gridOptionsRowDataModal.api.setRowData(this.rowSortedData)
-    console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
+    //console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
+  }
+  /***
+   *excel模式微調
+   */
+   onRowDragEndRowDataOnExcelModal(e: RowDragEndEvent) {
+    console.log("微调明细test")
+    var itemsToUpdate = [];
+    this.excelModelGridOptions.api.forEachNode((rowNode,index)=>{
+     // console.log("index: " + index + ",rowNode:" +JSON.stringify(rowNode.data))
+      itemsToUpdate.push(rowNode.data);
+    })
+    console.log('onRowDragEndRowDataModal:', JSON.stringify(itemsToUpdate) );
+    //this.rowSortedData = [...itemsToUpdate];
+    this.rowExcelModelData = itemsToUpdate;
+    this.excelModelGridOptions.api.setRowData(this.rowExcelModelData)
+    //console.log('onRowDragEndRowDataModal2:', JSON.stringify(this.rowSortedData) );
   }
   onRowDragMove(event: RowDragMoveEvent) {
     var movingNode = event.node;
@@ -556,7 +917,7 @@ category = '' ;
     let preGroupString = "" ;
     let preGroupObject = {} ;
     this.originalData = JSON.parse(localStorage.getItem("originalData"))
-    console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
+    //console.log("this.originalData localStorage 1 :" + localStorage.getItem("originalData") ) ;
     let originalDataTemp:any[] = [...this.originalData]
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
@@ -593,9 +954,13 @@ category = '' ;
                   if(key === 'sortId') {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
-                  } else {
-                    let newStr =  item[key] ;
+                  } else if(key === 'START_DATE_C' || key === 'END_DATE_C')  {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
+                  }
+                  else {
+                    let newStr =  item[key] ;
+                      preGroupObject[key] = newStr
                   }
                  
                  /*
@@ -612,6 +977,10 @@ category = '' ;
                //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
                   //preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2)
                   preGroupObject[key] +=  item[key];  
+                   //結束時間顯示
+                   if(key === 'END_DATE_C') {
+                    console.log("結束時間2END_DATE_C ：" + item[key]) 
+                  }
                  
                 }
 
@@ -646,18 +1015,36 @@ category = '' ;
   }
 //写入之前需要处理数据
  pushDataBeforeFormat(preGroupObject:any) {
+  // console.log("寫入數據分群：" + JSON.stringify(preGroupObject) )
   Object.keys(preGroupObject).forEach((key)=>{
     //处理不是id的栏位
     if(key !== 'sortId') {
     //当前栏位不是数字
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
-      //如果当前不为空
+      //如果当前值不为空
       if(preGroupObject[key] !== null) {
-        let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
-        preGroupObject[key] = newStr
+      
+        if(key === 'START_DATE_C') {
+         // preGroupObject[key] = ""
+        let  startDateArray =   preGroupObject[key].toString().split(',')[0]
+        preGroupObject[key] = startDateArray
+        } else if(key === 'END_DATE_C'){
+          let endDateArrayLen = preGroupObject[key].toString().split(',').length ;
+          let  endDateArray =   preGroupObject[key].toString().split(',')[endDateArrayLen - 1]
+          preGroupObject[key] = endDateArray
+         // preGroupObject[key] = ""
+        } else {
+          let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
       } else {
-        let newStr = preGroupObject[key]//.toString().replace("null","");
-        preGroupObject[key] = newStr
+       // 當前值為空
+        if(key === 'START_DATE_C' || key === 'END_DATE_C') {
+          preGroupObject[key] = "" 
+        } else {
+          let newStr = preGroupObject[key]//.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
       }
      //当前栏位是数字
     } else {
@@ -728,13 +1115,21 @@ category = '' ;
      this.finalChangeDataIds = [] ;
      //原始數據調取
      this.originalData = JSON.parse(localStorage.getItem("originalData"))
-     //遍歷分群數據
-     this.rowData.forEach((item,index,array)=>{
-       let ids = item.sortId.split(',')
-       ids.forEach((val)=>{
-        this.finalChangeDataIds.push(this.originalData[val-1].ID) 
-       })
-     })
+     // 微调确认
+     if(flag === '3') {
+      this.rowSortedData.forEach((item,index,array)=>{
+        this.finalChangeDataIds.push(item.ID) ;
+      })
+     } else {  //内外层 遍歷分群數據
+      this.rowData.forEach((item,index,array)=>{
+        let ids = item.sortId.split(',')
+        ids.forEach((val)=>{
+         this.finalChangeDataIds.push(this.originalData[val-1].ID) 
+        })
+      })
+     }
+    
+    
      let finalChangeDataTemp = [] ;
      this.finalChangeDataIds.forEach((item,index,array)=>{
       finalChangeDataTemp.push({id:item,sort:index + 1})
@@ -760,7 +1155,7 @@ category = '' ;
       if(result.code !== 200) {
         this.nzMessageService.error(result.message)
       } else {
-        this.getSetColumGroupData() ;
+        this.getSetColumByUser() ;
       }
      
     })
@@ -820,6 +1215,121 @@ category = '' ;
    handleShopStatusModal(){
     this.shopStatusModalVisiable = !this.shopStatusModalVisiable ;
    }
+
+
+    /**EXCEL FUNCTION START parameter */
+
+    // ExcelModelModal 顯示模式
+    handleExcelModelModal(){
+      this.rowExcelModelData = [] ;
+      this.excelModelModalIsVisible = !this.excelModelModalIsVisible ;
+    }
+    //確認使用當前排程
+    comitExcelModelModal(){
+      if(this.rowExcelModelData.length < 1) {
+        this.nzMessageService.error("請先匯入排程數據")
+        return ;
+      }
+      let finalChangeDataTemp = [] ;
+      this.rowExcelModelData.forEach((item,index,array)=>{
+        finalChangeDataTemp.push({id:item.ID,sort:index + 1})
+      }) 
+      this.handlecomitExcelModelConfirmLoading = true
+      this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+        this.handlecomitExcelModelConfirmLoading  = false ;
+        let result:any = res ;
+        if(result.code == 200) {
+          this.nzMessageService.success(result.message)
+          this.excelModelModalIsVisible = false
+          this.uploadFile = null
+          this.getTableData()
+        } else{
+          this.nzMessageService.error(result.message)
+        }
+      })
+
+    }
+
+    importBtn(){
+
+    }
+    // excel檔名
+    incomingfile(event) {
+      this.uploadFile = event.target.files[0]; 
+      console.log("incomingfile e : " + this.uploadFile);
+      let lastname = this.uploadFile.name.split('.').pop();
+      console.log("lastname:" + lastname)
+      console.log("exportFileName:" + this.exportFileName)
+      if(!this.uploadFile.name.includes(this.exportFileName)) {
+        this.nzMessageService.error('請使用同一份文件檔案。');
+      }
+      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+        this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
+        this.clearFile();
+        return;
+      }
+    }
+    //清除文件
+    clearFile() {
+      document.getElementsByTagName('input')[0].value = '';
+  
+    }
+
+    handleUploadFile(){
+      console.log(this.uploadFile)
+      if(this.uploadFile === null || this.uploadFile === undefined) {
+        this.nzMessageService.error("請先上傳檔案")
+        return
+      }
+      let lastname = this.uploadFile.name.split('.').pop();
+      console.log("this.file.name: "+this.uploadFile.name);
+      console.log("incomingfile e : " + this.uploadFile);
+      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+        this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
+        this.clearFile();
+        return;
+      } else {
+        console.log("上傳檔案格式沒有錯誤");
+        let fileReader = new FileReader();
+        fileReader.onload = (e) => {
+          this.arrayBuffer = fileReader.result;
+          var data = new Uint8Array(this.arrayBuffer);
+          var arr = new Array();
+          for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+          var bstr = arr.join("");
+          var workbook = XLSX.read(bstr, {type:"binary"});
+          var first_sheet_name = workbook.SheetNames[0];
+          var worksheet:any = workbook.Sheets[first_sheet_name];
+          this.upLoadExcelData = XLSX.utils.sheet_to_json(worksheet, {raw:true});
+    
+          
+            console.log("importExcel")
+            console.log(this.upLoadExcelData)
+            this.importExcel(this.upLoadExcelData);
+          
+        }
+        fileReader.readAsArrayBuffer(this.uploadFile);
+      }
+    }
+
+    importExcel(_data) {
+      console.log("EXCEL 資料上傳檢核開始");
+      var upload_data = [];
+      for(let i=0 ; i < _data.length ; i++) {
+        console.log("數據： " + JSON.stringify(_data[i]));
+        let dataTemp = _data[i];
+        const myObject = {};
+        this.columnDefs.forEach((item2,index2,array2)=>{
+          myObject[item2.field] = dataTemp[item2.headerName] 
+        })
+        upload_data.push(myObject);
+      }
+      this.rowExcelModelData = upload_data ;
+      this.excelModelGridOptions.api.setRowData(this.rowExcelModelData) ;
+
+    }
+
+    /**EXCEL FUNCTION END */
 
 
 }

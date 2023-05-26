@@ -40,7 +40,6 @@ export class PPSI107Component implements AfterViewInit {
   USERNAME;
   PLANT_CODE;
 
-
   // 線速
   SHOP_CODE_5;
   EQUIP_CODE_5;
@@ -569,12 +568,13 @@ export class PPSI107Component implements AfterViewInit {
     //this.errorMSG('請選擇檔案', '');
     //return;
     //}
-
+    this.loading = true;
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
     console.log("incomingfile e : " + this.file);
     if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
       this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.loading = false;
       this.clearFile();
       return;
     } else {
@@ -639,6 +639,7 @@ export class PPSI107Component implements AfterViewInit {
     console.log(upload_data);
     return new Promise((resolve, reject) => {
       console.log("匯入開始");
+      this.loading = true;
       this.LoadingPage = true;
       let myObj = this;
       let obj = {};
