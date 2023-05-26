@@ -37,17 +37,18 @@
         (cellClicked)="onCellClicked($event)"
       ></ag-grid-angular>
       
-      <nz-modal  [(nzVisible)]="isShowTable2"  nzWidth = "800" (nzOnCancel)="handleCancel()" [nzFooter] = null >
+      <nz-modal  [(nzVisible)]="isShowTable2"  [nzWidth] = 1000 (nzOnCancel)="handleCancel()" [nzFooter] = null >
         <ng-container *nzModalContent >  
           <button style = "margin:10px ; " nz-button nzType="primary" nzDanger (click) = "exportExcelTab2()">
             EXCEL匯出
           </button>
+          <label style = "float: right; margin-right: 10px;" nz-checkbox [(ngModel)]="checkSecond" (ngModelChange) = "onlyShowErrorSecond()">僅顯示異常資料</label> 
         <ag-grid-angular
           style="width: 100% ; height:700px; overflow: scroll"
           class="ag-theme-alpine"
           [columnDefs]="columnDefsTab2"
           [defaultColDef]="defaultColDefTab1"
-          [rowData]="rowDataTab2"
+          [rowData]="displayTable2Data"
           [suppressRowClickSelection]="true"
           [groupSelectsChildren]="true"
           [rowSelection]="'multiple'"
