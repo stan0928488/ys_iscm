@@ -23,6 +23,8 @@
           <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" ></nz-date-picker>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
+          <button style="margin-left: 20px;" nz-button nzType="primary"  *ngIf="selectEquipCode !== 'RF'"  (click)="handleExcelModelModal()">Excel模式</button>
+
       </p>
         <!--站別機台選擇-->
         <p> <nz-radio-group [(ngModel)]="selectShopCode" nzButtonStyle="solid" (ngModelChange)="selectShopCodeFunc()">
@@ -130,7 +132,7 @@
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
-      <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('2')">確認</button>
+      <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" [nzLoading]="saveLoading2" (click)="saveSortedModal('2')">確認</button>
 
       <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
       <!-- <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button> -->
@@ -276,7 +278,7 @@ nzWidth="300"
 </ng-template>
 </nz-modal>
 
-<!---選車-->
+<!---選車開始-->
 <nz-modal
 [(nzVisible)]="selectCarIsVisible"
 [nzTitle]="selectCarModalTitle"
@@ -314,7 +316,7 @@ nzWidth="300"
   <button nz-button nzType="primary" (click)="comitHandleSelectCarModal()" [nzLoading]="handleSelectCarIsConfirmLoading">確定</button>
 </ng-template>
 </nz-modal>
-
+<!---選車結束-->
 
 <!---更換機台-->
    <nz-modal
@@ -336,4 +338,60 @@ nzWidth="300"
         <button nz-button nzType="primary" (click)="comitHandleEquipModal()" [nzLoading]="handleEquipIsConfirmLoading">存檔</button>
       </ng-template>
     </nz-modal>
+
+<!---EXCEL模式開始-->
+<nz-modal
+[(nzVisible)]="excelModelModalIsVisible"
+[nzTitle]="excelModelModalTitle"
+[nzContent]="excelModelModalContent"
+[nzFooter]="excelModelModalFooter"
+(nzOnCancel)="handleExcelModelModal()"
+nzWidth="300"
+>
+<ng-template #excelModelModalTitle>EXCEL模式</ng-template>
+
+<ng-template #excelModelModalContent>
+  <div nz-row>
+    <ag-grid-angular
+    style="width: 100% ; min-height:500px; overflow: scroll"
+    class="ag-theme-alpine"
+    [rowDragManaged]="true"
+    [gridOptions]="excelModelGridOptions"
+    [rowDragMultiRow]="false"
+    [suppressScrollOnNewData] = "true"
+    [animateRows]="true"
+    [rowData]="rowExcelModelData"
+    [columnDefs]="columnDefs">
+    </ag-grid-angular>
+  </div>
+  
+</ng-template>
+
+<ng-template #excelModelModalFooter>
+ 
+  <span>
+    <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">數據匯出</button>
+
+    <input type="file" id="fileupload" style="display: inline-block;margin-left: 30px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        nzType="primary"
+        (click)="handleUploadFile()"
+      ><span nz-icon nzType="upload" nzTheme="outline"></span>
+      數據匯入確認
+      </button>
+  </span>
+  
+  <button style="margin-left: 20px;" nz-button nzType="primary" (click)="comitExcelModelModal()" [nzLoading]="handlecomitExcelModelConfirmLoading">確定</button>
+
+  <button style="margin-left: 20px;" nz-button nzType="default" (click)="handleExcelModelModal()">關閉</button>
+  <!-- <button style="margin-left: 20px;" nz-button nzType="primary" (click)="importBtn()">數據匯入</button> -->
+  
+</ng-template>
+</nz-modal>
+<!---EXCEL模式結束-->
+
+
+
 </div>
