@@ -1638,4 +1638,31 @@ getEquipCodeList(_data){
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
 }
 
+  getR304DataList(){
+
+    let endpointUrl = this.APIURL + `/FCP/R304/getPPSR304List`;
+    return this.http.get<any>(endpointUrl);
+  }
+
+  batchSaveR304Data(_data){
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/R304/insertPPSR304BatchSave`;
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 :${body}`);
+  return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  getR305DataList(){
+
+    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List`;
+    return this.http.get<any>(endpointUrl);
+  }
+
+  batchSaveR305Data(_data){
+    const body = JSON.stringify(_data);
+    let endpointUrl = this.APIURL + `/FCP/R305/insertPPSR305BatchSave`;
+    console.log(`請求API Endpoint Url : ${endpointUrl}`);
+    console.log(`請求API 參數 :${body}`);
+  return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
 }

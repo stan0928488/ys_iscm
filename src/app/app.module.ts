@@ -82,6 +82,8 @@ import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 import { PPSR303Component } from "./pages/PPS/PPSR303/PPSR303.component";
 
+import { PPSR304Component } from "./pages/PPS/PPSR304/PPSR304.component";
+import { PPSR305Component } from "./pages/PPS/PPSR305/PPSR305.component";
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -165,7 +167,8 @@ registerLocaleData(zh);
     PPSR301Component,
     PPSR302Component,
     PPSR303Component,
-
+    PPSR304Component,
+    PPSR305Component,
     OIPP029component,
     
     SPAP100component,

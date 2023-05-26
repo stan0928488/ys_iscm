@@ -1,0 +1,62 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+          <ul>
+              <li class="active"><a href="#/FCPshipRepo/R304"><label style="color:blue"> 客戶出貨資訊維護表</label></a></li>
+              <li><a href="#/FCPshipRepo/R305">訂單足項維護表</a></li>
+              <li><a href="#/FCPshipRepo/R306">出貨移轉統計表</a></li>
+              <li><a href="#/FCPshipRepo/R307">成品/半成品現況</a></li>
+          </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
+
+  <div style="min-height: 1200px;">
+    <div>
+      <input type="file" id="fileupload" style="display: inline-block;float:left;" (change)="incomingfile($event)"  placeholder="Upload file" accept=".xlsx, .xls, .csv">
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        nzType="primary"
+        (click) = "Upload()"
+      ><span nz-icon nzType="upload" nzTheme="outline"></span>
+      E X C E L 匯入
+      </button>
+      &nbsp;&nbsp;
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        nzType="primary"
+        (click) = "exportToExcel()"
+      ><span nz-icon nzType="download" nzTheme="outline"></span>
+        E X C E L 匯出
+      </button>
+      <div style = "float:right;">
+        <h3>更新時間 : {{uploadDate}}
+            更新者 : {{uploadUser}}</h3>
+      </div> 
+    </div>      
+
+    <div nz-col [nzSpan]="24" style="padding-top:10px;">
+        <ag-grid-angular
+        style="width: 70% ; height:500px; overflow: scroll; margin:0px auto;"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefsTab"
+        [defaultColDef]="defaultColDefTab"
+        [rowData]="R304DataList"
+        [suppressRowClickSelection]="true"
+        [groupSelectsChildren]="true"
+        [rowSelection]="'multiple'"
+        [pagination]="true"
+        [tooltipShowDelay]="tooltipShowDelay"
+        [autoGroupColumnDef]="autoGroupColumnDef"
+        [animateRows]="true"
+        
+      ></ag-grid-angular>
+    </div>
+  </div>
+  
+</nz-content>

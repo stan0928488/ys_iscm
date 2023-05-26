@@ -60,7 +60,8 @@ import { PPSI230Component } from "./pages/PPS/PPSI230/PPSI230.component";
 import { PPSR301Component } from "./pages/PPS/PPSR301/PPSR301.component";
 import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 import { PPSR303Component } from "./pages/PPS/PPSR303/PPSR303.component";
-
+import { PPSR304Component } from "./pages/PPS/PPSR304/PPSR304.component";
+import { PPSR305Component } from "./pages/PPS/PPSR305/PPSR305.component";
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
 import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
@@ -215,7 +216,17 @@ const routes: Routes = [
       { path: "", redirectTo: "/FCPBarRepo/R302", pathMatch: "full" },
       { path: "R303", component: PPSR303Component },
       { path: "R302", component: PPSR302Component },
-      { path: "R301", component: PPSR301Component }
+      { path: "R301", component: PPSR301Component },
+      { path: "R305", component: PPSR305Component }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "FCPshipRepo",
+    children: [
+      { path: "", redirectTo: "/FCPBarRepo/R304", pathMatch: "full" },
+      { path: "R304", component: PPSR304Component },
+      { path: "R305", component: PPSR305Component }
     ],
     canActivate: [AuthGuard]
   },

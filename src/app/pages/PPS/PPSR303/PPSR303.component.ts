@@ -488,12 +488,12 @@ export class PPSR303Component implements OnInit {
         data : []
       };
   
-      for(var i in this.rowDataTab2) {
+      for(var i in this.displayTable2Data) {
         var temp = {}
         for(var j in this.columnDefsTab2){
           
           var field = this.columnDefsTab2[j]['field']
-          temp[field] = this.rowDataTab2[i][this.columnDefsTab2[j]['field']];
+          temp[field] = this.displayTable2Data[i][this.columnDefsTab2[j]['field']];
           
           
         }
