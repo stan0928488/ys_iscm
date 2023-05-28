@@ -619,10 +619,10 @@ export class PPSI107Component implements AfterViewInit {
           this.importdata_repeat.push(allData);         
           upload_data.push({
             SHOP_CODE:_data[i]['站號'].toString(),
-            EQUIP_CODE:_data[i]['機台'],
-            SHAPE_TYPE:_data[i]['產出型態'],
-            GRADE_GROUP:_data[i]['鋼種類別'],
-            SPEED_TYPE:_data[i]['線速分類'],
+            EQUIP_CODE:_data[i]['機台'].toString(),
+            SHAPE_TYPE:_data[i]['產出型態'].toString(),
+            GRADE_GROUP:_data[i]['鋼種類別'].toString(),
+            SPEED_TYPE:_data[i]['線速分類'].toString(),
             REDUCTION_RATE_MIN:_data[i]['減面率MIN'],
             REDUCTION_RATE_MAX:_data[i]['減面率MAX'],
             DIA_MIN:_data[i]['產出尺寸最小值'],
