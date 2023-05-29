@@ -377,6 +377,21 @@ comitHandleSelectCarModal(){
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+          // Apply a background color to even rows
+         // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
+          console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          return { background: 'white' };
+        } else {
+          console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          // Apply a different background color to odd rows
+          return { background: 'yellow' };
+        }
+      },
       //rowData: this.rowData,
     //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
@@ -393,6 +408,21 @@ comitHandleSelectCarModal(){
     this.gridOptionsModal = {
       rowDragMultiRow: true,
       rowDragManaged: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+          // Apply a background color to even rows
+         // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
+          console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          return { background: 'white' };
+        } else {
+          console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          // Apply a different background color to odd rows
+          return { background: 'yellow' };
+        }
+      },
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
@@ -670,6 +700,14 @@ comitHandleSelectCarModal(){
         this.columnDefs.push(index7);
         //数据类型
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
+
+         // 411 CARLPST
+         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("ORIGINAL_OP_CODE")
+         this.columnDefs.push(index8);
+         //数据类型
+         this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
+ 
       }
 
 
