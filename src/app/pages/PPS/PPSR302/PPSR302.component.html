@@ -102,14 +102,25 @@
               <td>
                 計畫入庫量
               </td>
-              <td *ngFor="let data of tableTotalCell" class="total-weight" >{{data.value}}</td>
+              <ng-container ng-container [ngSwitch]="true" *ngFor="let data of tableTotalCell let j = index  let last = last;" >
+                <!-- 交期對應 pst 為全部 -->
+                <td *ngSwitchCase="false == last"
+                (click)="tdClickFun(99,j,3,tplTitle, tplContent, tplFooter)"
+                class="total-weight" >{{data.value}}</td>
+                <!-- 交期為全部， pst 為全部  -->
+                <td *ngSwitchCase="true == last"
+                (click)="tdClickFun(100,j,3,tplTitle, tplContent, tplFooter)"
+                class="total-weight" >{{data.value}}</td>
+              </ng-container>
           </tr>
           <tr *ngFor="let data of tableSplitData let k = index ">
                <td>{{data.label}}</td>
                <ng-container *ngFor="let item of tableHeaderList let j = index  ">
                 <ng-container [ngSwitch]="true">
                   <ng-container *ngSwitchCase="item.label === 'TOTAL'">
-                    <td class="total-weight"> {{tbodyList[k][j].value }}</td>
+                    <!-- 交期為全部， 對應pst  -->
+                    <td (click)="tdClickFun(k,99,3,tplTitle, tplContent, tplFooter)"
+                    class="total-weight"> {{tbodyList[k][j].value }}</td>
                   </ng-container>
                   <ng-container *ngSwitchDefault>
                     <ng-container [ngSwitch]="true" >

@@ -212,9 +212,14 @@ export class PPSR302Component implements OnInit {
   }
 
   tdClickFun(k,j,i,tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>){
+    
     this.firstModalData = [] ;
-    let tableHeaderItem = this.tableHeaderList[j] ;
-    let tableLeftItem = this.tableSplitData[k] ;
+    let tableLeftItem;
+    let tableHeaderItem;
+    let title;
+    tableHeaderItem = this.tableHeaderList[j] ;
+    tableLeftItem = this.tableSplitData[k] ;
+
     let headTitle = "";
     switch(i){
       case 0 :
@@ -226,8 +231,44 @@ export class PPSR302Component implements OnInit {
       case 2 :
       headTitle = "超前"
       break ;
+      case 3 :
+      break ;
     }
-    let title = headTitle+"訂單明細（ 計劃執行："+ tableLeftItem.label + " || 交期："+ tableHeaderItem.label + " ) " ;
+
+    if(k == 99){
+      //交期對應 pst 為全部
+      tableLeftItem = this.tableSplitData[0];
+      title = headTitle+"訂單明細（ 計劃執行："
+      + this.tableSplitData[0].label + "~" + this.tableSplitData[this.tableSplitData.length - 1].label
+      + " || 交期："+ tableHeaderItem.label + " ) " ;
+      tableLeftItem.endDate = this.tableSplitData[this.tableSplitData.length - 1].endDate;
+    }
+    else if(k == 100){
+      //交期為全部， pst 為全部
+      tableLeftItem = this.tableSplitData[0];
+      title = headTitle+"訂單明細（ 計劃執行："
+      + this.tableSplitData[0].label + "~" + this.tableSplitData[this.tableSplitData.length - 1].label
+      + " || 交期："+ this.tableHeaderList[0].label + "~" + this.tableHeaderList[this.tableHeaderList.length - 1].label
+      + " ) " ;
+      tableLeftItem.endDate = this.tableSplitData[this.tableSplitData.length - 1].endDate;
+
+      tableHeaderItem = this.tableHeaderList[0];
+      tableHeaderItem.endDate = this.tableHeaderList[this.tableHeaderList.length - 1].endDate;
+    }
+
+    if(j == 99){
+      //交期為全部， 對應pst
+      title = headTitle+"訂單明細（ 計劃執行："+ tableLeftItem.label 
+      + " || 交期："+ this.tableHeaderList[0].label + "~" + this.tableHeaderList[this.tableHeaderList.length - 1].label
+      + " ) " ;
+      tableHeaderItem = this.tableHeaderList[0];
+      tableHeaderItem.endDate = this.tableHeaderList[this.tableHeaderList.length - 1].endDate;
+    }
+
+    if(k!= 99 && k != 100 && j != 99){
+      title = headTitle+"訂單明細（ 計劃執行："+ tableLeftItem.label + " || 交期："+ tableHeaderItem.label + " ) " ;
+    }
+
     this.firstModalTitle = title ;
     this.getDateFrom(tableLeftItem.startDate,tableLeftItem.endDate);
     //this.isModalVisible = true ;

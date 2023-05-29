@@ -40,7 +40,9 @@ export class ExcelService {
 			let key = this.letter[i]+1;
             // console.log("title:" + title)
 			// console.log("key:" + key)
-			_ws[key]['v'] = title;
+			if(_ws[key] != null && _ws[key]['v'] != null){
+				_ws[key]['v'] = title;
+			}
 		}
 		return _ws;
 	}
