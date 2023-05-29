@@ -1309,7 +1309,9 @@ export class PPSI220Component implements AfterViewInit {
         ORIGINAL_CUSTOM_SORT: _.get(item, "ORIGINAL_CUSTOM_SORT"),
         CATEGORY: _.get(item, "CATEGORY"),
         REMARK: _.get(item, "REMARK"),
-        REMARK_PLAN_IN_STORAGE: _.get(item, "REMARK_PLAN_IN_STORAGE")
+        REMARK_PLAN_IN_STORAGE: _.get(item, "REMARK_PLAN_IN_STORAGE"),
+        ORIGINAL_OP_CODE: _.get(item, "ORIGINAL_OP_CODE"),
+        ORIGINAL_PST_MACHINE: _.get(item, "ORIGINAL_PST_MACHINE")
     
       });
       excelData.push(obj);
