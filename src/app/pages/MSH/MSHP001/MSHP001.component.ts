@@ -40,6 +40,8 @@ export class MSHP001Component implements OnInit {
   rowExcelModelData = [] ;
   // 表格頭
   columnDefs: ColDef[] = [];
+  //外層表格頭部
+  outsideColumnDefs: ColDef[] = [];
 
   rowData = [];
 
@@ -381,7 +383,7 @@ comitHandleSelectCarModal(){
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
-        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
           // Apply a background color to even rows
          // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
           console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
@@ -412,7 +414,7 @@ comitHandleSelectCarModal(){
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
-        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
           // Apply a background color to even rows
          // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
           console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
@@ -652,8 +654,11 @@ comitHandleSelectCarModal(){
       this.groupColumList = groupColumListTemp ;
       // 分群栏位 checked
       this.groupArray = groupArrayTemp ;
-
+      //頭部
       this.columnDefs = [] ;
+      //外層頭部
+      this.outsideColumnDefs = [] ;
+
       let exportHeader = [] ;
       this.columKeyType = {} ;
      
@@ -661,23 +666,27 @@ comitHandleSelectCarModal(){
         let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
+        this.outsideColumnDefs.push(index1);
         this.columKeyType["sortId"] = 0 ;
 
         let index2 = {headerName:'KEY',field:'ID',rowDrag: false,resizable:true,width:50, hide: true }
         exportHeader.push("KEY")
         this.columnDefs.push(index2);
+        this.outsideColumnDefs.push(index2);
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
         let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
         exportHeader.push("開始")
         this.columnDefs.push(index3);
+        this.outsideColumnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
         let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
+        this.outsideColumnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
         if(this.selectEquipCode === 'RF') {
@@ -685,6 +694,7 @@ comitHandleSelectCarModal(){
         let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
+        this.outsideColumnDefs.push(index5);
         //数据类型
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
@@ -692,12 +702,14 @@ comitHandleSelectCarModal(){
         let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
+        this.outsideColumnDefs.push(index6);
         //数据类型
         this.columKeyType["CAR_EPST_ADD"] = 0 ;
         // 411 CARLPST
         let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CARLPST")
         this.columnDefs.push(index7);
+        this.outsideColumnDefs.push(index7);
         //数据类型
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
 
@@ -705,6 +717,7 @@ comitHandleSelectCarModal(){
          let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
          exportHeader.push("ORIGINAL_OP_CODE")
          this.columnDefs.push(index8);
+         this.outsideColumnDefs.push(index8);
          //数据类型
          this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
  
@@ -717,10 +730,18 @@ comitHandleSelectCarModal(){
           if(index == 0) {
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
+            
           } else { 
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
           }
+         
           let columKeyTypeTemp = {} ;
           let key = item.columValue ;
           columKeyTypeTemp[key] = item.isNumber ;
@@ -1300,6 +1321,8 @@ comitHandleSelectCarModal(){
       console.log("exportFileName:" + this.exportFileName)
       if(!this.uploadFile.name.includes(this.exportFileName)) {
         this.nzMessageService.error('請使用同一份文件檔案。');
+        this.clearFile();
+        return;
       }
       if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
@@ -1309,6 +1332,7 @@ comitHandleSelectCarModal(){
     }
     //清除文件
     clearFile() {
+      this.uploadFile = null ;
       document.getElementsByTagName('input')[0].value = '';
   
     }

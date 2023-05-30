@@ -9,6 +9,7 @@ interface shopCodesItem {
   columLabel:string;
   columValue:string;
   isGroup: number;
+  isOutside: number;
   isNumber: number;
   columSort:number;
   category:string;
@@ -73,7 +74,7 @@ export class MSHI002Component implements OnInit {
       name: '已挑選欄位',
     };
 
-  log(value: string[]): void {
+  selectColumChecked(value: string[]): void {
     console.log("checked:"+JSON.stringify(this.allColumList) );
      //過濾已經篩選數據
      this.selectAllColumList = this.allColumList.filter((item,index,array)=>{
@@ -101,6 +102,7 @@ export class MSHI002Component implements OnInit {
         columLabel:item.columLabel,
         columValue:item.columValue,
         isGroup:item.isGroup,
+        isOutside:item.isOutside,
         isNumber:item.isNumber,
         columSort: index + 1,
         category:'B',
@@ -116,6 +118,13 @@ export class MSHI002Component implements OnInit {
     this.selectAllColumList[index].isGroup = this.selectAllColumList[index].isGroup === 0 ? 1:0 ;
     console.log("選擇操作：" + JSON.stringify(this.selectAllColumList))
   }
+  doubleClickCurrentFunc(index:number,item:any){
+    this.edited = true ;
+    this.selectAllColumList[index].isOutside = this.selectAllColumList[index].isOutside === 0 ? 1:0 ;
+    console.log("選擇操作：" + JSON.stringify(this.selectAllColumList))
+  }
+
+
   //User保存
 saveDataByAdmin(){
   this.mshService.saveDataByUser(this.saveData).subscribe(res=>{
