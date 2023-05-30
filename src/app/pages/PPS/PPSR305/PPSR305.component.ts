@@ -54,7 +54,9 @@ export class PPSR305Component implements AfterViewInit {
 
   columnDefsTab: ColDef<data>[] = [
     { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 100 },
-    { headerName: '訂單編號' ,field: 'saleOrder' , filter: false,width: 120 },
+    { headerName: '訂單編號' ,field: 'saleOrder',hide : true ,  filter: false,width: 120 },
+    { headerName: '訂單項次' ,field: 'saleItem' , hide : true ,filter: false,width: 120 },
+    { headerName: '訂單號碼' ,field: 'saleInfo' ,filter: false,width: 120 },
     { headerName:'缺項群組',field: 'missingGroup' , filter: false,width: 100 }
  ];
 
@@ -86,11 +88,16 @@ export class PPSR305Component implements AfterViewInit {
 
       let result : any = res;
 
-      console.log(res);
+      
       this.R305DataList = result ;
-      this.uploadDate = result[0]['dateUpdate'] != undefined? result[0]['dateUpdate'].split(" ")[0]:result[0]['dateCreate'].split(" ")[0];
+      this.uploadDate = result[0]['dateUpdate'] != undefined? result[0]['dateUpdate']:result[0]['dateCreate'];
       this.uploadUser = result[0]['userUpdate'] != undefined? result[0]['userUpdate']:result[0]['userCreate'];
 
+      this.R305DataList.forEach(data =>{
+        data['saleInfo'] = data['saleOrder'] + '-' +data['saleItem'];
+      });
+
+      console.log(this.R305DataList);
       this.loading = false;
     });
   }
@@ -101,7 +108,8 @@ export class PPSR305Component implements AfterViewInit {
       var head = [];
       for(var i in this.columnDefsTab){
         
-        head.push(this.columnDefsTab[i]['headerName']);
+        if(this.columnDefsTab[i]['hide'] == undefined || this.columnDefsTab[i]['hide'] != true)
+          head.push(this.columnDefsTab[i]['headerName']);
       }
       header.push(head);
       console.log(header);
@@ -111,10 +119,10 @@ export class PPSR305Component implements AfterViewInit {
   
       for(var i in this.R305DataList) {
         var temp = {}
-        for(var j in this.columnDefsTab){
+        for(var j in head){
           
-          var field = this.columnDefsTab[j]['field']
-          temp[field] = this.R305DataList[i][this.columnDefsTab[j]['field']];
+          var field = head[j]
+          temp[field] = this.R305DataList[i][field];
           
           
         }
@@ -192,13 +200,14 @@ export class PPSR305Component implements AfterViewInit {
         return;
       }
       else{
+        var saleInfo =  _data[i]['訂單號碼'].toString().split('-');
         this.importdata_repeat.push(allData);
         upload_data.push({
           plantCode: this.PLANT_CODE,
           custAbbreviations: _data[i]['客戶簡稱'] ,
-          saleOrder: _data[i]['訂單編號'].toString(),
-          saleItem : 'n',
-          missingGroup :_data[i]['缺項群組'],
+          saleOrder: saleInfo[0],
+          saleItem : saleInfo[1],
+          missingGroup :_data[i]['缺項群組'].toString(),
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
@@ -274,4 +283,8 @@ export class PPSR305Component implements AfterViewInit {
 			nzContent: `${_context}`
 		});
 	}
+
+  saleInfoGetter(params){
+    return params.data.saleOrder + '-' + params.data.saleItem;
+  }
 }

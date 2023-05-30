@@ -105,11 +105,11 @@
               <ng-container ng-container [ngSwitch]="true" *ngFor="let data of tableTotalCell let j = index  let last = last;" >
                 <!-- 交期對應 pst 為全部 -->
                 <td *ngSwitchCase="false == last"
-                (click)="tdClickFun(99,j,3,tplTitle, tplContent, tplFooter)"
+                (dblclick)="tdClickFun(99,j,3,tplTitle, tplContent, tplFooter)"
                 class="total-weight" >{{data.value}}</td>
                 <!-- 交期為全部， pst 為全部  -->
                 <td *ngSwitchCase="true == last"
-                (click)="tdClickFun(100,j,3,tplTitle, tplContent, tplFooter)"
+                (dblclick)="tdClickFun(100,j,3,tplTitle, tplContent, tplFooter)"
                 class="total-weight" >{{data.value}}</td>
               </ng-container>
           </tr>
@@ -119,18 +119,18 @@
                 <ng-container [ngSwitch]="true">
                   <ng-container *ngSwitchCase="item.label === 'TOTAL'">
                     <!-- 交期為全部， 對應pst  -->
-                    <td (click)="tdClickFun(k,99,3,tplTitle, tplContent, tplFooter)"
+                    <td (dblclick)="tdClickFun(k,99,3,tplTitle, tplContent, tplFooter)"
                     class="total-weight"> {{tbodyList[k][j].value }}</td>
                   </ng-container>
                   <ng-container *ngSwitchDefault>
                     <ng-container [ngSwitch]="true" >
-                      <td  (click)="tdClickFun(k,j,0,tplTitle, tplContent, tplFooter)" *ngSwitchCase="data.endDate > item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-smaller total-weight' " >
+                      <td  (dblclick)="tdClickFun(k,j,0,tplTitle, tplContent, tplFooter)" *ngSwitchCase="data.endDate > item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-smaller total-weight' " >
                         {{tbodyList[k][j].value }}
                       </td>
-                      <td (click)="tdClickFun(k,j,1,tplTitle, tplContent, tplFooter)"  *ngSwitchCase="data.endDate == item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-equal total-weight' " >
+                      <td (dblclick)="tdClickFun(k,j,1,tplTitle, tplContent, tplFooter)"  *ngSwitchCase="data.endDate == item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-equal total-weight' " >
                         {{tbodyList[k][j].value }}
                       </td>
-                      <td  (click)="tdClickFun(k,j,2,tplTitle, tplContent, tplFooter)" *ngSwitchCase="data.endDate < item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-bigger total-weight' " >
+                      <td  (dblclick)="tdClickFun(k,j,2,tplTitle, tplContent, tplFooter)" *ngSwitchCase="data.endDate < item.endDate" [class]="tbodyList[k][j].value === null ? '' :'td-bigger total-weight' " >
                         {{tbodyList[k][j].value }}
                       </td>
                     </ng-container >
@@ -147,11 +147,27 @@
 </nz-content>
 <!-- 第一层modal 开始 -->
 <div class="firstModalDiv" style="width:1500px ;">
+    
     <!-- <nz-modal
      [(nzVisible)]="isModalVisible" [nzTitle]="firstModalTitle" nzCancelText="關閉" nzOkText="EXCEL匯出"  (nzOnCancel)="handleModalChange()" (nzOnOk)="handleModalExport()">
     </nz-modal> -->
     <ng-template  #tplTitle>
-      <span>{{firstModalTitle}}</span>
+      <div nz-row>
+        <div nz-col nzSpan="8">{{firstModalTitle}}</div>
+        <div nz-col nzSpan="4">
+          <input nz-input placeholder="客戶名稱" [(ngModel)]="firstSearchParamete.custAbbreviations" />
+        </div>
+        <div nz-col nzSpan="4">
+          <input nz-input placeholder="訂單編號" [(ngModel)]="firstSearchParamete.saleOrder" />
+        </div>
+        <div nz-col nzSpan="6">
+          <button style="margin-left:20px ;"  
+          (click)="firstSearchClickFun()"
+          nz-button nzType="primary" >
+            <span nz-icon nzType="search" ></span>查詢
+          </button>
+        </div>
+      </div>
     </ng-template>
     <ng-template  #tplContent>
      <div>
@@ -163,7 +179,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of firstModalData let i = index" (click) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
+          <tr *ngFor="let data of firstModalData let i = index" (dblclick) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
             <td nzWidth="100px"  nzLeft="0px" >{{i+1}}</td>
             <td nzWidth="100px" nzLeft="100px" >{{data.orderNo}}-{{data.orderItemNo}}</td>
             <td nzWidth="100px" nzLeft="200px" >{{data.deliveryDate}}</td>
@@ -210,7 +226,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let data of firstModalData let i = index"   (click) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
+            <tr *ngFor="let data of firstModalData let i = index"   (dblclick) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
               <td nzWidth="100px"  >{{i+1}}</td>
               <td nzWidth="100px"  >{{data.orderNo}}-{{data.orderItemNo}}</td>
               <td nzWidth="100px"  >{{data.deliveryDate}}</td>
