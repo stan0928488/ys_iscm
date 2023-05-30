@@ -200,13 +200,14 @@ export class PPSR305Component implements AfterViewInit {
         return;
       }
       else{
+        var saleInfo =  _data[i]['訂單號碼'].toString().split('-');
         this.importdata_repeat.push(allData);
         upload_data.push({
           plantCode: this.PLANT_CODE,
           custAbbreviations: _data[i]['客戶簡稱'] ,
-          saleOrder: _data[i]['訂單編號'].toString(),
-          saleItem : 'n',
-          missingGroup :_data[i]['缺項群組'],
+          saleOrder: saleInfo[0],
+          saleItem : saleInfo[1],
+          missingGroup :_data[i]['缺項群組'].toString(),
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
