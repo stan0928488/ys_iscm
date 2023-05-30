@@ -1393,5 +1393,23 @@ comitHandleSelectCarModal(){
 
     /**EXCEL FUNCTION END */
 
+    /***子層 */
+    exportRowSelectData(){
+    let tableName = 'EXPORTDATAINFO' ;
+    if(this.rowSelectData.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.excelService.exportAsExcelFile(this.rowSelectData, tableName,this.export.header);
+
+    }
+    exportRowSortedData(){
+      let tableName = 'EXPORTALLDATAINFO' ;
+      if(this.rowSortedData.length < 1) {
+        this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+        return 
+      }
+      this.excelService.exportAsExcelFile(this.rowSortedData, tableName,this.export.header);
+    }
 
 }
