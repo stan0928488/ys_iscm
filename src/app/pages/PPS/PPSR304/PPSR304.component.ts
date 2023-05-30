@@ -188,7 +188,6 @@ export class PPSR304Component implements AfterViewInit {
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
       console.log(_data[i]);
-
       let allData = JSON.stringify(_data[i]);
 
       if (this.importdata_repeat.includes(allData)){
@@ -204,8 +203,8 @@ export class PPSR304Component implements AfterViewInit {
           estimateWeight: _data[i]['預估出貨量'],
           profieldGoal : _data[i]['異型棒目標'],
           bigStickGoal :_data[i]['大棒目標'],
-          datePlanInStorage : _data[i]['允收截止日'],
-          dateDeliveryPp : _data[i]['可接受交期'],
+          datePlanInStorage :moment((_data[i]['允收截止日'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
+          dateDeliveryPp :moment((_data[i]['可接受交期'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
@@ -248,6 +247,7 @@ export class PPSR304Component implements AfterViewInit {
         this.LoadingPage = false;
       })
     });
+    
     this.getR304DataList();
 
   }
