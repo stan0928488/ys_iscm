@@ -126,6 +126,7 @@ export class PPSR303Component implements OnInit {
     ];
 
   columnDefsTab2: ColDef<data>[] = [
+      { headerName: '版次' ,field: 'edition' , filter: false,width: 300 },
       { headerName: 'ID號碼' ,field: 'idNo' , filter: false,width: 120},
       { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 120},
       { headerName: '機台碼' ,field: 'equipCode' , filter: false,width: 120},
@@ -155,7 +156,6 @@ export class PPSR303Component implements OnInit {
       { headerName: 'ASAP' ,field: 'asap' , filter: false,width: 120},
       { headerName: 'CPST' ,field: 'cpst' , filter: false,width: 120},
       { headerName: '建立日期' ,field: 'dateCreate' , filter: false,width: 120},
-      { headerName: '版次' ,field: 'edition' , filter: false,width: 300 },
       { headerName: '違反事項' ,field: 'violation' , filter: false,width: 120 },
       { headerName: 'compaign Id' ,field: 'compaignId' , filter: false,width: 120},
       { headerName: 'ASAP調整日期' ,field: 'newAsap' , filter: false,width: 120},
@@ -338,7 +338,8 @@ export class PPSR303Component implements OnInit {
     
     if(this.edition != null){
       this.isLoading = true;
-
+      this.checked = false;
+      this.checkSecond  = false;
       this.getR303Data(this.edition);
     }
     
@@ -356,7 +357,7 @@ export class PPSR303Component implements OnInit {
       this.secondIdNo = e.data.idNo;
 
       let myObj = this ;
-      myObj.getPPSService.getR303SecondData(e.data.idNo , this.isError).subscribe(res => {
+      myObj.getPPSService.getR303SecondData(e.data.idNo ,this.edition, this.isError).subscribe(res => {
         let result:any = res ;
         
 
@@ -424,6 +425,7 @@ export class PPSR303Component implements OnInit {
       console.log('Button cancel clicked!');
       this.isShowTable2 = false;
       this.isShowFCPMo = false;
+      this.checkSecond = false;
     }
 
     exportExcelTab1(): void {

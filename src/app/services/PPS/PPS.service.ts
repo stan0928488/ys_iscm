@@ -866,8 +866,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  getR303SecondData(idNo , isError){
-    let queryUrl =this.APINEWURL + `/ppsout004/getAllSecondData?idNo=${idNo}&isError=${isError}`;
+  getR303SecondData(idNo , edition , isError){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllSecondData?idNo=${idNo}&isError=${isError}&edition=${edition}`;
     console.log(queryUrl)
     return this.http.get(queryUrl);
   }
