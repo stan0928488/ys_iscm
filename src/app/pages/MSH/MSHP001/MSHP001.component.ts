@@ -161,6 +161,29 @@ category = '' ;
   this.changeOpCodeIsVisible = !this.changeOpCodeIsVisible 
 
  }
+
+
+ /******更換機台開始 */
+ changeMachineModal = {
+  isVisible : false ,
+  title:'機台更換',
+  isConfirmLoading: false ,
+  table : {
+    header : [
+      {"label":'MO',"value":'ID_NO'},
+      {"label":'投產機台',"value":'PST_MACHINE_ADD'},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+    ] ,
+    tbData : [] ,
+  }
+ }
+
+ /******更換機台結束 */
+
+
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
   this.mshService.getEquipOpCode(ids).subscribe(res=>{
@@ -329,15 +352,6 @@ comitHandleSelectCarModal(){
 
 }
 
-   /***更換機台 */
-   changeEquipIsVisible = false ;
-   handleEquipModal(){
-    this.changeEquipIsVisible = !this.changeEquipIsVisible 
-   }
-   // 確認保存
-   comitHandleEquipModal(){
-
-   }
    // 保存狀態
    handleEquipIsConfirmLoading = false 
    // 更換機台數據
@@ -384,9 +398,6 @@ comitHandleSelectCarModal(){
         //   return { background: 'lightgray' };
         // }
         if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
-          console.log("getRowStyle") ;
-          console.log("PST_MACHINE_ADD --------" + params.data["PST_MACHINE_ADD"]) ;
-          console.log("ORIGINAL_OP_CODE_ADD -----"+params.data["ORIGINAL_OP_CODE_ADD"]) ;
           if(params.data["CAR_WEIGHT_ADD"] < 3900) {
             return { background: 'lightcoral' };
           } else {
@@ -1416,7 +1427,7 @@ comitHandleSelectCarModal(){
 
     /**EXCEL FUNCTION END */
 
-    /***子層 */
+    /***子層開始 */
     exportRowSelectData(){
     let tableName = 'EXPORTDATAINFO' ;
     if(this.rowSelectData.length < 1) {
@@ -1434,5 +1445,30 @@ comitHandleSelectCarModal(){
       }
       this.excelService.exportAsExcelFile(this.rowSortedData, tableName,this.export.header);
     }
+
+     /***子層結束 */
+
+     /***機台更換開始 */
+     //更換機台，將數據從子層調出
+     handleChangeMachineModal(){
+      // 子層數據源
+      this.rowSelectData.forEach((item,index,array)=>{
+       
+      })
+      
+     }
+     // 開啟關閉更換機台窗口
+     handleMachineModal(){
+      this.changeMachineModal.isVisible = ! this.changeMachineModal.isVisible ;
+     }
+    //提交機台更換確認
+     comitHandleMachineModal(){
+
+     }
+
+     
+
+
+    /***機台更換結束 */
 
 }
