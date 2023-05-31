@@ -10,7 +10,7 @@
             <li><a href="#/singleData/I121">直棒研磨道次</a></li>
             <li><a href="#/singleData/I122">直棒桶槽式工時</a></li>
             <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
-            <li class="active"><a href="#/singleData/I124"><label style="color:blue">特殊站優先順序表</label></a></li>
+            <li class="active"><a href="#/singleData/I124"><label style="color:blue">公版設定維護</label></a></li>
             <li><a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a></li>
         </ul>
       </tr>
@@ -21,8 +21,8 @@
 
   <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'">
 
-    <!-- 420/430尺寸順序 -->
-    <nz-tab nzTitle="420/430尺寸順序" (nzClick)="changeTab(1)">
+    <!-- 尺寸優先順序表 -->
+    <nz-tab nzTitle="尺寸優先順序" (nzClick)="changeTab(1)">
 
       <div>
         <tr>
@@ -96,7 +96,7 @@
   
 
     <!-- 401站優先順序表 -->
-    <nz-tab nzTitle="401站優先順序" (nzClick)="changeTab(2)">
+    <nz-tab nzTitle="401站優先順序表" (nzClick)="changeTab(2)">
 
       <div>
         <tr>
@@ -221,8 +221,7 @@
         </div>
       </div>
     </nz-tab>
-  
-    
+
 
     <!-- 205站公版尺寸 -->
     <nz-tab nzTitle="205站公版尺寸" (nzClick)="changeTab(2)">
@@ -234,6 +233,8 @@
   
     
 
+  
+    
 
   </nz-tabset>
 </nz-content>

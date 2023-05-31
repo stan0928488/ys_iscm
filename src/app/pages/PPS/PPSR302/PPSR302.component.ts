@@ -63,13 +63,13 @@ export class PPSR302Component implements OnInit {
   secondModalLoading = false ; //第二层loading状态
   secondModalTableHeader = [
     {label:'MO'},
-    {label:'總重'},
+    {label:'總重(噸)'},
     {label:'執行'}
    ];
 
    secondModalTableHeaderExport = [
     {label:'MO'},
-    {label:'總重'}
+    {label:'總重(噸)'}
    ];
 
    secondModalTableHeaderLast = [] ;
@@ -103,7 +103,7 @@ export class PPSR302Component implements OnInit {
     {label:'鋼種'},
     {label:'尺寸'},
     {label:'尚未入庫量(噸)'},
-    {label:'計畫入庫日(PCT)'},
+    {label:'MAX 計畫入庫日'},
     {label:'預計入庫量(噸)'},
   ] ;
   totalWeight = 0 ;
@@ -112,8 +112,14 @@ export class PPSR302Component implements OnInit {
   firstModalListOfData = [] ; //
   testLength = [1,2,3,4,5,6,7,8,9,10]
   firstModalData = [] ;
-
-
+  firstSearchParamete = {
+    fcpVer: this.selectedVer.value,
+    pointStatus:this.selectedVer.pointStatus,
+    tableHeader:{},
+    tableLeft:{},
+    custAbbreviations:"",
+    saleOrder:""
+  }
 
   // tslint:disable-next-line:no-any
   compareFn1 = (o1: any, o2: any) => (o1 && o2 ? o1.value === o2.value : o1 === o2);
@@ -180,6 +186,9 @@ export class PPSR302Component implements OnInit {
 
             rowData[dateList[i]] = dateTemp[i]
           }
+          rowData["weight"] = (rowData["weight"] != 0 ? rowData["weight"] / 1000 : 0)
+          this.secondModalData[i].weight  = (this.secondModalData[i].weight != 0 ? 
+            this.secondModalData[i].weight / 1000 : 0);
           this.secondModalExportList.push(rowData) ;
         }
 
@@ -209,6 +218,10 @@ export class PPSR302Component implements OnInit {
   }
   handleSecondModalChange(){
     this.secondModal.destroy() ;
+  }
+
+  firstSearchClickFun(){
+    this.getFirstModalData(this.firstSearchParamete.tableHeader,this.firstSearchParamete.tableLeft);
   }
 
   tdClickFun(k,j,i,tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>){
@@ -299,6 +312,10 @@ export class PPSR302Component implements OnInit {
      let exportTableName = "訂單明細"
      let exportData = this.modalDataExportList ;
      //console.log("exportTableTitle:"+exportTableTitle);
+     exportData.forEach(function(item)
+    {
+      item['planWeight'] = Number(item['planWeight']);
+    });
      console.log("exportData:"+JSON.stringify(exportData));
      this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
   }
@@ -375,13 +392,13 @@ export class PPSR302Component implements OnInit {
   getFirstModalData(header,left){
     let myObj = this ;
     this.firstModalLoading = true
-    let paramete = {
-      fcpVer: this.selectedVer.value,
-      pointStatus:this.selectedVer.pointStatus,
-      tableHeader: header,
-      tableLeft:left
-    }
-  myObj.getPPSService.getR302FirstModalDataList(paramete).subscribe(res => {
+    
+    this.firstSearchParamete.fcpVer = this.selectedVer.value;
+    this.firstSearchParamete.pointStatus = this.selectedVer.pointStatus;
+    this.firstSearchParamete.tableHeader = header;
+    this.firstSearchParamete.tableLeft = left;
+
+  myObj.getPPSService.getR302FirstModalDataList(this.firstSearchParamete).subscribe(res => {
     this.firstModalLoading = false
     this.modalDataExportList = [] ;
     console.log("comitData :" + JSON.stringify(res)) ;
