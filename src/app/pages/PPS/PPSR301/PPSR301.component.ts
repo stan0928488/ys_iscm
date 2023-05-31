@@ -247,55 +247,55 @@ export class PPSR301Component implements OnInit {
     mergeCol: 0,
     showCell : true,
     hoverTitle:'說明',
-    hoverContent:'接單量+可再負荷量'
+    hoverContent:'需生產量+空餘產能'
   },
   {
-    value : '機台狀況' ,
+    value : '機台負荷' ,
     mergeRow: 0 ,
     mergeCol: 2,
     showCell : true,
     hoverTitle:'說明',
-    hoverContent:'機台狀況'
+    hoverContent:'機台負荷'
   },
   {
-    value : '機台狀況' ,
+    value : '機台負荷' ,
     mergeRow: 0 ,
     mergeCol: 2,
     showCell : false,
     hoverTitle:'說明',
-    hoverContent:'機台狀況'
+    hoverContent:'機台負荷'
   },
   {
-    value : '負荷量' ,
+    value : '生產分佈' ,
     mergeRow: 0 ,
     mergeCol: 4,
     showCell : true,
     hoverTitle:'說明',
-    hoverContent:'負荷量'
+    hoverContent:'生產分佈'
   },
   {
-    value : '負荷量' ,
+    value : '生產分佈' ,
     mergeRow: 0 ,
     mergeCol: 4,
     showCell : false,
     hoverTitle:'說明',
-    hoverContent:'負荷量'
+    hoverContent:'生產分佈'
   },
   {
-    value : '負荷量' ,
+    value : '生產分佈' ,
     mergeRow: 0 ,
     mergeCol: 4,
     showCell : false,
     hoverTitle:'說明',
-    hoverContent:'負荷量'
+    hoverContent:'生產分佈'
   },
   {
-    value : '負荷量' ,
+    value : '生產分佈' ,
     mergeRow: 0 ,
     mergeCol: 4,
     showCell : false,
     hoverTitle:'說明',
-    hoverContent:'負荷量'
+    hoverContent:'生產分佈'
   },
   {
     value : '庫存分佈' ,
@@ -422,7 +422,7 @@ export class PPSR301Component implements OnInit {
       showCell : false
     },
     {
-      value : '剩餘負荷量' ,
+      value : '需生產量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true,
@@ -430,7 +430,7 @@ export class PPSR301Component implements OnInit {
       hoverContent:`來源：FCP結果表，不含跨天的總重，依機台、交期月份顯示`
     },
     {
-      value : '可再負荷量' ,
+      value : '空餘產能' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true,
@@ -443,7 +443,7 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，總工時(不含停機)/排程負荷_當月工時(M)'
+      hoverContent:'來源：FCP結果表，排除定修，不含跨天總重，當日到月底的總計畫重_當月(M)'
     },
     {
       value : this.Montwo ,
@@ -451,7 +451,7 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，總工時(不含停機)/排程負荷_當月工時(M+1)'
+      hoverContent:'來源：FCP結果表，排除定修，不含跨天總重，當日到月底的總計畫重_當月(M+1)'
     },
     {
       value :this.MonThree ,
@@ -459,7 +459,7 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，總工時(不含停機)/排程負荷_當月工時(M+2)'
+      hoverContent:'來源：FCP結果表，排除定修，不含跨天總重，當日到月底的總計畫重_當月(M+2)'
     },
     {
       value : '總工時(天)' ,
@@ -587,13 +587,13 @@ export class PPSR301Component implements OnInit {
       showCell : true
     },
     {
-      value : '依據剩餘負荷量與可再負荷量加總顯示交期月份的最大負荷量' ,
+      value : '依據需生產量與空餘產能加總顯示交期月份的最大負荷量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
     },
     {
-      value : '依據交期月份角度計算目前剩餘負荷量' ,
+      value : '依據交期月份角度計算目前需生產量' ,
       mergeRow: 0 ,
       mergeCol: 0,
       showCell : true
@@ -922,12 +922,12 @@ export class PPSR301Component implements OnInit {
     worksheet.getCell('D1').value = '交期月份';
     worksheet.getCell('E1').value = '已生產量';
     worksheet.getCell('F1').value = '最大負荷量';
-    worksheet.getCell('G1').value = '機台狀況';
-    worksheet.getCell('I1').value = '負荷量';
+    worksheet.getCell('G1').value = '機台負荷';
+    worksheet.getCell('I1').value = '生產分佈';
     worksheet.getCell('Q1').value = '庫存分佈';
     worksheet.getCell('M1').value = '機台負荷';
-    worksheet.getCell('G2').value = '剩餘負荷量';
-    worksheet.getCell('H2').value = '可再負荷量';
+    worksheet.getCell('G2').value = '需生產量';
+    worksheet.getCell('H2').value = '空餘產能';
     worksheet.getCell('I2').value = this.MonOne;
     worksheet.getCell('J2').value = this.Montwo;
     worksheet.getCell('K2').value = this.MonThree;
@@ -956,7 +956,7 @@ export class PPSR301Component implements OnInit {
     // 生成Excel檔案
     workbook.xlsx.writeBuffer().then((buffer: ArrayBuffer) => {
       // 建立檔案名稱
-      const fileName = '機台負荷表_' + this.component.dateFormat(moment(), 7) + '.xlsx';
+      const fileName = '機台產能分析表_' + this.component.dateFormat(moment(), 7) + '.xlsx';
 
       // 下載Excel檔案
       this.saveAsExcelFile(buffer, fileName);
@@ -971,66 +971,6 @@ export class PPSR301Component implements OnInit {
       const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
       FileSaver.saveAs(data, fileName);
     }
-
-
-  // loadMachineExport() {
-  //   // this.message.error('還沒寫完');
-  //   // if (this.tbodyList.length < 1) {
-  //   //   this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
-  //   //   return;
-  //   // }
-
-  //   let title = [];
-    
-  //   // this.theadList.forEach(item => {
-  //   //   const value = item.value;
-  //   //   console.log(value);
-  //   // });
-
-  //   // console.log(title)
-  //   // for (let a of this.theadList) {
-  //   //   // title.push([this.theadList[a].value])
-  //   // }
-  //   // let header = [[this.theadList.value]];
-  //   // console.log(this.theadList.value)
-  //   var dataLoadMachine = {
-  //     data : []
-  //   };
-
-  //   for(var i in this.tbodyList) {
-  //       var item = this.tbodyList[i];
-  //       dataLoadMachine.data.push({
-  //           "fcpEdition" : item.fcpVer
-  //       });
-  //   }
-
-    
-  //   // 创建工作簿和工作表
-  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
-    
-  //   // 添加合并单元格的定义
-  //   const mergeRange = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 }} ,
-  //                       { s: { r: 1, c: 1 }, e: { r: 2, c: 0 }} ,
-  //                       { s: { r: 2, c: 1 }, e: { r: 3, c: 0 }} ,
-  //                      ];
-    
-  //   // 转换合并单元格数据为二维数组
-  //   const merges: XLSX.CellAddress[][] = mergeRange.map(range => [
-  //     { r: range.s.r, c: range.s.c },
-  //     { r: range.e.r, c: range.e.c }
-  //   ]);
-
-  //   // 合并列
-  //   XLSX.utils.sheet_add_aoa(worksheet, merges, { origin: -1 });
-
-  //   // XLSX.utils.sheet_add_aoa(worksheet,header);
-  //   XLSX.utils.sheet_add_json(worksheet, dataLoadMachine.data, { origin: 'A2', skipHeader: true });//origin => started row
-
-  //   const book: XLSX.WorkBook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-  //   XLSX.writeFile(book, '機台負荷表_'+new Date().toLocaleDateString('sv')+'.xlsx');//filename => Date_
-  // }
 
   // 展開明細第二層
   openDtl(i) {
@@ -1108,7 +1048,7 @@ export class PPSR301Component implements OnInit {
 
     const book: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-    XLSX.writeFile(book, '機台負荷表明細清單_'+this.component.dateFormat(moment(), 7)+'.xlsx');//filename => Date_
+    XLSX.writeFile(book, '機台產能分析表明細清單_'+this.component.dateFormat(moment(), 7)+'.xlsx');//filename => Date_
   }
 
   loadMachineDtlCancel() {
