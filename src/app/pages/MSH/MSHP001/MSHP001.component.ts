@@ -40,6 +40,8 @@ export class MSHP001Component implements OnInit {
   rowExcelModelData = [] ;
   // 表格頭
   columnDefs: ColDef[] = [];
+  //外層表格頭部
+  outsideColumnDefs: ColDef[] = [];
 
   rowData = [];
 
@@ -159,6 +161,29 @@ category = '' ;
   this.changeOpCodeIsVisible = !this.changeOpCodeIsVisible 
 
  }
+
+
+ /******更換機台開始 */
+ changeMachineModal = {
+  isVisible : false ,
+  title:'機台更換',
+  isConfirmLoading: false ,
+  table : {
+    header : [
+      {"label":'MO',"value":'ID_NO'},
+      {"label":'投產機台',"value":'PST_MACHINE_ADD'},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+    ] ,
+    tbData : [] ,
+  }
+ }
+
+ /******更換機台結束 */
+
+
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
   this.mshService.getEquipOpCode(ids).subscribe(res=>{
@@ -327,15 +352,6 @@ comitHandleSelectCarModal(){
 
 }
 
-   /***更換機台 */
-   changeEquipIsVisible = false ;
-   handleEquipModal(){
-    this.changeEquipIsVisible = !this.changeEquipIsVisible 
-   }
-   // 確認保存
-   comitHandleEquipModal(){
-
-   }
    // 保存狀態
    handleEquipIsConfirmLoading = false 
    // 更換機台數據
@@ -377,6 +393,25 @@ comitHandleSelectCarModal(){
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+            return { background: 'lightcoral' };
+          } else {
+            if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+              return { background: 'white' };
+            } else {
+              return { background: 'yellow' };
+            }
+          }
+        } else {
+          return { background: 'white' };
+        }
+       
+      },
       //rowData: this.rowData,
     //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
@@ -393,6 +428,21 @@ comitHandleSelectCarModal(){
     this.gridOptionsModal = {
       rowDragMultiRow: true,
       rowDragManaged: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+          // Apply a background color to even rows
+         // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
+          console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          return { background: 'white' };
+        } else {
+          console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          // Apply a different background color to odd rows
+          return { background: 'yellow' };
+        }
+      },
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
@@ -622,8 +672,11 @@ comitHandleSelectCarModal(){
       this.groupColumList = groupColumListTemp ;
       // 分群栏位 checked
       this.groupArray = groupArrayTemp ;
-
+      //頭部
       this.columnDefs = [] ;
+      //外層頭部
+      this.outsideColumnDefs = [] ;
+
       let exportHeader = [] ;
       this.columKeyType = {} ;
      
@@ -631,23 +684,27 @@ comitHandleSelectCarModal(){
         let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
+        this.outsideColumnDefs.push(index1);
         this.columKeyType["sortId"] = 0 ;
 
         let index2 = {headerName:'KEY',field:'ID',rowDrag: false,resizable:true,width:50, hide: true }
         exportHeader.push("KEY")
         this.columnDefs.push(index2);
+        this.outsideColumnDefs.push(index2);
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
         let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
         exportHeader.push("開始")
         this.columnDefs.push(index3);
+        this.outsideColumnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
         let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
+        this.outsideColumnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
         if(this.selectEquipCode === 'RF') {
@@ -655,6 +712,7 @@ comitHandleSelectCarModal(){
         let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
+        this.outsideColumnDefs.push(index5);
         //数据类型
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
@@ -662,14 +720,40 @@ comitHandleSelectCarModal(){
         let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
+        this.outsideColumnDefs.push(index6);
         //数据类型
         this.columKeyType["CAR_EPST_ADD"] = 0 ;
         // 411 CARLPST
         let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CARLPST")
         this.columnDefs.push(index7);
+        this.outsideColumnDefs.push(index7);
         //数据类型
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
+
+         // 411 CARLPST
+         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("ORIGINAL_OP_CODE")
+         this.columnDefs.push(index8);
+         this.outsideColumnDefs.push(index8);
+         //数据类型
+         this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
+
+         //411 車重
+         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80 }
+         exportHeader.push("車重")
+         this.columnDefs.push(index9);
+         this.outsideColumnDefs.push(index9);
+         //数据类型
+         this.columKeyType["CAR_WEIGHT_ADD"] = 0 ;
+         // 411 PST_MACHINE_ADD
+
+         let index10 = {headerName:'固定機台',field:'PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("固定機台")
+         this.columnDefs.push(index10);
+         this.outsideColumnDefs.push(index10);
+         //数据类型
+         this.columKeyType["PST_MACHINE_ADD"] = 0 ;
       }
 
 
@@ -679,10 +763,18 @@ comitHandleSelectCarModal(){
           if(index == 0) {
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
+            
           } else { 
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
           }
+         
           let columKeyTypeTemp = {} ;
           let key = item.columValue ;
           columKeyTypeTemp[key] = item.isNumber ;
@@ -922,6 +1014,7 @@ comitHandleSelectCarModal(){
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
       //遍歷出每一筆數據按照分群結果拼接,逗號隔開
+      //講分群欄位的內容進行拼接
       let currentGroupString = ""
       for(let i = 0 ; i < this.groupArray.length ; i ++) {
         let key = this.groupArray[i]
@@ -1262,6 +1355,8 @@ comitHandleSelectCarModal(){
       console.log("exportFileName:" + this.exportFileName)
       if(!this.uploadFile.name.includes(this.exportFileName)) {
         this.nzMessageService.error('請使用同一份文件檔案。');
+        this.clearFile();
+        return;
       }
       if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
@@ -1271,6 +1366,7 @@ comitHandleSelectCarModal(){
     }
     //清除文件
     clearFile() {
+      this.uploadFile = null ;
       document.getElementsByTagName('input')[0].value = '';
   
     }
@@ -1331,5 +1427,48 @@ comitHandleSelectCarModal(){
 
     /**EXCEL FUNCTION END */
 
+    /***子層開始 */
+    exportRowSelectData(){
+    let tableName = 'EXPORTDATAINFO' ;
+    if(this.rowSelectData.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.excelService.exportAsExcelFile(this.rowSelectData, tableName,this.export.header);
+
+    }
+    exportRowSortedData(){
+      let tableName = 'EXPORTALLDATAINFO' ;
+      if(this.rowSortedData.length < 1) {
+        this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+        return 
+      }
+      this.excelService.exportAsExcelFile(this.rowSortedData, tableName,this.export.header);
+    }
+
+     /***子層結束 */
+
+     /***機台更換開始 */
+     //更換機台，將數據從子層調出
+     handleChangeMachineModal(){
+      // 子層數據源
+      this.rowSelectData.forEach((item,index,array)=>{
+       
+      })
+      
+     }
+     // 開啟關閉更換機台窗口
+     handleMachineModal(){
+      this.changeMachineModal.isVisible = ! this.changeMachineModal.isVisible ;
+     }
+    //提交機台更換確認
+     comitHandleMachineModal(){
+
+     }
+
+     
+
+
+    /***機台更換結束 */
 
 }

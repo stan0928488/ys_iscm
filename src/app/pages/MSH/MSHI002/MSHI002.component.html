@@ -12,7 +12,7 @@
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
         <p>
-          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="selectColumChecked($event)">
             <div nz-row>
               <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
               
@@ -25,16 +25,27 @@
     <nz-collapse style="width: 100%;" nzAccordion [nzExpandIconPosition]="expandIconPosition1">
       <nz-collapse-panel [nzHeader]="panels3.name" [nzActive]="panels3.active"  [nzExtra]="extraTpl">
         <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)" >
-          <div class="example-box" *ngFor="let item3 of selectAllColumList ; let index = index" cdkDrag  (click) = "clickCurrentFunc(index,item3)">
+          <div class="example-box" *ngFor="let item3 of selectAllColumList ; let index = index" cdkDrag        >
             <span>{{index + 1}}-{{item3.columLabel}}</span>
-            <span class="selectDiv">
+            <br>
+            <span class="groupDiv" (click) = "clickCurrentFunc(index,item3)">
              <span [ngSwitch]="item3.isGroup">
                <!-- the same view can be shown in more than one case -->
-               <span *ngSwitchCase="0">[NOG]</span>
-               <span *ngSwitchCase="1">[G]</span>
+               <span *ngSwitchCase="0">[非分群]</span>
+               <span *ngSwitchCase="1">[分群]</span>
                <!--default case when there are no matches -->
                <span *ngSwitchDefault></span>
              </span>
+             </span>
+             <br>
+             <span class="outSideDiv" (click)="doubleClickCurrentFunc(index,item3)">
+             <span [ngSwitch]="item3.isOutside">
+              <!-- the same view can be shown in more than one case -->
+              <span *ngSwitchCase="0">[內]</span>
+              <span *ngSwitchCase="1">[外]</span>
+              <!--default case when there are no matches -->
+              <span *ngSwitchDefault></span>
+            </span>
              </span>
         </div>
         </div>

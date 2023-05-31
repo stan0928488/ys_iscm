@@ -104,7 +104,7 @@
     [rowSelection]="rowSelection"
     [animateRows]="true"
     [rowData]="rowData"
-    [columnDefs]="columnDefs">
+    [columnDefs]="outsideColumnDefs">
     [getRowId]="getRowId"
     (cellClicked)="onCellClicked($event)"
    
@@ -129,9 +129,12 @@
     </div>
     <div *nzModalFooter>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
+      <!-- <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'TC'"  (click)="handleChangeMachineModal()">更換機台</button> -->
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
+      <button  nz-button style="margin-left:5px; "  nzType="primary"  (click)="exportRowSelectData()">匯出</button>
+      
       <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" [nzLoading]="saveLoading2" (click)="saveSortedModal('2')">確認</button>
 
       <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
@@ -158,9 +161,10 @@
       </div>
     </div>
     <div *nzModalFooter>
-      <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
-      <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('3')">確認</button>
-      <button nz-button nzType="default" (click)="handleChangeRowDataModal()">关闭</button>
+      <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
+      <button  nz-button style="margin-left:15px;"  nzType="primary" (click)="exportRowSortedData()">匯出</button>
+      <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('3')">確認</button>
+      <button nz-button style="margin-left:15px;"  nzType="default" (click)="handleChangeRowDataModal()">关闭</button>
       <!-- <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button> -->
     </div>
   </nz-modal>
@@ -320,22 +324,22 @@ nzWidth="300"
 
 <!---更換機台-->
    <nz-modal
-      [(nzVisible)]="changeEquipIsVisible"
-      [nzTitle]="changeEquipModalTitle"
-      [nzContent]="equipModalContent"
-      [nzFooter]="equipModalFooter"
-      (nzOnCancel)="handleEquipModal()"
+      [(nzVisible)]="changeMachineModal.isVisible"
+      [nzTitle]="machineModalTitle"
+      [nzContent]="machineModalContent"
+      [nzFooter]="machineModalFooter"
+      (nzOnCancel)="handleMachineModal()"
     >
-      <ng-template #changeEquipModalTitle>機台更換</ng-template>
+      <ng-template #machineModalTitle>機台更換</ng-template>
 
-      <ng-template #equipModalContent>
+      <ng-template #machineModalContent>
       
       </ng-template>
 
-      <ng-template #equipModalFooter>
+      <ng-template #machineModalFooter>
         <span>...</span>
-        <button nz-button nzType="default" (click)="handleEquipModal()">關閉</button>
-        <button nz-button nzType="primary" (click)="comitHandleEquipModal()" [nzLoading]="handleEquipIsConfirmLoading">存檔</button>
+        <button nz-button nzType="default" (click)="handleMachineModal()">關閉</button>
+        <button nz-button nzType="primary" (click)="comitHandleMachineModal()" [nzLoading]="changeMachineModal.isConfirmLoading">存檔</button>
       </ng-template>
     </nz-modal>
 
