@@ -383,16 +383,23 @@ comitHandleSelectCarModal(){
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
-        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
-          // Apply a background color to even rows
-         // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
-          console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
-          return { background: 'white' };
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
+          console.log("getRowStyle") ;
+          console.log("PST_MACHINE_ADD --------" + params.data["PST_MACHINE_ADD"]) ;
+          console.log("ORIGINAL_OP_CODE_ADD -----"+params.data["ORIGINAL_OP_CODE_ADD"]) ;
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+            return { background: 'lightcoral' };
+          } else {
+            if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+              return { background: 'white' };
+            } else {
+              return { background: 'yellow' };
+            }
+          }
         } else {
-          console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
-          // Apply a different background color to odd rows
-          return { background: 'yellow' };
+          return { background: 'white' };
         }
+       
       },
       //rowData: this.rowData,
     //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
@@ -720,7 +727,22 @@ comitHandleSelectCarModal(){
          this.outsideColumnDefs.push(index8);
          //数据类型
          this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
- 
+
+         //411 車重
+         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80 }
+         exportHeader.push("車重")
+         this.columnDefs.push(index9);
+         this.outsideColumnDefs.push(index9);
+         //数据类型
+         this.columKeyType["CAR_WEIGHT_ADD"] = 0 ;
+         // 411 PST_MACHINE_ADD
+
+         let index10 = {headerName:'固定機台',field:'PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("固定機台")
+         this.columnDefs.push(index10);
+         this.outsideColumnDefs.push(index10);
+         //数据类型
+         this.columKeyType["PST_MACHINE_ADD"] = 0 ;
       }
 
 
@@ -981,6 +1003,7 @@ comitHandleSelectCarModal(){
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
       //遍歷出每一筆數據按照分群結果拼接,逗號隔開
+      //講分群欄位的內容進行拼接
       let currentGroupString = ""
       for(let i = 0 ; i < this.groupArray.length ; i ++) {
         let key = this.groupArray[i]
