@@ -374,7 +374,7 @@ export class PPSR302Component implements OnInit {
           rowData["customer"]= item.customer;
           rowData["steelType"]= item.steelType;
           rowData["steelSize"]= item.steelSize;
-          rowData["pendingStorage"]= "";
+          rowData["pendingStorage"]= item.pendingStorage;;
           rowData["planInDate"]= item.planInDate;
           rowData["planWeight"]= item.planWeight;
           this.modalDelayDataExportList.push(rowData) ;
@@ -415,14 +415,14 @@ export class PPSR302Component implements OnInit {
         rowData["customer"]= item.customer;
         rowData["steelType"]= item.steelType;
         rowData["steelSize"]= item.steelSize;
-        rowData["pendingStorage"]= "";
+        rowData["pendingStorage"]= item.pendingStorage;
         rowData["planInDate"]= item.planInDate;
         rowData["planWeight"]= item.planWeight;
         let t = 0 ;
         for(let it of item.dateWeightList){
           t++ ;
           let col = "M" + t ;
-          rowData[col] = it ;
+          rowData[col] =  Number(it);
         }
         console.log("一行数据：" + JSON.stringify(rowData));
         //接收导出到数据
