@@ -10,33 +10,23 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { CommonService } from 'src/app/services/common/common.service';
 
-class Tbppsm014 {
+class tbppsm114 {
    id : number;
-   plantCode : string;
-   shopCode : string;
-   steelType : string;
    diaMin : number;
-   dixMax : number;
-   processCode2pcs : string;
-   processCode4pcs : string;
+   diaMax : number;
+   productionTime : any;
    dateCreate : number;
    userCreate : string;
    dateUpdate : number;
    userUpdate : string;
   
-  constructor(_id : number, _plantCode : string, _shopCode : string,
-              _steelType : string, _diaMin : number, _dixMax : number,
-              _processCode2pcs : string, _processCode4pcs : string,
-              _dateCreate : number, _userCreate : string,
+  constructor(_id : number, _diaMin : number, _diaMax : number,
+              _productionTime : any, _dateCreate : number, _userCreate : string,
               _dateUpdate : number, _userUpdate : string){
     this.id = _id;
-    this.plantCode = _plantCode;
-    this.shopCode = _shopCode;
-    this.steelType = _steelType;
     this.diaMin = _diaMin;
-    this.dixMax = _dixMax;
-    this.processCode2pcs = _processCode2pcs;
-    this.processCode4pcs = _processCode4pcs;
+    this.diaMax = _diaMax;
+    this.productionTime = _productionTime;
     this.dateCreate = _dateCreate;
     this.userCreate = _userCreate;
     this.dateUpdate = _dateUpdate;
@@ -44,18 +34,15 @@ class Tbppsm014 {
   }
 }
 
-class DisplayTbppsm014 extends Tbppsm014{
+class Displaytbppsm114 extends tbppsm114{
   isEdit : boolean;
-  constructor(_id : number, _plantCode : string, _shopCode : string,
-    _steelType : string, _diaMin : number, _dixMax : number,
-    _processCode2pcs : string, _processCode4pcs : string,
+  constructor(_id : number, _diaMin : number, _diaMax : number,
+    _productionTime : any,
     _dateCreate : number, _userCreate : string,
     _dateUpdate : number, _userUpdate : string,
     _isEdit : boolean){
 
-    super(_id, _plantCode, _shopCode, _steelType, 
-          _diaMin, _dixMax, _processCode2pcs, _processCode4pcs,
-          _dateCreate, _userCreate, _dateUpdate, _userUpdate)
+    super(_id, _diaMin, _diaMax, _productionTime, _dateCreate, _userCreate, _dateUpdate, _userUpdate)
 
     this.isEdit = _isEdit;
   }
@@ -63,15 +50,15 @@ class DisplayTbppsm014 extends Tbppsm014{
 }
 
 @Component({
-  selector: "app-PPSI130",
-  templateUrl: "./PPSI130.component.html",
-  styleUrls: ["./PPSI130.component.scss"],
+  selector: "app-PPSI131",
+  templateUrl: "./PPSI131.component.html",
+  styleUrls: ["./PPSI131.component.scss"],
   providers:[NzMessageService]
 })
-export class PPSI130Component implements AfterViewInit {
+export class PPSI131Component implements AfterViewInit {
 
   USERNAME;
-  PLANT_CODE;
+  id;
   isSpinning = false;
 
 
@@ -81,37 +68,15 @@ export class PPSI130Component implements AfterViewInit {
 
   // 控制輸入彈出視窗的顯示
   isVisibleBFSGCCPC = false;
-  // 輸入欄位 -> 站別
-  shopCodeInput = "";
-  // 輸入欄位 -> 鋼種
-  steelTypeInput = "";
   // 輸入欄位 -> 尺寸_min(含)
   diaMinInput : number = undefined;
   // 輸入欄位 -> 尺寸_max(含)
-  dixMaxInput : number = undefined;
+  diaMaxInput : number = undefined;
   // 輸入欄位 -> 製程碼_一爐兩捲
-  processCode2pcsInput = "";
-  // 輸入欄位 -> 製程碼_一爐四捲
-  processCode4pcsInput = ""; 
+  productionTimeInput = "";
 
 
 
-  
-
-  // 廠區別搜尋關鍵字
-  searchPlantCodeValue = "";
-  // 廠區別搜尋框是否出現
-  plantCodeFilterVisible = false;
-
-  // 站別搜尋關鍵字
-  searchShopCodeValue = "";
-  // 站別搜尋框是否出現
-  shopCodeFilterVisible = false;
-
-  // 鋼種搜尋關鍵字
-  searchSteelTypeValue = "";
-  // 鋼種搜尋框是否出現
-  steelTypeFilterVisible = false;
 
   // 尺寸_min(含)搜尋關鍵字
   searchDiaMinValue = "";
@@ -124,37 +89,29 @@ export class PPSI130Component implements AfterViewInit {
   diaMaxFilterVisible = false;
 
   // 製程碼_一爐兩捲搜尋關鍵字
-  searchProcessCode2pcsValue = "";
+  searchproductionTimeValue = "";
   // 製程碼_一爐兩捲搜尋框是否出現
-  processCode2pcsFilterVisible = false;
-
-  // 製程碼_一爐四捲搜尋關鍵字
-  searchProcessCode4pcsValue = "";
-  // 製程碼_一爐四捲搜尋框是否出現
-  processCode4pcsFilterVisible = false;
+  productionTimeFilterVisible = false;
 
   // 是否正在搜尋
   isSearching = false;
   // 正在針對哪一個欄位做搜尋
   searchingColumn = "";
 
-  DB_PLANT_CODE_COLUMN_NAME = "PLANT_CODE";
-  DB_SHOP_CODE_COLUMN_NAME = "SCH_SHOP_CODE";
-  DB_STEEL_TYPE_COLUMN_NAME = "STEEL_TYPE";
+  DB_id_COLUMN_NAME = "id";
   DB_DIA_MIN_COLUMN_NAME = "DIA_MIN";
   DB_DIA_MAX_COLUMN_NAME = "DIA_MAX";
-  DB_PROCESS_CODE_2PCS_COLUMN_NAME = "PROCESS_CODE_2PCS";
-  DB_PROCESS_CODE_4PCS_COLUMN_NAME = "PROCESS_CODE_4PCS";
+  DB_PRODUCTION_TIME_COLUMN_NAME = "PRODUCTION_TIME";
 
   // 於畫面表格顯示的資料
-  displayTbppsm014List: DisplayTbppsm014[] = [];
+  displaytbppsm114List: Displaytbppsm114[] = [];
   // 編輯時顯示的資料
-  editCache: { [id: number]: { isEdit: boolean; data: Tbppsm014 } } = {};
+  editCache: { [id: number]: { isEdit: boolean; data: tbppsm114 } } = {};
   // 記錄一個用來比對使用者是否有修改畫面上資料的變數
-  wasModifiedData : { [id: number] : {data: Tbppsm014} } = {};
+  wasModifiedData : { [id: number] : {data: tbppsm114} } = {};
 
-  // tbppsm014表總共有幾筆資料
-  tbppsm014DataTotal = 0;
+  // tbppsm114表總共有幾筆資料
+  tbppsm114DataTotal = 0;
   // 當前頁碼(第幾頁)
   currentPageIndex = 1;
   // 每頁有幾筆
@@ -177,21 +134,21 @@ export class PPSI130Component implements AfterViewInit {
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
-    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.id = this.cookieService.getCookie("id");
   }
 
   ngAfterViewInit() {
-   const p = this.getPPSI130List();
+   const p = this.getPPSI131List();
    this.setupTableAndEditCache(p);
   }
   
-  getPPSI130List() {
+  getPPSI131List() {
 
     this.isSpinning = true;
     
     const myThis = this;
     return new Promise<any>(function(resolve, reject){
-      myThis.PPSService.listTbppsm014DataByPagination(myThis.currentPageIndex, myThis.pageSize).subscribe(response => {
+      myThis.PPSService.listtbppsm114DataByPagination(myThis.currentPageIndex, myThis.pageSize).subscribe(response => {
         const resData = {response : response, isSearch : false}
         resolve(resData);
       }, error =>{
@@ -227,24 +184,20 @@ export class PPSI130Component implements AfterViewInit {
   }
 
   setupTable(response) : void {
-   this.tbppsm014DataTotal = response.totalCount;
+   this.tbppsm114DataTotal = response.totalCount;
    const dataList = response.data;
 
-   const displayDataList : DisplayTbppsm014[] = 
+   const displayDataList : Displaytbppsm114[] = 
 
       dataList.map(item => {
        
         let isEdit = _.includes(this.editingItemList, item.id);
         
-        let data = new DisplayTbppsm014 (
+        let data = new Displaytbppsm114 (
           item.id,
-          item.plantCode,
-          item.shopCode,
-          item.steelType,
           item.diaMin,
-          item.dixMax,
-          item.processCode2pcs,
-          item.processCode4pcs,
+          item.diaMax,
+          item.productionTime,
           item.dateCreate,
           item.userCreate,
           item.dateUpdate,
@@ -254,14 +207,14 @@ export class PPSI130Component implements AfterViewInit {
         return data;
       });
 
-      this.displayTbppsm014List = displayDataList;
+      this.displaytbppsm114List = displayDataList;
   }
 
   // 複製一份資料到編輯專用的資料list
  setupUpdateEditCache(): void {
   this.editCache = {};
-  this.displayTbppsm014List.forEach(item => {
-    let newCloneItem : Tbppsm014 = _.omit(item, ['isEdit']);
+  this.displaytbppsm114List.forEach(item => {
+    let newCloneItem : tbppsm114 = _.omit(item, ['isEdit']);
     this.editCache[item.id] = {
       isEdit: item.isEdit,
       data: newCloneItem
@@ -296,7 +249,7 @@ export class PPSI130Component implements AfterViewInit {
     this.isSpinning = true;
     const myThis = this;
     new Promise<any>(function(resolve, reject){
-      myThis.PPSService.deleteTbppsm014Data(id).subscribe(response => {
+      myThis.PPSService.deletetbppsm114Data(id).subscribe(response => {
         if(response.success == true){
           resolve(true);
         }
@@ -309,8 +262,8 @@ export class PPSI130Component implements AfterViewInit {
         reject(`刪除失敗，後台錯誤，請聯繫系統工程師。Error Msg : ${errorMsg}`);
       })
     }).then(updateSuccess => {
-      if(_.isEmpty(myThis.searchingColumn)) return this.getPPSI130List();
-      else return this.switchGetSearchTbppsm014ColumnDataByKeyWord();
+      if(_.isEmpty(myThis.searchingColumn)) return this.getPPSI131List();
+      else return this.switchGetSearchtbppsm114ColumnDataByKeyWord();
     }).then(resData => { 
       this.handleData(resData);
       myThis.sucessMSG("刪除成功", ``);
@@ -339,7 +292,7 @@ export class PPSI130Component implements AfterViewInit {
         this.isSpinning = true;
         const myThis = this;
         new Promise<any>(function(resolve, reject){
-          myThis.PPSService.updateTbppsm014Data(updateItem).subscribe(response => {
+          myThis.PPSService.updatetbppsm114Data(updateItem).subscribe(response => {
             if(response.success == true){
               resolve(true);
             }
@@ -354,8 +307,8 @@ export class PPSI130Component implements AfterViewInit {
         }).then(updateSuccess => {
           myThis.cancelEdit(id);
 
-          if(_.isEmpty(myThis.searchingColumn)) return this.getPPSI130List();
-          else return this.switchGetSearchTbppsm014ColumnDataByKeyWord();
+          if(_.isEmpty(myThis.searchingColumn)) return this.getPPSI131List();
+          else return this.switchGetSearchtbppsm114ColumnDataByKeyWord();
 
         }).then(resData => { 
           this.handleData(resData);
@@ -383,15 +336,11 @@ export class PPSI130Component implements AfterViewInit {
       nzTitle: '是否確定新增?',
       nzOnOk: () => {
         this.isSpinning = true;
-        const tbppsm014Data = new Tbppsm014(
+        const tbppsm114Data = new tbppsm114(
                         null,
-                        this.PLANT_CODE,
-                        this.shopCodeInput,
-                        this.steelTypeInput,
                         this.diaMinInput,
-                        this.dixMaxInput,
-                        this.processCode2pcsInput,
-                        this.processCode4pcsInput,
+                        this.diaMaxInput,
+                        this.productionTimeInput,
                         null,
                         this.USERNAME,
                         null,
@@ -399,7 +348,7 @@ export class PPSI130Component implements AfterViewInit {
 
         const myThis = this;
         new Promise<any>(function(resolve, reject){
-          myThis.PPSService.saveTbppsm014Data(tbppsm014Data).subscribe(response => {
+          myThis.PPSService.savetbppsm114Data(tbppsm114Data).subscribe(response => {
             if(response.success === true) resolve(response.message);
             else reject(response.message);
           }, error =>{
@@ -409,14 +358,11 @@ export class PPSI130Component implements AfterViewInit {
 
         }).then(saveSuccess => {
           this.isVisibleBFSGCCPC = false;
-          this.shopCodeInput = "";
-          this.steelTypeInput = "";
           this.diaMinInput = undefined;
-          this.dixMaxInput = undefined;
-          this.processCode2pcsInput = "";
-          this.processCode4pcsInput = "";
+          this.diaMaxInput = undefined;
+          this.productionTimeInput = "";
           myThis.sucessMSG(saveSuccess, ``);
-          return this.getPPSI130List();
+          return this.getPPSI131List();
         }).then(response => {
           this.handleData(response);
           myThis.isSpinning = false;
@@ -432,33 +378,18 @@ export class PPSI130Component implements AfterViewInit {
 
   validateInputFieldForInsert() : boolean {
 
-    if (_.isEmpty(this.shopCodeInput)) {
-      this.message.create("error", "「站別」不可為空");
-      return false;
-    }
-
-    if (_.isEmpty(this.steelTypeInput)) {
-      this.message.create("error", "「鋼種」不可為空");
-      return false;
-    }
-
     if (!_.isNumber(this.diaMinInput)) {
-      this.message.create("error", "「尺寸_min(含)」僅能是數字或不可為空");
+      this.message.create("error", "「尺寸下限(含)」僅能是數字或不可為空");
       return false;
     }
 
-    if (!_.isNumber(this.dixMaxInput)) {
-      this.message.create("error", "「尺寸_max(含)」僅能是數字或不可為空");
+    if (!_.isNumber(this.diaMaxInput)) {
+      this.message.create("error", "「尺寸上限(含)」僅能是數字或不可為空");
       return false;
     }
 
-    if (_.isEmpty(this.processCode2pcsInput)) {
-      this.message.create("error", "「製程碼_一爐兩捲」不可為空");
-      return false;
-    }
-
-    if (_.isEmpty(this.processCode4pcsInput)) {
-      this.message.create("error", "「製程碼_一爐四捲」不可為空");
+    if (_.isEmpty(this.productionTimeInput)) {
+      this.message.create("error", "「每爐生產時間(分)」不可為空");
       return false;
     }
 
@@ -471,12 +402,12 @@ export class PPSI130Component implements AfterViewInit {
     this.isSpinning = true;
 
     if(!_.isEmpty(this.searchingColumn)){
-      const p = this.switchGetSearchTbppsm014ColumnDataByKeyWord();
+      const p = this.switchGetSearchtbppsm114ColumnDataByKeyWord();
       this.setupTableAndEditCache(p);
       return;
     }
 
-    const p = this.getPPSI130List();
+    const p = this.getPPSI131List();
     this.setupTableAndEditCache(p);
   }
 
@@ -508,81 +439,6 @@ export class PPSI130Component implements AfterViewInit {
 
 // ============= filter資料 ========================
 
-  searchByPlantCode(isUserClick : boolean){
-    if(_.isEmpty(this.searchPlantCodeValue)){
-      this.message.create("error", "請輸入搜尋關鍵字");
-      return;
-    }
-
-    this.searchingColumn = this.DB_PLANT_CODE_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_PLANT_CODE_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.DB_PLANT_CODE_COLUMN_NAME, this.searchPlantCodeValue);
-
-    if(!isUserClick){
-      return p;
-    }
-    else{
-      this.setupTableAndEditCache(p);
-      this.plantCodeFilterVisible = false;
-    }
-  }
-  resetByPlantCode(){
-    this.searchPlantCodeValue = "";
-    this.reset();
-    this.plantCodeFilterVisible = false;
-  }
-
-
-  searchByShopCode(isUserClick : boolean){
-    if(_.isEmpty(this.searchShopCodeValue)){
-      this.message.create("error", "請輸入搜尋關鍵字");
-      return;
-    }
-
-    this.searchingColumn = this.DB_SHOP_CODE_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_SHOP_CODE_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchShopCodeValue);
-
-    if(!isUserClick){
-      return p;
-    }
-    else{
-      this.setupTableAndEditCache(p);
-      this.shopCodeFilterVisible = false;
-    }
-  }
-  resetByShopCode(){
-    this.searchShopCodeValue = "";
-    this.reset();
-    this.shopCodeFilterVisible = false;
-  }
-
-  searchBySteelType(isUserClick : boolean){
-    
-    if(_.isEmpty(this.searchSteelTypeValue)){
-      this.message.create("error", "請輸入搜尋關鍵字");
-      return;
-    }
-
-    this.searchingColumn = this.DB_STEEL_TYPE_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_STEEL_TYPE_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchSteelTypeValue);
-
-    if(!isUserClick){
-      return p;
-    }
-    else{
-      this.setupTableAndEditCache(p);
-      this.steelTypeFilterVisible = false;
-    }
-
-  }
-  resetBySteelType(){
-    this.searchSteelTypeValue = "";
-    this.reset();
-    this.steelTypeFilterVisible = false;
-  }
-
   searchByDiaMin(isUserClick : boolean){
     if(_.isEmpty(this.searchDiaMinValue)){
       this.message.create("error", "請輸入搜尋關鍵字");
@@ -591,7 +447,7 @@ export class PPSI130Component implements AfterViewInit {
 
     this.searchingColumn = this.DB_DIA_MIN_COLUMN_NAME;
     this.clearOtherSearchValue(this.DB_DIA_MIN_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchDiaMinValue);
+    const p = this.searchtbppsm114ColumnDataByKeyWord(this.searchingColumn, this.searchDiaMinValue);
 
     if(!isUserClick){
       return p;
@@ -615,7 +471,7 @@ export class PPSI130Component implements AfterViewInit {
 
     this.searchingColumn = this.DB_DIA_MAX_COLUMN_NAME;
     this.clearOtherSearchValue(this.DB_DIA_MAX_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchDiaMaxValue);
+    const p = this.searchtbppsm114ColumnDataByKeyWord(this.searchingColumn, this.searchDiaMaxValue);
 
     if(!isUserClick){
       return p;
@@ -631,74 +487,40 @@ export class PPSI130Component implements AfterViewInit {
     this.diaMaxFilterVisible = false;
   }
 
-  searchByProcessCode2pcs(isUserClick : boolean){
-    if(_.isEmpty(this.searchProcessCode2pcsValue)){
+  searchByproductionTime(isUserClick : boolean){
+    if(_.isEmpty(this.searchproductionTimeValue)){
       this.message.create("error", "請輸入搜尋關鍵字");
       return;
     }
 
-    this.searchingColumn = this.DB_PROCESS_CODE_2PCS_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_PROCESS_CODE_2PCS_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchProcessCode2pcsValue);
+    this.searchingColumn = this.DB_PRODUCTION_TIME_COLUMN_NAME;
+    this.clearOtherSearchValue(this.DB_PRODUCTION_TIME_COLUMN_NAME);
+    const p = this.searchtbppsm114ColumnDataByKeyWord(this.searchingColumn, this.searchproductionTimeValue);
 
     if(!isUserClick){
       return p;
     }
     else{
       this.setupTableAndEditCache(p);
-      this.processCode2pcsFilterVisible = false;
+      this.productionTimeFilterVisible = false;
     }
   }
-  resetByProcessCode2pcs(){
-    this.searchProcessCode2pcsValue = "";
+  resetByproductionTime(){
+    this.searchproductionTimeValue = "";
     this.reset();
-    this.processCode2pcsFilterVisible = false;
+    this.productionTimeFilterVisible = false;
   }
-
-  searchByProcessCode4pcs(isUserClick : boolean){
-    if(_.isEmpty(this.searchProcessCode4pcsValue)){
-      this.message.create("error", "請輸入搜尋關鍵字");
-      return;
-    }
-
-    this.searchingColumn = this.DB_PROCESS_CODE_4PCS_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_PROCESS_CODE_4PCS_COLUMN_NAME);
-    const p = this.searchTbppsm014ColumnDataByKeyWord(this.searchingColumn, this.searchProcessCode4pcsValue);
-
-    if(!isUserClick){
-      return p;
-    }
-    else{
-      this.setupTableAndEditCache(p);
-      this.processCode4pcsFilterVisible = false;
-    }
-  }
-  resetByProcessCode4pcs(){
-    this.searchProcessCode4pcsValue = "";
-    this.reset();
-    this.processCode4pcsFilterVisible = false;
-  }
-
-
 
   reset() : void{
     this.isSpinning = true;
     this.currentPageIndex = 1;
     this.searchingColumn = "";
     this.clearOtherSearchValue("All Clear");
-    const p = this.getPPSI130List();
+    const p = this.getPPSI131List();
     this.setupTableAndEditCache(p);  
   }
 
   clearOtherSearchValue(currentField : string){
-
-    if(!_.isEqual(currentField, this.DB_SHOP_CODE_COLUMN_NAME)){
-      this.searchShopCodeValue = "";
-    }
-
-    if(!_.isEqual(currentField, this.DB_STEEL_TYPE_COLUMN_NAME)){
-      this.searchSteelTypeValue = "";
-    }
 
     if(!_.isEqual(currentField, this.DB_DIA_MIN_COLUMN_NAME)){
       this.searchDiaMinValue = "";
@@ -708,25 +530,19 @@ export class PPSI130Component implements AfterViewInit {
       this.searchDiaMaxValue = "";
     }
 
-    if(!_.isEqual(currentField, this.DB_PROCESS_CODE_2PCS_COLUMN_NAME)){
-      this.searchProcessCode2pcsValue = "";
+    if(!_.isEqual(currentField, this.DB_PRODUCTION_TIME_COLUMN_NAME)){
+      this.searchproductionTimeValue = "";
     }
-
-    if(!_.isEqual(currentField, this.DB_PROCESS_CODE_4PCS_COLUMN_NAME)){
-      this.searchProcessCode4pcsValue = "";
-    }
-
-
 
   }
 
 
-  searchTbppsm014ColumnDataByKeyWord(column:string, keyword:string){
+  searchtbppsm114ColumnDataByKeyWord(column:string, keyword:string){
 
     this.isSpinning = true;
     const myThis = this;
     return new Promise(function(resolve, reject){
-      myThis.PPSService.searchTbppsm014ColumnDataByKeyword(
+      myThis.PPSService.searchtbppsm114ColumnDataByKeyword(
           column, 
           keyword, 
           myThis.currentPageIndex,
@@ -746,19 +562,11 @@ export class PPSI130Component implements AfterViewInit {
   }
 
 
-  switchGetSearchTbppsm014ColumnDataByKeyWord() {
+  switchGetSearchtbppsm114ColumnDataByKeyWord() {
 
     let p : Promise<any>;
 
     switch (this.searchingColumn){
-      case this.DB_SHOP_CODE_COLUMN_NAME : {
-        p =  this.searchByShopCode(false);
-        break;
-      }
-      case this.DB_STEEL_TYPE_COLUMN_NAME : {
-        p =  this.searchBySteelType(false);
-        break;
-      }
       case this.DB_DIA_MIN_COLUMN_NAME: {
         p =  this.searchByDiaMin(false);
         break;
@@ -767,12 +575,8 @@ export class PPSI130Component implements AfterViewInit {
         p =  this.searchByDiaMax(false);
         break;
       }
-      case this.DB_PROCESS_CODE_2PCS_COLUMN_NAME: {
-        p =  this.searchByProcessCode2pcs(false);
-        break;
-      }
-      case this.DB_PROCESS_CODE_4PCS_COLUMN_NAME: {
-        p =  this.searchByProcessCode4pcs(false);
+      case this.DB_PRODUCTION_TIME_COLUMN_NAME: {
+        p =  this.searchByproductionTime(false);
         break;
       }
       default: {
@@ -883,7 +687,7 @@ export class PPSI130Component implements AfterViewInit {
        myThis.currentPageIndex = 1;
        myThis.searchingColumn = "";
        myThis.sucessMSG(barchInsertSuccess, ``);
-       return myThis.getPPSI130List();
+       return myThis.getPPSI131List();
      }).then(resData =>{
        myThis.handleData(resData)
        myThis.isSpinning = false;
@@ -897,7 +701,7 @@ export class PPSI130Component implements AfterViewInit {
   barchInsertExcelData() {
     const myThis = this;
     return new Promise(function(resolve, reject){
-      myThis.PPSService.batchSaveTbppsm014Data(myThis.jsonExcelData).subscribe(response => {
+      myThis.PPSService.batchSavetbppsm114Data(myThis.jsonExcelData).subscribe(response => {
         if (response.success === true) {
           resolve("匯入成功")
         } 
@@ -913,7 +717,7 @@ export class PPSI130Component implements AfterViewInit {
   deleteAllData(){
     const myThis = this;
     return new Promise(function(resolve, reject){
-      myThis.PPSService.deleteTbppsm014AllData().subscribe(response => {
+      myThis.PPSService.deletetbppsm114AllData().subscribe(response => {
         if (response.success === true) {
           resolve("刪除所有資料成功");
         } 
@@ -930,23 +734,12 @@ export class PPSI130Component implements AfterViewInit {
 
   convertJsonToEnglishkey() : void {
 
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"廠區別":').join('"plantCode":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"站別":').join('"shopCode":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"鋼種":').join('"steelType":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸MIN":').join('"diaMin":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸MAX":').join('"dixMax":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼_一爐兩捲":').join('"processCode2pcs":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼_一爐四捲":').join('"processCode4pcs":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機台":').join('"equipCode":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"機群":').join('"equipGroup":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸下限":').join('"diaMin":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"尺寸上限":').join('"diaMax":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"每爐生產時間":').join('"productionTime":'));
     for (let i = 0; i < this.jsonExcelData.length; i++) {
 
       this.jsonExcelData[i].userCreate = this.USERNAME;
-
-      
-      if(_.isEqual(this.jsonExcelData[i].processCode4pcs, '-') || _.isEqual(this.jsonExcelData[i].processCode4pcs, '')){
-        this.jsonExcelData[i].processCode4pcs = null;
-      }
 
     }
 
@@ -965,16 +758,12 @@ export class PPSI130Component implements AfterViewInit {
     const keys = Object.keys(d);
 
     keys.forEach(k =>{
-      if(k === "廠區別") b1 = true;
-      if (k === "站別") b2 = true;
-      else if (k === "鋼種") b3 = true;
-      else if (k === "尺寸MIN") b4 = true;
-      else if (k === "尺寸MAX") b5 = true;
-      else if (k === "製程碼_一爐兩捲") b6 = true;
-      else if (k === "製程碼_一爐四捲") b7 = true;
+      if (k === "尺寸下限") b1 = true;
+      else if (k === "尺寸上限") b2 = true;
+      else if (k === "每爐生產時間") b3 = true;
     });
 
-    return b1 && b2 && b3 && b4 && b5 && b6 && b7;
+    return b1 && b2 && b3;
   }
 
   checkAllValuesNotEmpty(jsonExcelData) : boolean{
@@ -983,28 +772,13 @@ export class PPSI130Component implements AfterViewInit {
 
       let rowNumberInExcel = i+1;
 
-      if(_.isEmpty(String(jsonExcelData[i-1]["廠區別"]))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「廠區別」不得為空，請修正`);
+      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸下限"]))){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸下限」不得為空，請修正`);
         return false;
       }
 
-      if(_.isEmpty(String(jsonExcelData[i-1]["站別"]))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「站別」不得為空，請修正`);
-        return false;
-      }
-
-      if(_.isEmpty(String(jsonExcelData[i-1]["鋼種"]))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「鋼種」不得為空，請修正`);
-        return false;
-      }
-
-      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MIN"]))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MIN」不得為空，請修正`);
-        return false;
-      }
-
-      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸MAX"]))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸MAX」不得為空，請修正`);
+      if(_.isEmpty(String(jsonExcelData[i-1]["尺寸上限"]))){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「尺寸上限」不得為空，請修正`);
         return false;
       }
 
@@ -1022,14 +796,14 @@ export class PPSI130Component implements AfterViewInit {
 
     p.then(jsonDataFroExport => {
 
-      const firstRow = ["plantCode", "shopCode", "steelType", "diaMin", "dixMax", "processCode2pcs", "processCode4pcs"];
-      const firstRowDisplay = {plantCode:"廠區別", shopCode:"站別", steelType:"鋼種", diaMin:"尺寸MIN", dixMax:"尺寸MAX", processCode2pcs:"製程碼_一爐兩捲", processCode4pcs:"製程碼_一爐四捲"};
+      const firstRow = ["diaMin", "diaMax", "productionTime"];
+      const firstRowDisplay = {diaMin:"尺寸下限", diaMax:"尺寸上限", productionTime:"每爐生產時間"};
       const exportData = [firstRowDisplay, ...jsonDataFroExport];  
 
       const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
       const workBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet1");
-      XLSX.writeFileXLSX(workBook, '批次爐鋼種捲數製程碼對應表.xlsx')
+      XLSX.writeFileXLSX(workBook, '直棒批次爐表.xlsx')
   
       myThis.isSpinning = false;
       myThis.sucessMSG("匯出成功!", ``);
@@ -1044,7 +818,7 @@ export class PPSI130Component implements AfterViewInit {
   getAllData()  {
     let myThis = this;
     return new Promise<any>(function(resolve, reject){
-      myThis.PPSService.listTbppsm014AllData().subscribe(response => {
+      myThis.PPSService.listtbppsm114AllData().subscribe(response => {
         if (response.success === true) {
           resolve(response.data);
         } 
