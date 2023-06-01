@@ -145,7 +145,7 @@ export class LABP100Component implements AfterViewInit {
   columnDefsTab1: ColDef<data>[] = [
     { headerName: '預計實驗完成時間' ,field: 'experimentDoneDate' , filter: false,width: 170 },
     { headerName:'取樣代號',field: 'sampleNo' , filter: false,width: 120 },
-    { headerName: '取樣ID' ,field: 'sampleId' , filter: false,width: 120 },
+    { headerName: '訂單ID' ,field: 'sampleId' , filter: false,width: 120 },
     { headerName:'放樣ID',field: 'idNo' , filter: false,width: 120, headerTooltip:'非取樣ID之母體ID'},
     { headerName:'客戶',field: 'custAbbr' , filter: false,width: 100 },
     { headerName: '訂單尺寸' ,field: 'saleOrderDia' , filter: false,width: 100 },

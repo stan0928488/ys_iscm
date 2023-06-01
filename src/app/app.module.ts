@@ -102,6 +102,7 @@ import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
+import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 
 registerLocaleData(zh);
 
@@ -186,6 +187,7 @@ registerLocaleData(zh);
     MSHI003Component,
     PrimeDatePickerCellEditorComponent,
     LABI002Component,
+    LABI003Component,
    ],
   imports: [
     BrowserModule,

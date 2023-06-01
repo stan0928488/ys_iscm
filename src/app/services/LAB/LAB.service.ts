@@ -201,4 +201,45 @@ export class LABService {
     console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
     return this.http.delete<any>(endpointUrl, { params: httpParams });
   }
+
+   // 實驗室行事曆休息時段批次新增
+   batchSaveTblabm003(payload){
+    console.log('實驗室行事曆休息時段批次新增');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/batchSaveTblabm003`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.post<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+  findAllTblabm003ByYearAndMonth(year : string, month : string){
+    console.log('獲取實驗室休假行事曆');
+    const httpParams = new HttpParams()
+      .set('year', year)
+      .set('month', month);
+    let endpointUrl = `${this.APIURL}/LAB001/findAllTblabm003ByMonth`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+    return this.http.get<any>(endpointUrl, { params: httpParams });
+  }
+
+  // 實驗室行事曆休息時段批次新增
+  batchSaveTblabm003ForExcelImport(payload){
+    console.log('實驗室行事曆休息時段Excel匯入批次新增"');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/batchSaveTblabm003ForExcelImport`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.post<any>(endpointUrl, payload, this.httpOptions);
+  }
+
+  // 更新實驗室行事曆休息時段
+  updateTblabm003(payload){
+    console.log('更新實驗室行事曆休息時段');
+    const payloadJson = JSON.stringify(payload);
+    let endpointUrl = `${this.APIURL}/LAB001/updateTblabm003`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${payloadJson}`);
+    return this.http.put<any>(endpointUrl, payload, this.httpOptions);
+  }
 }

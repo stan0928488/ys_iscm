@@ -692,11 +692,11 @@ export class MSHI003Component implements AfterViewInit {
 
     if(typeof inputDate === 'string'){
       if(!dateRegex.test(String(inputDate))){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」格式錯誤，請修正。<br>日期格式為 YYYY-MM-DD hh:mm:ss 或 YYYY-MM-DD <br> 例如 ${moment().format('YYYY-MM-DD hh:mm:ss')} 或 ${moment().format('YYYY-MM-DD')}`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」格式錯誤，請修正。<br>日期格式為 YYYY-MM-DD HH:mm:ss 或 YYYY-MM-DD <br> 例如 ${moment().format('YYYY-MM-DD HH:mm:ss')} 或 ${moment().format('YYYY-MM-DD')}`);
         return false;
       }
 
-      let isValid01 = moment(inputDate, 'YYYY-MM-DD hh:mm:ss', false).isValid();
+      let isValid01 = moment(inputDate, 'YYYY-MM-DD HH:mm:ss', false).isValid();
       let isValid02 = moment(inputDate, 'YYYY-MM-DD', false).isValid();
 
       // 若比較兩種格式的日期都不合法
@@ -705,7 +705,7 @@ export class MSHI003Component implements AfterViewInit {
         return false;
       }
 
-      if(!moment(inputDate).isSameOrAfter(moment(), 'day')){
+      if(!moment(inputDate, 'YYYY-MM-DD HH:mm:ss').isSameOrAfter(moment().format('YYYY-MM-DD HH:mm:ss'), 'day')){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」不能是過去日期，請修正。`);
         return false;
       }
@@ -740,7 +740,7 @@ export class MSHI003Component implements AfterViewInit {
     var utc_value = utc_days * 86400;                                        
     var date_info = new Date(utc_value * 1000);
  
-    var fractional_day = serial - Math.floor(serial);
+    var fractional_day = serial - Math.floor(serial) + 0.0000001;;
  
     var total_seconds = Math.floor(86400 * fractional_day);
  
@@ -820,7 +820,7 @@ export class MSHI003Component implements AfterViewInit {
     const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
     const workBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet1");
-    XLSX.writeFileXLSX(workBook, `EPST變更作業_${moment().format('YYYY-MM-DD_hh-mm-ss')}.xlsx`)
+    XLSX.writeFileXLSX(workBook, `EPST變更作業_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`)
         
     this.isSpinning = false;
     this.sucessMSG("匯出成功!", ``);
