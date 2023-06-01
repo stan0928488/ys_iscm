@@ -102,6 +102,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { PPSI131Component } from './pages/PPS/PPSI131/PPSI131.component';
+import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
 
 registerLocaleData(zh);
 
@@ -185,6 +186,7 @@ registerLocaleData(zh);
     PrimeDatePickerCellEditorComponent,
     LABI002Component,
     PPSI131Component,
+    NonPpsiComponent,
    ],
   imports: [
     BrowserModule,

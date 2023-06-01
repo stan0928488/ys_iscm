@@ -1,22 +1,5 @@
 <nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
-        <ul>
-            <li><a href="#/singleData/I120">直棒退火爐工時</a></li>
-            <li class="active"><a href="#/singleData/I121"><label style="color:blue">直棒研磨道次</label></a></li>
-            <li><a href="#/singleData/I122">直棒桶槽式工時</a></li>
-            <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
-            <li><a href="#/singleData/I124">公版設定維護</a></li>
-            <li><a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a></li>
-            <li><a href="#/singleData/I131">直棒批次爐</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+  <app-non-ppsi></app-non-ppsi>
   
   <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
     <div style="background: rgb(255, 255, 255); min-height: 1200px;">

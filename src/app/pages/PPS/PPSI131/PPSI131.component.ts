@@ -4,7 +4,7 @@ import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {NzModalService} from "ng-zorro-antd/modal"
+import {NzModalService, NzModalRef} from "ng-zorro-antd/modal"
 import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
@@ -142,6 +142,8 @@ export class PPSI131Component implements AfterViewInit {
    this.setupTableAndEditCache(p);
   }
   
+
+
   getPPSI131List() {
 
     this.isSpinning = true;
@@ -299,7 +301,6 @@ export class PPSI131Component implements AfterViewInit {
             else{
               reject(response.message);
             }
-            
           }, error =>{
             const errorMsg = JSON.stringify(error["error"]);
             reject(`更新失敗，後台錯誤，請聯繫系統工程師。Error Msg : ${errorMsg}`);
@@ -424,6 +425,12 @@ export class PPSI131Component implements AfterViewInit {
 			nzTitle: _title,
 			nzContent: `${_context}`
 		});
+
+    this.Modal.afterAllClose.subscribe((result) => {
+
+      console.log("重新刷新.....");
+      this.reset();
+    });
 	}
 
   //============== 新增資料之彈出視窗 =====================
@@ -679,11 +686,9 @@ export class PPSI131Component implements AfterViewInit {
 
      // 將資料全刪除，再匯入EXCEL檔內的資料
      const myThis = this;
-     const p = this.deleteAllData();
-     p.then(deleteSuccess =>{
+     const p = this.barchInsertExcelData();
+     p.then(barchInsertSuccess =>{
        // 批次新增Excle中的資料
-       return myThis.barchInsertExcelData();
-     }).then(barchInsertSuccess =>{
        myThis.currentPageIndex = 1;
        myThis.searchingColumn = "";
        myThis.sucessMSG(barchInsertSuccess, ``);
@@ -696,6 +701,7 @@ export class PPSI131Component implements AfterViewInit {
        myThis.errorMSG(error, ``);
      });
      (<HTMLInputElement>document.getElementById("importExcel")).value = "" ;
+       
   }
 
   barchInsertExcelData() {
