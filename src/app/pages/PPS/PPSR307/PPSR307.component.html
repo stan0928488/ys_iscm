@@ -1,0 +1,57 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+          <li><a href="#/FCPshipRepo/R304"> 客戶出貨資訊維護表</a></li>
+          <li ><a href="#/FCPshipRepo/R305">訂單足項維護表</a></li>
+          <li ><a href={{redirect306Url}}>出貨移轉統計表</a></li>
+          <li class="active"><a href= "#/FCPshipRepo/R307"><label style="color:blue">成品/半成品現況</label></a></li>
+      </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
+
+  <div style="min-height: 1200px;">
+    <div>
+      版次 :
+      <nz-select style=" margin-left:10px; margin-right:10px; width: 160px;" nzShowSearch  nzPlaceHolder="Select a edition" [(ngModel)]="edition" (ngModelChange)="onEditionChange($event)">
+        <nz-option *ngFor="let edition of editionList ;let i = index" [nzLabel]="edition" [nzValue]="edition"></nz-option>
+        
+      </nz-select>  
+      結轉時間 :
+      <nz-date-picker  [(ngModel)]="date" (ngModelChange)="onDateChange($event)"></nz-date-picker>
+      <button
+        nz-button
+        style=" margin-left:10px;box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        nzType="primary"
+        (click) = "search()"
+      ><span nz-icon nzType="search" nzTheme="outline"></span>
+       查詢
+      </button>
+
+    </div>       
+    <nz-spin [nzTip]="spinType" [nzSize] ="'large'" [nzSpinning]="isLoading">
+    <div nz-col [nzSpan]="24" style="padding-top:10px;">
+        <ag-grid-angular
+        style="width: 100% ; height:500px; overflow: scroll;"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefsTab"
+        [defaultColDef]="defaultColDefTab"
+        [rowData]="R307DataList"
+        [suppressRowClickSelection]="true"
+        [groupSelectsChildren]="true"
+        [rowSelection]="'multiple'"
+        [pagination]="true"
+        [tooltipShowDelay]="tooltipShowDelay"
+        [autoGroupColumnDef]="autoGroupColumnDef"
+        [animateRows]="true"
+        
+      ></ag-grid-angular>
+    </div>
+  </nz-spin>
+  </div>
+  
+</nz-content>

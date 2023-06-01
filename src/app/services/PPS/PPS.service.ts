@@ -1665,4 +1665,29 @@ getEquipCodeList(_data){
     console.log(`請求API 參數 :${body}`);
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
+
+  getR306Editionist(){
+
+    let endpointUrl = this.APIURL + `/FCP/R306/getPPSR306Edition`;
+    return this.http.get<any>(endpointUrl);
+  }
+  
+  getR306DataList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + "/FCP/R306/getPPSR306List";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+
+  getR307Editionist(){
+
+    let endpointUrl = this.APIURL + `/FCP/R307/getPPSR307Edition`;
+    return this.http.get<any>(endpointUrl);
+  }
+  
+  getR307DataList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + "/FCP/R307/getPPSR307List";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 }

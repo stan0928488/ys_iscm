@@ -170,6 +170,19 @@ export class PPSR304Component implements AfterViewInit {
         var workbook = XLSX.read(bstr, {type:"binary"});
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet:any = workbook.Sheets[first_sheet_name];
+
+        if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
+          worksheet.F1 === undefined ) {
+        this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+          return;
+        } else if(worksheet.A1.v !== "客戶簡稱" || worksheet.B1.v !== "預估出貨量" 
+        || worksheet.C1.v !== "異型棒目標" || worksheet.D1.v !== "大棒目標" || worksheet.E1.v !== "允收截止日" || worksheet.F1.v !== "可接受交期" ) {
+          this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+          this.clearFile();
+          return;
+        }
+
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
   
         
