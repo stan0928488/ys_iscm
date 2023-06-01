@@ -118,7 +118,7 @@ export class PPSR303Component implements OnInit {
     { headerName: '技術指定機台' ,field: 'fixenEquipCode' , filter: false,width: 100 },
     { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 },
     { headerName: '料號' ,field: 'mtrlNo' , filter: false,width: 200},
-    { headerName: '違反事項' ,field: 'violattion' , filter: false,width: 150 },
+    { headerName: '違反事項' ,field: 'violation' , filter: false,width: 150 },
     { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300 },
     { headerName: '作業代碼' ,field: 'opCode' , filter: false,width: 100 },
     { headerName: '判斷 405站是否做過C2/C3F' ,field: 'flag405Temp' , filter: false,width: 80 },
@@ -131,7 +131,7 @@ export class PPSR303Component implements OnInit {
       { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 120},
       { headerName: '機台碼' ,field: 'equipCode' , filter: false,width: 120},
       { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 120},
-      { headerName: 'ROUTING_SEQ' ,field: 'routingSeq' , filter: false,width: 120},
+      { headerName: '製程順序' ,field: 'routingSeq' , filter: false,width: 120},
       { headerName: '產出尺寸' ,field: 'turnDiaMax' , filter: false,width: 120},
       { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 120},
       { headerName: '支數' ,field: 'pieceCount' , filter: false,width: 120 },
@@ -159,7 +159,7 @@ export class PPSR303Component implements OnInit {
       { headerName: '違反事項' ,field: 'violation' , filter: false,width: 120 },
       { headerName: 'compaign Id' ,field: 'compaignId' , filter: false,width: 120},
       { headerName: 'ASAP調整日期' ,field: 'newAsap' , filter: false,width: 120},
-      { headerName: '違反事項_已解決' ,field: 'p2ResetViolation' , filter: false,width: 300 },
+      { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300 },
       { headerName: '判斷 405站是否做過C2/C3F' ,field: 'flag405Temp' , filter: false,width: 120}
   ]
   public defaultColDefTab1: ColDef = {
@@ -357,11 +357,17 @@ export class PPSR303Component implements OnInit {
       this.secondIdNo = e.data.idNo;
 
       let myObj = this ;
-      myObj.getPPSService.getR303SecondData(e.data.idNo ,this.edition, this.isError).subscribe(res => {
+      console.log(e.data)
+      myObj.getPPSService.getR303SecondData(e.data.idNo ,this.edition, this.isError,e.data.routingSeq).subscribe(res => {
         let result:any = res ;
         
 
         this.rowDataTab2 = result.data;
+
+        this.rowDataTab2.forEach(data=>{
+          if(data['violation'] == null && data['resetViolation'] !=null)
+            data['violation'] = e.data.violation;
+        })
         this.displayTable2Data = this.rowDataTab2;
         this.isLoading = false;
         this.isShowTable2 = true;
@@ -381,8 +387,8 @@ export class PPSR303Component implements OnInit {
 
         this.displayRowData = this.rowDataTab4;
   
-        this.displayRowData = this.displayRowData.concat(this.rowDataTab1.filter(element => element['violattion'] != null));
-      
+        this.displayRowData = this.displayRowData.concat(this.rowDataTab1.filter(element => element['violation'] != null));
+        
       }else{
         this.displayRowData = [];
 
@@ -405,7 +411,7 @@ export class PPSR303Component implements OnInit {
 
   
         this.displayTable2Data = this.displayTable2Data.concat(this.rowDataTab2.filter(element => element['violation'] != null));
-      
+        
       }else{
         this.displayTable2Data = [];
 
@@ -430,7 +436,7 @@ export class PPSR303Component implements OnInit {
 
     exportExcelTab1(): void {
       
-      
+      this.isLoading = true;
       let header = [];
 
       var head = [];
@@ -465,7 +471,7 @@ export class PPSR303Component implements OnInit {
       const book: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
       XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'MO異常表_'+this.edition+ '.xlsx');//filename => Date_
-      
+      this.isLoading = false;
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
@@ -476,7 +482,7 @@ export class PPSR303Component implements OnInit {
 
     exportExcelTab2(): void {
       
-      
+      this.isLoading = true;
       let header = [];
 
       var head = []
@@ -499,7 +505,7 @@ export class PPSR303Component implements OnInit {
           
           
         }
-        console.log(temp)
+       
         dataReSort.data.push(temp);
 
       }
@@ -511,7 +517,7 @@ export class PPSR303Component implements OnInit {
       const book: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
       XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'MO異常表 _ '+ this.secondIdNo +'.xlsx');//filename => Date_
-      
+      this.isLoading = false;
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
@@ -526,18 +532,28 @@ export class PPSR303Component implements OnInit {
       myObj.getPPSService.getR303FCPEditionList().subscribe(res => {
       
         let result:any = res;
-
+        if(result.data.length == 0){
+          this.errorMSG("錯誤","沒有版次資料");
+          return;
+        }
         if(result.code == 200){
           this.FCPMoEdition = result.data;
           this.fcpMo = this.FCPMoEdition[0];
           this.isShowFCPMo = true;
+        }
+        
+
+      },
+      error =>{
+        if(this.FCPMoEdition.length == 0){
+          this.errorMSG("錯誤","請連繫後端");
         }
       });
       
     }
 
     exportExcelFCP(): void {
-      
+      this.isLoading = true;
       this.isShowFCPMo = false;
       let header = [];
 
@@ -553,6 +569,7 @@ export class PPSR303Component implements OnInit {
       
       let myObj = this ;
       myObj.getPPSService.getR303FCPData(this.fcpMo).subscribe(res => {
+        
         var result: any = res;
 
         if(result.code == 200){
@@ -576,7 +593,7 @@ export class PPSR303Component implements OnInit {
           const book: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
           XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'FCP_MO異常表 _ '+ this.fcpMo +'.xlsx');//filename => Date_
-          
+          this.isLoading = false;
           this.Modal.info({
             nzTitle: '提示訊息',
             nzContent: 'excel 匯出完成' ,
@@ -592,5 +609,17 @@ export class PPSR303Component implements OnInit {
       
       
     }
-
+    sucessMSG(_title, _plan): void {
+      this.Modal.success({
+        nzTitle: _title,
+        nzContent: `${_plan}`
+      });
+    }
+  
+    errorMSG(_title, _context): void {
+      this.Modal.error({
+        nzTitle: _title,
+        nzContent: `${_context}`
+      });
+    }
 }
