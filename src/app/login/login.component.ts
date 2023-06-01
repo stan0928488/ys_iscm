@@ -120,25 +120,17 @@ export class LoginComponent implements OnInit {
           this.isLogining = false;
           // window.location.reload();
         } else {
-          console.log("login success");
-          this.authFail = false;
-
-          this.cookieService.setCookie("USERNAME", username, 2);
-          this.cookieService.setCookie("plantCode", plantCode, 2);
-          this.authService.emitAuthState();
-          this.router.navigateByUrl("/FCPBarData/P202");
+          console.log("login fail err");
+          console.log(res);
           this.isLogining = false;
+          this.authFail = true;
         }
       },
       err => {
-        console.log("login success");
-        this.authFail = false;
-
-        this.cookieService.setCookie("USERNAME", username, 2);
-        this.cookieService.setCookie("plantCode", plantCode, 2);
-        this.authService.emitAuthState();
-        this.router.navigateByUrl("/FCPBarData/P202");
+        console.log("login fail err");
+        console.log(err);
         this.isLogining = false;
+        this.authFail = true;
       }
     );
 
