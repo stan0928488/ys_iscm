@@ -80,6 +80,9 @@ export class LABI003Component implements AfterViewInit {
   holidayTimeStart : Date = null;
   holidayTimeEnd : Date = null;
 
+  // 彈出視窗的載入動畫控制
+  isOkLoading = false;
+
   // 選中的日期
   pickDates : string[] = [];
 
@@ -566,7 +569,76 @@ disabledSeconds(id : number) {
   }
 
   deleteRowData(id : number){
+    
+    this.isOkLoading = true;
+    let resMessage = '';
+    new Promise<boolean>((resolve, reject) => {
+      this.LABService.deleteTblabm003(id, this.editCache[id].data.plantCode).subscribe({
+        next : (res) =>{
+          if(res.code === 200){
+            resMessage = res.message;
+            resolve(true);
+          }else{
+            this.errorMSG('刪除失敗', res.message);
+            reject(true);
+          }
+        },
+        error : (err) => {
+          this.errorMSG('發生系統錯誤', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+          reject(true);
+        },
+        complete : () => {
+          console.log("實驗室行事曆休假時段刪除完成");
+        }
 
+      });
+    })
+    .then(success =>{
+      this.updateHolidayPeriodsTableForDelete(id, resMessage);
+      this.isOkLoading = false;
+    }).catch(error =>{
+      this.isOkLoading = false;
+    });
+
+  }
+
+   // 當使用者更新休假時段後，更新顯示休假時段的table
+   updateHolidayPeriodsTableForDelete(id : number, resMessage : string){
+
+    // 先找到這筆刪除的時段是哪一天
+    let holidayPeriodsList = this.listHolidayMap.get(this.editCache[id].data.holiday);
+
+    // 再找這個刪除時段是那一天的哪一筆
+    const index = _.findIndex(holidayPeriodsList, function(o) { return o.id === id; });
+
+    // 刪除該筆時段
+    holidayPeriodsList.splice(index, 1);
+
+    // 如果刪除的是最後一筆，則關閉彈出視窗並且不在行事曆顯示當天有休假
+    if(_.isEmpty(holidayPeriodsList)){
+      this.listHolidayMap.delete(this.editCache[id].data.holiday);
+      this.isVisibleHolidayPeriods = false;
+      this.sucessMSG('刪除成功', `${this.editCache[id].data.holiday} 已無休假時段`);
+      return;
+    }
+
+    // 深拷貝這個刪除過的休假時段物件
+    let deepCloneDataList = _.cloneDeep(holidayPeriodsList);
+    holidayPeriodsList = deepCloneDataList;
+
+    // 根據休假開始時間排序
+    holidayPeriodsList = _.sortBy(holidayPeriodsList, ['startTime']);
+
+    // 根據排序重新計算編號
+    holidayPeriodsList = holidayPeriodsList.map((item,index) => {
+        item.rowNumber = index + 1;
+        return item
+    })
+
+    // 重新賦值渲染table
+    this.displayholidayPeriodsList = holidayPeriodsList;
+
+    this.sucessMSG('刪除成功', resMessage);
   }
 
   saveEdit(id : number){
@@ -580,7 +652,7 @@ disabledSeconds(id : number) {
       return true;
     }
 
-    this.isSpinning = true;
+    this.isOkLoading = true;
     
     const updatePayLoad = new Tblabm003Request(
                               this.editCache[id].data.id,
@@ -622,9 +694,9 @@ disabledSeconds(id : number) {
       // 當使用者更新休假時段後，更新顯示休假時段的table
       this.updateHolidayPeriodsTable(this.editCache[id].data);
       this.editCache[id].isEdit = false;
-      this.isSpinning = false;
+      this.isOkLoading = false;
     }).catch(error =>{
-      this.isSpinning = false;
+      this.isOkLoading = false;
     });
 
   }
@@ -633,7 +705,7 @@ disabledSeconds(id : number) {
   updateHolidayPeriodsTable(data: Tblabm003Response){
 
     // 先找到這筆更新的資料是哪一天
-    const holidayPeriodsList = this.listHolidayMap.get(data.holiday);
+    let holidayPeriodsList = this.listHolidayMap.get(data.holiday);
 
     // 再找這個更新時段是那一天的哪一筆
     const index = _.findIndex(holidayPeriodsList, function(o) { return o.id === data.id; });
@@ -641,9 +713,24 @@ disabledSeconds(id : number) {
     // 深拷貝這個更新過的休假時段物件
     const deepCloneData = _.cloneDeep(data);
 
-    // 將該物件賦給原本顯示在table上的那筆物件
-    Object.assign(holidayPeriodsList[index], deepCloneData)
+    // 賦值給當天所有休假資料的List
+    holidayPeriodsList[index] = deepCloneData;
 
+    // 深拷貝這個有更新時段過的休假時段物件
+    let deepCloneDataList = _.cloneDeep(holidayPeriodsList);
+    holidayPeriodsList = deepCloneDataList;
+
+    // 根據休假開始時間排序
+    holidayPeriodsList = _.sortBy(holidayPeriodsList, ['startTime']);
+
+    // 根據排序重新計算編號
+    holidayPeriodsList = holidayPeriodsList.map((item,index) => {
+      item.rowNumber = index + 1;
+      return item
+    })
+
+    // 重新賦值渲染table
+    this.displayholidayPeriodsList = holidayPeriodsList;
   }
 
   cancelEdit(id : number){

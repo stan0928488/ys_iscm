@@ -242,4 +242,17 @@ export class LABService {
     console.log(`Payload 參數 : ${payloadJson}`);
     return this.http.put<any>(endpointUrl, payload, this.httpOptions);
   }
+
+  // 刪除實驗室行事曆休息時段
+  deleteTblabm003(id:number, plantCode:string){
+    console.log('刪除實驗室行事曆休息時段');
+    const httpParams = new HttpParams()
+      .set('id', id)
+      .set('plantCode', plantCode);
+    let endpointUrl = `${this.APIURL}/LAB001/deleteTblabm003`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+    return this.http.delete<any>(endpointUrl, { params: httpParams });
+  }
+
 }
