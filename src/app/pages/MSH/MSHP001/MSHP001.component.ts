@@ -1181,14 +1181,14 @@ comitHandleSelectCarModal(){
           let dateTimeStrings = preGroupObject[key].toString().split(",");
           let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
-          let r = moment(dateObjects[0]).format('YYYY-MM-DD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYY-MM-DD') ;
+          let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'PST') {  // 若果是投產日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
           let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
-          let r = moment(dateObjects[0]).format('YYYY-MM-DD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYY-MM-DD') ;
+          let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'AUTO_FROZEN') {  // 若果是排程凍結 
@@ -1198,7 +1198,7 @@ comitHandleSelectCarModal(){
           let dateTimeStrings = preGroupObject[key].toString().split(",");
           let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
-          let r = moment(dateObjects[0]).format('YYYY-MM-DD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYY-MM-DD') ;
+          let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'STEEL_TYPE') {  // 若果是鋼種，逗號拼接
