@@ -85,9 +85,11 @@
                         </button>
                 </nz-card>
             </div>
+
+            <nz-divider nzType="vertical" class="custom-divider"></nz-divider>
             
             <div class="rightDiv">
-                <nz-card style="width:100%; margin-left: 20px;">
+                <nz-card style="width:100%;">
                     <nz-calendar 
                         [nzFullscreen]="true"
                         [(ngModel)]="calendarSelectedDate" 
@@ -127,7 +129,7 @@
     (nzOnOk)="cancelHolidayPeriods()"
     (nzOnCancel)="cancelHolidayPeriods()">
 
-    <ng-template #repareTitle>{{ holidayDateShowInModalTitle }}&nbsp;&nbsp;-&nbsp;&nbsp;休息時段清單</ng-template>
+    <ng-template #repareTitle>{{ holidayDateShowInModalTitle }}&nbsp;&nbsp;-&nbsp;&nbsp;休假時段列表</ng-template>
     <ng-template #content>
 
         <nz-table 

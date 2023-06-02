@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 import { NzCalendarMode } from 'ng-zorro-antd/calendar';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -66,6 +66,13 @@ class ExcelExport{
 })
 export class LABI003Component implements AfterViewInit {
 
+  leftDiv! : HTMLDivElement;
+  rightDiv! : HTMLDivElement;
+  divider! : any;
+  isStartDrag = false;
+  startX = 0;
+
+
   USERNAME;
   PLANT_CODE;
   isSpinning = false;
@@ -118,7 +125,8 @@ export class LABI003Component implements AfterViewInit {
   // 當月所有休息時段資料
   allHolidayPeriodsListByMonth : ExcelExport[] = [];
 
-  constructor(private Modal : NzModalService,
+  constructor(private elementRef : ElementRef,
+              private Modal : NzModalService,
               private LABService : LABService,
               private cookieService: CookieService,
               private message: NzMessageService,
@@ -132,8 +140,48 @@ export class LABI003Component implements AfterViewInit {
 
 
   ngAfterViewInit(): void {
+    this.divider = this.elementRef.nativeElement.querySelector('.custom-divider') as any;
+    this.leftDiv = this.elementRef.nativeElement.querySelector('.leftDiv') as HTMLDivElement;
+    this.rightDiv = this.elementRef.nativeElement.querySelector('.rightDiv') as HTMLDivElement;
+    this.divider.addEventListener('mousedown', this.startDrag);
+    document.addEventListener('mousemove', this.dragHandler);
+    document.addEventListener('mouseup', this.stopDrag);
+    document.addEventListener('mouseleave', this.stopDrag);
+
     this.inputExcelFile = this.renderer.selectRootElement('#importExcelFile');
     this.getHolidayList();
+  }
+
+  startDrag = (event: MouseEvent): void =>{ 
+    this.isStartDrag = true;
+    this.startX = event.pageX;
+  }
+
+  dragHandler = (event : MouseEvent) : void => {
+    if(!this.isStartDrag) return;
+
+    event.preventDefault();
+
+    let dividerRect = this.divider.getBoundingClientRect();
+    let distanceMoved = this.startX - event.pageX;
+    this.startX = event.pageX;
+
+    // 調整左邊div的寬度
+    let leftDivRect = this.leftDiv.getBoundingClientRect();
+    this.leftDiv.style.width = (leftDivRect.width - distanceMoved) + 'px';
+  }
+
+  stopDrag = (event : Event) : void => {
+    if(this.isStartDrag){
+      this.isStartDrag = false;
+    }
+  }
+
+
+  getWidthNum(widthStr : string){
+    const matches = widthStr.match(/\d+/);
+    const widthNumber = matches ? parseInt(matches[0], 10) : 0;
+    return widthNumber;
   }
 
   getHolidayList() : void {

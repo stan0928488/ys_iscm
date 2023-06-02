@@ -155,6 +155,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '允收截止日' ,field: 'dlvyDate' , filter: false,width: 170},
     { headerName:'現場取樣時間',field: 'sampleDate' , filter: false,width: 170 },
     { headerName:'實驗室收樣時間', field:'confirmDate', filter:false, width:170},
+    { headerName:'預計實驗室收樣時間', field:'planConfirmDate', filter:false, width:170},
     { headerName: '現況訂單' ,field: 'saleOrder' , filter: false,width: 100 },
     { headerName: '現況訂單項次' ,field: 'saleItem' , filter: false,width: 120 },
     { headerName: '現況mic_no' ,field: 'micNo' , filter: false,width: 100 },
@@ -188,6 +189,7 @@ export class LABP100Component implements AfterViewInit {
     { headerName: '鋼種' ,field: 'gradeNo' , filter: false,width: 100 },
     { headerName: '現場取樣時間' ,field: 'sampleDate' , filter: false,width: 170 },
     { headerName:'實驗室收樣時間', field:'confirmDate', filter:false, width:170},
+    { headerName:'預計實驗室收樣時間', field:'planConfirmDate', filter:false, width:170},
     { headerName: '實驗天數' ,field: 'experimentDays' , filter: false,width: 100 }
   ];
 
@@ -435,11 +437,15 @@ export class LABP100Component implements AfterViewInit {
         temp.forEach(element => {
           let sampleDate = _.get(element, "sampleDate");
           let confirmDate = _.get(element, "confirmDate");
-  
+          let planConfirmDate = _.get(element, "planConfirmDate");
+
           const sampleDateStr = this.component.dateFormat(sampleDate, 1);
           const confirmDateStr = this.component.dateFormat(confirmDate, 1);
+          const planConfirmDateStr = this.component.dateFormat(planConfirmDate, 1);
+
           _.set(element, "sampleDate", sampleDateStr);
-          _.set(element, "confirmDate", confirmDateStr);        
+          _.set(element, "confirmDate", confirmDateStr);
+          _.set(element, "planConfirmDate", planConfirmDateStr);        
         });
         
         this.rowDataTab2 = temp;
@@ -473,6 +479,7 @@ export class LABP100Component implements AfterViewInit {
           let sampleDateCreate = _.get(element, "sampleDateCreate");
           let experimentDoneDate = _.get(element, "experimentDoneDate");
           let confirmDate = _.get(element, "confirmDate");
+          let planConfirmDate = _.get(element, "planConfirmDate");
 
           // if(!_.isEmpty(String(dateDeliveryPp)) && dateRegex.test(String(dateDeliveryPp))){
           const sampleDateStr = this.component.dateFormat(sampleDate, 1);
@@ -481,6 +488,7 @@ export class LABP100Component implements AfterViewInit {
           const sampleDateCreateStr = moment(sampleDateCreate, 'YYYY-MM-DD HH').format('YYYY-MM-DD HH');
           const experimentDoneDateStr = this.component.dateFormat(experimentDoneDate, 1);
           const confirmDateStr = this.component.dateFormat(confirmDate, 1);
+          const planConfirmDateStr = this.component.dateFormat(planConfirmDate, 1);
 
           _.set(element, "sampleDate", sampleDateStr);
           _.set(element, "dateDeliveryPp", dateDeliveryPpStr);
@@ -488,6 +496,8 @@ export class LABP100Component implements AfterViewInit {
           _.set(element, "sampleDateCreate", sampleDateCreateStr);
           _.set(element, "experimentDoneDate", experimentDoneDateStr);
           _.set(element, "confirmDate", confirmDateStr);
+          _.set(element, "confirmDate", confirmDateStr);
+          _.set(element, "planConfirmDate", planConfirmDateStr);
           // }          
         });
         this.rowDataTab1 = temp;          
