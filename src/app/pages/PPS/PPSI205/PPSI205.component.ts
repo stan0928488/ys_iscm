@@ -92,7 +92,15 @@ export class PPSI205Component implements AfterViewInit {
       console.log("getTbppsm101List success");
       this.tbppsm101List = res;
       console.log(this.tbppsm101List)
-
+      const licss = document.getElementById('eeli');
+        if (licss != null) {
+          licss.style.backgroundColor = '#E4E3E3';
+        }
+        const acss = document.getElementById('eea');
+        if (acss != null) {
+          acss.style.cssText = "color: blue; font-weight:bold;";
+        }
+        document.getElementById('number').innerHTML = 'PPSI205';
       myObj.loading = false;
     });
   }

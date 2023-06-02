@@ -84,7 +84,15 @@ export class PPSI123Component implements AfterViewInit {
     this.PPSService.getPPSINP20List().subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP20List_tmp = res;
-
+      const licss = document.getElementById('ddli');
+        if (licss != null) {
+          licss.style.backgroundColor = '#E4E3E3';
+        }
+        const acss = document.getElementById('dda');
+        if (acss != null) {
+          acss.style.cssText = "color: blue; font-weight:bold;";
+        }
+        document.getElementById('number').innerHTML = 'PPSI123';
       const data = [];
       for (let i = 0; i < this.PPSINP20List_tmp.length ; i++) {
         data.push({

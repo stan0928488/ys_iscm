@@ -101,7 +101,15 @@ export class PPSI122Component implements AfterViewInit {
     this.PPSService.getPPSINP10List().subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP10List_tmp = res;
-
+      const licss = document.getElementById('ccli');
+        if (licss != null) {
+          licss.style.backgroundColor = '#E4E3E3';
+        }
+        const acss = document.getElementById('cca');
+        if (acss != null) {
+          acss.style.cssText = "color: blue; font-weight:bold;";
+        }
+        document.getElementById('number').innerHTML = 'PPSI122';
       const data = [];
       for (let i = 0; i < this.PPSINP10List_tmp.length ; i++) {
         data.push({

@@ -105,6 +105,15 @@ export class PPSI120Component implements AfterViewInit {
     let myObj = this;
     this.PPSService.getPPSINP09List().subscribe(res => {
       console.log("getFCPTB26List success");
+      const licss = document.getElementById('aali');
+        if (licss != null) {
+          licss.style.backgroundColor = '#E4E3E3';
+        }
+        const acss = document.getElementById('aaa');
+        if (acss != null) {
+          acss.style.cssText = "color: blue; font-weight:bold;";
+        }
+        document.getElementById('number').innerHTML = 'PPSI120';
       this.PPSINP09List_tmp = res;
 
       console.log("OP_CODE", this.PPSINP09List_tmp[0].OP_CODE);

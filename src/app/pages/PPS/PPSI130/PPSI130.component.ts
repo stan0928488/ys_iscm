@@ -193,6 +193,15 @@ export class PPSI130Component implements AfterViewInit {
     return new Promise<any>(function(resolve, reject){
       myThis.PPSService.listTbppsm014DataByPagination(myThis.currentPageIndex, myThis.pageSize).subscribe(response => {
         const resData = {response : response, isSearch : false}
+        const licss = document.getElementById('ffli');
+        if (licss != null) {
+          licss.style.backgroundColor = '#E4E3E3';
+        }
+        const acss = document.getElementById('ffa');
+        if (acss != null) {
+          acss.style.cssText = "color: blue; font-weight:bold;";
+        }
+        document.getElementById('number').innerHTML = 'PPSI130';
         resolve(resData);
       }, error =>{
         const errorMsg = JSON.stringify(error["error"]);
