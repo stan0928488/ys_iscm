@@ -1014,7 +1014,7 @@ comitHandleSelectCarModal(){
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
       //遍歷出每一筆數據按照分群結果拼接,逗號隔開
-      //講分群欄位的內容進行拼接
+      //將分群欄位的內容進行拼接 以判斷分群界限
       let currentGroupString = ""
       for(let i = 0 ; i < this.groupArray.length ; i ++) {
         let key = this.groupArray[i]
@@ -1041,9 +1041,19 @@ comitHandleSelectCarModal(){
               if(this.arrayContainStr(this.groupArray,key) === true) {
               //  console.log("分群欄位：" + key + ":" + preGroupObject[key]) ;
               } else {
+                  // 將所有的分群進行拼接，逗號隔開
+                  if(item[key] !== null) {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
+                    preGroupObject[key] = newStr
+                  } else {
+                    preGroupObject[key] = preGroupObject[key]
+                  }
+                  
+                 /** ========== 舊算法 */
                // console.log("this.columKeyType[key]:" +this.columKeyType[key])
                 //如果不是分組欄位，數字加和，字符串拼接
-                if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
+                //如果不是數字
+                /*if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
                   if(key === 'sortId') {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
@@ -1055,19 +1065,8 @@ comitHandleSelectCarModal(){
                     let newStr =  item[key] ;
                       preGroupObject[key] = newStr
                   }
-                 
-                 /*
-                  if(item[key] !== null) {
-                    let newStr = preGroupObject[key] + ',' + item[key] ;
-                    preGroupObject[key] = newStr
-                  } else {
-                    preGroupObject[key] = preGroupObject[key]
-                  }
-                  */
-                 
-               //   console.log("非分群 非數字：" + key + ":" + newStr) ;
-                } else {
-               //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
+                } else { // 如果是數子
+                  //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
                   //preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2)
                   preGroupObject[key] +=  item[key];  
                    //結束時間顯示
@@ -1076,7 +1075,7 @@ comitHandleSelectCarModal(){
                   }
                  
                 }
-
+              /** ========== 舊算法 */
               }
             })
             //如果跟上一條數據相等
@@ -1111,8 +1110,122 @@ comitHandleSelectCarModal(){
   // console.log("寫入數據分群：" + JSON.stringify(preGroupObject) )
   Object.keys(preGroupObject).forEach((key)=>{
     //处理不是id的栏位
-    if(key !== 'sortId') {
+    if(key !== 'sortId') { 
+      if(preGroupObject[key] !== null) {
+        // 開始時間取第一筆
+        if(key === 'START_DATE_C') {
+         // preGroupObject[key] = ""
+        let  startDateArray =   preGroupObject[key].toString().split(',')[0]
+        preGroupObject[key] = startDateArray
+        } else if(key === 'END_DATE_C'){ // 結束時間取左後一筆
+          let endDateArrayLen = preGroupObject[key].toString().split(',').length ;
+          let  endDateArray =   preGroupObject[key].toString().split(',')[endDateArrayLen - 1]
+          preGroupObject[key] = endDateArray
+         // preGroupObject[key] = ""
+        } else if( key === 'NEXT_SCH_SHOP_CODE') {  // 若果是下站別 逗號隔開 去重復
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+
+        }else if( key === 'PLAN_WEIGHT_I') {  // 若果是計劃重量 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }else if( key === 'OUTPUT_SHAPE') {  // 若果是產出形態 逗號隔開 去重復
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+
+        }else if( key === 'TC_TEMPERATURE') {  // 若果是TC_溫度 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+
+        }else if( key === 'TC_FREQUENCE') {  // 若果是TC_頻率 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }else if( key === 'BA1_TEMPERATURE') {  // 若果是BA_溫度 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }else if( key === 'INPUT_DIA') {  // 若果是投入尺寸 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        } else if( key === 'OUT_DIA') {  // 若果是產出尺寸 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'OP_CODE') {  // 若果是作業代碼 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'DATE_DELIVERY_PP') {  // 若果是交期 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'PST') {  // 若果是投產日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'AUTO_FROZEN') {  // 若果是排程凍結 
+
+        }  
+        else if( key === 'DATE_PLAN_IN_STORAGE') {  // 若果是允收截止日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'STEEL_TYPE') {  // 若果是鋼種，逗號拼接
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+        }  
+        else {
+         // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let filteredArr = arr.filter((item) => item !== "null"); // 过滤掉数组中的 null 元素
+          preGroupObject[key] = filteredArr[0]
+        }
+      } else {
+       // 當前值為空
+        if(key === 'START_DATE_C' || key === 'END_DATE_C') {
+          preGroupObject[key] = "" 
+        } else {
+          let newStr = preGroupObject[key]//.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
+      }
+
+
+      /*** ======舊算法 */
     //当前栏位不是数字
+    /*
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
       //如果当前值不为空
       if(preGroupObject[key] !== null) {
@@ -1145,6 +1258,7 @@ comitHandleSelectCarModal(){
         preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2);
       }  
     }
+    */
   }
   })
   return preGroupObject ;
