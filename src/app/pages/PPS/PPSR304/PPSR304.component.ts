@@ -115,11 +115,18 @@ export class PPSR304Component implements AfterViewInit {
       };
   
       for(var i in this.R304DataList) {
+        
         var temp = {}
         for(var j in this.columnDefsTab){
           
           var field = this.columnDefsTab[j]['field']
-          temp[field] = this.R304DataList[i][this.columnDefsTab[j]['field']];
+
+          if( this.R304DataList[i][this.columnDefsTab[j]['field']] != undefined &&
+          field == 'datePlanInStorage' || field == 'dateDeliveryPp')
+            temp[field] = moment(this.R304DataList[i][this.columnDefsTab[j]['field']])
+                          .format('YYYY-MM-DD');
+          else
+            temp[field] = this.R304DataList[i][this.columnDefsTab[j]['field']];
           
           
         }
@@ -216,8 +223,8 @@ export class PPSR304Component implements AfterViewInit {
           estimateWeight: _data[i]['預估出貨量'],
           profieldGoal : _data[i]['異型棒目標'],
           bigStickGoal :_data[i]['大棒目標'],
-          datePlanInStorage :moment((_data[i]['允收截止日'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
-          dateDeliveryPp :moment((_data[i]['可接受交期'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
+          datePlanInStorage :_data[i]['允收截止日'],
+          dateDeliveryPp :_data[i]['可接受交期'],
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
@@ -266,7 +273,7 @@ export class PPSR304Component implements AfterViewInit {
   }
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
-
+    this.importdata_repeat = [];
   }
 
      // excel檔名
