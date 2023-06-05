@@ -177,13 +177,6 @@ export class LABI003Component implements AfterViewInit {
     }
   }
 
-
-  getWidthNum(widthStr : string){
-    const matches = widthStr.match(/\d+/);
-    const widthNumber = matches ? parseInt(matches[0], 10) : 0;
-    return widthNumber;
-  }
-
   getHolidayList() : void {
     this.isSpinning = true;
       new Promise<boolean>((resolve, reject) => {
@@ -193,7 +186,7 @@ export class LABI003Component implements AfterViewInit {
           next : (res) =>{
             if(res.code === 200){
               if(_.keys(res.data).length <= 0){
-                // 清空上一個月份查詢到的的資料
+                // 清空上一次查詢到的的資料
                 this.allHolidayPeriodsListByMonth = [];
                 this.editCache = {};
                 this.listHolidayMap.clear();
@@ -1038,11 +1031,11 @@ disabledSeconds(id : number) {
   }
 
   verifyAndAdjustHolidayPeriods(inputItem : any, rowNumberInExcel : number, headerName : string) : boolean{
-    const dateRegex = /^\d{4}[-]\d{1,2}[-]\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}$/;
+    
     let inputDateTime = inputItem[headerName];
 
     if(typeof inputDateTime === 'string'){
-
+      const dateRegex = /^\d{4}[-]\d{1,2}[-]\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}$|^\d{4}[\/]\d{1,2}[\/]\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}$/;
       // 校驗格式是否正確
       if(!dateRegex.test(inputDateTime)){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」格式錯誤，請修正。<br>日期格式必須為 YYYY-MM-DD HH:mm:ss <br> 例如 ${moment().format('YYYY-MM-DD HH:mm:ss')}`);
@@ -1052,7 +1045,7 @@ disabledSeconds(id : number) {
       // 校驗日期是否合法
       const isValid = moment(inputDateTime, 'YYYY-MM-DD HH:mm:ss', false).isValid();
       if(!isValid){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」日期時間數字不合法，請修正。`);
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${headerName}」日期時間數字範圍不合法，請修正。`);
         return false;
       }
 
