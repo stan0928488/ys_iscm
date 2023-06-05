@@ -345,11 +345,23 @@
                       異常MO表
                     </a>
                   </li>
-                  <li nz-menu-item>
-                    <a [routerLink]="['/FCPshipRepo/R304']">
-                      出貨計畫表
-                    </a>
+
+                  
+                  <li nz-submenu nzTitle="出貨計畫表">
+                    <ul>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/FCPshipRepo/R304']">
+                          報表維護
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/FCPshipRepo/R308']">
+                          報表檢視
+                        </a>
+                      </li>
+                    </ul>
                   </li>
+
                 </ul>
               </li>
                   
