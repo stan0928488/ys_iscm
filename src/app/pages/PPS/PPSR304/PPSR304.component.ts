@@ -8,6 +8,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
+import { AppComponent } from "src/app/app.component";
+import { DatePipe } from '@angular/common';
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 
 interface data {
@@ -70,6 +72,7 @@ export class PPSR304Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private component: AppComponent
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -208,16 +211,34 @@ export class PPSR304Component implements AfterViewInit {
         this.clearFile();
         return;
       }
-      else{
+      else {
+        const datePipe = new DatePipe('en-US');
+
         this.importdata_repeat.push(allData);
+        let datePlanInStorage;
+        let dateDeliveryPp;
+        let planInStorage = _data[i]['允收截止日'];
+        let deliveryPp = _data[i]['可接受交期'];
+
+        if (planInStorage === undefined || planInStorage === 'Invalid date') {
+          datePlanInStorage = null;
+        } else {
+          datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+        }
+          
+        if (deliveryPp === undefined || deliveryPp === 'Invalid date') {
+          dateDeliveryPp = null;
+        } else {
+          dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+        }
         upload_data.push({
           plantCode:this.PLANT_CODE,
-          custAbbreviations: _data[i]['客戶簡稱'] ,
-          estimateWeight: _data[i]['預估出貨量'],
-          profieldGoal : _data[i]['異型棒目標'],
-          bigStickGoal :_data[i]['大棒目標'],
-          datePlanInStorage :moment((_data[i]['允收截止日'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
-          dateDeliveryPp :moment((_data[i]['可接受交期'] - 25568) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss'),
+          custAbbreviations: _data[i]['客戶簡稱'].toString(),
+          estimateWeight: parseInt(_data[i]['預估出貨量']),
+          profieldGoal : parseInt(_data[i]['異型棒目標']),
+          bigStickGoal :parseInt(_data[i]['大棒目標']),
+          datePlanInStorage : datePlanInStorage,
+          dateDeliveryPp :dateDeliveryPp,
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
@@ -269,17 +290,18 @@ export class PPSR304Component implements AfterViewInit {
 
   }
 
-     // excel檔名
-     incomingfile(event) {
-      this.file = event.target.files[0]; 
-      console.log("incomingfile e : " + this.file);
-      let lastname = this.file.name.split('.').pop();
-      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
-        this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-        this.clearFile();
-        return;
-      }
+  // excel檔名
+  incomingfile(event) {
+    this.file = event.target.files[0]; 
+    console.log("incomingfile e : " + this.file);
+    let lastname = this.file.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
     }
+  }
+
 
   sucessMSG(_title, _plan): void {
 		this.Modal.success({
@@ -294,4 +316,8 @@ export class PPSR304Component implements AfterViewInit {
 			nzContent: `${_context}`
 		});
 	}
+
+
+
+
 }
