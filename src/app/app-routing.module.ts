@@ -229,7 +229,9 @@ const routes: Routes = [
       { path: "R304", component: PPSR304Component },
       { path: "R305", component: PPSR305Component },
       { path: "R306", component: PPSR306Component },
-      { path: "R307", component: PPSR307Component }
+      { path: "R307", component: PPSR307Component },
+      { path: "R308" }  //component: PPSR308Component
+
     ],
     canActivate: [AuthGuard]
   },
