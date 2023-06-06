@@ -33,6 +33,8 @@
     <label nz-radio-button nzValue="Z">周</label>
   </nz-radio-group>
 
+ 
+
 <nz-select
       nzDisabled
       *ngIf="showSelectSplitNum"
@@ -57,10 +59,36 @@
       <nz-option *ngFor="let option of optionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
     </nz-select>
 
-  <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
+    
+    <nz-radio-group style="margin-bottom: 8px;" 
+    (ngModelChange)="onChangekindType($event)"
+    [(ngModel)]="searchData.kindType"
+    [nzButtonStyle]="'solid'">
+      <label nz-radio-button nzDisabled="true">產品別:</label>
+      <label nz-radio-button>ALL</label>
+      <label nz-radio-button nzValue="PL">PL</label>
+      <label nz-radio-button nzValue="BTB">BTB</label>
+      <label nz-radio-button nzValue="CTB">CTB</label>
+      <br>
+      <nz-radio-group style="margin-bottom: 8px;" 
+      [(ngModel)]="searchData.specialBar"
+      [nzButtonStyle]="'solid'">
+        <label nz-radio-button nzDisabled="true">高附加:</label>
+        <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE490">異型</label>
+        <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE49041TO67">大棒</label>
+      </nz-radio-group>
+    </nz-radio-group>
+
+    <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
     <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
 
+    <div>
+    
+      
+      
     </div>
+
+  </div>
      <!-- 内容区  -->
      <div  *ngIf="loaded">
      <div style="text-align: center;"><h4>訂單交期彙總 (單位：MT)</h4> </div>
