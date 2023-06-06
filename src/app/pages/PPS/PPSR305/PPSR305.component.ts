@@ -118,12 +118,15 @@ export class PPSR305Component implements AfterViewInit {
       };
   
       for(var i in this.R305DataList) {
+        
         var temp = {}
-        for(var j in head){
+        for(var j in this.columnDefsTab){
           
-          var field = head[j]
-          temp[field] = this.R305DataList[i][field];
-          
+          if(this.columnDefsTab[j]['hide'] == undefined || this.columnDefsTab[j]['hide'] != true){
+            var field = this.columnDefsTab[j]['field'];
+            console.log(field)
+            temp[field] = this.R305DataList[i][field];
+          }
           
         }
         console.log(temp)
