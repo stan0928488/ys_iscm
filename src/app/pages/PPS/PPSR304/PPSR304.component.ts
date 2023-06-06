@@ -118,11 +118,18 @@ export class PPSR304Component implements AfterViewInit {
       };
   
       for(var i in this.R304DataList) {
+        
         var temp = {}
         for(var j in this.columnDefsTab){
           
           var field = this.columnDefsTab[j]['field']
-          temp[field] = this.R304DataList[i][this.columnDefsTab[j]['field']];
+
+          if( this.R304DataList[i][this.columnDefsTab[j]['field']] != undefined &&
+          field == 'datePlanInStorage' || field == 'dateDeliveryPp')
+            temp[field] = moment(this.R304DataList[i][this.columnDefsTab[j]['field']])
+                          .format('YYYY-MM-DD');
+          else
+            temp[field] = this.R304DataList[i][this.columnDefsTab[j]['field']];
           
           
         }
@@ -287,7 +294,7 @@ export class PPSR304Component implements AfterViewInit {
   }
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
-
+    this.importdata_repeat = [];
   }
 
   // excel檔名
