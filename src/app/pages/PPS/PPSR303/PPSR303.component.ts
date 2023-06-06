@@ -364,10 +364,7 @@ export class PPSR303Component implements OnInit {
 
         this.rowDataTab2 = result.data;
 
-        this.rowDataTab2.forEach(data=>{
-          if(data['violation'] == null && data['resetViolation'] !=null)
-            data['violation'] = e.data.violation;
-        })
+        
         this.displayTable2Data = this.rowDataTab2;
         this.isLoading = false;
         this.isShowTable2 = true;
