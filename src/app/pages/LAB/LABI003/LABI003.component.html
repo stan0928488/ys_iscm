@@ -1,0 +1,225 @@
+<nz-content style="margin:0 16px;">
+    <nz-breadcrumb style="margin:16px 0;">
+      <nz-breadcrumb-item>實驗室工時</nz-breadcrumb-item>
+      <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+      <nz-breadcrumb-item>實驗室行事曆</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning" >
+        <div class="headFlex">
+            <!-- 匯入EXCEL -->
+            <div style="margin-left:150px;">
+                <input style="width:180px;" type="file" name="file" id="importExcelFile" required (change)="incomingFile($event)"
+                accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                
+                <button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color:#4CAF50; border:2px none;"
+                nz-button
+                nzType="primary"
+                (click)="handleImport()">
+                    <span nz-icon nzType="upload" nzTheme="outline"></span>EXCEL匯入
+                </button>
+            </div>
+
+            <!-- 下載當月資料(EXCEL匯出) -->
+            <button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px; background-color:#4CAF50; border:2px none;"
+                nz-button
+                nzType="primary"
+                (click)="exportExcel()">
+                <span nz-icon nzType="download" nzTheme="outline"></span>下載當月資料
+            </button>
+        </div>
+
+        <div class="bodyFlex">
+
+            <div class="leftDiv">
+
+                <nz-card style="width:100%;" nzTitle="已選中日期">
+                    <label 
+                        *ngFor="let item of pickDates; let _index = index;">
+                        <nz-tag 
+                            [nzColor]="'volcano'" 
+                            nzMode="closeable" 
+                            (nzOnClose)="unPickDates(_index)">
+                            {{item}}
+                        </nz-tag>
+                    </label>  
+                
+                </nz-card>
+
+                <nz-card style="width:100%; margin-top: 20px;" nzTitle="實驗室休假時間設定">
+                        <nz-time-picker 
+                            [(ngModel)]="holidayTimeStart" 
+                            nzPlaceHolder="休假時間(起)"
+                            [nzNowText]="'Now'"
+                            [nzOkText]="'確認'"
+                            (ngModelChange)="holidayTimeStartChange(null)"
+                            [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                        </nz-time-picker>
+
+                        <span>&nbsp;&nbsp;~&nbsp;&nbsp;</span>
+
+                        <nz-time-picker 
+                            nz-tooltip 
+                            [nzTooltipTitle]="holidayTimeEndTooltipTitle"
+                            [(ngModel)]="holidayTimeEnd" 
+                            nzPlaceHolder="休假時間(迄)"
+                            [nzNowText]="'Now'"
+                            [nzOkText]="'確認'"
+                            [nzDisabled]="disabledHolidayTimeEnd"
+                            [nzDisabledHours]="disabledHours(null)"
+                            [nzDisabledMinutes]="disabledMinutes(null)"
+                            [nzDisabledSeconds]="disabledSeconds(null)"
+                            [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                        </nz-time-picker>
+
+                        <button
+                            style="margin-top:20px; float:right;"
+                            nz-button
+                            nzType="primary"
+                            [nzSize]="'default'"
+                            (click)="batchAddPeriods()">
+                            <span nz-icon nzType="save" nzTheme="outline"></span>
+                                確認
+                        </button>
+                </nz-card>
+            </div>
+
+            <nz-divider nzType="vertical" class="custom-divider"></nz-divider>
+            
+            <div class="rightDiv">
+                <nz-card style="width:100%;">
+                    <nz-calendar 
+                        [nzFullscreen]="true"
+                        [(ngModel)]="calendarSelectedDate" 
+                        [(nzMode)]="calendarMode"
+                        (nzSelectChange)="calendarSelected($event)">
+                        <ul *nzDateCell="let date">
+                            <ng-container *ngIf="listHolidayMap.get(date.toLocaleDateString('en-CA')) !== undefined">
+                                <nz-tag 
+                                    nzMode="checkable"
+                                    [nzColor]="'gold'"
+                                    (click)="selectedHolidayTag($event, date.toLocaleDateString('en-CA'))">
+                                休假</nz-tag>
+                            </ng-container>
+                        </ul>
+                    </nz-calendar>
+                </nz-card>
+            </div>
+
+        </div>
+
+    </nz-spin>
+
+
+</nz-content>
+
+
+<!-- 顯示每天設定的休息時段彈出框 -->
+<nz-modal
+    [(nzVisible)]="isVisibleHolidayPeriods"
+    [nzWidth]="850" 
+    [nzTitle]="repareTitle" 
+    [nzContent]="content" 
+    [nzMaskClosable]="false"
+    [nzCancelText]="null"
+    [nzOkText]="'關閉'"
+    [nzOkLoading]="isOkLoading"
+    (nzOnOk)="cancelHolidayPeriods()"
+    (nzOnCancel)="cancelHolidayPeriods()">
+
+    <ng-template #repareTitle>{{ holidayDateShowInModalTitle }}&nbsp;&nbsp;-&nbsp;&nbsp;休假時段列表</ng-template>
+    <ng-template #content>
+
+        <nz-table 
+            #holidayPeriodsRowTable nzBordered 
+            [nzData]="displayholidayPeriodsList" 
+            [nzPageSize]="20" 
+            [nzScroll]="{ y: '1200px'}" 
+            style="margin-top: 20px; margin-bottom: 20px; border:3px #cccccc solid;" 
+            cellpadding="10" 
+            border='1'>
+            <thead>
+                <tr>
+                    <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>編號</b></font>
+                      </th>
+                      <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>休假時間(起)</b></font>
+                      </th>
+                      <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>休假時間(迄)</b></font>
+                      </th>
+                      <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let data of holidayPeriodsRowTable.data; let i = index">
+                    <ng-container *ngIf="!editCache[data.id].isEdit; else editTemplate">
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.rowNumber }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.startTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                        <td style="text-align:center; padding: 5px; height: 60px;">{{ data.endTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a id="revise" (click)="editRowData(data.id)">
+                              <span nz-icon nzType="edit" nzTheme="outline"></span>
+                              修改
+                            </a>|
+                            <a id="delete" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRowData(data.id)">
+                              <span nz-icon nzType="delete" nzTheme="outline"></span>
+                              刪除
+                            </a>
+                          </td>
+                    </ng-container>
+
+                    <ng-template #editTemplate>
+
+                        <td nzWidth="3%" style="text-align:center; padding: 5px; height: 60px;">
+                            {{ data.rowNumber }}
+                        </td>
+
+                        <td style="text-align:center;">
+                            <nz-time-picker 
+                                [(ngModel)]="editCache[data.id].data.startTime"
+                                nzPlaceHolder="休假時間(起)"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                (ngModelChange)="holidayTimeStartChange(data.id)">
+                            </nz-time-picker>
+                        </td>
+
+                        <td style="text-align:center;">
+                            <nz-time-picker 
+                                nz-tooltip 
+                                [nzTooltipTitle]="editCache[data.id].data.holidayTimeEndTooltipTitle"
+                                [(ngModel)]="editCache[data.id].data.endTime" 
+                                nzPlaceHolder="休假時間(迄)"
+                                [nzNowText]="'Now'"
+                                [nzOkText]="'確認'"
+                                [nzDisabled]="editCache[data.id].data.disabledHolidayTimeEnd"
+                                [nzDisabledHours]="disabledHours(data.id)"
+                                [nzDisabledMinutes]="disabledMinutes(data.id)"
+                                [nzDisabledSeconds]="disabledSeconds(data.id)"
+                                (ngModelChange)="holidayTimeEndChange(data.id)">
+                            </nz-time-picker>
+                        </td>
+                        
+                        <td style="text-align:center; padding: 0px; height: 10px; width: 100px;">
+                            <a nz-popconfirm nzPopconfirmTitle="確定修改嗎?" (nzOnConfirm)="saveEdit(data.id)">
+                              <span nz-icon nzType="save" nzTheme="outline"></span>
+                              確認
+                            </a>|
+                            <a (click)="cancelEdit(data.id)">
+                              <span nz-icon nzType="close" nzTheme="outline"></span>
+                              取消
+                            </a>
+                          </td>
+
+                    </ng-template>
+                </tr>
+            </tbody>
+
+        </nz-table>
+    </ng-template>
+</nz-modal>

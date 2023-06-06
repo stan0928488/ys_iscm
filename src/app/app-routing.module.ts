@@ -79,6 +79,7 @@ import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
 import { MSHI003Component } from "./pages/MSH/MSHI003/MSHI003.component";
 import { MSHI003CanDeactivateGuard } from "./pages/MSH/MSHI003/MSHI003.can.deactivate.guard";
 import { LABI002Component } from "./pages/LAB/LABI002/LABI002.component";
+import { LABI003Component } from "./pages/LAB/LABI003/LABI003.component";
 
 const routes: Routes = [
   {
@@ -258,7 +259,8 @@ const routes: Routes = [
     children: [   
       { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
       { path: "I001", component: LABI001Component },
-      { path: "I002", component: LABI002Component } // 實驗室取樣時間設定
+      { path: "I002", component: LABI002Component }, // 實驗室取樣時間設定
+      { path: "I003", component: LABI003Component } // 實驗室行事曆
     ],
     canActivate: [AuthGuard]
   },
