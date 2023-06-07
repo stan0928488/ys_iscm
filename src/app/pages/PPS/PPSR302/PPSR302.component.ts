@@ -35,6 +35,7 @@ export class PPSR302Component implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.specialBarDisable = true;
     this.getVerList();
     this.getWeekData();
   }
@@ -112,14 +113,21 @@ export class PPSR302Component implements OnInit {
   firstModalListOfData = [] ; //
   testLength = [1,2,3,4,5,6,7,8,9,10]
   firstModalData = [] ;
+  searchData = {
+    kindType:"",
+    specialBar:"",
+    saleAreaGroup:""
+  }
   firstSearchParamete = {
     fcpVer: this.selectedVer.value,
     pointStatus:this.selectedVer.pointStatus,
     tableHeader:{},
     tableLeft:{},
     custAbbreviations:"",
-    saleOrder:""
+    saleOrder:"",
+    searchData:this.searchData
   }
+  specialBarDisable:boolean;
 
   // tslint:disable-next-line:no-any
   compareFn1 = (o1: any, o2: any) => (o1 && o2 ? o1.value === o2.value : o1 === o2);
@@ -186,9 +194,6 @@ export class PPSR302Component implements OnInit {
 
             rowData[dateList[i]] = dateTemp[i]
           }
-          rowData["weight"] = (rowData["weight"] != 0 ? rowData["weight"] / 1000 : 0)
-          this.secondModalData[i].weight  = (this.secondModalData[i].weight != 0 ? 
-            this.secondModalData[i].weight / 1000 : 0);
           this.secondModalExportList.push(rowData) ;
         }
 
@@ -352,7 +357,8 @@ export class PPSR302Component implements OnInit {
     let myObj = this ;
     let paramete = {
       fcpVer: this.selectedVer.value,
-      pointStatus:this.selectedVer.pointStatus
+      pointStatus:this.selectedVer.pointStatus,
+      searchData:this.searchData
     }
     myObj.getPPSService.getR302DelayDataList(paramete).subscribe(res => {
       this.delayModalLoading = false
@@ -515,7 +521,8 @@ export class PPSR302Component implements OnInit {
       days:this.selectedDayValue.value,
       weekDay:"0",
       tableHeaderList : this.tableHeaderList,
-      tableLeftList: this.tableSplitData
+      tableLeftList: this.tableSplitData,
+      searchData:this.searchData
     }
   myObj.getPPSService.getR302DataList(paramete).subscribe(res => {
     //console.log("comitData :" + JSON.stringify(res)) ;
@@ -779,6 +786,14 @@ this.firstModalTableAppendList = [] ;
       }
     }
     this.initOtherMonth() ;
+  }
+
+  onChangekindType(result:any): void {
+    if(result){
+      this.specialBarDisable = false;
+    }else{
+      this.specialBarDisable = true;
+    }
   }
 
 }
