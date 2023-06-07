@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, Renderer2, HostListener } from '@angular/core';
+import { async } from '@angular/core/testing';
+import { AfterViewInit, Component, Renderer2, HostListener, OnInit } from '@angular/core';
 import { MSHService } from 'src/app/services/MSH/MSH.service';
 import {NzModalService} from "ng-zorro-antd/modal";
 import {NzMessageService} from "ng-zorro-antd/message";
@@ -12,6 +13,8 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import { DataTransferService } from 'src/app/services/MSH/Data.transfer.service';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
+import { AdjShopCodeCellRendererComponent } from './AdjShopCodeCellRenderer.componet';
+import { AdjShopCodeCellSelectEditorComponent } from './adj-shop-code-cell-select-editor';
 
 class MSHI003Payload {
   shopCode : string[];
@@ -35,10 +38,12 @@ class MSHI003Payload {
   styleUrls: ['./MSHI003.component.css'],
   providers:[NzMessageService]
 })
-export class MSHI003Component implements AfterViewInit {
+export class MSHI003Component implements AfterViewInit{
   
   USERNAME;
   PLANTCODE;
+
+  gridApi : GridApi;
 
   isSpinning = false;
 
@@ -99,6 +104,7 @@ export class MSHI003Component implements AfterViewInit {
     },
     components: {
       primeDatePickerCellEditorComponent: PrimeDatePickerCellEditorComponent,
+      adjShopCodeCellSelectEditorComponent: AdjShopCodeCellSelectEditorComponent
     }
   };
 
@@ -153,7 +159,7 @@ export class MSHI003Component implements AfterViewInit {
       this.isSpinning = false;
     });
   }
-  
+
   ngAfterViewInit(): void {
     this.inputExcelFile = this.renderer.selectRootElement('#importExcelFile');
   }
@@ -166,8 +172,30 @@ export class MSHI003Component implements AfterViewInit {
     {headerName: '客戶', field: 'custAbbr', width: 100, filter: true},
     {headerName: '放行碼', field: 'procStatus', width: 100},
     {headerName: '現況尺寸', field: 'sfcDia', width: 100},
-    {headerName: '現況MIC', field: 'finalMicNo', width: 100},
+    {headerName: '現況流程', field: 'finalMicNo', width: 100},
     {headerName: '製程碼', field: 'processCode', width: 100},
+    {
+      headerName: '調整站別', 
+      field: 'adjShopCode', 
+      width: 120,
+      editable: true,
+      cellEditor: 'adjShopCodeCellSelectEditorComponent',
+      headerClass: 'header-editable-color',
+      cellClass: 'cell-editable-color',
+      cellRenderer: AdjShopCodeCellRendererComponent,
+    },
+    {
+      headerName: '調整流程', 
+      field: 'adjLineupProcess', 
+      width: 120,
+      headerClass: 'header-editable-color',
+      cellClass: 'cell-editable-color',
+    },
+    {
+      headerName: '過站狀態', 
+      field: 'overShopStatus', 
+      width: 120
+    },
     {
       headerName: 'EPST', 
       field: 'epst', 
@@ -226,9 +254,43 @@ export class MSHI003Component implements AfterViewInit {
     {headerName: '更新日期', field: 'dateUpdate', width: 180}
   ];
 
-  
+  // 設定調整站別的站別下拉選項
+  async setShopCodeCellEditorSelectValues() {
+    let colDefs : ColDef<any>[] = this.gridApi.getColumnDefs();
+    let shopCodeColumnIndex = colDefs.findIndex(item => item.field === 'adjShopCode');
+    await this.getShopCodeAsync().then(value => {
+      colDefs[shopCodeColumnIndex].cellEditorParams.values = value.data;
+      this.gridApi.setColumnDefs(colDefs);
+    });
+  }
+
+  async getShopCodeAsync() : Promise<any> {
+
+    if(_.isEmpty(this.shopCodeOfOption)){
+      this.isSpinning = true;
+      try{
+      const res = await this.mshService.getShopCodeList().toPromise();
+        if(res.code === 200){
+          return res;
+        }
+        else{
+          this.message.error('後台錯誤，獲取不到站別清單');
+        }
+      } catch (error) {
+        this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+
+      }
+      finally{
+        this.isSpinning = false;
+      }
+    }
+    else{
+      return this.shopCodeOfOption;
+    }
+  }
 
   getShopCodeList() : void {
+    
     this.shopCodeLoading = true;
     new Promise<boolean>((resolve, reject) => {
       this.mshService.getShopCodeList().subscribe(res => {
@@ -859,7 +921,8 @@ export class MSHI003Component implements AfterViewInit {
   }
 
   onGridReady(params: GridReadyEvent) {
-    //this.gridApi = params.api;
+    this.gridApi = params.api;
+    // this.setShopCodeCellEditorSelectValues();
     //gridApi.sizeColumnsToFit();
   }
 
