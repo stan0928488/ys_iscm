@@ -115,7 +115,8 @@ export class PPSR302Component implements OnInit {
   firstModalData = [] ;
   searchData = {
     kindType:"",
-    specialBar:""
+    specialBar:"",
+    saleAreaGroup:""
   }
   firstSearchParamete = {
     fcpVer: this.selectedVer.value,
