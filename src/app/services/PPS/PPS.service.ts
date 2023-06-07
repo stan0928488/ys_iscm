@@ -1059,6 +1059,13 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+    //getTbppsm113List getTbppsm113List
+    getTbppsm113List(_plantCode) {
+      let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
+      console.log(queryUrl);
+      return this.http.get(queryUrl);
+    }
+
   //upd102ListData 修改102List
   upd102ListData(obj) {
     const body = JSON.stringify(obj);
@@ -1067,7 +1074,13 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-
+  //upd113ListData 修改102List
+  upd113ListData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + "/FCP/I205/upd113ListData";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   //importI205Excel 優先順序表EXCEL匯入 1. 420/430尺寸  2.401COMPAIGN
   importI205Excel(_result) {
     const body = JSON.stringify(_result);
@@ -1652,9 +1665,9 @@ getEquipCodeList(_data){
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-  getR305DataList(){
+  getR305DataList(plantCode){
 
-    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List`;
+    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List/${plantCode}`;
     return this.http.get<any>(endpointUrl);
   }
 
