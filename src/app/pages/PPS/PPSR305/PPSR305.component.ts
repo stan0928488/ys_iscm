@@ -84,7 +84,7 @@ export class PPSR305Component implements AfterViewInit {
 
     let myObj = this ;
 
-    myObj.PPSService.getR305DataList().subscribe(res =>{
+    myObj.PPSService.getR305DataList(this.PLANT_CODE).subscribe(res =>{
 
       let result : any = res;
 
