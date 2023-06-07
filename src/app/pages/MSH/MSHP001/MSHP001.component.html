@@ -21,7 +21,7 @@
          
           <nz-date-picker style="margin-left: 20px;" [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
           <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" ></nz-date-picker>
-          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()">查詢</button>
+          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()" [nzLoading] = "isLoading">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
           <button style="margin-left: 20px;" nz-button nzType="primary"  *ngIf="selectEquipCode !== 'RF'"  (click)="handleExcelModelModal()">Excel模式</button>
 
@@ -56,8 +56,8 @@
             </div>
           </nz-checkbox-wrapper>
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF'" (click)="recoverDataBtn()">恢複數據</button>
-          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF'" (click)="dataSortedModal()">微調確認</button>
+          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
+          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
           <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
 
         </p>
@@ -129,7 +129,7 @@
     </div>
     <div *nzModalFooter>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
-      <!-- <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'BA1'"  (click)="handleChangeMachineModal()">更換機台</button> -->
+      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode !== 'RF'"  (click)="handleChangeMachineModal()">更換機台</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
@@ -329,15 +329,55 @@ nzWidth="300"
       [nzContent]="machineModalContent"
       [nzFooter]="machineModalFooter"
       (nzOnCancel)="handleMachineModal()"
+      nzWidth="500"
     >
       <ng-template #machineModalTitle>機台更換</ng-template>
 
       <ng-template #machineModalContent>
+        <nz-table #changeMachineTable  [nzData]="changeMachineModal.table.tbData" [nzFrontPagination]="false"  >
+          <thead>
+            <tr>
+              <th>選擇</th>
+              <th>MO</th>
+              <th>機台</th>
+              <th>替換機台 
+                <nz-radio-group [(ngModel)]="selectChangeEquipCode" nzButtonStyle="solid" (ngModelChange)="selectChangeEquipCodeFunc()">
+                  <ng-container *ngFor="let item of equipCodeChangeList" >
+                    <label [nzDisabled]="item.value === selectEquipCode ? true : false"  nz-radio-button [nzValue]="item.value"  >{{item.label}}</label>
+                  </ng-container>
+                </nz-radio-group>
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of changeMachineTable.data; let i = index">
+            <td> <label nz-checkbox [nzDisabled]="data.PST_MACHINE_NEW ==='' ? true : false "   [(ngModel)]="data.checked"  (ngModelChange)="handleSelectChangeMachine()">{{data.ID_NO}}</label>
+            </td>
+              <td>{{data.ID_NO}}</td>
+              <td>{{data.PST_MACHINE}}</td>
+              <ng-container  *ngIf="!data.isEdit ; else editChangeMachine">
+              <td>{{data.PST_MACHINE_NEW}}</td>
+              </ng-container>
+              <ng-template #editChangeMachine>
+                <td>  <input style="width:80px;"  nz-input [disabled]="true"  [(ngModel)]="data.PST_MACHINE_NEW" />
+                  <nz-radio-group style="margin-left:15px;" [(ngModel)]="data.PST_MACHINE_NEW" nzButtonStyle="solid" (ngModelChange)="selectChangeEquipCodeOptionFunc(i)">
+                    <ng-container *ngFor="let itemTemp of equipCodeChangeListOption" >
+                      <label   nz-radio-button [nzValue]="itemTemp.value"  >{{itemTemp.label}}</label>
+                    </ng-container>
+                  </nz-radio-group>
+                </td>
+              </ng-template>
+              <td><a (click)="startEdit(i)">{{data.isEdit ? 'Save' :'Edit'}}</a></td>
+            </tr>
+          </tbody>
+        </nz-table>
+
       
       </ng-template>
 
       <ng-template #machineModalFooter>
-        <span>...</span>
+        <span></span>
         <button nz-button nzType="default" (click)="handleMachineModal()">關閉</button>
         <button nz-button nzType="primary" (click)="comitHandleMachineModal()" [nzLoading]="changeMachineModal.isConfirmLoading">存檔</button>
       </ng-template>
