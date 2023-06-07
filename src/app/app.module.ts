@@ -103,6 +103,8 @@ import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-da
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { PPSI131Component } from './pages/PPS/PPSI131/PPSI131.component';
 import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
+import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
+import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
 
 registerLocaleData(zh);
 
@@ -187,6 +189,8 @@ registerLocaleData(zh);
     LABI002Component,
     PPSI131Component,
     NonPpsiComponent,
+    MSHI004Component,
+    PrimeDatePickerCellEditor,
    ],
   imports: [
     BrowserModule,

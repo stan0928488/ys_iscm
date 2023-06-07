@@ -1,0 +1,29 @@
+<nz-content style="margin: 0 16px">
+  <nz-breadcrumb style="margin: 16px 0">
+    <nz-breadcrumb-item>工廠排程</nz-breadcrumb-item>
+    <nz-breadcrumb-item>排序設定</nz-breadcrumb-item>
+    <nz-breadcrumb-item>啟動發佈模式</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
+    <ag-grid-angular
+      style="width: 100%; height: 700px; margin-bottom: 200px; margin-top: 50px"
+      class="ag-theme-alpine"
+      [rowData]="MSHI004DataList"
+      [columnDefs]="columnDefs"
+      [gridOptions]="gridOptions"
+      [pagination]="true"
+      [paginationPageSize]="20"
+    >
+    </ag-grid-angular>
+
+    <button
+      style="margin-left: 20px"
+      (click)="confirm()"
+      nz-button
+      nzType="primary"
+    >
+      <span nz-icon nzType="check-circle" nzTheme="outline"></span>確認
+    </button>
+  </nz-spin>
+</nz-content>

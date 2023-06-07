@@ -78,6 +78,7 @@ import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
 import { MSHI003Component } from "./pages/MSH/MSHI003/MSHI003.component";
 import { MSHI003CanDeactivateGuard } from "./pages/MSH/MSHI003/MSHI003.can.deactivate.guard";
 import { LABI002Component } from "./pages/LAB/LABI002/LABI002.component";
+import { MSHI004Component } from "./pages/MSH/MSHI004/MSHI004.component";
 
 const routes: Routes = [
   {
@@ -238,7 +239,8 @@ const routes: Routes = [
       { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
       { path: "I001", component: MSHI001Component },
       { path: "I002", component: MSHI002Component },
-      { path: "I003", component: MSHI003Component, canDeactivate : [MSHI003CanDeactivateGuard]}
+      { path: "I003", component: MSHI003Component, canDeactivate : [MSHI003CanDeactivateGuard]},
+      { path: "I004", component: MSHI004Component }
     ],
     canActivate: [AuthGuard]
   },

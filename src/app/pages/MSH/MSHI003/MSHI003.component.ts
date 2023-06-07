@@ -386,12 +386,14 @@ export class MSHI003Component implements AfterViewInit {
   confirm() :void {
 
     if(_.isEmpty(this.MSHI003DataList)){
+      console.log(this.MSHI003DataList);
       this.message.error('請更換搜尋條件，目前無資料可儲存');
       this.isSpinning = false;
       return;
     }
 
      if(_.isEmpty(this.MSHI003PendingDataList)){
+      console.log(this.MSHI003PendingDataList);
       this.message.error('尚無資料異動，無法儲存資料');
       this.isSpinning = false;
       return;
