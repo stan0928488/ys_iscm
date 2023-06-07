@@ -11,18 +11,14 @@ import { MSHI004 } from './MSHI004.model';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
-import {
-  CellEditingStartedEvent,
-  ColDef,
-  GridApi,
-  GridReadyEvent,
-} from 'ag-grid-community';
+import { CellClickedEvent, ColDef } from 'ag-grid-community';
 import { PrimeDatePickerCellEditor } from './prime-date-picker-cell-editor';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { DataTransferService } from 'src/app/services/MSHI004/Data.transfer.service';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-MSHI004',
@@ -59,7 +55,8 @@ export class MSHI004Component implements AfterViewInit {
     private dataTransferService: DataTransferService,
     private cookieService: CookieService,
     private renderer: Renderer2,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private clipboardApi: ClipboardService
   ) {
     this.id = this.cookieService.getCookie('id');
 
@@ -73,7 +70,7 @@ export class MSHI004Component implements AfterViewInit {
         node.data
       );
 
-      // 資料一樣，若之前有放到MSHI003PendingDataList之中則進行移除
+      // 資料一樣，若之前有放到MSHI004PendingDataList之中則進行移除
       if (isSame) {
         const isSameIndex = this.MSHI004PendingDataList.findIndex(
           (data) => data === node.data
@@ -91,7 +88,7 @@ export class MSHI004Component implements AfterViewInit {
         return;
       }
 
-      // 判斷該筆資料是否已存在於this.MSHI003PendingDataList
+      // 判斷該筆資料是否已存在於this.MSHI004PendingDataList
       // 若存在則不需要再進行push
       const isExist = this.MSHI004PendingDataList.some(
         (data) => data === node.data
@@ -131,6 +128,7 @@ export class MSHI004Component implements AfterViewInit {
       field: 'mesPublishGroup',
       width: 200,
       filter: true,
+      onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
     },
     {
       headerName: '發佈MES天數',
@@ -178,17 +176,27 @@ export class MSHI004Component implements AfterViewInit {
     },
   ];
 
+  //點擊一下即可複製的功能
+  onCellClicked(e: CellClickedEvent): void {
+    console.log('=======>>>>cellClicked', e);
+    const { value } = e;
+    console.log('value:' + value);
+    this.clipboardApi.copyFromContent(value);
+    console.log('copyFromContent:' + value);
+    console.log(`=[===>已複製: ${value} `);
+    this.message.create('success', `MES群組已複製：${value} `);
+  }
+
   confirm(): void {
     if (_.isEmpty(this.MSHI004PendingDataList)) {
       this.message.error('尚無資料異動，無法儲存資料');
       this.isSpinning = false;
       return;
     }
+    //準備要存入的資料欄位
     let missingNewEpst: MSHI004;
     let missingNewEpstFlag = this.MSHI004PendingDataList.some((element) => {
       missingNewEpst = element;
-      console.log('jflsjflkdsjflk');
-
       return _.isNil(element.userCreate);
     });
 
@@ -229,6 +237,7 @@ export class MSHI004Component implements AfterViewInit {
               }
             );
         })
+          //成功或失敗都釋放掉原先準備新增的資料
           .then((success) => {
             this.MSHI004PendingDataList = [];
             this.getData();
