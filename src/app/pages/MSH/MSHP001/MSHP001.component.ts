@@ -18,6 +18,8 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
+import { ClipboardService } from 'ngx-clipboard'
+
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -47,21 +49,25 @@ export class MSHP001Component implements OnInit {
 
   rowData1 = [];
 
-onCellClicked(value:any){
-  console.log(value.data)
-}
+
 //識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
 category = '' ;
 
 
 //public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   date:Date[];
-  selectShopCode = "401" ;
+  selectShopCode = "334" ;
   shopCodeList:any = [] ;
   //選擇機台
   selectEquipCode = '';
   //可选机台
   equipCodeList = [] ;
+  //可替換機台
+  equipCodeChangeList = [] ;
+  //可替換幾天
+  equipCodeChangeListOption = [] ;
+  //可替換機台選擇
+  selectChangeEquipCode = "";
   //可展示欄位
   allColumList:any = [] ;
  //可以分群的數據
@@ -147,6 +153,11 @@ category = '' ;
 
  /***更換作業代碼 */
  changeOpCodeIsVisible = false ;
+
+ //當前站別下載機台數
+ shopMachineList = [] ;
+
+
  handleOpCodeModal(){
   let idsTemp = "" ;
   this.rowSelectData.forEach((item,index,array)=>{
@@ -388,7 +399,8 @@ comitHandleSelectCarModal(){
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
     private excelService: ExcelService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private clipboardService: ClipboardService
     ) {
     this.gridOptions = {
       rowDragManaged: true,     
@@ -397,23 +409,33 @@ comitHandleSelectCarModal(){
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
           if(params.data["CAR_WEIGHT_ADD"] < 3900) {
             return { background: 'lightcoral' };
           } else {
             if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
-              return { background: 'white' };
+              if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                return { background: 'white' };
+              } else {
+                return { background: 'powderblue' };
+              }
             } else {
               return { background: 'yellow' };
             }
           }
         } else {
-          return { background: 'white' };
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
         }
        
       },
       //rowData: this.rowData,
-    //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
+
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClick(event) ;
       } ,
@@ -432,17 +454,20 @@ comitHandleSelectCarModal(){
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
-          // Apply a background color to even rows
-         // console.log("ORIGINAL_OP_CODE_ADD:" + this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString())
-          console.log("ORIGINAL_OP_CODE_ADD1:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
-          return { background: 'white' };
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
         } else {
           console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
           // Apply a different background color to odd rows
           return { background: 'yellow' };
         }
       },
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
@@ -488,6 +513,19 @@ comitHandleSelectCarModal(){
   }
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
+  onCellClicked(event:any){
+    console.log("cellClick :" + event.value )
+    if(event.colDef.field === 'ID_NO') {
+      this.copy(event.value) ;
+    }
+   
+  }
+  copy(text: string){
+    this.clipboardService.copy(text)
+    this.nzMessageService.info(text + ", 已復製到剪切板，可使用CTRL+V") 
+  }
+  
+
   doubleClick(row){
     console.log("doubleClick")
     console.log(row)
@@ -580,7 +618,7 @@ comitHandleSelectCarModal(){
     this.searchV0.equipCode = this.selectEquipCode ;
     this.searchV0.fcpVer = this.selectFcpVer
     // 如果是RF 的，结束时间为3个月之后
-    if(this.selectEquipCode === 'RF') {
+    if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1') {
       console.log("RF")
       this.searchV0.endDate = moment(new Date()).add(3, "months").format(this.mdateFormat) ;
       console.log("endDate ：" + this.searchV0.endDate)
@@ -654,7 +692,7 @@ comitHandleSelectCarModal(){
       //分群默认选择
       let groupArrayTemp = [] ;
       //如果是 RF 需要CARID
-      if(this.selectEquipCode === 'RF'){
+      if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1'){
         let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
         groupColumListTemp.push(itemTemp) ;
         groupArrayTemp.push(itemTemp.columValue) ;
@@ -694,20 +732,20 @@ comitHandleSelectCarModal(){
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
+        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:200 }
         exportHeader.push("開始")
         this.columnDefs.push(index3);
         this.outsideColumnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:200 }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
-        if(this.selectEquipCode === 'RF') {
+        if(this.selectEquipCode === 'RF' ||this.selectEquipCode === 'BA1' ) {
         // 411 CARID
         let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAR_ID_ADD")
@@ -754,7 +792,16 @@ comitHandleSelectCarModal(){
          this.outsideColumnDefs.push(index10);
          //数据类型
          this.columKeyType["PST_MACHINE_ADD"] = 0 ;
+
+        
       }
+       //ORIGINAL_PST_MACHINE_ADD
+       let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("原始機台")
+       this.columnDefs.push(index11);
+       this.outsideColumnDefs.push(index11);
+       //数据类型
+       this.columKeyType["ORIGINAL_PST_MACHINE_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
@@ -1200,8 +1247,23 @@ comitHandleSelectCarModal(){
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
           preGroupObject[key] = r 
-        }  
+        }
+        else if( key === 'NEW_EPST') {  // 若果是允收截止日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
+          preGroupObject[key] = r 
+        }
+        
         else if( key === 'STEEL_TYPE') {  // 若果是鋼種，逗號拼接
+          //console.log(" 鋼種 : " +  preGroupObject[key])
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+        }  
+        else if( key === 'GRADE_GROUP') {  // 若果是鋼種，逗號拼接
+          //console.log(" 鋼種 : " +  preGroupObject[key])
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
           preGroupObject[key] = uniqueArr.join(','); 
@@ -1565,22 +1627,147 @@ comitHandleSelectCarModal(){
      /***機台更換開始 */
      //更換機台，將數據從子層調出
      handleChangeMachineModal(){
+      this.changeMachineModal.isVisible = true ;
+      this.selectChangeEquipCode = "" ;
+      this.equipCodeChangeList =  this.equipCodeList ;
+      this.equipCodeChangeListOption = this.equipCodeChangeList.filter((item)=>{
+         return item.value !== this.selectEquipCode
+      })
+      console.log("equipCodeChangeListOption:" + this.equipCodeChangeListOption)
+      let changeMachineTB = [] ;
       // 子層數據源
       this.rowSelectData.forEach((item,index,array)=>{
-       
+       //  console.log("子層數據源：" + JSON.stringify(item))
+       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false }
+        changeMachineTB.push(changeMachineTBTemp) ;
+      })
+      this.changeMachineModal.table.tbData = changeMachineTB ;
+      //當前站別的機台
+      this.getCurrentMachineData() ;
+     //equipCodeChangeList
+      
+     
+      
+     }
+     // 機台更換選擇
+     selectChangeEquipCodeFunc(){
+      console.log("selectChangeEquipCode:" + this.selectChangeEquipCode)
+      if(this.shopMachineList.length === 0){
+        this.nzMessageService.error("當前站別沒有查到已配置機台，請刷新重試!") 
+        return ;
+      }
+      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.selectChangeEquipCode);
+      if (containsValue) {
+        // 数组对象包含特定值
+        
+      } else {
+        // 数组对象不包含特定值
+        this.nzMessageService.error("當前機台未配置，請先下載數據!") ;
+        return ;
+      }
+
+       this.changeMachineModal.table.tbData.forEach((item,index,arr)=>{
+        this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
+        this.changeMachineModal.table.tbData[index].checked = true ;
       })
       
+     }
+     //機台選擇
+     selectChangeEquipCodeOptionFunc(index:any){
+      if(this.shopMachineList.length === 0){
+        this.nzMessageService.error("當前站別沒有查到已配置機台，請刷新重試!") 
+        return ;
+      }
+      console.log("已配置机台" + JSON.stringify(this.shopMachineList))
+      console.log("选择机台：" + this.selectChangeEquipCode)
+      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW);
+      if (containsValue) {
+        // 数组对象包含特定值
+        
+      } else {
+        // 数组对象不包含特定值
+        this.nzMessageService.error("當前機台未配置，請先下載數據!") ;
+        return ;
+      }
+
+     }
+     //手動修改機台
+     startEdit(i:any){
+      this.changeMachineModal.table.tbData[i].isEdit = !this.changeMachineModal.table.tbData[i].isEdit
+
      }
      // 開啟關閉更換機台窗口
      handleMachineModal(){
       this.changeMachineModal.isVisible = ! this.changeMachineModal.isVisible ;
      }
-    //提交機台更換確認
-     comitHandleMachineModal(){
+
+     // 選擇更換哪些機台
+     handleSelectChangeMachine(){
+      console.log("this.changeMachineModal.table.tbData : " + JSON.stringify(this.changeMachineModal.table.tbData))
 
      }
 
-     
+ /***機台更換開始 */
+    //提交機台更換確認
+     comitHandleMachineModal(){
+      let comitDataTemp = [] ;
+      comitDataTemp = this.changeMachineModal.table.tbData.filter((item)=>{
+       return item.checked === true 
+      })
+      console.log("comitData : " + JSON.stringify(comitDataTemp))
+      //處理提交數據
+      let comitData = []
+      let checkData = true ;
+      comitDataTemp.forEach((item,index,value)=>{
+        const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === item.PST_MACHINE_NEW);
+      if (containsValue) {
+        let obj = {id:item.ID, pstMachine:item.PST_MACHINE_NEW, originalPstMachine:item.PST_MACHINE} ;
+        comitData.push(obj) ;
+        // 数组对象包含特定值
+      } else {
+        // 数组对象不包含特定值
+        checkData = false ;
+      }
+      
+      }) ;
+      
+      if(checkData === true) {
+        this.changeMachineModal.isConfirmLoading = true ;
+        this.mshService.saveChangeMachine(comitData).subscribe(res=>{
+          this.changeMachineModal.isConfirmLoading = false
+          let result:any = res ;
+          if(result.code !== 200) {
+            this.nzMessageService.error(result.message) ;
+          } else {
+            this.nzMessageService.success(result.message);
+            this.changeMachineModal.isVisible = false ;
+            this.modalTableVisible = false ;
+            this.getTableData() ;
+          }
+        })
+      } else {
+        this.nzMessageService.error("存在未配置機台，請先下載數據!") ;
+      }
+      
+     }
+
+     //獲取當前站別配置的機台
+     getCurrentMachineData(){
+      this.searchV0.shopCode = this.selectShopCode ;
+      this.searchV0.equipCode = this.selectEquipCode ;
+      this.searchV0.fcpVer = this.selectFcpVer
+      this.mshService.getCurrentMachineData(this.searchV0).subscribe(res=>{
+        this.shopMachineList = []
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.shopMachineList = result.data ;
+        }
+        console.log("當前站別，配置機台：" + JSON.stringify(this.shopMachineList))
+
+      });
+     }
 
 
     /***機台更換結束 */

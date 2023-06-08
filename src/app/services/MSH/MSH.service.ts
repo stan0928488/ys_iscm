@@ -168,4 +168,16 @@ saveChangeOpCode(_param) {
     return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
   }
 
+
+  /****機台更換 */
+  saveChangeMachine(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeMachine";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+  // 獲取當前機台數據已配置的數據
+  getCurrentMachineData(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/getCurrentMachineData";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+
 }
