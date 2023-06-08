@@ -18,6 +18,8 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
+import { ClipboardService } from 'ngx-clipboard'
+
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -47,9 +49,7 @@ export class MSHP001Component implements OnInit {
 
   rowData1 = [];
 
-onCellClicked(value:any){
-  console.log(value.data)
-}
+
 //識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
 category = '' ;
 
@@ -399,7 +399,8 @@ comitHandleSelectCarModal(){
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
     private excelService: ExcelService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private clipboardService: ClipboardService
     ) {
     this.gridOptions = {
       rowDragManaged: true,     
@@ -433,7 +434,8 @@ comitHandleSelectCarModal(){
        
       },
       //rowData: this.rowData,
-    //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
+
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClick(event) ;
       } ,
@@ -465,6 +467,7 @@ comitHandleSelectCarModal(){
           return { background: 'yellow' };
         }
       },
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
@@ -510,6 +513,19 @@ comitHandleSelectCarModal(){
   }
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
+  onCellClicked(event:any){
+    console.log("cellClick :" + event.value )
+    if(event.colDef.field === 'ID_NO') {
+      this.copy(event.value) ;
+    }
+   
+  }
+  copy(text: string){
+    this.clipboardService.copy(text)
+    this.nzMessageService.info(text + ", 已復製到剪切板，可使用CTRL+V") 
+  }
+  
+
   doubleClick(row){
     console.log("doubleClick")
     console.log(row)
@@ -1652,16 +1668,19 @@ comitHandleSelectCarModal(){
 
        this.changeMachineModal.table.tbData.forEach((item,index,arr)=>{
         this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
+        this.changeMachineModal.table.tbData[index].checked = true ;
       })
       
      }
      //機台選擇
-     selectChangeEquipCodeOptionFunc(Index:any){
+     selectChangeEquipCodeOptionFunc(index:any){
       if(this.shopMachineList.length === 0){
         this.nzMessageService.error("當前站別沒有查到已配置機台，請刷新重試!") 
         return ;
       }
-      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.selectChangeEquipCode);
+      console.log("已配置机台" + JSON.stringify(this.shopMachineList))
+      console.log("选择机台：" + this.selectChangeEquipCode)
+      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW);
       if (containsValue) {
         // 数组对象包含特定值
         
