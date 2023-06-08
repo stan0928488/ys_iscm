@@ -1,5 +1,5 @@
 import { async } from '@angular/core/testing';
-import { AfterViewInit, Component, Renderer2, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Renderer2, HostListener, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MSHService } from 'src/app/services/MSH/MSH.service';
 import {NzModalService} from "ng-zorro-antd/modal";
 import {NzMessageService} from "ng-zorro-antd/message";
@@ -7,7 +7,7 @@ import {MSHI003} from "./MSHI003.model";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
-import { CellEditingStartedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import { CellEditingStartedEvent, ColDef, GridApi, GridReadyEvent, ICellEditorParams, IRowNode } from 'ag-grid-community';
 import { PrimeDatePickerCellEditorComponent } from './prime-date-picker-cell-editor';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { DataTransferService } from 'src/app/services/MSH/Data.transfer.service';
@@ -15,6 +15,7 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
 import { AdjShopCodeCellRendererComponent } from './AdjShopCodeCellRenderer.componet';
 import { AdjShopCodeCellSelectEditorComponent } from './adj-shop-code-cell-select-editor';
+import { AdjLineupProcessSelectEditorComponent } from './adj-lineup-process-cell-select-editor';
 
 class MSHI003Payload {
   shopCode : string[];
@@ -44,6 +45,11 @@ export class MSHI003Component implements AfterViewInit{
   PLANTCODE;
 
   gridApi : GridApi;
+  agGridContext : any;
+  params: GridReadyEvent;
+
+  // 使用者當前編輯的rowIndex
+  currentEditRowIndex : number | null = null;
 
   isSpinning = false;
 
@@ -60,6 +66,11 @@ export class MSHI003Component implements AfterViewInit{
   equipCodeInputList : string[] = [];
   // 機台下拉是否正在載入選項
   equipCodeLoading = false;
+
+  // 流程下拉選項
+  lineupProcessOfOptions : string[] = [];
+  // 流程下拉是否正在載入選項
+  lineupProcessLoading = false;
 
   // mo輸入
   moInput = "";
@@ -96,6 +107,9 @@ export class MSHI003Component implements AfterViewInit{
   EPST = "EPST";
   NEW_EPST = "調整日期";
   COMMENT = "備註";
+  ADJ_SHOP_CODE = "調整站別";
+  ADJ_LINEUP_PROCESS = "調整流程";
+  OVER_SHOP_STATUS = "過站狀態";
 
   gridOptions = {
     defaultColDef : {
@@ -104,7 +118,8 @@ export class MSHI003Component implements AfterViewInit{
     },
     components: {
       primeDatePickerCellEditorComponent: PrimeDatePickerCellEditorComponent,
-      adjShopCodeCellSelectEditorComponent: AdjShopCodeCellSelectEditorComponent
+      adjShopCodeCellSelectEditorComponent: AdjShopCodeCellSelectEditorComponent,
+      adjLineupProcessSelectEditorComponent : AdjLineupProcessSelectEditorComponent
     }
   };
 
@@ -114,50 +129,20 @@ export class MSHI003Component implements AfterViewInit{
               private dataTransferService:DataTransferService,
               private cookieService: CookieService,
               private renderer: Renderer2,
-              private commonService : CommonService) { 
+              private commonService : CommonService,
+              private changeDetectorRef: ChangeDetectorRef) { 
 
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANTCODE = this.cookieService.getCookie("plantCode");
+    this.agGridContext = {
+          componentParent: this
+        };
 
-    this.dataTransferService.getData().subscribe((node) => {
-        this.isSpinning = true;
+    // 收集待新增或更新的資料
+    this.collectingDataForAdditionOrUpdate();
 
-      // 判斷使用者經過一連串的編輯後，是否仍然與原資料相同
-      // 若相同該筆資料則不進行儲存
-      if(!_.isNil(this.MSHI003DataListDeepClone[node.rowIndex].newEpst)){
-        this.MSHI003DataListDeepClone[node.rowIndex].newEpst = moment(this.MSHI003DataListDeepClone[node.rowIndex].newEpst).format('YYYY-MM-DD');
-      }
-      if(!_.isNil(node.data.newEpst)){
-        node.data.newEpst = moment(node.data.newEpst).format('YYYY-MM-DD');
-      }
-      const isSame = _.isEqual(this.MSHI003DataListDeepClone[node.rowIndex], node.data);
-
-      // 資料一樣，若之前有放到MSHI003PendingDataList之中則進行移除
-      if(isSame){
-        const isSameIndex = this.MSHI003PendingDataList.findIndex(data => data === node.data);
-        if(isSameIndex > -1){
-          this.MSHI003PendingDataList.splice(isSameIndex, 1);
-        }
-        this.isSpinning = false;
-        return;
-      }
-
-      if(_.isEmpty(this.MSHI003PendingDataList)){
-        this.MSHI003PendingDataList.push(node.data);
-        this.isSpinning = false;
-        return;
-      }
-      
-      // 判斷該筆資料是否已存在於this.MSHI003PendingDataList
-      // 若存在則不需要再進行push
-      const isExist = this.MSHI003PendingDataList.some(data => data === node.data);
-
-      // 找不到同樣id的資料則進行push
-      if(!isSame && !isExist) {
-        this.MSHI003PendingDataList.push(node.data);
-      }
-      this.isSpinning = false;
-    });
+    // 實時根據調整站別與調整流程搜尋過站狀態與EPST
+    this.realTimeSearchForShopStatusAndEPST();
   }
 
   ngAfterViewInit(): void {
@@ -188,13 +173,22 @@ export class MSHI003Component implements AfterViewInit{
       headerName: '調整流程', 
       field: 'adjLineupProcess', 
       width: 120,
+      editable: true,
+      cellEditor: 'adjLineupProcessSelectEditorComponent',
       headerClass: 'header-editable-color',
       cellClass: 'cell-editable-color',
     },
     {
       headerName: '過站狀態', 
       field: 'overShopStatus', 
-      width: 120
+      width: 120,
+      valueFormatter : (params) =>{
+        let overShopStatusStr = '';
+        if(!_.isEmpty(params.value)){
+          overShopStatusStr = params.value === 'Y' ? '已過站' : '未過站';
+        }
+        return overShopStatusStr;
+      }
     },
     {
       headerName: 'EPST', 
@@ -254,42 +248,30 @@ export class MSHI003Component implements AfterViewInit{
     {headerName: '更新日期', field: 'dateUpdate', width: 180}
   ];
 
-  // 設定調整站別的站別下拉選項
-  async setShopCodeCellEditorSelectValues() {
-    let colDefs : ColDef<any>[] = this.gridApi.getColumnDefs();
-    let shopCodeColumnIndex = colDefs.findIndex(item => item.field === 'adjShopCode');
-    await this.getShopCodeAsync().then(value => {
-      colDefs[shopCodeColumnIndex].cellEditorParams.values = value.data;
-      this.gridApi.setColumnDefs(colDefs);
-    });
-  }
+  async getLineupProcessAsync() : Promise<void> {
 
-  async getShopCodeAsync() : Promise<any> {
-
-    if(_.isEmpty(this.shopCodeOfOption)){
-      this.isSpinning = true;
+    if(_.isEmpty(this.lineupProcessOfOptions)){
+      this.lineupProcessLoading = true;
       try{
-      const res = await this.mshService.getShopCodeList().toPromise();
+        const res = await this.mshService.getLineupProcessList().toPromise();
         if(res.code === 200){
-          return res;
+          this.lineupProcessOfOptions = res.data;
         }
         else{
-          this.message.error('後台錯誤，獲取不到站別清單');
+          this.message.error('後台錯誤，獲取不到流程清單');
         }
       } catch (error) {
-        this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
-
+        this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
       }
       finally{
-        this.isSpinning = false;
+        this.lineupProcessLoading = false;
       }
-    }
-    else{
-      return this.shopCodeOfOption;
     }
   }
 
   getShopCodeList() : void {
+
+    if(!_.isEmpty(this.shopCodeOfOption)) return;
     
     this.shopCodeLoading = true;
     new Promise<boolean>((resolve, reject) => {
@@ -405,6 +387,9 @@ export class MSHI003Component implements AfterViewInit{
                   item.sfcDia,
                   item.finalMicNo,
                   item.processCode,
+                  item.adjShopCode,
+                  item.adjLineupProcess,
+                  item.overShopStatus,
                   item.epst,
                   item.comment,
                   item.newEpst,
@@ -437,6 +422,14 @@ export class MSHI003Component implements AfterViewInit{
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
       this.isSpinning = false;
+     
+		  // 使用者編輯後將滾動條定位到可以看到過站狀態與EPST的位置
+     if(!_.isNil(this.currentEditRowIndex)){
+        // 等待畫面渲染完畢
+        this.changeDetectorRef.detectChanges();
+        this.gridApi.ensureIndexVisible(this.currentEditRowIndex, 'top');
+        this.gridApi.ensureColumnVisible('comment', 'end');
+      }
     }).catch(error =>{
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
@@ -650,6 +643,9 @@ export class MSHI003Component implements AfterViewInit{
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"現況尺寸":').join('"sfcDia":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"現況MIC":').join('"finalMicNo":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼":').join('"processCode":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整站別":').join('"adjShopCode":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整站別":').join('"adjLineupProcess":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"過站狀態":').join('"overShopStatus":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"EPST":').join('"epst":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整日期":').join('"newEpst":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"備註":').join('"comment":'));
@@ -838,6 +834,9 @@ export class MSHI003Component implements AfterViewInit{
     let b10 = false;
     let b11 = false;
     let b12 = false;
+    let b13 = false;
+    let b14 = false;
+    let b15 = false;
 
     keys.forEach(k => {
       if(k === this.ID_NO) b1 = true;
@@ -849,9 +848,12 @@ export class MSHI003Component implements AfterViewInit{
       else if(k === this.SFC_DIA) b7 = true;
       else if(k === this.FINAL_MIC_NO) b8 = true;
       else if(k === this.PROCESS_CODE) b9 = true;
-      else if(k === this.EPST) b10 = true;
-      else if(k === this.NEW_EPST) b11 = true;
-      else if(k === this.COMMENT) b12 = true;
+      else if(k === this.ADJ_SHOP_CODE) b10 = true;
+      else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
+      else if(k === this.OVER_SHOP_STATUS) b12 = true;
+      else if(k === this.EPST) b13 = true;
+      else if(k === this.NEW_EPST) b14 = true;
+      else if(k === this.COMMENT) b15 = true;
     });
 
     return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
@@ -872,11 +874,14 @@ export class MSHI003Component implements AfterViewInit{
     // 剔除不需要匯出的屬性
     let MSHI003DataListClone = [];
     this.MSHI003DataList.forEach(item => {
+      if(!_.isNil(item.overShopStatus)){
+        item.overShopStatus = item.overShopStatus === 'Y' ? '已過站' : '未過站';
+      }
       MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno']));
     });
 
-    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "processCode", "epst", "newEpst", "comment", "userCreate", "dateCreate", "userUpdate", "dateUpdate"];
-    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, processCode:this.PROCESS_CODE, epst:this.EPST, newEpst:this.NEW_EPST, comment:this.COMMENT, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期"};
+    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "processCode", "adjShopCode", "adjLineupProcess", "overShopStatus", "epst", "newEpst", "comment", "userCreate", "dateCreate", "userUpdate", "dateUpdate"];
+    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, processCode:this.PROCESS_CODE, adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, newEpst:this.NEW_EPST, comment:this.COMMENT, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期"};
     const exportData = [firstRowDisplay, ...MSHI003DataListClone]; 
 
     const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
@@ -922,8 +927,122 @@ export class MSHI003Component implements AfterViewInit{
 
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api;
+    this.params = params;
     // this.setShopCodeCellEditorSelectValues();
     //gridApi.sizeColumnsToFit();
+  }
+
+  collectingDataForAdditionOrUpdate(){
+
+      this.dataTransferService.getData().subscribe((node) => {
+      this.isSpinning = true;
+      // 判斷使用者經過一連串的編輯後，是否仍然與原資料相同
+      // 若相同該筆資料則不進行儲存
+      if(!_.isNil(this.MSHI003DataListDeepClone[node.rowIndex].newEpst)){
+        this.MSHI003DataListDeepClone[node.rowIndex].newEpst = moment(this.MSHI003DataListDeepClone[node.rowIndex].newEpst).format('YYYY-MM-DD');
+      }
+      if(!_.isNil(node.data.newEpst)){
+        node.data.newEpst = moment(node.data.newEpst).format('YYYY-MM-DD');
+      }
+
+      const isSame = _.isEqual(this.MSHI003DataListDeepClone[node.rowIndex], node.data);
+
+      // 資料一樣(表示經過一連串的編輯後仍然與原資料相同)
+      // 若之前有放到MSHI003PendingDataList之中則進行移除
+      if(isSame){
+        const isSameIndex = this.MSHI003PendingDataList.findIndex(data => data === node.data);
+        if(isSameIndex > -1){
+          this.MSHI003PendingDataList.splice(isSameIndex, 1);
+        }
+        this.isSpinning = false;
+        return;
+      }
+
+      // 若收集待新增或更新的陣列為空則直接push進去
+      if(_.isEmpty(this.MSHI003PendingDataList)){
+        this.MSHI003PendingDataList.push(node.data);
+        this.isSpinning = false;
+        return;
+      }
+      
+      // 判斷該筆資料是否已存在於this.MSHI003PendingDataList
+      // 若存在則不需要再進行push
+      const isExist = this.MSHI003PendingDataList.some(data => data === node.data);
+
+      // 找不到同樣的資料則進行push
+      if(!isSame && !isExist) {
+        this.MSHI003PendingDataList.push(node.data);
+      }
+
+
+      this.isSpinning = false;
+    });
+  }
+
+  // 根據使用者選擇的調整站別與調整流程搜尋EPST與判定過站狀態
+  realTimeSearchForShopStatusAndEPST(){
+    // 當收到使用者選擇的調整站別或調整流程時
+    this.dataTransferService.getParamsOfAdjShopCodeAndAdjLineupProcess().subscribe((rowNode) => {
+      this.isSpinning = true;
+
+      if(!_.isNil(rowNode.data.adjShopCode) && !_.isNil(rowNode.data.adjLineupProcess)){
+        // 請求後端API查找EPST與判定過站狀態
+        this.findByIdNoAdjShopCodeAdjLineupProcess(rowNode.data.idNo, rowNode.data.adjShopCode, rowNode.data.adjLineupProcess).then(epst =>{
+          // 查找的到渲染EPST與過站狀態
+          if(!_.isNil(epst)){
+            rowNode.data.epst = epst;
+            rowNode.data.overShopStatus = 'N';
+          }
+          // 查找不到渲染過站狀態
+          else{
+            rowNode.data.epst = null;
+            rowNode.data.overShopStatus = 'Y';
+          }
+          this.editAdjShopCodeAndAdjLineupProcessAfterHandler(rowNode);
+        })
+      }
+      else{
+        rowNode.data.epst = null;
+        rowNode.data.overShopStatus = null;
+        this.editAdjShopCodeAndAdjLineupProcessAfterHandler(rowNode);
+      }
+      this.isSpinning = false;
+    });
+  }
+
+  editAdjShopCodeAndAdjLineupProcessAfterHandler(rowNode : IRowNode<MSHI003>) : void {
+       
+      // 紀錄當前編輯的 row index
+      this.currentEditRowIndex = rowNode.rowIndex;
+    
+      // 渲染過站狀態與EPST到畫面上
+       this.gridApi.setRowData(this.MSHI003DataList);
+
+       // 將滾動條定位到可以看到過站狀態與EPST的位置
+       this.gridApi.ensureIndexVisible(rowNode.rowIndex, 'middle');
+       this.gridApi.ensureColumnVisible('comment', 'end');
+
+       // 送出該筆資料進行儲存或更新
+       this.dataTransferService.setData(rowNode);
+  }
+
+  async findByIdNoAdjShopCodeAdjLineupProcess(idNo : string, adjShopCode : string, adjLineupProcess : string) : Promise<string>{
+    try{
+      const res = await this.mshService.findByIdNoAdjShopCodeAdjLineupProcess(idNo, adjShopCode, adjLineupProcess).toPromise();
+      if(res.code === 200){
+        return res.data;
+      }
+      else{
+        this.message.error('後台錯誤，獲取不到流程清單');
+        return null;
+      }
+    } catch (error) {
+      this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+      return null;
+    }
+    finally{
+      
+    }
   }
 
   sucessMSG(_title, _plan): void {

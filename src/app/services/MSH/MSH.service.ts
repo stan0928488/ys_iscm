@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 import { CookieService } from "../config/cookie.service";
 import * as _ from "lodash";
@@ -138,6 +138,15 @@ saveChangeOpCode(_param) {
     return this.http.get<any>(endpointUrl);
   }
 
+  // 獲取流程清單
+  getLineupProcessList(){
+    console.log('獲取流程清單..');
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getLineupProcessList`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : 無`);
+    return this.http.get<any>(endpointUrl);
+  }
+
   // 獲取機台清單
   getEquipCodeList(shopCodeList){
     console.log('獲取機台清單..');
@@ -168,4 +177,16 @@ saveChangeOpCode(_param) {
     return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
   }
 
+  // 根據idNo、調整站別與調整流程搜尋過站狀態與EPST
+  findByIdNoAdjShopCodeAdjLineupProcess(idNo : string, adjShopCode : string, adjLineupProcess : string){
+  console.log('根據idNo、調整站別與調整流程搜尋過站狀態與EPST..');
+  const httpParams = new HttpParams()
+      .set('idNo', idNo)
+      .set('adjShopCode', adjShopCode)
+      .set('adjLineupProcess', adjLineupProcess);
+  let endpointUrl = `${this.APIURL}/msh/MSHC003/findByIdNoAdjShopCodeAdjLineupProcess`;
+  console.log(`API Url : ${endpointUrl}`);
+  console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+  return this.http.get<any>(endpointUrl, { params: httpParams });
+}
 }

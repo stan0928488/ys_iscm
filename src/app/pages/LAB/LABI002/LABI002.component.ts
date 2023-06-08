@@ -139,7 +139,7 @@ export class LABI002Component implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.getTblabm002List();
+    //this.getTblabm002List();
     this.getTblabm003List();
   }
 

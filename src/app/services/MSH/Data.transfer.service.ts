@@ -9,6 +9,7 @@ import { MSHI003 } from "src/app/pages/MSH/MSHI003/MSHI003.model";
 export class DataTransferService {
 
     private data = new Subject<IRowNode<MSHI003>>();
+    private paramsOfAdjShopCodeAndAdjLineupProcessForSearchEpst = new Subject<IRowNode<MSHI003>>();
 
     setData(_data: IRowNode<MSHI003>) {
         this.data.next(_data);
@@ -17,5 +18,14 @@ export class DataTransferService {
     getData() {
         return this.data.asObservable();
     }
+
+    setParamsOfAdjShopCodeAndAdjLineupProcess(_data: IRowNode<MSHI003>) {
+        this.paramsOfAdjShopCodeAndAdjLineupProcessForSearchEpst.next(_data);
+    }
+
+    getParamsOfAdjShopCodeAndAdjLineupProcess() {
+        return this.paramsOfAdjShopCodeAndAdjLineupProcessForSearchEpst.asObservable();
+    }
+
 
 }
