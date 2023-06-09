@@ -18,6 +18,7 @@ import { LoginComponent } from './login/login.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { ClipboardModule } from 'ngx-clipboard';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -208,6 +209,7 @@ registerLocaleData(zh);
     AgGridModule,
     NzTimelineModule,
     CalendarModule,
+    ClipboardModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
