@@ -545,22 +545,33 @@ export class PPSI205Component implements AfterViewInit {
     } else {
 
       for(let i=0 ; i < _data.length ; i++) {
+        
         let publicMonth =  this.dateFormat(this.ExcelDateExchange(_data[i].公版月份),6);
         let productType = _data[i].產品;
         let dia = _data[i].軋延尺寸.toString();
         let cycleNo = _data[i].CYCLE.toString();
         let startDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~起']), 2);
-
-        if(_data[i]['日期~迄'] != undefined)
-          var endDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~迄']), 2);
-
+        console.log(publicMonth)
+        if (publicMonth === 'Invalid date') {
+          publicMonth =  this.dateFormat(_data[i]['公版月份'],6);
+        }
         if (startDate === 'Invalid date') {
           startDate = this.dateFormat(_data[i]['日期~起'], 2);
         }
-       
-        this.importdata_new.push({publicMonth: publicMonth , productType: productType, dia: dia, cycleNo: cycleNo, startDate: startDate, endDate: endDate});
+        if(_data[i]['日期~迄'] != undefined){
+
+          var endDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~迄']), 2);
+
+          if (endDate === 'Invalid date') {
+            endDate = this.dateFormat(_data[i]['日期~起'], 2);
+          }      
+
+          this.importdata_new.push({publicMonth: publicMonth , productType: productType, dia: dia, cycleNo: cycleNo, startDate: startDate, endDate: endDate});
+        }else{
+          this.importdata_new.push({publicMonth: publicMonth , productType: productType, dia: dia, cycleNo: cycleNo, startDate: startDate});
+        }
       }
-      console.log(this.importdata_new)
+      
       return new Promise((resolve, reject) => {
         this.LoadingPage = true;
         let myObj = this;

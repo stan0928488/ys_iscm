@@ -64,6 +64,65 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
 
+  filterObj = {
+
+    bootControlFilter:{
+      value:0,
+      search:()=>{
+        
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.bootControlFilter.value == 0){
+            return true;
+          }
+          return obj.bootControl == this.filterObj.bootControlFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.bootControlFilter.value = 0;
+        this.filterObj.bootControlFilter.search();
+      }
+    },
+    accumulateDayFilter:{
+      value:0,
+      search:()=>{
+
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.accumulateDayFilter.value == 0){
+            return true;
+          }
+          return obj.accumulateDay == this.filterObj.accumulateDayFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.accumulateDayFilter.value = 0;
+        this.filterObj.accumulateDayFilter.search();
+      }
+    },
+    dateLimitFilter:{
+      value:0,
+      search:()=>{
+
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.dateLimitFilter.value == 0){
+            return true;
+          }
+          return obj.dateLimit == this.filterObj.dateLimitFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.dateLimitFilter.value = 0;
+        this.filterObj.dateLimitFilter.search();
+      }
+    }
+
+  }
+
   constructor(
     private PPSService: PPSService,
     private excelService: ExcelService,

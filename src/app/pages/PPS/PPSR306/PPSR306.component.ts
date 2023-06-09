@@ -62,7 +62,7 @@ export class PPSR306Component implements AfterViewInit {
     { headerName: '客戶簡稱' ,field: 'custAbbreviations' , filter: false,width: 100 },
     { headerName: '訂單號碼' ,field: 'saleOrder'  ,filter: false,width: 100 },
     { headerName: '訂單項次' ,field: 'saleItem' ,filter: false,width: 100 },
-    { headerName:'過帳否',field: 'insertDate' , filter: false,width: 120 },
+    { headerName:'過帳否',field: 'typeIssue' , filter: false,width: 120 },
     { headerName:'重量',field: 'weight' , filter: false,width: 100 },
     { headerName:'MIC',field: 'mic' , filter: false,width: 100 },
     { headerName:'尺寸',field: 'dia' , filter: false,width: 100 }
@@ -80,6 +80,7 @@ export class PPSR306Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    
   }
 
   ngOnInit(){

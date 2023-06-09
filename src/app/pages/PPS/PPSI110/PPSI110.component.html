@@ -110,9 +110,27 @@
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">開機管數</th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">累計天數</th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">略過天數</th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">開機管數
+                <nz-filter-trigger 
+                [nzActive]="filterObj.bootControlFilter.value > 0" 
+                [nzDropdownMenu]="bootControlMenu">
+                <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">累計天數
+                <nz-filter-trigger 
+                [nzActive]="filterObj.accumulateDayFilter.value > 0" 
+                [nzDropdownMenu]="accumulateDayMenu">
+                <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">略過天數
+                <nz-filter-trigger 
+                [nzActive]="filterObj.dateLimitFilter.value > 0" 
+                [nzDropdownMenu]="dateLimitMenu">
+                <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
               <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
             </tr>
             </thead>
@@ -290,6 +308,36 @@
       <input type="text" nz-input [(ngModel)]="searchEquipQuanityValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipQuanity()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipQuanity()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #bootControlMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="filterObj.bootControlFilter.value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.bootControlFilter.search()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="filterObj.bootControlFilter.reset()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #accumulateDayMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="filterObj.accumulateDayFilter.value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.accumulateDayFilter.search()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="filterObj.accumulateDayFilter.reset()">重設</button>
+    </div>
+  </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #dateLimitMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input type="text" nz-input [(ngModel)]="filterObj.dateLimitFilter.value" />
+      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.dateLimitFilter.search()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="filterObj.dateLimitFilter.reset()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>
