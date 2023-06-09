@@ -3,7 +3,7 @@ import { AgEditorComponent } from "ag-grid-angular";
 import { GridApi, ICellEditorParams, IRowNode } from "ag-grid-community";
 import { MSHI003 } from "./MSHI003.model";
 import { DataTransferService } from "src/app/services/MSH/Data.transfer.service";
-
+import * as _ from "lodash";
 
 @Component({
     selector: 'app-adj-shop-code-cell-select-editor',
@@ -78,9 +78,11 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
 
     selected(){
 
+        this.currentRowNode.data.adjLineupProcess = null;
+
         // 停止編輯，讓調整站別資料賦值到該row對應的物件上，並渲染畫面
         this.gridApi.stopEditing();
-
+        
         // 送出該筆資料進行過站狀態與EPST的實時抓取
         this.dataTransferService.setParamsOfAdjShopCodeAndAdjLineupProcess(this.currentRowNode);
 

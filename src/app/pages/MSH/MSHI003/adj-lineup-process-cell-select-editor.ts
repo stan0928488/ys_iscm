@@ -1,20 +1,22 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { AgEditorComponent } from "ag-grid-angular";
 import { GridApi, ICellEditorParams } from "ag-grid-community";
-import { MSHI003 } from "./MSHI003.model";
 import { DataTransferService } from "src/app/services/MSH/Data.transfer.service";
-
+import * as _ from "lodash";
 
 @Component({
     selector: 'app-adj-lineup-process-cell-select-editor',
     template: `
          <nz-select 
             #adjLineupProcessCellSelect
+            nz-tooltip 
+            [nzTooltipTitle]="adjLineupProcessTooltipTitle"
             style="width: 100%; height: 100%;"
             nzPlaceHolder="請選擇流程"
             [nzOpen]="true"
             [nzAllowClear]="true"
             [nzShowSearch]="true"
+            [nzDisabled]="lineupProcessDisabled"
             [(ngModel)]="selectedLineupProcessValue"
             (ngModelChange)="selected()">
             <nz-option *ngFor="let lineupProcess of componentParent.lineupProcessOfOptions" [nzLabel]="lineupProcess" [nzValue]="lineupProcess"></nz-option>
@@ -41,7 +43,15 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
     // 當前選中的那一個row的資料物件
     currentRowNode : any;
 
-    constructor(private dataTransferService : DataTransferService){}
+    // 流程下拉是否禁用
+    lineupProcessDisabled = true;
+
+    // 提示必須先選擇調整流程
+    adjLineupProcessTooltipTitle = '請先選擇調整站別'
+
+    constructor(private dataTransferService : DataTransferService){
+
+    }
 
     ngAfterViewInit(): void {
         //this.adjShopCodeCellSelect.nzOpen = true;
@@ -57,11 +67,17 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
        // 將當前調整站別的值設定給<nz-select>雙向綁定的變數 
        this.selectedLineupProcessValue = params.value;
 
-       // 調用 MSHI003Component 的方法撈取站別清單
-       this.componentParent.getLineupProcessAsync();
-
        // 當前選中的那一個row的資料物件
        this.currentRowNode = params.node;
+
+       if(!_.isNil(this.currentRowNode.data.adjShopCode)){
+            // 有選擇調整站別則不禁用調整流程的選項
+            this.lineupProcessDisabled = false;
+            this.adjLineupProcessTooltipTitle = '';
+
+            // 調用 MSHI003Component 的方法撈取流程清單
+            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.adjShopCode);
+        }
     }
 
     isPopup(): boolean {

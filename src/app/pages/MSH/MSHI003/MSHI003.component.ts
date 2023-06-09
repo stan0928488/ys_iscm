@@ -78,7 +78,6 @@ export class MSHI003Component implements AfterViewInit{
   // hole狀態選擇
   holeChecked = false;
 
-
   MSHI003DataList : MSHI003[] = [];
 
   MSHI003DataListDeepClone : MSHI003[] = [];
@@ -248,12 +247,11 @@ export class MSHI003Component implements AfterViewInit{
     {headerName: '更新日期', field: 'dateUpdate', width: 180}
   ];
 
-  async getLineupProcessAsync() : Promise<void> {
+  async getLineupProcessAsync(adjShopCode : string) : Promise<void> {
 
-    if(_.isEmpty(this.lineupProcessOfOptions)){
       this.lineupProcessLoading = true;
       try{
-        const res = await this.mshService.getLineupProcessList().toPromise();
+        const res = await this.mshService.getLineupProcessListByShopCode(adjShopCode).toPromise();
         if(res.code === 200){
           this.lineupProcessOfOptions = res.data;
         }
@@ -266,7 +264,6 @@ export class MSHI003Component implements AfterViewInit{
       finally{
         this.lineupProcessLoading = false;
       }
-    }
   }
 
   getShopCodeList() : void {
@@ -960,6 +957,7 @@ export class MSHI003Component implements AfterViewInit{
 
       // 若收集待新增或更新的陣列為空則直接push進去
       if(_.isEmpty(this.MSHI003PendingDataList)){
+        this.currentEditRowIndex = node.rowIndex;
         this.MSHI003PendingDataList.push(node.data);
         this.isSpinning = false;
         return;
@@ -971,9 +969,9 @@ export class MSHI003Component implements AfterViewInit{
 
       // 找不到同樣的資料則進行push
       if(!isSame && !isExist) {
+        this.currentEditRowIndex = node.rowIndex;
         this.MSHI003PendingDataList.push(node.data);
       }
-
 
       this.isSpinning = false;
     });
