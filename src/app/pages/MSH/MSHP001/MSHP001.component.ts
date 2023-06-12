@@ -515,7 +515,7 @@ comitHandleSelectCarModal(){
   public rowSelection: 'single' | 'multiple' = 'multiple';
   onCellClicked(event:any){
     console.log("cellClick :" + event.value )
-    if(event.colDef.field === 'ID_NO') {
+    if(event.colDef.field === 'ID_NO' || event.colDef.field ==="START_DATE_C" || event.colDef.field ==="END_DATE_C") {
       this.copy(event.value) ;
     }
    
