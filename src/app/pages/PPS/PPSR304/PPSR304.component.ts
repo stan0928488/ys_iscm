@@ -58,11 +58,13 @@ export class PPSR304Component implements AfterViewInit {
 
   columnDefsTab: ColDef<data>[] = [
     { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 100 },
+    { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
+    { headerName: '業務員' ,field: 'sales' , filter: false,width: 120 },
     { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
     { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
     { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
     { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 200 },
-    { headerName:'可接受交期', field:'dateDeliveryPp', filter:false, width:200}
+    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:200}
  ];
 
   constructor(
