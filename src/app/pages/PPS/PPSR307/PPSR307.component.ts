@@ -60,16 +60,16 @@ export class PPSR307Component implements AfterViewInit {
 
   columnDefsTab: ColDef<data>[] = [
     { headerName:'類型',field: 'stockType' , filter: false,width: 100 },
-	  { headerName:'銷售區域',field: 'saleAreaGroup' , filter: false,width: 100 },
-    { headerName: '客戶簡稱' ,field: 'custAbbreviations' , filter: false,width: 100 },
+	  { headerName:'銷售區域',field: 'saleAreaGroup' , filter: false,width: 120 },
+    { headerName: '客戶簡稱' ,field: 'custAbbreviations' , filter: false,width: 120 },
     { headerName: '訂單號碼' ,field: 'saleOrder'  ,filter: false,width: 100 },
     { headerName: '訂單項次' ,field: 'saleItem' ,filter: false,width: 100 },
-    { headerName:'生計交期',field: 'dateDeliveryPp' , filter: false,width: 100 },
+    { headerName:'生計交期',field: 'dateDeliveryPp' , filter: false,width: 120 },
 	  { headerName:'重量',field: 'weight' , filter: false,width: 100 },
-	  { headerName:'產品ID',field: 'idNo' , filter: false,width: 100 },
+	  { headerName:'產品ID',field: 'idNo' , filter: false,width: 120 },
 	  { headerName: '形狀' ,field: 'shape' , filter: false,width: 100 },
 	  { headerName:'尺寸',field: 'dia' , filter: false,width: 100 },
-	  { headerName: '凍結部門' ,field: 'frozenDeptName'  ,filter: false,width: 200 }
+	  { headerName: '凍結部門' ,field: 'frozenDeptName'  ,filter: false,width: 150 }
  ];
 
   constructor(

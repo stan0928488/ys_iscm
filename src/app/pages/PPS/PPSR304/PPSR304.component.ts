@@ -45,28 +45,6 @@ export class PPSR304Component implements AfterViewInit {
   uploadDate = "";
   uploadUser = "";
 
-  public defaultColDefTab: ColDef = {
-    sortable: true,
-    filter: true,
-    resizable: true,
-  };
-
-  public autoGroupColumnDef: ColDef = {
-    minWidth: 200,
-  };
-
-
-  columnDefsTab: ColDef<data>[] = [
-    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 100 },
-    { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
-    { headerName: '業務員' ,field: 'sales' , filter: false,width: 120 },
-    { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
-    { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
-    { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
-    { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 200 },
-    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:200}
- ];
-
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -80,6 +58,29 @@ export class PPSR304Component implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
   }
+
+  columnDefsTab: ColDef<data>[] = [
+    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 120 },
+    { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
+    { headerName: '業務員' ,field: 'sales' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
+    { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
+    { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
+    { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:120, cellStyle: { textAlign: "center" }}
+ ];
+
+ public defaultColDefTab: ColDef = {
+  sortable: true,
+  filter: true,
+  resizable: true,
+};
+
+public autoGroupColumnDef: ColDef = {
+  minWidth: 200,
+};
+
+
 
   ngAfterViewInit() {
     this.loading = true;
@@ -151,17 +152,11 @@ export class PPSR304Component implements AfterViewInit {
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確定'
       })
   }
 
   Upload() {
-    
-    // let getFileNull = this.inputFileUseInUpload;
-    // if(getFileNull === undefined){
-    //   this.errorMSG('請選擇檔案', '');
-    //   return;
-    // }
 
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
@@ -197,11 +192,7 @@ export class PPSR304Component implements AfterViewInit {
         }
 
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-  
-        
-          console.log("importExcel")
-          console.log(this.importdata)
-          this.importExcel(this.importdata);
+        this.importExcel(this.importdata);
         
       }
       fileReader.readAsArrayBuffer(this.file);
@@ -213,9 +204,9 @@ export class PPSR304Component implements AfterViewInit {
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
       let allData = JSON.stringify(_data[i]);
 
+      console.log(_data[i]);
       if (this.importdata_repeat.includes(allData)){
         this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
         this.clearFile();
@@ -225,22 +216,23 @@ export class PPSR304Component implements AfterViewInit {
         const datePipe = new DatePipe('en-US');
 
         this.importdata_repeat.push(allData);
-        let datePlanInStorage;
-        let dateDeliveryPp;
         let planInStorage = _data[i]['允收截止日'];
         let deliveryPp = _data[i]['可接受交期'];
 
-        if (planInStorage === undefined) {
+        let datePlanInStorage = null;
+        let dateDeliveryPp = null;
+
+        if (planInStorage == undefined) {
           datePlanInStorage = null;
-        } else if(planInStorage === 'Invalid date'){
+        } else {
           datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
         }
-        console.log(deliveryPp)
-        if (deliveryPp === undefined) {
+        if (deliveryPp == undefined) {
           dateDeliveryPp = null;
-        } else if(deliveryPp === 'Invalid date'){
+        } else {
           dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
         }
+
         upload_data.push({
           plantCode:this.PLANT_CODE,
           custAbbreviations: _data[i]['客戶簡稱'].toString(),
