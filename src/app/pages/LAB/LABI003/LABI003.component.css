@@ -1,0 +1,45 @@
+.headFlex {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    margin-left: 20px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.bodyFlex{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 30px;
+    width: 1250px;
+    height: 1200px;
+}
+
+.leftDiv {
+    width: 340px;
+    height: 500px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 50px;
+} 
+
+.rightDiv {
+    flex: 1;
+}
+
+.custom-divider {
+    height: 1200px;
+    cursor: ew-resize;
+    border-width: 3px;
+    margin: 0 10px;
+}
+
+.custom-divider:hover {
+    border-left: 1px dashed skyblue;
+    border-width: 3px;
+}

@@ -273,11 +273,6 @@
                           精整批次爐鋼種捲數製程碼對應表
                         </a>
                       </li>
-                      <li nz-menu-item>
-                        <a [routerLink]="['/singleData/I131']">
-                          直棒批次爐
-                        </a>
-                      </li>
                       
                     </ul>
                   </li>
@@ -342,7 +337,7 @@
                   </li>
                   <li nz-menu-item>
                     <a [routerLink]="['/FCPBarRepo/R301']">
-                      機台負荷表
+                      機台產能分析表
                     </a>
                   </li>
                   <li nz-menu-item>
@@ -350,33 +345,27 @@
                       異常MO表
                     </a>
                   </li>
+
+                  
+                  <li nz-submenu nzTitle="出貨計畫表">
+                    <ul>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/FCPshipRepo/R304']">
+                          報表維護
+                        </a>
+                      </li>
+                      <li nz-menu-item>
+                        <a [routerLink]="['/FCPshipRepo/R308']">
+                          報表檢視
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
                 </ul>
               </li>
                   
-              <li nz-submenu nzTitle="出貨計畫表" nzIcon="appstore">
-                <ul>
-                  <li nz-menu-item>
-                    <a [routerLink]="['/FCPshipRepo/R304']">
-                      客戶出貨資訊維護表
-                    </a>
-                  </li>
-                  <li nz-menu-item>
-                    <a [routerLink]="['/FCPshipRepo/R305']">
-                      訂單足項維護表
-                    </a>
-                  </li>
-                  <li nz-menu-item>
-                    <a [routerLink]="['/FCPshipRepo/R306']">
-                      出貨移轉統計表
-                    </a>
-                  </li>
-                  <li nz-menu-item>
-                    <a [routerLink]="['/FCPshipRepo/R307']">
-                      成品/半成品現況
-                    </a>
-                  </li>
-                </ul>   
-              </li>
+            
             </ul>
           </li>
           
@@ -401,12 +390,6 @@
                   <li nz-menu-item>
                     <a [routerLink]="['/MSHSet/I003']">
                       EPST變更作業
-                    </a>
-                  </li>
-
-                  <li nz-menu-item>
-                    <a [routerLink]="['/MSHSet/I004']">
-                      起動發佈模式
                     </a>
                   </li>
                 </ul>
@@ -439,6 +422,11 @@
                   <li nz-menu-item>
                     <a [routerLink]="['/LABSet/I002']">
                       實驗室取樣時間設定
+                    </a>
+                  </li>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/LABSet/I003']">
+                      實驗室行事曆
                     </a>
                   </li>
                 </ul>

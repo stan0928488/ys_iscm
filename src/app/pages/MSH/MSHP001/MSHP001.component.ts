@@ -18,6 +18,8 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
+import { ClipboardService } from 'ngx-clipboard'
+
 @Component({
   selector: 'app-MSHP001',
   templateUrl: './MSHP001.component.html',
@@ -40,26 +42,32 @@ export class MSHP001Component implements OnInit {
   rowExcelModelData = [] ;
   // 表格頭
   columnDefs: ColDef[] = [];
+  //外層表格頭部
+  outsideColumnDefs: ColDef[] = [];
 
   rowData = [];
 
   rowData1 = [];
 
-onCellClicked(value:any){
-  console.log(value.data)
-}
+
 //識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
 category = '' ;
 
 
 //public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
   date:Date[];
-  selectShopCode = "401" ;
+  selectShopCode = "334" ;
   shopCodeList:any = [] ;
   //選擇機台
   selectEquipCode = '';
   //可选机台
   equipCodeList = [] ;
+  //可替換機台
+  equipCodeChangeList = [] ;
+  //可替換幾天
+  equipCodeChangeListOption = [] ;
+  //可替換機台選擇
+  selectChangeEquipCode = "";
   //可展示欄位
   allColumList:any = [] ;
  //可以分群的數據
@@ -145,6 +153,11 @@ category = '' ;
 
  /***更換作業代碼 */
  changeOpCodeIsVisible = false ;
+
+ //當前站別下載機台數
+ shopMachineList = [] ;
+
+
  handleOpCodeModal(){
   let idsTemp = "" ;
   this.rowSelectData.forEach((item,index,array)=>{
@@ -159,6 +172,29 @@ category = '' ;
   this.changeOpCodeIsVisible = !this.changeOpCodeIsVisible 
 
  }
+
+
+ /******更換機台開始 */
+ changeMachineModal = {
+  isVisible : false ,
+  title:'機台更換',
+  isConfirmLoading: false ,
+  table : {
+    header : [
+      {"label":'MO',"value":'ID_NO'},
+      {"label":'投產機台',"value":'PST_MACHINE_ADD'},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+    ] ,
+    tbData : [] ,
+  }
+ }
+
+ /******更換機台結束 */
+
+
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
   this.mshService.getEquipOpCode(ids).subscribe(res=>{
@@ -327,15 +363,6 @@ comitHandleSelectCarModal(){
 
 }
 
-   /***更換機台 */
-   changeEquipIsVisible = false ;
-   handleEquipModal(){
-    this.changeEquipIsVisible = !this.changeEquipIsVisible 
-   }
-   // 確認保存
-   comitHandleEquipModal(){
-
-   }
    // 保存狀態
    handleEquipIsConfirmLoading = false 
    // 更換機台數據
@@ -372,13 +399,43 @@ comitHandleSelectCarModal(){
     private mshService:MSHService,
     private nzMessageService:NzMessageService,
     private excelService: ExcelService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private clipboardService: ClipboardService
     ) {
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+            return { background: 'lightcoral' };
+          } else {
+            if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+              if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                return { background: 'white' };
+              } else {
+                return { background: 'powderblue' };
+              }
+            } else {
+              return { background: 'yellow' };
+            }
+          }
+        } else {
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
+        }
+       
+      },
       //rowData: this.rowData,
-    //  cellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event);},
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
+
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClick(event) ;
       } ,
@@ -393,6 +450,24 @@ comitHandleSelectCarModal(){
     this.gridOptionsModal = {
       rowDragMultiRow: true,
       rowDragManaged: true, 
+      getRowStyle(params) {
+        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
+        //   return { background: 'lightgray' };
+        // }
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
+        } else {
+          console.log("ORIGINAL_OP_CODE_ADD2:" + JSON.stringify(params.data["ORIGINAL_OP_CODE_ADD"]))
+          // Apply a different background color to odd rows
+          return { background: 'yellow' };
+        }
+      },
+      onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
@@ -438,6 +513,19 @@ comitHandleSelectCarModal(){
   }
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
+  onCellClicked(event:any){
+    console.log("cellClick :" + event.value )
+    if(event.colDef.field === 'ID_NO' || event.colDef.field ==="START_DATE_C" || event.colDef.field ==="END_DATE_C") {
+      this.copy(event.value) ;
+    }
+   
+  }
+  copy(text: string){
+    this.clipboardService.copy(text)
+    this.nzMessageService.info(text + ", 已復製到剪切板，可使用CTRL+V") 
+  }
+  
+
   doubleClick(row){
     console.log("doubleClick")
     console.log(row)
@@ -530,7 +618,7 @@ comitHandleSelectCarModal(){
     this.searchV0.equipCode = this.selectEquipCode ;
     this.searchV0.fcpVer = this.selectFcpVer
     // 如果是RF 的，结束时间为3个月之后
-    if(this.selectEquipCode === 'RF') {
+    if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1') {
       console.log("RF")
       this.searchV0.endDate = moment(new Date()).add(3, "months").format(this.mdateFormat) ;
       console.log("endDate ：" + this.searchV0.endDate)
@@ -604,7 +692,7 @@ comitHandleSelectCarModal(){
       //分群默认选择
       let groupArrayTemp = [] ;
       //如果是 RF 需要CARID
-      if(this.selectEquipCode === 'RF'){
+      if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1'){
         let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
         groupColumListTemp.push(itemTemp) ;
         groupArrayTemp.push(itemTemp.columValue) ;
@@ -622,8 +710,11 @@ comitHandleSelectCarModal(){
       this.groupColumList = groupColumListTemp ;
       // 分群栏位 checked
       this.groupArray = groupArrayTemp ;
-
+      //頭部
       this.columnDefs = [] ;
+      //外層頭部
+      this.outsideColumnDefs = [] ;
+
       let exportHeader = [] ;
       this.columKeyType = {} ;
      
@@ -631,30 +722,35 @@ comitHandleSelectCarModal(){
         let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
+        this.outsideColumnDefs.push(index1);
         this.columKeyType["sortId"] = 0 ;
 
         let index2 = {headerName:'KEY',field:'ID',rowDrag: false,resizable:true,width:50, hide: true }
         exportHeader.push("KEY")
         this.columnDefs.push(index2);
+        this.outsideColumnDefs.push(index2);
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:130 }
+        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:200 }
         exportHeader.push("開始")
         this.columnDefs.push(index3);
+        this.outsideColumnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80 }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:200 }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
+        this.outsideColumnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
-        if(this.selectEquipCode === 'RF') {
+        if(this.selectEquipCode === 'RF' ||this.selectEquipCode === 'BA1' ) {
         // 411 CARID
         let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
+        this.outsideColumnDefs.push(index5);
         //数据类型
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
@@ -662,15 +758,50 @@ comitHandleSelectCarModal(){
         let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
+        this.outsideColumnDefs.push(index6);
         //数据类型
         this.columKeyType["CAR_EPST_ADD"] = 0 ;
         // 411 CARLPST
         let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CARLPST")
         this.columnDefs.push(index7);
+        this.outsideColumnDefs.push(index7);
         //数据类型
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
+
+         // 411 CARLPST
+         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("ORIGINAL_OP_CODE")
+         this.columnDefs.push(index8);
+         this.outsideColumnDefs.push(index8);
+         //数据类型
+         this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
+
+         //411 車重
+         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80 }
+         exportHeader.push("車重")
+         this.columnDefs.push(index9);
+         this.outsideColumnDefs.push(index9);
+         //数据类型
+         this.columKeyType["CAR_WEIGHT_ADD"] = 0 ;
+         // 411 PST_MACHINE_ADD
+
+         let index10 = {headerName:'固定機台',field:'PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         exportHeader.push("固定機台")
+         this.columnDefs.push(index10);
+         this.outsideColumnDefs.push(index10);
+         //数据类型
+         this.columKeyType["PST_MACHINE_ADD"] = 0 ;
+
+        
       }
+       //ORIGINAL_PST_MACHINE_ADD
+       let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("原始機台")
+       this.columnDefs.push(index11);
+       this.outsideColumnDefs.push(index11);
+       //数据类型
+       this.columKeyType["ORIGINAL_PST_MACHINE_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
@@ -679,10 +810,18 @@ comitHandleSelectCarModal(){
           if(index == 0) {
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
+            
           } else { 
             let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
+            if(item.isOutside === 1) {
+              this.outsideColumnDefs.push(itemTemp);
+            }
           }
+         
           let columKeyTypeTemp = {} ;
           let key = item.columValue ;
           columKeyTypeTemp[key] = item.isNumber ;
@@ -922,6 +1061,7 @@ comitHandleSelectCarModal(){
     //遍歷原始數據
     originalDataTemp.forEach((item,index,array)=>{
       //遍歷出每一筆數據按照分群結果拼接,逗號隔開
+      //將分群欄位的內容進行拼接 以判斷分群界限
       let currentGroupString = ""
       for(let i = 0 ; i < this.groupArray.length ; i ++) {
         let key = this.groupArray[i]
@@ -948,9 +1088,19 @@ comitHandleSelectCarModal(){
               if(this.arrayContainStr(this.groupArray,key) === true) {
               //  console.log("分群欄位：" + key + ":" + preGroupObject[key]) ;
               } else {
+                  // 將所有的分群進行拼接，逗號隔開
+                  if(item[key] !== null) {
+                    let newStr = preGroupObject[key] + ',' + item[key] ;
+                    preGroupObject[key] = newStr
+                  } else {
+                    preGroupObject[key] = preGroupObject[key]
+                  }
+                  
+                 /** ========== 舊算法 */
                // console.log("this.columKeyType[key]:" +this.columKeyType[key])
                 //如果不是分組欄位，數字加和，字符串拼接
-                if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
+                //如果不是數字
+                /*if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
                   if(key === 'sortId') {
                     let newStr = preGroupObject[key] + ',' + item[key] ;
                     preGroupObject[key] = newStr
@@ -962,19 +1112,8 @@ comitHandleSelectCarModal(){
                     let newStr =  item[key] ;
                       preGroupObject[key] = newStr
                   }
-                 
-                 /*
-                  if(item[key] !== null) {
-                    let newStr = preGroupObject[key] + ',' + item[key] ;
-                    preGroupObject[key] = newStr
-                  } else {
-                    preGroupObject[key] = preGroupObject[key]
-                  }
-                  */
-                 
-               //   console.log("非分群 非數字：" + key + ":" + newStr) ;
-                } else {
-               //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
+                } else { // 如果是數子
+                  //   console.log("非分群 數字：" + key + ":" + preGroupObject[key]) ;
                   //preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2)
                   preGroupObject[key] +=  item[key];  
                    //結束時間顯示
@@ -983,7 +1122,7 @@ comitHandleSelectCarModal(){
                   }
                  
                 }
-
+              /** ========== 舊算法 */
               }
             })
             //如果跟上一條數據相等
@@ -1018,8 +1157,137 @@ comitHandleSelectCarModal(){
   // console.log("寫入數據分群：" + JSON.stringify(preGroupObject) )
   Object.keys(preGroupObject).forEach((key)=>{
     //处理不是id的栏位
-    if(key !== 'sortId') {
+    if(key !== 'sortId') { 
+      if(preGroupObject[key] !== null) {
+        // 開始時間取第一筆
+        if(key === 'START_DATE_C') {
+         // preGroupObject[key] = ""
+        let  startDateArray =   preGroupObject[key].toString().split(',')[0]
+        preGroupObject[key] = startDateArray
+        } else if(key === 'END_DATE_C'){ // 結束時間取左後一筆
+          let endDateArrayLen = preGroupObject[key].toString().split(',').length ;
+          let  endDateArray =   preGroupObject[key].toString().split(',')[endDateArrayLen - 1]
+          preGroupObject[key] = endDateArray
+         // preGroupObject[key] = ""
+        } else if( key === 'NEXT_SCH_SHOP_CODE') {  // 若果是下站別 逗號隔開 去重復
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+
+        }else if( key === 'PLAN_WEIGHT_I') {  // 若果是計劃重量 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }else if( key === 'OUTPUT_SHAPE') {  // 若果是產出形態 逗號隔開 去重復
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+
+        }else if( key === 'TC_TEMPERATURE') {  // 若果是TC_溫度 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+
+        }else if( key === 'TC_FREQUENCE') {  // 若果是TC_頻率 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }else if( key === 'BA1_TEMPERATURE') {  // 若果是BA_溫度 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }else if( key === 'INPUT_DIA') {  // 若果是投入尺寸 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        } else if( key === 'OUT_DIA') {  // 若果是產出尺寸 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'OP_CODE') {  // 若果是作業代碼 從低到高
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'DATE_DELIVERY_PP') {  // 若果是交期 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'PST') {  // 若果是投產日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
+          preGroupObject[key] = r 
+        }  
+        else if( key === 'AUTO_FROZEN') {  // 若果是排程凍結 
+
+        }  
+        else if( key === 'DATE_PLAN_IN_STORAGE') {  // 若果是允收截止日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
+          preGroupObject[key] = r 
+        }
+        else if( key === 'NEW_EPST') {  // 若果是允收截止日 從低到高
+          let dateTimeStrings = preGroupObject[key].toString().split(",");
+          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
+          let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
+          preGroupObject[key] = r 
+        }
+        
+        else if( key === 'STEEL_TYPE') {  // 若果是鋼種，逗號拼接
+          //console.log(" 鋼種 : " +  preGroupObject[key])
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+        }  
+        else if( key === 'GRADE_GROUP') {  // 若果是鋼種，逗號拼接
+          //console.log(" 鋼種 : " +  preGroupObject[key])
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+        }  
+        else {
+         // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let filteredArr = arr.filter((item) => item !== "null"); // 过滤掉数组中的 null 元素
+          preGroupObject[key] = filteredArr[0]
+        }
+      } else {
+       // 當前值為空
+        if(key === 'START_DATE_C' || key === 'END_DATE_C') {
+          preGroupObject[key] = "" 
+        } else {
+          let newStr = preGroupObject[key]//.toString().replace("null","");
+          preGroupObject[key] = newStr
+        }
+      }
+
+
+      /*** ======舊算法 */
     //当前栏位不是数字
+    /*
     if(this.columKeyType[key] === 0 || this.columKeyType[key] === '0') {
       //如果当前值不为空
       if(preGroupObject[key] !== null) {
@@ -1052,6 +1320,7 @@ comitHandleSelectCarModal(){
         preGroupObject[key] =  Number(preGroupObject[key]).toFixed(2);
       }  
     }
+    */
   }
   })
   return preGroupObject ;
@@ -1262,6 +1531,8 @@ comitHandleSelectCarModal(){
       console.log("exportFileName:" + this.exportFileName)
       if(!this.uploadFile.name.includes(this.exportFileName)) {
         this.nzMessageService.error('請使用同一份文件檔案。');
+        this.clearFile();
+        return;
       }
       if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
@@ -1271,6 +1542,7 @@ comitHandleSelectCarModal(){
     }
     //清除文件
     clearFile() {
+      this.uploadFile = null ;
       document.getElementsByTagName('input')[0].value = '';
   
     }
@@ -1331,5 +1603,173 @@ comitHandleSelectCarModal(){
 
     /**EXCEL FUNCTION END */
 
+    /***子層開始 */
+    exportRowSelectData(){
+    let tableName = 'EXPORTDATAINFO' ;
+    if(this.rowSelectData.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.excelService.exportAsExcelFile(this.rowSelectData, tableName,this.export.header);
+
+    }
+    exportRowSortedData(){
+      let tableName = 'EXPORTALLDATAINFO' ;
+      if(this.rowSortedData.length < 1) {
+        this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+        return 
+      }
+      this.excelService.exportAsExcelFile(this.rowSortedData, tableName,this.export.header);
+    }
+
+     /***子層結束 */
+
+     /***機台更換開始 */
+     //更換機台，將數據從子層調出
+     handleChangeMachineModal(){
+      this.changeMachineModal.isVisible = true ;
+      this.selectChangeEquipCode = "" ;
+      this.equipCodeChangeList =  this.equipCodeList ;
+      this.equipCodeChangeListOption = this.equipCodeChangeList.filter((item)=>{
+         return item.value !== this.selectEquipCode
+      })
+      console.log("equipCodeChangeListOption:" + this.equipCodeChangeListOption)
+      let changeMachineTB = [] ;
+      // 子層數據源
+      this.rowSelectData.forEach((item,index,array)=>{
+       //  console.log("子層數據源：" + JSON.stringify(item))
+       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false }
+        changeMachineTB.push(changeMachineTBTemp) ;
+      })
+      this.changeMachineModal.table.tbData = changeMachineTB ;
+      //當前站別的機台
+      this.getCurrentMachineData() ;
+     //equipCodeChangeList
+      
+     
+      
+     }
+     // 機台更換選擇
+     selectChangeEquipCodeFunc(){
+      console.log("selectChangeEquipCode:" + this.selectChangeEquipCode)
+      if(this.shopMachineList.length === 0){
+        this.nzMessageService.error("當前站別沒有查到已配置機台，請刷新重試!") 
+        return ;
+      }
+      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.selectChangeEquipCode);
+      if (containsValue) {
+        // 数组对象包含特定值
+        
+      } else {
+        // 数组对象不包含特定值
+        this.nzMessageService.error("當前機台未配置，請先下載數據!") ;
+        return ;
+      }
+
+       this.changeMachineModal.table.tbData.forEach((item,index,arr)=>{
+        this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
+        this.changeMachineModal.table.tbData[index].checked = true ;
+      })
+      
+     }
+     //機台選擇
+     selectChangeEquipCodeOptionFunc(index:any){
+      if(this.shopMachineList.length === 0){
+        this.nzMessageService.error("當前站別沒有查到已配置機台，請刷新重試!") 
+        return ;
+      }
+      console.log("已配置机台" + JSON.stringify(this.shopMachineList))
+      console.log("选择机台：" + this.selectChangeEquipCode)
+      const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW);
+      if (containsValue) {
+        // 数组对象包含特定值
+        
+      } else {
+        // 数组对象不包含特定值
+        this.nzMessageService.error("當前機台未配置，請先下載數據!") ;
+        return ;
+      }
+
+     }
+     //手動修改機台
+     startEdit(i:any){
+      this.changeMachineModal.table.tbData[i].isEdit = !this.changeMachineModal.table.tbData[i].isEdit
+
+     }
+     // 開啟關閉更換機台窗口
+     handleMachineModal(){
+      this.changeMachineModal.isVisible = ! this.changeMachineModal.isVisible ;
+     }
+
+     // 選擇更換哪些機台
+     handleSelectChangeMachine(){
+      console.log("this.changeMachineModal.table.tbData : " + JSON.stringify(this.changeMachineModal.table.tbData))
+
+     }
+
+ /***機台更換開始 */
+    //提交機台更換確認
+     comitHandleMachineModal(){
+      let comitDataTemp = [] ;
+      comitDataTemp = this.changeMachineModal.table.tbData.filter((item)=>{
+       return item.checked === true 
+      })
+      console.log("comitData : " + JSON.stringify(comitDataTemp))
+      //處理提交數據
+      let comitData = []
+      let checkData = true ;
+      comitDataTemp.forEach((item,index,value)=>{
+        const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === item.PST_MACHINE_NEW);
+      if (containsValue) {
+        let obj = {id:item.ID, pstMachine:item.PST_MACHINE_NEW, originalPstMachine:item.PST_MACHINE} ;
+        comitData.push(obj) ;
+        // 数组对象包含特定值
+      } else {
+        // 数组对象不包含特定值
+        checkData = false ;
+      }
+      
+      }) ;
+      
+      if(checkData === true) {
+        this.changeMachineModal.isConfirmLoading = true ;
+        this.mshService.saveChangeMachine(comitData).subscribe(res=>{
+          this.changeMachineModal.isConfirmLoading = false
+          let result:any = res ;
+          if(result.code !== 200) {
+            this.nzMessageService.error(result.message) ;
+          } else {
+            this.nzMessageService.success(result.message);
+            this.changeMachineModal.isVisible = false ;
+            this.modalTableVisible = false ;
+            this.getTableData() ;
+          }
+        })
+      } else {
+        this.nzMessageService.error("存在未配置機台，請先下載數據!") ;
+      }
+      
+     }
+
+     //獲取當前站別配置的機台
+     getCurrentMachineData(){
+      this.searchV0.shopCode = this.selectShopCode ;
+      this.searchV0.equipCode = this.selectEquipCode ;
+      this.searchV0.fcpVer = this.selectFcpVer
+      this.mshService.getCurrentMachineData(this.searchV0).subscribe(res=>{
+        this.shopMachineList = []
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.shopMachineList = result.data ;
+        }
+        console.log("當前站別，配置機台：" + JSON.stringify(this.shopMachineList))
+
+      });
+     }
+
+
+    /***機台更換結束 */
 
 }

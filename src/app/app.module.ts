@@ -18,6 +18,7 @@ import { LoginComponent } from './login/login.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { ClipboardModule } from 'ngx-clipboard';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -68,7 +69,6 @@ import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
 import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
 import { PPSI130Component } from "./pages/PPS/PPSI130/PPSI130.component";
-
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -85,6 +85,8 @@ import { PPSR303Component } from "./pages/PPS/PPSR303/PPSR303.component";
 
 import { PPSR304Component } from "./pages/PPS/PPSR304/PPSR304.component";
 import { PPSR305Component } from "./pages/PPS/PPSR305/PPSR305.component";
+import { PPSR306Component } from "./pages/PPS/PPSR306/PPSR306.component";
+import { PPSR307Component } from "./pages/PPS/PPSR307/PPSR307.component";
 import { OIPP029component } from "./pages/OIP/OIPP029/OIPP029.component";
 
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
@@ -101,10 +103,10 @@ import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
-import { PPSI131Component } from './pages/PPS/PPSI131/PPSI131.component';
-import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
-import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
-import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
+import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
+import { AdjShopCodeCellRendererComponent } from './pages/MSH/MSHI003/AdjShopCodeCellRenderer.componet';
+import { AdjShopCodeCellSelectEditorComponent } from './pages/MSH/MSHI003/adj-shop-code-cell-select-editor';
+import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-lineup-process-cell-select-editor';
 
 registerLocaleData(zh);
 
@@ -174,6 +176,8 @@ registerLocaleData(zh);
     PPSR303Component,
     PPSR304Component,
     PPSR305Component,
+    PPSR306Component,
+    PPSR307Component,
     OIPP029component,
     
     SPAP100component,
@@ -187,10 +191,10 @@ registerLocaleData(zh);
     MSHI003Component,
     PrimeDatePickerCellEditorComponent,
     LABI002Component,
-    PPSI131Component,
-    NonPpsiComponent,
-    MSHI004Component,
-    PrimeDatePickerCellEditor,
+    LABI003Component,
+    AdjShopCodeCellRendererComponent,
+    AdjShopCodeCellSelectEditorComponent,
+    AdjLineupProcessSelectEditorComponent
    ],
   imports: [
     BrowserModule,
@@ -205,6 +209,7 @@ registerLocaleData(zh);
     AgGridModule,
     NzTimelineModule,
     CalendarModule,
+    ClipboardModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')

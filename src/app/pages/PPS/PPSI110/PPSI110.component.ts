@@ -8,6 +8,7 @@ import {NzModalService} from "ng-zorro-antd/modal";
 import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import { number } from "echarts";
 
 
 interface ItemData {
@@ -19,6 +20,9 @@ interface ItemData {
   equipGroup: string;
   groupAmount: number;
   equipQuanity: number;
+  bootControl: number;
+  accumulateDay: number;
+  dateLimit: number;
 }
 
 
@@ -41,6 +45,11 @@ export class PPSI110Component implements AfterViewInit {
   equipGroup = '';
   groupAmount = 0;
   equipQuanity = 0;
+  insertData = {
+    bootControl:0,
+    accumulateDay:0,
+    dateLimit:0
+  }
 
   isVisibleYield = false;
   searchSchShopCodeValue = '';
@@ -57,6 +66,67 @@ export class PPSI110Component implements AfterViewInit {
   importdata = [];
   importdata_new = [];
   errorTXT = [];
+
+  filterObj = {
+
+    bootControlFilter:{
+      value:0,
+      search:()=>{
+        
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.bootControlFilter.value == 0){
+            return true;
+          }
+          return obj.bootControl == this.filterObj.bootControlFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.bootControlFilter.value = 0;
+        this.filterObj.bootControlFilter.search();
+      }
+    },
+    accumulateDayFilter:{
+      value:0,
+      search:()=>{
+
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.accumulateDayFilter.value == 0){
+            return true;
+          }
+          return obj.accumulateDay == this.filterObj.accumulateDayFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.accumulateDayFilter.value = 0;
+        this.filterObj.accumulateDayFilter.search();
+      }
+    },
+    dateLimitFilter:{
+      value:0,
+      search:()=>{
+
+        const data = this.tbppsm013List.filter((obj) => {
+          if(this.filterObj.dateLimitFilter.value == 0){
+            return true;
+          }
+          return obj.dateLimit == this.filterObj.dateLimitFilter.value
+        });
+        this.displayTbppsm013List = data;
+
+      },
+      reset:()=>{
+        this.filterObj.dateLimitFilter.value = 0;
+        this.filterObj.dateLimitFilter.search();
+      }
+    }
+
+  }
+
+  
 
   constructor(
     private PPSService: PPSService,
@@ -132,7 +202,10 @@ export class PPSI110Component implements AfterViewInit {
           equipCode: this.tbppsm013Tmp[i].equipCode,
           equipGroup: this.tbppsm013Tmp[i].equipGroup,
           groupAmount: this.tbppsm013Tmp[i].groupAmount,
-          equipQuanity: this.tbppsm013Tmp[i].equipQuanity
+          equipQuanity: this.tbppsm013Tmp[i].equipQuanity,
+          bootControl: this.tbppsm013Tmp[i].bootControl,
+          accumulateDay: this.tbppsm013Tmp[i].accumulateDay,
+          dateLimit: this.tbppsm013Tmp[i].dateLimit
         });
       }
       this.tbppsm013List = data;
@@ -242,7 +315,10 @@ export class PPSI110Component implements AfterViewInit {
         equipGroup : this.equipGroup,
         groupAmount : this.groupAmount,
         equipQuanity : this.equipQuanity,
-        userName : this.userName
+        userName : this.userName,
+        bootControl : this.insertData.bootControl,
+        accumulateDay : this.insertData.accumulateDay,
+        dateLimit : this.insertData.dateLimit
       })
 
       myObj.PPSService.insertI106Save('1', obj).subscribe(res => {
@@ -276,6 +352,9 @@ export class PPSI110Component implements AfterViewInit {
         equipGroup : this.editCache[_id].data.equipGroup,
         groupAmount : this.editCache[_id].data.groupAmount,
         equipQuanity : this.editCache[_id].data.equipQuanity,
+        bootControl : this.editCache[_id].data.bootControl,
+        accumulateDay : this.editCache[_id].data.accumulateDay,
+        dateLimit : this.editCache[_id].data.dateLimit,
         userName : this.userName
       })
       myObj.PPSService.updateI106Save('1', obj).subscribe(res => {
@@ -325,7 +404,7 @@ export class PPSI110Component implements AfterViewInit {
     if(this.tbppsm013List.length > 0) {
       data = this.formatDataForExcel(this.tbppsm013List);
       fileName = `直棒產能維護`;
-      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量'];
+      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量','開機管數','累計天數','略過天數'];
     } else {
       this.errorMSG("匯出失敗", "直棒產能維護目前無資料");
       return;
@@ -344,7 +423,10 @@ export class PPSI110Component implements AfterViewInit {
         equipCode: _.get(item, "equipCode"),
         equipGroup: _.get(item, "equipGroup"),
         groupAmount: _.get(item, "groupAmount"),
-        equipQuanity: _.get(item, "equipQuanity")
+        equipQuanity: _.get(item, "equipQuanity"),
+        bootControl: _.get(item, "bootControl"),
+        accumulateDay: _.get(item, "accumulateDay"),
+        dateLimit: _.get(item, "dateLimit")
       });
       excelData.push(obj);
     }
@@ -448,8 +530,16 @@ export class PPSI110Component implements AfterViewInit {
         let equipGroup = _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
         let groupAmount = _data[i].機群設備數量 !== undefined ? _data[i].機群設備數量.toString() : '0';
         let equipQuanity = _data[i].單設備生產量 !== undefined ? _data[i].單設備生產量.toString() : '0';
+        let bootControl = _data[i].開機管數	 !== undefined ? _data[i].開機管數.toString() : '0';
+        let dateLimit = _data[i].略過天數 !== undefined ? _data[i].略過天數.toString() : '0';
+        let accumulateDay = _data[i].累計天數 !== undefined ? _data[i].累計天數.toString() : '0';
 
-        this.importdata_new.push({plantCode: plantCode, schShopCode: schShopCode, equipCode: equipCode, equipGroup: equipGroup, groupAmount: groupAmount, equipQuanity: equipQuanity});
+        this.importdata_new.push({
+          plantCode: plantCode, schShopCode: schShopCode, equipCode: equipCode, equipGroup: equipGroup, groupAmount: groupAmount, equipQuanity: equipQuanity
+          ,bootControl:bootControl
+          ,dateLimit:dateLimit
+          ,accumulateDay:accumulateDay
+        });
       }
 
       return new Promise((resolve, reject) => {

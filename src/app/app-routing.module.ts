@@ -47,7 +47,6 @@ import { PPSI121Component } from "./pages/PPS/PPSI121/PPSI121.component";
 import { PPSI122Component } from "./pages/PPS/PPSI122/PPSI122.component";
 import { PPSI123Component } from "./pages/PPS/PPSI123/PPSI123.component";
 import { PPSI130Component } from "./pages/PPS/PPSI130/PPSI130.component";
-import { PPSI131Component } from "./pages/PPS/PPSI131/PPSI131.component";
 import { PPSI200Component } from "./pages/PPS/PPSI200/PPSI200.component";
 import { PPSI201Component } from "./pages/PPS/PPSI201/PPSI201.component";
 import { PPSI202Component } from "./pages/PPS/PPSI202/PPSI202.component";
@@ -63,6 +62,8 @@ import { PPSR302Component } from "./pages/PPS/PPSR302/PPSR302.component";
 import { PPSR303Component } from "./pages/PPS/PPSR303/PPSR303.component";
 import { PPSR304Component } from "./pages/PPS/PPSR304/PPSR304.component";
 import { PPSR305Component } from "./pages/PPS/PPSR305/PPSR305.component";
+import { PPSR306Component } from "./pages/PPS/PPSR306/PPSR306.component";
+import { PPSR307Component } from "./pages/PPS/PPSR307/PPSR307.component";
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
 import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
@@ -78,7 +79,7 @@ import { ErrorPageComponent } from "./pages/errorPage/ErrorPage.component";
 import { MSHI003Component } from "./pages/MSH/MSHI003/MSHI003.component";
 import { MSHI003CanDeactivateGuard } from "./pages/MSH/MSHI003/MSHI003.can.deactivate.guard";
 import { LABI002Component } from "./pages/LAB/LABI002/LABI002.component";
-import { MSHI004Component } from "./pages/MSH/MSHI004/MSHI004.component";
+import { LABI003Component } from "./pages/LAB/LABI003/LABI003.component";
 
 const routes: Routes = [
   {
@@ -186,8 +187,7 @@ const routes: Routes = [
       { path: "I122", component: PPSI122Component },
       { path: "I123", component: PPSI123Component },
       { path: "I124", component: PPSI205Component },
-      { path: "I130", component: PPSI130Component },
-      { path: "I131", component: PPSI131Component }
+      { path: "I130", component: PPSI130Component }
     ],
     canActivate: [AuthGuard]
   },
@@ -219,8 +219,7 @@ const routes: Routes = [
       { path: "", redirectTo: "/FCPBarRepo/R302", pathMatch: "full" },
       { path: "R303", component: PPSR303Component },
       { path: "R302", component: PPSR302Component },
-      { path: "R301", component: PPSR301Component },
-      { path: "R305", component: PPSR305Component }
+      { path: "R301", component: PPSR301Component }
     ],
     canActivate: [AuthGuard]
   },
@@ -229,7 +228,11 @@ const routes: Routes = [
     children: [
       { path: "", redirectTo: "/FCPBarRepo/R304", pathMatch: "full" },
       { path: "R304", component: PPSR304Component },
-      { path: "R305", component: PPSR305Component }
+      { path: "R305", component: PPSR305Component },
+      { path: "R306", component: PPSR306Component },
+      { path: "R307", component: PPSR307Component },
+      { path: "R308" }  //component: PPSR308Component
+
     ],
     canActivate: [AuthGuard]
   },
@@ -239,8 +242,7 @@ const routes: Routes = [
       { path: "", redirectTo: "/MSHSet/I001", pathMatch: "full" },
       { path: "I001", component: MSHI001Component },
       { path: "I002", component: MSHI002Component },
-      { path: "I003", component: MSHI003Component, canDeactivate : [MSHI003CanDeactivateGuard]},
-      { path: "I004", component: MSHI004Component }
+      { path: "I003", component: MSHI003Component, canDeactivate : [MSHI003CanDeactivateGuard]}
     ],
     canActivate: [AuthGuard]
   },
@@ -257,7 +259,8 @@ const routes: Routes = [
     children: [   
       { path: "", redirectTo: "/LABSet/I001", pathMatch: "full" },
       { path: "I001", component: LABI001Component },
-      { path: "I002", component: LABI002Component } // 實驗室取樣時間設定
+      { path: "I002", component: LABI002Component }, // 實驗室取樣時間設定
+      { path: "I003", component: LABI003Component } // 實驗室行事曆
     ],
     canActivate: [AuthGuard]
   },

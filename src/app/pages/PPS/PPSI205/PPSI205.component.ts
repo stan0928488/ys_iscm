@@ -31,7 +31,7 @@ export class PPSI205Component implements AfterViewInit {
 
   titleArray1 = ["月份","站別","機台","產出型態","產出尺寸","現況尺寸","最終製程","鋼種群組","製程碼"];
   titleArray2 = ["站別","機台","下一站站別","天數","最大值的EPST或LPST","生產開始日","生產結束日","TC頻率升降冪","COMPAIGN_ID"];
-
+  titleArray3 = ["公版月份","產品","軋延尺寸","CYCLE","日期~起","日期~迄"]
   datetime = moment();
   arrayBuffer:any;
   file:File;
@@ -50,6 +50,8 @@ export class PPSI205Component implements AfterViewInit {
   tbppsm101List;
   // tab 2
   tbppsm102List;
+  // tab 3
+  tbppsm113List;
 
   constructor(
     private router: Router,
@@ -69,7 +71,7 @@ export class PPSI205Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getTbppsm101List();
-    this.getRunFCPCount();
+    //this.getRunFCPCount();
   }
 
   // 取得是否有正在執行的FCP
@@ -92,15 +94,7 @@ export class PPSI205Component implements AfterViewInit {
       console.log("getTbppsm101List success");
       this.tbppsm101List = res;
       console.log(this.tbppsm101List)
-      const licss = document.getElementById('eeli');
-        if (licss != null) {
-          licss.style.backgroundColor = '#E4E3E3';
-        }
-        const acss = document.getElementById('eea');
-        if (acss != null) {
-          acss.style.cssText = "color: blue; font-weight:bold;";
-        }
-        document.getElementById('number').innerHTML = 'PPSI205';
+
       myObj.loading = false;
     });
   }
@@ -119,6 +113,18 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
+  //tab3
+   getTbppsm113List() {
+    this.loading = true;
+    let myObj = this;
+    this.getPPSService.getTbppsm113List(this.PLANT_CODE).subscribe(res => {
+      console.log("getTbppsm113List success");
+      this.tbppsm113List = res;
+      console.log(this.tbppsm113List)
+
+      myObj.loading = false;
+    });
+  }
 
 
   changeTab(tab): void {
@@ -127,6 +133,8 @@ export class PPSI205Component implements AfterViewInit {
       this.getTbppsm101List();
     } else if(tab === 2) {
       this.getTbppsm102List();
+    } else if(tab === 3){
+      this.getTbppsm113List();
     }
   }
   
@@ -154,6 +162,15 @@ export class PPSI205Component implements AfterViewInit {
         titleArray = this.titleArray2;
       } else {
         this.errorMSG("匯出失敗", "401站優先順序表目前無資料");
+        return;
+      }
+    } else if(_type === '3') {
+      if(this.tbppsm113List.length > 0) {
+        data = this.formatDataForExcel(_type, this.tbppsm113List);
+        fileName = `205站公版尺寸`;
+        titleArray = this.titleArray3;
+      } else {
+        this.errorMSG("匯出失敗", "205站公版尺寸目前無資料");
         return;
       }
     } 
@@ -195,6 +212,20 @@ export class PPSI205Component implements AfterViewInit {
           TC_FREQUENCE_LIFT: _.get(item, "TC_FREQUENCE_LIFT") === 'ASC' ? '升冪' : _.get(item, "TC_FREQUENCE_LIFT") === 'DESC' ? '降冪' : '',
           COMPAIGN_ID: _.get(item, "COMPAIGN_ID")//,
           // EXPORTDATETIME: _.get(item, "EXPORTDATETIME")
+        });
+        excelData.push(obj);
+      }
+    }  else if (_type === '3') {
+      for (let item of _displayData) {
+        let obj = {};
+        _.extend(obj, {
+          // ORDER_ID: _.get(item, "ORDER_ID"),
+          publicMonth: _.get(item, "publicMonth"),
+          productType: _.get(item, "productType"),
+          dia: _.get(item, "dia").toString(),
+          cycleNo: _.get(item, "cycleNo"),
+          startDate: _.get(item, "startDate"),
+          endDate: _.get(item, "endDate"),
         });
         excelData.push(obj);
       }
@@ -282,10 +313,25 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
-      } else {
+      }
+      else {
         this.importExcel2('2', importdata);
       }
-    }
+    } else if(_type === '3') {
+      console.log("incomingfile e5 : " + _type);
+      if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
+         worksheet.F1 === undefined) {
+        this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+        return;
+      } else if(worksheet.A1.v !== "公版月份" || worksheet.B1.v !== "產品" || worksheet.C1.v !== "軋延尺寸" || worksheet.D1.v !== "CYCLE" || worksheet.E1.v !== "日期~起" ||
+                worksheet.F1.v !== "日期~迄") {
+        this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+        return;
+      }else {
+        this.importExcel3('3', importdata);
+      } }
   }
 
   
@@ -467,6 +513,100 @@ export class PPSI205Component implements AfterViewInit {
     }
   }
 
+  // EXCEL 資料上傳 (tbppsm102List)
+  importExcel3(_type, _data) {
+    console.log("incomingfile e6 : " + _type);
+    for(let i=0 ; i < _data.length ; i++) {
+      let publicMonth = this.dateFormat(this.ExcelDateExchange(_data[i].公版月份),6);
+      let productType = _data[i].產品;
+      let dia = _data[i].軋延尺寸;
+      let cycleNo = _data[i].CYCLE;
+      let startDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~起']),2);
+      
+      if (startDate === 'Invalid date') {
+        startDate = this.dateFormat(_data[i]['日期~起'], 2);
+      }
+
+
+      if(publicMonth === undefined || productType === undefined || dia === undefined || cycleNo === undefined || startDate === undefined ) {
+        let col = i+2;
+        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+        this.isERROR = true;
+      }
+    }
+
+    if(this.isERROR) {
+      // 匯入錯誤失敗訊息提醒
+      this.clearFile();
+      this.isErrorMsg = true;
+      this.importdata_new = [];
+      this.errorMSG("匯入錯誤", this.errorTXT);
+
+    } else {
+
+      for(let i=0 ; i < _data.length ; i++) {
+        
+        let publicMonth =  this.dateFormat(this.ExcelDateExchange(_data[i].公版月份),6);
+        let productType = _data[i].產品;
+        let dia = _data[i].軋延尺寸.toString();
+        let cycleNo = _data[i].CYCLE.toString();
+        let startDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~起']), 2);
+        console.log(publicMonth)
+        if (publicMonth === 'Invalid date') {
+          publicMonth =  this.dateFormat(_data[i]['公版月份'],6);
+        }
+        if (startDate === 'Invalid date') {
+          startDate = this.dateFormat(_data[i]['日期~起'], 2);
+        }
+        if(_data[i]['日期~迄'] != undefined){
+
+          var endDate = this.dateFormat(this.ExcelDateExchange(_data[i]['日期~迄']), 2);
+
+          if (endDate === 'Invalid date') {
+            endDate = this.dateFormat(_data[i]['日期~起'], 2);
+          }      
+
+          this.importdata_new.push({publicMonth: publicMonth , productType: productType, dia: dia, cycleNo: cycleNo, startDate: startDate, endDate: endDate});
+        }else{
+          this.importdata_new.push({publicMonth: publicMonth , productType: productType, dia: dia, cycleNo: cycleNo, startDate: startDate});
+        }
+      }
+      
+      return new Promise((resolve, reject) => {
+        this.LoadingPage = true;
+        let myObj = this;
+        let obj = {};
+        _.extend(obj, {
+          NOWTABS : _type,
+          EXCELDATA : this.importdata_new,
+          PLANT_CODE : this.PLANT_CODE,
+          USERCODE : this.USERNAME,
+          DATETIME : this.datetime.format('YYYY-MM-DD HH:mm:ss')
+        })
+        myObj.getPPSService.importI205Excel(obj).subscribe(res => {
+          if(res[0].MSG === "Y") {
+            this.loading = false;
+            this.LoadingPage = false;
+
+            this.sucessMSG("EXCCEL上傳成功", "");
+            this.getTbppsm113List();
+            this.clearFile();
+          } else {
+            this.errorMSG("匯入錯誤", res[0].MSG);
+            this.clearFile();
+            this.LoadingPage = false;
+          }
+        },err => {
+          reject('upload fail');
+          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+          this.LoadingPage = false;
+        })
+        this.importdata = [];
+        this.importdata_new = [];
+        this.errorTXT = [];
+      });
+    }
+  }
   // 清空資料
   clearFile() {
     var objFile = document.getElementsByTagName('input')[0];
@@ -556,6 +696,16 @@ export class PPSI205Component implements AfterViewInit {
       this.tbppsm102List[idx].MAX_DATE = this.dateFormat(result, 6);
     } else if(_type === '2') {
       this.tbppsm102List[idx].STARTDATE = this.dateFormat(result, 2);
+    } else if(_type === '3-0') {
+      this.tbppsm113List[idx].publicMonth = this.dateFormat(result, 2);
+      console.log(this.tbppsm113List[idx])
+    } else if(_type === '3-1') {
+      this.tbppsm113List[idx].startDate = this.dateFormat(result, 2);
+      console.log(this.tbppsm113List[idx])
+    } else if(_type === '3-2') {
+      console.log(result)
+      this.tbppsm113List[idx].endDate = this.dateFormat(result, 2);
+      console.log(this.tbppsm113List[idx])
     }
   }
   
@@ -673,6 +823,105 @@ export class PPSI205Component implements AfterViewInit {
   }
 
 
+  // 修改存檔
+  save113_dtlRow(i, data) {
+    console.log("-------save113_dtlRow------");
+
+    this.newlist = data;
+    console.log(this.oldlist)
+    let publicMonth = this.dateFormat(this.newlist.publicMonth,6);
+    let productType = this.newlist.productType;
+    let dia = this.newlist.dia;
+    let cycleNo = this.newlist.cycleNo;
+    let startDate = this.dateFormat(this.newlist.startDate,2);
+    let endDate = this.dateFormat(this.newlist.endDate,2);
+
+    console.log(this.newlist);
+    if(publicMonth === '' || productType === '' || dia === '' || cycleNo === '' || startDate === ''
+    || endDate === ''|| endDate === undefined) {
+
+      this.errorMSG("錯誤", "有欄位尚未填寫完畢，請檢查");
+      //this.cancel113_dtlRow(i,data);
+      return;
+    } else {
+
+      this.newlist.publicMonth = publicMonth;
+      this.newlist.startDate = startDate;
+      this.newlist.endDate = endDate;
+      this.newlist.dia = this.newlist.dia.toString();
+      this.newlist.cycleNo = this.newlist.cycleNo.toString();
+
+      this.Modal.confirm({
+        nzTitle: '是否確定存檔',
+        nzOnOk: () => {
+          this.Save113OK(i),
+          this.EditMode[i] = true
+        },
+        nzOnCancel: () =>
+          this.EditMode[i] = true
+      });
+
+    }
+  }
+
+  // 確定修改存檔
+  Save113OK(col) {
+    console.log("oldlist :")
+    console.log(this.oldlist);
+
+
+    console.log("newlist :")
+    console.log(this.newlist)
+
+    this.LoadingPage = true;
+    let myObj = this;
+		return new Promise((resolve, reject) => {
+			let obj = {};
+
+			_.extend(obj, {
+				OLDLIST : this.oldlist,
+				NEWList : this.newlist,
+        USERCODE : this.USERNAME,
+        DATETIME : this.datetime.format('YYYY-MM-DD HH:mm:ss')
+			})
+      myObj.getPPSService.upd113ListData(obj).subscribe(res => {
+        if(res[0].MSG === "Y") {
+          this.LoadingPage = false;
+          this.EditMode[col] = false;
+          this.oldlist = [];
+          this.newlist = [];
+          this.getTbppsm102List();
+          this.sucessMSG("修改存檔成功", "");
+          this.getTbppsm113List();
+
+        } else {
+          this.errorMSG("修改存檔失敗", res[0].MSG);
+          this.LoadingPage = false;
+          this.EditMode[col] = true;
+        }
+      },err => {
+        reject('upload fail');
+        this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+        this.oldlist = [];
+        this.LoadingPage = false;
+      })
+		});
+
+  }
+
+
+  // 取消修改
+  cancel113_dtlRow(i, data) {
+    console.log();
+    this.EditMode[i] = false;
+
+    this.tbppsm113List[i].publicMonth = this.dateFormat(this.oldlist['publicMonth'], 6);
+    this.tbppsm113List[i].productType = this.oldlist['productType'];
+    this.tbppsm113List[i].dia = this.oldlist['dia'];
+    this.tbppsm113List[i].cycleNo = this.oldlist['cycleNo'];
+    this.tbppsm113List[i].startDate =  this.dateFormat(this.oldlist['startDate'], 2);
+    this.tbppsm113List[i].endDate =  this.dateFormat(this.oldlist['endDate'], 2);
+  }
 	sucessMSG(_title, _context): void {
 		this.Modal.success({
 			nzTitle: _title,

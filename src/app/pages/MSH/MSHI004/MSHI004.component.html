@@ -6,8 +6,45 @@
   </nz-breadcrumb>
 
   <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
+    <div class="flex">
+      <button (click)="serach(true)" nz-button nzType="primary">
+        <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+      </button>
+    </div>
+
+    <div class="flex">
+      <span
+        style="
+          width: 50px;
+          height: 25px;
+          font-size: 16px;
+          background-color: rgb(156, 182, 206);
+          font-weight: bold;
+          border-radius: 5px;
+        "
+        >&nbsp;&nbsp;站別</span
+      >
+      <nz-select
+        nzPlaceHolder="請選擇版本"
+        style="width: 195px"
+        [(ngModel)]="shopCodeInputList"
+        nzAllowClear
+        (nzOpenChange)="getShopCodeList()"
+      >
+        <nz-option
+          *ngFor="let shopCode of shopCodeOfOption"
+          [nzLabel]="shopCode"
+          [nzValue]="shopCode"
+        ></nz-option>
+        <nz-option *ngIf="shopCodeLoading" nzDisabled nzCustomContent>
+          <span nz-icon nzType="loading" class="loading-icon"></span>
+          版本清單載入中...
+        </nz-option>
+      </nz-select>
+    </div>
+
     <ag-grid-angular
-      style="width: 100%; height: 700px; margin-bottom: 200px; margin-top: 50px"
+      style="width: 100%; height: 703px; margin-bottom: 50px; margin-top: 50px"
       class="ag-theme-alpine"
       [rowData]="MSHI004DataList"
       [columnDefs]="columnDefs"
@@ -17,13 +54,8 @@
     >
     </ag-grid-angular>
 
-    <button
-      style="margin-left: 20px"
-      (click)="confirm()"
-      nz-button
-      nzType="primary"
-    >
-      <span nz-icon nzType="check-circle" nzTheme="outline"></span>確認
+    <button style="float: right" (click)="confirm()" nz-button nzType="primary">
+      <span nz-icon nzType="check-circle" nzTheme="outline"></span>儲存
     </button>
   </nz-spin>
 </nz-content>

@@ -84,7 +84,7 @@ export class PPSR305Component implements AfterViewInit {
 
     let myObj = this ;
 
-    myObj.PPSService.getR305DataList().subscribe(res =>{
+    myObj.PPSService.getR305DataList(this.PLANT_CODE).subscribe(res =>{
 
       let result : any = res;
 
@@ -118,12 +118,15 @@ export class PPSR305Component implements AfterViewInit {
       };
   
       for(var i in this.R305DataList) {
+        
         var temp = {}
-        for(var j in head){
+        for(var j in this.columnDefsTab){
           
-          var field = head[j]
-          temp[field] = this.R305DataList[i][field];
-          
+          if(this.columnDefsTab[j]['hide'] == undefined || this.columnDefsTab[j]['hide'] != true){
+            var field = this.columnDefsTab[j]['field'];
+            console.log(field)
+            temp[field] = this.R305DataList[i][field];
+          }
           
         }
         console.log(temp)
@@ -175,7 +178,16 @@ export class PPSR305Component implements AfterViewInit {
         var worksheet:any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
   
-        
+        if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined ) {
+        this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+          return;
+        } else if(worksheet.A1.v !== "客戶簡稱" || worksheet.B1.v !== "訂單號碼" 
+        || worksheet.C1.v !== "缺項群組") {
+          this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+          this.clearFile();
+          return;
+        }
           console.log("importExcel")
           console.log(this.importdata)
           this.importExcel(this.importdata);
@@ -198,8 +210,11 @@ export class PPSR305Component implements AfterViewInit {
         this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
         this.clearFile();
         return;
-      }
-      else{
+      }else if(!_data[i]['訂單號碼'].includes('-')){
+        this.errorMSG('資料格式有誤', '第' + (i+1) + "筆訂單號碼格式有誤，請確認後再上傳");
+        this.clearFile();
+        return;
+      }else{
         var saleInfo =  _data[i]['訂單號碼'].toString().split('-');
         this.importdata_repeat.push(allData);
         upload_data.push({
@@ -256,6 +271,7 @@ export class PPSR305Component implements AfterViewInit {
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
     this.importdata_repeat = [];
+    
   }
 
      // excel檔名

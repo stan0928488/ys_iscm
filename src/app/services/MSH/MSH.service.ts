@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 import { CookieService } from "../config/cookie.service";
 import * as _ from "lodash";
@@ -138,6 +138,17 @@ saveChangeOpCode(_param) {
     return this.http.get<any>(endpointUrl);
   }
 
+  // 獲取流程清單
+  getLineupProcessListByShopCode(adjShopCode : string){
+    console.log('獲取流程清單..');
+    const httpParams = new HttpParams()
+      .set('adjShopCode', adjShopCode);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getLineupProcessListByShopCode`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : 無`);
+    return this.http.get<any>(endpointUrl, { params: httpParams });
+  }
+
   // 獲取機台清單
   getEquipCodeList(shopCodeList){
     console.log('獲取機台清單..');
@@ -166,6 +177,30 @@ saveChangeOpCode(_param) {
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Body參數 : ${body}`);
     return this.http.post<any>(endpointUrl, jsonExcelData, this.httpOptions);
+  }
+
+  // 根據idNo、調整站別與調整流程搜尋過站狀態與EPST
+  findByIdNoAdjShopCodeAdjLineupProcess(idNo : string, adjShopCode : string, adjLineupProcess : string){
+  console.log('根據idNo、調整站別與調整流程搜尋過站狀態與EPST..');
+  const httpParams = new HttpParams()
+      .set('idNo', idNo)
+      .set('adjShopCode', adjShopCode)
+      .set('adjLineupProcess', adjLineupProcess);
+  let endpointUrl = `${this.APIURL}/msh/MSHC003/findByIdNoAdjShopCodeAdjLineupProcess`;
+  console.log(`API Url : ${endpointUrl}`);
+  console.log(`Payload 參數 : ${JSON.stringify(httpParams)}`);
+  return this.http.get<any>(endpointUrl, { params: httpParams });
+}
+
+  /****機台更換 */
+  saveChangeMachine(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeMachine";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+  // 獲取當前機台數據已配置的數據
+  getCurrentMachineData(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/getCurrentMachineData";
+    return this.http.post(queryUrl,_param,this.httpOptions);
   }
 
 }

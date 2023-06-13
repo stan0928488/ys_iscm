@@ -139,7 +139,7 @@ export class LABI002Component implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.getTblabm002List();
+    //this.getTblabm002List();
     this.getTblabm003List();
   }
 
@@ -644,17 +644,17 @@ export class LABI002Component implements AfterViewInit {
   addSampleTimeSettingPeriod(){
 
       this.isOkLoadingForOnlyTime = true;
-      let startHour = this.startTimeForOnlyTime.getHours().toString();
-      let startMinute = this.startTimeForOnlyTime.getMinutes().toString();
-      let stratSecond = this.startTimeForOnlyTime.getSeconds().toString();
+      let startHour = this.startTimeForOnlyTime.getHours().toString().padStart(2, '0');;
+      let startMinute = this.startTimeForOnlyTime.getMinutes().toString().padStart(2, '0');;
+      let stratSecond = this.startTimeForOnlyTime.getSeconds().toString().padStart(2, '0');;
 
-      let endHour = this.endTimeForOnlyTime.getHours().toString();
-      let endMinute = this.endTimeForOnlyTime.getMinutes().toString();
-      let endSecond  = this.endTimeForOnlyTime.getSeconds().toString();
+      let endHour = this.endTimeForOnlyTime.getHours().toString().padStart(2, '0');;
+      let endMinute = this.endTimeForOnlyTime.getMinutes().toString().padStart(2, '0');;
+      let endSecond  = this.endTimeForOnlyTime.getSeconds().toString().padStart(2, '0');;
 
-      let setHour = this.setTimeForOnlyTime.getHours().toString();
-      let setMinute = this.setTimeForOnlyTime.getMinutes().toString();
-      let setSecond  = this.setTimeForOnlyTime.getSeconds().toString();
+      let setHour = this.setTimeForOnlyTime.getHours().toString().padStart(2, '0');;
+      let setMinute = this.setTimeForOnlyTime.getMinutes().toString().padStart(2, '0');;
+      let setSecond  = this.setTimeForOnlyTime.getSeconds().toString().padStart(2, '0');;
 
       const payload = {
         plantCode : this.PLANT_CODE,
@@ -710,13 +710,13 @@ export class LABI002Component implements AfterViewInit {
         next : (res) =>{
           if(res.code === 200){
             if(res.data.length <= 0){
-              this.sucessMSG('查無資料', '目前查無資料');
+              this.sucessMSG('查無資料，請設定', '必須至少設定一筆收樣時間!');
               this.displayTblabm003List = [];
               this.setupUpdateEditCacheForOnlyTime();
               resolve(true);
               return;
             }
-
+            
             const resultDataList : Tblabm002Time[] =
               res.data.map(item => {
 
@@ -840,17 +840,17 @@ export class LABI002Component implements AfterViewInit {
   updateSampleTimeSettingPeriod(id : number){
     this.isSpinningForOnlyTime = true;
 
-    let startHour = this.editCacheForOnlyTime[id].data.timeStart.getHours().toString();
-    let startMinute = this.editCacheForOnlyTime[id].data.timeStart.getMinutes().toString();
-    let stratSecond = this.editCacheForOnlyTime[id].data.timeStart.getSeconds().toString();
+    let startHour = this.editCacheForOnlyTime[id].data.timeStart.getHours().toString().padStart(2, '0');;
+    let startMinute = this.editCacheForOnlyTime[id].data.timeStart.getMinutes().toString().padStart(2, '0');;
+    let stratSecond = this.editCacheForOnlyTime[id].data.timeStart.getSeconds().toString().padStart(2, '0');;
 
-    let endHour = this.editCacheForOnlyTime[id].data.timeEnd.getHours().toString();
-    let endMinute = this.editCacheForOnlyTime[id].data.timeEnd.getMinutes().toString();
-    let endSecond  = this.editCacheForOnlyTime[id].data.timeEnd.getSeconds().toString();
+    let endHour = this.editCacheForOnlyTime[id].data.timeEnd.getHours().toString().padStart(2, '0');;
+    let endMinute = this.editCacheForOnlyTime[id].data.timeEnd.getMinutes().toString().padStart(2, '0');;
+    let endSecond  = this.editCacheForOnlyTime[id].data.timeEnd.getSeconds().toString().padStart(2, '0');;
 
-    let setHour = this.editCacheForOnlyTime[id].data.setTime.getHours().toString();
-    let setMinute = this.editCacheForOnlyTime[id].data.setTime.getMinutes().toString();
-    let setSecond  = this.editCacheForOnlyTime[id].data.setTime.getSeconds().toString();
+    let setHour = this.editCacheForOnlyTime[id].data.setTime.getHours().toString().padStart(2, '0');;
+    let setMinute = this.editCacheForOnlyTime[id].data.setTime.getMinutes().toString().padStart(2, '0');;
+    let setSecond  = this.editCacheForOnlyTime[id].data.setTime.getSeconds().toString().padStart(2, '0');;
 
     const payload = {
       id : id,

@@ -83,15 +83,6 @@ export class PPSI121Component implements AfterViewInit {
     let myObj = this;
     this.PPSService.getPPSINP13List().subscribe(res => {
       console.log("getPPSINP13List success");
-      const licss = document.getElementById('bbli');
-        if (licss != null) {
-          licss.style.backgroundColor = '#E4E3E3';
-        }
-        const acss = document.getElementById('bba');
-        if (acss != null) {
-          acss.style.cssText = "color: blue; font-weight:bold;";
-        }
-        document.getElementById('number').innerHTML = 'PPSI121';
       this.PPSINP13List_tmp = res;
 
       const data = [];

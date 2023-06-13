@@ -19,6 +19,14 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
+import { ButtonComponent } from 'src/app/button/button.component';
+
+class MSHI004Payload {
+  fcpEdition: string;
+  constructor(_fcpEdition: string) {
+    this.fcpEdition = _fcpEdition;
+  }
+}
 
 @Component({
   selector: 'app-MSHI004',
@@ -26,10 +34,16 @@ import { ClipboardService } from 'ngx-clipboard';
   styleUrls: ['./MSHI004.component.css'],
   providers: [NzMessageService],
 })
-export class MSHI004Component implements AfterViewInit {
+export class MSHI004Component {
   id; //
 
   isSpinning = false;
+
+  shopCodeOfOption: string[] = [];
+  // 使用者選中哪些站別
+  shopCodeInputList: string;
+  // 站別下拉是否正在載入選項
+  shopCodeLoading = false;
 
   MSHI004DataList: MSHI004[] = [];
 
@@ -37,6 +51,8 @@ export class MSHI004Component implements AfterViewInit {
 
   // 存放待更新或新增的row資料
   MSHI004PendingDataList: MSHI004[] = [];
+
+  payloadcache: MSHI004Payload;
 
   gridOptions = {
     defaultColDef: {
@@ -102,26 +118,22 @@ export class MSHI004Component implements AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.getData();
-  }
-
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
 
-  getData() {
-    this.mshi004Service.getData().subscribe(
-      (response: any) => {
-        this.item = response;
-        const { data } = response;
-        console.log(
-          '🚀 ~ file: MSHI004.component.ts:147 ~ MSHI004Component ~ getData ~ data:',
-          data
-        );
-        this.MSHI004DataList = JSON.parse(data);
-      },
-      (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
-    );
-  }
+  // getData() {
+  //   this.mshi004Service.getData().subscribe(
+  //     (response: any) => {
+  //       this.item = response;
+  //       const { data } = response;
+  //       console.log(
+  //         '🚀 ~ file: MSHI004.component.ts:147 ~ MSHI004Component ~ getData ~ data:',
+  //         data
+  //       );
+  //       this.MSHI004DataList = JSON.parse(data);
+  //     },
+  //     (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
+  //   );
+  // }
   columnDefs: ColDef[] = [
     {
       headerName: 'MES群組',
@@ -174,6 +186,33 @@ export class MSHI004Component implements AfterViewInit {
         this.dataTransferService.setData(event.node);
       },
     },
+    {
+      headerName: '已配置機台數',
+      field: 'pstMachineSum',
+      width: 200,
+      filter: true,
+    },
+    { headerName: '手動發佈', field: 'publishSelf', width: 200, filter: true },
+    {
+      headerName: '確認發佈',
+      field: 'zxcvb',
+      width: 200,
+      filter: true,
+      cellRenderer: ButtonComponent,
+      cellRendererParams: {
+        clicked: (field: any) => {
+          alert(`${field} was clicked`);
+        },
+      },
+    },
+
+    { headerName: '已發佈機台', field: 'pstMachine', width: 200, filter: true },
+    {
+      headerName: '發佈時間區間',
+      field: 'fcpStartDate',
+      width: 200,
+      filter: true,
+    },
   ];
 
   //點擊一下即可複製的功能
@@ -193,12 +232,6 @@ export class MSHI004Component implements AfterViewInit {
       this.isSpinning = false;
       return;
     }
-    //準備要存入的資料欄位
-    let missingNewEpst: MSHI004;
-    let missingNewEpstFlag = this.MSHI004PendingDataList.some((element) => {
-      missingNewEpst = element;
-      return _.isNil(element.userCreate);
-    });
 
     this.Modal.confirm({
       nzTitle: '是否確定儲存資料?',
@@ -207,9 +240,14 @@ export class MSHI004Component implements AfterViewInit {
 
         // 1.將需要新增的資料設定建立者名稱與廠區別
         // 2.將需要更新的資料設定異動者名稱
+
         this.MSHI004PendingDataList.forEach((item) => {
-          if (_.isNil(item.id)) {
+          const { id } = item;
+
+          if (_.isNil(id)) {
             console.log(this.id);
+
+            // assign   uuid
             item.id = this.id;
           }
         });
@@ -240,17 +278,134 @@ export class MSHI004Component implements AfterViewInit {
           //成功或失敗都釋放掉原先準備新增的資料
           .then((success) => {
             this.MSHI004PendingDataList = [];
-            this.getData();
+            // this.getData();
             this.isSpinning = false;
           })
           .catch((error) => {
             this.MSHI004PendingDataList = [];
-            this.getData();
+            // this.getData();
             this.isSpinning = false;
           });
       },
       nzOnCancel: () => console.log('取消作業'),
     });
+  }
+
+  serach(isUserClick: boolean): void {
+    // 若存在編輯過的資料
+    if (!_.isEmpty(this.MSHI004PendingDataList) && isUserClick) {
+      this.Modal.confirm({
+        nzTitle: '資料尚未儲存，是否放棄儲存執行搜尋?',
+        nzOnOk: () => {
+          this.serachEPST(isUserClick);
+        },
+        nzOnCancel: () => console.log('取消搜尋EPST資料'),
+      });
+    } else {
+      this.serachEPST(isUserClick);
+    }
+  }
+
+  serachEPST(isUserClick: boolean): void {
+    this.isSpinning = true;
+    let payloads = null;
+
+    if (isUserClick) {
+      payloads = new MSHI004Payload(this.shopCodeInputList);
+    } else {
+      payloads = this.payloadcache;
+    }
+
+    if (_.isNil(payloads)) return;
+    console.log(payloads);
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.searchLdmData(payloads).subscribe(
+        (res) => {
+          const { code, data } = res;
+
+          const myDataList = JSON.parse(data);
+          console.log(
+            '🚀 ~ file: MSHI004.component.ts:333 ~ MSHI004Component ~ serachEPST ~ myDataList:',
+            myDataList
+          );
+
+          if (code === 200) {
+            if (_.size(myDataList) > 0) {
+              // xxxx.lenght
+              /*
+              let resultDataList: fcpdata[] = res.data.map((item) => {
+                return new fcpdata(
+                  item.pstMachineSum,
+                  item.publishSelf,
+                  item.pstMachine,
+                  item.fcpDate
+                );
+              });
+              */
+
+              this.MSHI004DataList = myDataList;
+
+              this.MSHI004DataListDeepClone = _.cloneDeep(this.MSHI004DataList);
+              console.log(this.MSHI004DataList);
+            } else {
+              this.message.success(res.message);
+            }
+
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到EPST資料');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取EPST資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.payloadcache = payloads;
+        this.MSHI004PendingDataList = [];
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.payloadcache = payloads;
+        this.MSHI004PendingDataList = [];
+        this.isSpinning = false;
+      });
+  }
+
+  getShopCodeList(): void {
+    this.shopCodeLoading = true;
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.getShopCodeList().subscribe(
+        (res) => {
+          if (res.code === 200) {
+            this.shopCodeOfOption = res.data;
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到站別清單');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取站別清單失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.shopCodeLoading = false;
+      })
+      .catch((error) => {
+        this.shopCodeLoading = false;
+      });
   }
 
   sucessMSG(_title, _plan): void {

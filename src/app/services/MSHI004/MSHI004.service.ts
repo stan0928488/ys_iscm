@@ -38,11 +38,11 @@ export class MSHI004Service {
     alert(e.error.error);
   }
 
-  getData() {
-    let queryUrl = this.APIURL + `/mshi/tbppsm117/get/117/log/list`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
+  // getData() {
+  //   let queryUrl = this.APIURL + `/mshi/tbppsm117/get/117/log/list`;
+  //   console.log(queryUrl);
+  //   return this.http.get(queryUrl);
+  // }
 
   // 批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料
   batchInsertOrUpdateLDM(MSHI004PendingDataList) {
@@ -53,5 +53,23 @@ export class MSHI004Service {
     console.log(`Body參數 : ${body}`);
     console.log(body);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  searchLdmData(_parms) {
+    console.log('搜尋啟動發佈模式資料..');
+    const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/searchLdm`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  // 獲取站別清單
+  getShopCodeList() {
+    console.log('獲取版本清單..');
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getFcpVersionList`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : 無`);
+    return this.http.get<any>(endpointUrl);
   }
 }

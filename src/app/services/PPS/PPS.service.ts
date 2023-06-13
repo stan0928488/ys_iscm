@@ -866,8 +866,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  getR303SecondData(idNo , edition , isError){
-    let queryUrl =this.APINEWURL + `/ppsout004/getAllSecondData?idNo=${idNo}&isError=${isError}&edition=${edition}`;
+  getR303SecondData(idNo , edition , isError , routingSeq){
+    let queryUrl =this.APINEWURL + `/ppsout004/getAllSecondData?idNo=${idNo}&isError=${isError}&edition=${edition}&routingSeq=${routingSeq}`;
     console.log(queryUrl)
     return this.http.get(queryUrl);
   }
@@ -1059,6 +1059,13 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+    //getTbppsm113List getTbppsm113List
+    getTbppsm113List(_plantCode) {
+      let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
+      console.log(queryUrl);
+      return this.http.get(queryUrl);
+    }
+
   //upd102ListData 修改102List
   upd102ListData(obj) {
     const body = JSON.stringify(obj);
@@ -1067,7 +1074,13 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-
+  //upd113ListData 修改102List
+  upd113ListData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + "/FCP/I205/upd113ListData";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   //importI205Excel 優先順序表EXCEL匯入 1. 420/430尺寸  2.401COMPAIGN
   importI205Excel(_result) {
     const body = JSON.stringify(_result);
@@ -1652,9 +1665,9 @@ getEquipCodeList(_data){
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-  getR305DataList(){
+  getR305DataList(plantCode){
 
-    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List`;
+    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List/${plantCode}`;
     return this.http.get<any>(endpointUrl);
   }
 
@@ -1666,83 +1679,28 @@ getEquipCodeList(_data){
   return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-    /////////////////////////////////////////////////////////////
-// PPSI131 直棒批次爐表
-/////////////////////////////////////////////////////////////
+  getR306Editionist(){
 
-savetbppsm114Data(_data) {
-  const body = JSON.stringify(_data);
-  let endpointUrl = this.APIURL + `/FCP/I131/saveI131Data`;
-  console.log("新增「直棒批次爐表」資料")
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  console.log(`請求API 參數:${body}`);
-  return this.http.post<any>(endpointUrl, body, this.httpOptions);
-}
-
-listtbppsm114DataByPagination(pageIndex: number, pageSize: number){
-  const httpParams = new HttpParams()
-  .set('pageIndex', pageIndex)
-  .set('pageSize', pageSize);
-  console.log("查詢「直棒批次爐表」資料");
-  let endpointUrl = this.APIURL + `/FCP/I131/listI131Data`;
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  console.log(`請求API 參數:pageIndex=>${pageIndex}, pageSize=>${pageSize}`);
-  return this.http.get<any>(endpointUrl, { params: httpParams });
-}
+    let endpointUrl = this.APIURL + `/FCP/R306/getPPSR306Edition`;
+    return this.http.get<any>(endpointUrl);
+  }
+  
+  getR306DataList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + "/FCP/R306/getPPSR306List";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 
 
-updatetbppsm114Data(_data) {
-  const body = JSON.stringify(_data);
-  let endpointUrl = this.APIURL + `/FCP/I131/updateI131Data`;
-  console.log("更新「直棒批次爐表」資料")
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  console.log(`請求API 參數:${body}`);
-  return this.http.put<any>(endpointUrl, body, this.httpOptions);
-}
+  getR307Editionist(){
 
-deletetbppsm114Data(id: number) {
-  let endpointUrl = this.APIURL + `/FCP/I131/deleteI131Data/${id}`;
-  console.log("刪除「直棒批次爐表」資料")
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  console.log(`請求API 參數:${id}`);
-  return this.http.delete<any>(endpointUrl);
-}
-
-searchtbppsm114ColumnDataByKeyword(column: string, keyword: string, pageIndex: number, pageSize: number) {
-  const httpParams = new HttpParams()
-    .set('columnName', column)
-    .set('keyword', keyword)
-    .set('pageIndex', pageIndex)
-    .set('pageSize', pageSize);
-    console.log("搜尋「直棒批次爐表」資料")
-  let endpointUrl = this.APIURL + `/FCP/I131/searchI131Data`;
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  return this.http.get<any>(endpointUrl, { params: httpParams });
-}
-
-deletetbppsm114AllData() {
-  let endpointUrl = this.APIURL + `/FCP/I131/deleteI131AllData`;
-  console.log("刪除「直棒批次爐表」所有資料")
-  console.log(`請求API Endpoint Url : ${endpointUrl}`);
-  console.log(`請求API 參數 : 無`);
-  return this.http.delete<any>(endpointUrl);
-}
-
-batchSavetbppsm114Data(_data) {
-  const body = JSON.stringify(_data);
-  let endpointUrl = this.APIURL + `/FCP/I131/batchInsertI131Data`;
-  console.log("批次新增「直棒批次爐表」資料")
-  console.log(`請求API Endpoint Url:${endpointUrl}`);
-  console.log(`請求API 參數:${body}`);
-  return this.http.post<any>(endpointUrl, body, this.httpOptions);
-}
-
-listtbppsm114AllData(){
-  console.log("查詢「直棒批次爐表」所有資料");
-  let endpointUrl = this.APIURL + `/FCP/I131/listI131AllData`;
-  console.log(`請求API Endpoint Url : ${endpointUrl}`);
-  console.log(`請求API 參數 : 無`);
-  return this.http.get<any>(endpointUrl);
-}
-
+    let endpointUrl = this.APIURL + `/FCP/R307/getPPSR307Edition`;
+    return this.http.get<any>(endpointUrl);
+  }
+  
+  getR307DataList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + "/FCP/R307/getPPSR307List";
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 }

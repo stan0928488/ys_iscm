@@ -11,6 +11,9 @@ export class MSHI003{
     sfcDia : string; // 尺寸
     finalMicNo : string; // 現況MIC
     processCode : string; // 製程碼
+    adjShopCode : string; // 調整站別
+    adjLineupProcess : string; // 調整流程
+    overShopStatus : string; // 過站狀態
     epst : string; // EPST
     comment : string; // 備註
     newEpst : string; // 調整日期
@@ -32,6 +35,9 @@ export class MSHI003{
       _sfcDia : string,
       _finalMicNo : string,
       _processCode : string,
+      _adjShopCode : string,
+      _adjLineupProcess : string,
+      _overShopStatus : string,
       _epst : string,
       _comment : string,
       _newEpst : string,
@@ -52,6 +58,9 @@ export class MSHI003{
         this.sfcDia = _sfcDia
         this.finalMicNo = _finalMicNo;
         this.processCode = _processCode;
+        this.adjShopCode = _adjShopCode;
+        this.adjLineupProcess = _adjLineupProcess;
+        this.overShopStatus = _overShopStatus;
         this.epst = _epst;
         this.comment = _comment;
         this.newEpst = _newEpst;
