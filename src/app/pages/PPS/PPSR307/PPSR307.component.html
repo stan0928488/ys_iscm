@@ -1,5 +1,10 @@
 <nz-content style="margin:0 16px;">
   <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>報表顯示</nz-breadcrumb-item>
+    <nz-breadcrumb-item>出貨計畫表</nz-breadcrumb-item>
+    <nz-breadcrumb-item><font size="4">成品/半成品現況(PPSR307)</font></nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <nz-breadcrumb style="margin:16px 0;">
 
     <nz-breadcrumb-item>
       <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
@@ -25,7 +30,7 @@
       <nz-date-picker  [(ngModel)]="date" (ngModelChange)="onDateChange($event)"></nz-date-picker>
       <button
         nz-button
-        style=" margin-left:10px;box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        style=" margin-left:10px;box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer;"
         nzType="primary"
         (click) = "search()"
       ><span nz-icon nzType="search" nzTheme="outline"></span>

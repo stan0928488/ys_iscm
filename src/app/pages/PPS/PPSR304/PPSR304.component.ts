@@ -45,26 +45,6 @@ export class PPSR304Component implements AfterViewInit {
   uploadDate = "";
   uploadUser = "";
 
-  public defaultColDefTab: ColDef = {
-    sortable: true,
-    filter: true,
-    resizable: true,
-  };
-
-  public autoGroupColumnDef: ColDef = {
-    minWidth: 200,
-  };
-
-
-  columnDefsTab: ColDef<data>[] = [
-    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 100 },
-    { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
-    { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
-    { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
-    { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 200 },
-    { headerName:'可接受交期', field:'dateDeliveryPp', filter:false, width:200}
- ];
-
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -78,6 +58,29 @@ export class PPSR304Component implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
   }
+
+  columnDefsTab: ColDef<data>[] = [
+    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 120 },
+    { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
+    { headerName: '業務員' ,field: 'sales' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
+    { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
+    { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
+    { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:120, cellStyle: { textAlign: "center" }}
+ ];
+
+ public defaultColDefTab: ColDef = {
+  sortable: true,
+  filter: true,
+  resizable: true,
+};
+
+public autoGroupColumnDef: ColDef = {
+  minWidth: 200,
+};
+
+
 
   ngAfterViewInit() {
     this.loading = true;
@@ -149,17 +152,11 @@ export class PPSR304Component implements AfterViewInit {
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確定'
       })
   }
 
   Upload() {
-    
-    // let getFileNull = this.inputFileUseInUpload;
-    // if(getFileNull === undefined){
-    //   this.errorMSG('請選擇檔案', '');
-    //   return;
-    // }
 
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
@@ -182,23 +179,20 @@ export class PPSR304Component implements AfterViewInit {
         var worksheet:any = workbook.Sheets[first_sheet_name];
 
         if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-          worksheet.F1 === undefined ) {
+          worksheet.F1 === undefined || worksheet.G1 === undefined  || worksheet.H1 === undefined ) {
         this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
         this.clearFile();
           return;
-        } else if(worksheet.A1.v !== "客戶簡稱" || worksheet.B1.v !== "預估出貨量" 
-        || worksheet.C1.v !== "異型棒目標" || worksheet.D1.v !== "大棒目標" || worksheet.E1.v !== "允收截止日" || worksheet.F1.v !== "可接受交期" ) {
+        } else if(worksheet.A1.v !== "客戶簡稱" || worksheet.B1.v !== "區別" 
+        || worksheet.C1.v !== "業務員" || worksheet.D1.v !== "預估出貨量" || worksheet.E1.v !== "異型棒目標" 
+        || worksheet.F1.v !== "大棒目標" || worksheet.G1.v !== "允收截止日" || worksheet.H1.v !== "可接受交期") {
           this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
           this.clearFile();
           return;
         }
 
         this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-  
-        
-          console.log("importExcel")
-          console.log(this.importdata)
-          this.importExcel(this.importdata);
+        this.importExcel(this.importdata);
         
       }
       fileReader.readAsArrayBuffer(this.file);
@@ -210,9 +204,9 @@ export class PPSR304Component implements AfterViewInit {
     console.log("EXCEL 資料上傳檢核開始");
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      console.log(_data[i]);
       let allData = JSON.stringify(_data[i]);
 
+      console.log(_data[i]);
       if (this.importdata_repeat.includes(allData)){
         this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
         this.clearFile();
@@ -222,30 +216,33 @@ export class PPSR304Component implements AfterViewInit {
         const datePipe = new DatePipe('en-US');
 
         this.importdata_repeat.push(allData);
-        let datePlanInStorage;
-        let dateDeliveryPp;
         let planInStorage = _data[i]['允收截止日'];
         let deliveryPp = _data[i]['可接受交期'];
 
-        if (planInStorage === undefined || planInStorage === 'Invalid date') {
+        let datePlanInStorage = null;
+        let dateDeliveryPp = null;
+
+        if (planInStorage == undefined) {
           datePlanInStorage = null;
         } else {
           datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
         }
-          
-        if (deliveryPp === undefined || deliveryPp === 'Invalid date') {
+        if (deliveryPp == undefined) {
           dateDeliveryPp = null;
         } else {
           dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
         }
+
         upload_data.push({
           plantCode:this.PLANT_CODE,
           custAbbreviations: _data[i]['客戶簡稱'].toString(),
+          areaGroup : _data[i]['區別'] != undefined ?_data[i]['區別'].toString():null,
+          sales : _data[i]['業務員'] != undefined ?_data[i]['業務員'].toString():null,
           estimateWeight: parseInt(_data[i]['預估出貨量']),
           profieldGoal : parseInt(_data[i]['異型棒目標']),
           bigStickGoal :parseInt(_data[i]['大棒目標']),
           datePlanInStorage : datePlanInStorage,
-          dateDeliveryPp :dateDeliveryPp,
+          dateAcceptTable :dateDeliveryPp,
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })

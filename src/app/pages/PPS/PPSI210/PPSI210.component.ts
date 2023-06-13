@@ -796,7 +796,12 @@ export class PPSI210Component implements AfterViewInit {
 
   // 拖曳改變 idx
   drop(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(this.listOfData, event.previousIndex, event.currentIndex);
+    var listTemp = this.listOfData;
+
+    moveItemInArray(listTemp, event.previousIndex, event.currentIndex);
+
+    this.listOfData = [];
+    this.listOfData = this.listOfData.concat(listTemp);
   }
 
 

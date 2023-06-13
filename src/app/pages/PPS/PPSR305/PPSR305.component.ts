@@ -53,7 +53,7 @@ export class PPSR305Component implements AfterViewInit {
 
 
   columnDefsTab: ColDef<data>[] = [
-    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 100 },
+    { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 120 },
     { headerName: '訂單編號' ,field: 'saleOrder',hide : true ,  filter: false,width: 120 },
     { headerName: '訂單項次' ,field: 'saleItem' , hide : true ,filter: false,width: 120 },
     { headerName: '訂單號碼' ,field: 'saleInfo' ,filter: false,width: 120 },
@@ -145,7 +145,7 @@ export class PPSR305Component implements AfterViewInit {
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確定'
       })
   }
 
