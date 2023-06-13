@@ -76,7 +76,7 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
             this.adjLineupProcessTooltipTitle = '';
 
             // 調用 MSHI003Component 的方法撈取流程清單
-            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.adjShopCode);
+            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.idNo, this.currentRowNode.data.adjShopCode);
         }
     }
 

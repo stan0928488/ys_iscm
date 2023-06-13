@@ -17,8 +17,8 @@ import * as _ from "lodash";
             [nzShowSearch]="true"
             [(ngModel)]="selectedShopCodeValue"
             (ngModelChange)="selected()">
-            <nz-option *ngFor="let shopCode of componentParent.shopCodeOfOption" [nzLabel]="shopCode" [nzValue]="shopCode"></nz-option>
-            <nz-option *ngIf="componentParent.shopCodeLoading" nzDisabled nzCustomContent>
+            <nz-option *ngFor="let shopCode of componentParent.shopCodeByIdNoOfOption" [nzLabel]="shopCode" [nzValue]="shopCode"></nz-option>
+            <nz-option *ngIf="componentParent.shopCodeByIdNoLoading" nzDisabled nzCustomContent>
                 <span nz-icon nzType="loading" class="loading-icon"></span>
                 站別清單載入中...
             </nz-option>
@@ -62,7 +62,7 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
        this.selectedShopCodeValue = params.value;
 
        // 調用 MSHI003Component 的方法撈取站別清單
-       this.componentParent.getShopCodeList();
+       this.componentParent.getShopCodeListByIdNo(params.node.data.idNo);
 
        // 當前選中的那一個row的資料物件
        this.currentRowNode = params.node;
