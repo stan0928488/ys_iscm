@@ -77,6 +77,7 @@
             [gridOptions]="gridOptions"
             [pagination]="true"
             [paginationPageSize]="20"
+            (cellDoubleClicked)="cellDoubleClickedHandler($event)"
             (gridReady)="onGridReady($event)">
         </ag-grid-angular>
 

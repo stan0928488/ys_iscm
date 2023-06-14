@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from "@angular/core";
 import { AgEditorComponent } from "ag-grid-angular";
-import { GridApi, ICellEditorParams, IRowNode } from "ag-grid-community";
+import { ColDef, GridApi, ICellEditorParams, IRowNode } from "ag-grid-community";
 import { MSHI003 } from "./MSHI003.model";
 import { DataTransferService } from "src/app/services/MSH/Data.transfer.service";
 import * as _ from "lodash";
+import { NzMessageService } from "ng-zorro-antd/message";
 
 @Component({
     selector: 'app-adj-shop-code-cell-select-editor',
@@ -27,6 +28,7 @@ import * as _ from "lodash";
   styles: [`
 
   `],
+ providers:[NzMessageService]
 })
 export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, AfterViewInit{
   
@@ -43,13 +45,15 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
 
     params: ICellEditorParams<any, any>;
 
-    constructor(private dataTransferService : DataTransferService){}
+    constructor(private dataTransferService : DataTransferService,
+                private message:NzMessageService,
+                private changeDetectorRef: ChangeDetectorRef){} 
 
     ngAfterViewInit(): void {
         //this.adjShopCodeCellSelect.nzOpen = true;
     }
 
-    agInit(params: ICellEditorParams<any, any>): void {
+    async agInit(params: ICellEditorParams<any, any>): Promise<void> {
        // 獲取 MSHI003Component 的 this
        this.componentParent = params.context.componentParent;
 
@@ -62,7 +66,7 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
        this.selectedShopCodeValue = params.value;
 
        // 調用 MSHI003Component 的方法撈取站別清單
-       this.componentParent.getShopCodeListByIdNo(params.node.data.idNo);
+       await this.componentParent.getShopCodeListByIdNo(params.node.data.idNo);
 
        // 當前選中的那一個row的資料物件
        this.currentRowNode = params.node;
@@ -87,8 +91,5 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
         this.dataTransferService.setParamsOfAdjShopCodeAndAdjLineupProcess(this.currentRowNode);
 
     }
-
-
-    
 }
     

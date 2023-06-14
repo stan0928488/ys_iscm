@@ -174,7 +174,7 @@ saveChangeOpCode(_param) {
   batchInsertOrUpdateEPST(MSHI003PendingDataList){
     console.log('批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料');
     let body = JSON.stringify(MSHI003PendingDataList);
-    let endpointUrl = `${this.APIURL}/msh/MSHC003/batchInsertOrUpdateEPSTInfo`;
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/batchInsertOrUpdateEPST`;
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Body參數 : ${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
