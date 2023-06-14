@@ -64,6 +64,8 @@ import { PPSR304Component } from "./pages/PPS/PPSR304/PPSR304.component";
 import { PPSR305Component } from "./pages/PPS/PPSR305/PPSR305.component";
 import { PPSR306Component } from "./pages/PPS/PPSR306/PPSR306.component";
 import { PPSR307Component } from "./pages/PPS/PPSR307/PPSR307.component";
+import { PPSR308Component } from "./pages/PPS/PPSR308/PPSR308.component";
+import { PPSR309Component } from "./pages/PPS/PPSR309/PPSR309.component";
 import { SPAP100component } from "./pages/SPA/SPAP100/SPAP100.component";
 import { SPAP101component } from "./pages/SPA/SPAP101/SPAP101.component";
 
@@ -231,8 +233,8 @@ const routes: Routes = [
       { path: "R305", component: PPSR305Component },
       { path: "R306", component: PPSR306Component },
       { path: "R307", component: PPSR307Component },
-      { path: "R308" }  //component: PPSR308Component
-
+      { path: "R308", component: PPSR308Component },
+      { path: "R309", component: PPSR309Component },
     ],
     canActivate: [AuthGuard]
   },
