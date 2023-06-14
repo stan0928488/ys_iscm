@@ -81,7 +81,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     '設備庫存下限(單位:MT)',
     '設備庫存上限(單位:MT)',
     '機台群組',
-    'MES群組',
+    '發佈MES群組',
     '有效碼',
     '工時計算分類',
   ];
@@ -523,7 +523,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     this.ppsInp07ListFilter('EQUIP_GROUP', this.searchEquipGroupValue);
   }
 
-  // 資料過濾---站別機台關聯表 --> MES群組
+  // 資料過濾---站別機台關聯表 --> 發佈MES群組
   searchByMesPublishGroup(): void {
     this.ppsInp07ListFilter(
       'MES_PUBLISH_GROUP',
@@ -637,7 +637,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       let allData = JSON.stringify(_data[i]);
       if (_data[i]['機台名稱'] == undefined) _data[i]['機台名稱'] = '';
       if (_data[i]['機台群組'] == undefined) _data[i]['機台群組'] = '';
-      if (_data[i]['MES群組'] == undefined) _data[i]['MES群組'] = '';
+      if (_data[i]['發佈MES群組'] == undefined) _data[i]['發佈MES群組'] = '';
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
       upload_data.push({
         PLANT_CODE: 'YS',
@@ -646,7 +646,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         SHOP_NAME: _data[i]['站別名稱'],
         EQUIP_CODE: _data[i]['機台'],
         EQUIP_GROUP: _data[i]['機台群組'],
-        MES_PUBLISH_GROUP: _data[i]['MES群組'],
+        MES_PUBLISH_GROUP: _data[i]['發佈MES群組'],
         EQUIP_NAME: _data[i]['機台名稱'],
         WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
           ? null

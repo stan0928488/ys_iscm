@@ -73,7 +73,7 @@ export class PPSI102Component implements AfterViewInit {
     '設備庫存下限(單位:MT)',
     '設備庫存上限(單位:MT)',
     '機台群組',
-    'MES群組',
+    '發佈MES群組',
     '有效碼',
   ];
   importdata_repeat = [];
@@ -503,7 +503,7 @@ export class PPSI102Component implements AfterViewInit {
     this.ppsInp07ListFilter('EQUIP_GROUP', this.searchEquipGroupValue);
   }
 
-  //資料過濾---站別機台關聯表 -->MES群組
+  //資料過濾---站別機台關聯表 -->發佈MES群組
   searchByMesPublishGroup(): void {
     this.ppsInp07ListFilter(
       'MES_PUBLISH_GROUP',
@@ -608,7 +608,7 @@ export class PPSI102Component implements AfterViewInit {
 
       if (_data[i]['機台名稱'] == undefined) _data[i]['機台名稱'] = '';
       if (_data[i]['機台群組'] == undefined) _data[i]['機台群組'] = '';
-      if (_data[i]['MES群組'] == undefined) _data[i]['MES群組'] = '';
+      if (_data[i]['發佈MES群組'] == undefined) _data[i]['發佈MES群組'] = '';
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
 
       upload_data.push({
@@ -625,7 +625,7 @@ export class PPSI102Component implements AfterViewInit {
           ? null
           : _data[i]['設備庫存上限(單位:MT)'],
         EQUIP_GROUP: _data[i]['機台群組'],
-        MES_PUBLISH_GROUP: _data[i]['MES群組'],
+        MES_PUBLISH_GROUP: _data[i]['發佈MES群組'],
         VALID: _data[i]['有效碼'],
         BALANCE_RULE: null,
         ORDER_SEQ: null,
