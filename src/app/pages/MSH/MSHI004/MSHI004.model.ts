@@ -8,7 +8,8 @@ export class MSHI004 {
   pstMachineSum: string; //已發佈機台數\
   publishSelf: string; //手動發佈
   pstMachine: string; //已發佈機台
-  fcpStartDate: Date; //發佈時間區間
+  startDatetime: Date; //發佈時間區間
+  zxcvb: number; //
 
   constructor(
     _id: string,
@@ -20,7 +21,8 @@ export class MSHI004 {
     _pstMachineSum: string,
     _publishSelf: string,
     _pstMachine: string,
-    _fcpStartDate: Date
+    _startDatetime: Date,
+    _zxcvb: number
   ) {
     this.id = _id;
     this.mesPublishGroup = _mesPublishGroup;
@@ -31,6 +33,7 @@ export class MSHI004 {
     this.pstMachineSum = _pstMachineSum;
     this.pstMachine = _pstMachine;
     this.publishSelf = _publishSelf;
-    this.fcpStartDate = _fcpStartDate;
+    this.startDatetime = _startDatetime;
+    this.zxcvb = _zxcvb;
   }
 }

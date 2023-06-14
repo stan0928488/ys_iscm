@@ -20,6 +20,7 @@ import { CommonService } from 'src/app/services/common/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
 import { ButtonComponent } from 'src/app/button/button.component';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 class MSHI004Payload {
   fcpEdition: string;
@@ -38,7 +39,7 @@ export class MSHI004Component {
   id; //
 
   isSpinning = false;
-
+  datetime = new Date();
   shopCodeOfOption: string[] = [];
   // 使用者選中哪些站別
   shopCodeInputList: string;
@@ -134,6 +135,7 @@ export class MSHI004Component {
   //     (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
   //   );
   // }
+
   columnDefs: ColDef[] = [
     {
       headerName: 'MES群組',
@@ -199,22 +201,16 @@ export class MSHI004Component {
       width: 200,
       filter: true,
       cellRenderer: ButtonComponent,
-      cellRendererParams: {
-        clicked: (field: any) => {
-          alert(`${field} was clicked`);
-        },
-      },
     },
 
     { headerName: '已發佈機台', field: 'pstMachine', width: 200, filter: true },
     {
       headerName: '發佈時間區間',
-      field: 'fcpStartDate',
+      field: 'startDatetime',
       width: 200,
       filter: true,
     },
   ];
-
   //點擊一下即可複製的功能
   onCellClicked(e: CellClickedEvent): void {
     console.log('=======>>>>cellClicked', e);
@@ -241,13 +237,20 @@ export class MSHI004Component {
         // 1.將需要新增的資料設定建立者名稱與廠區別
         // 2.將需要更新的資料設定異動者名稱
 
+        // this.MSHI004PendingDataList.forEach((item) => {
+        //   const { id } = item;
+
+        //   if (_.isNil(id)) {
+        //     console.log(this.id);
+
+        //     // assign   uuid
+        //     item.id = this.id;
+        //   }
+        // });
         this.MSHI004PendingDataList.forEach((item) => {
-          const { id } = item;
-
-          if (_.isNil(id)) {
-            console.log(this.id);
-
-            // assign   uuid
+          if (_.isNil(item.id)) {
+            item.id = this.id;
+          } else {
             item.id = this.id;
           }
         });
@@ -296,6 +299,7 @@ export class MSHI004Component {
     if (!_.isEmpty(this.MSHI004PendingDataList) && isUserClick) {
       this.Modal.confirm({
         nzTitle: '資料尚未儲存，是否放棄儲存執行搜尋?',
+
         nzOnOk: () => {
           this.serachEPST(isUserClick);
         },
@@ -304,6 +308,10 @@ export class MSHI004Component {
     } else {
       this.serachEPST(isUserClick);
     }
+    let date = new Date(this.datetime);
+    date.setDate(date.getDate() + 500000);
+    console.log('fsddddddddddd');
+    console.log(this.datetime);
   }
 
   serachEPST(isUserClick: boolean): void {
