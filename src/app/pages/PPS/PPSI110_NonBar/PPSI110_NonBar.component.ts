@@ -398,7 +398,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     if(this.tbppsm013List.length > 0) {
       data = this.formatDataForExcel(this.tbppsm013List);
       fileName = `非直棒產能維護`;
-      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量','開機管數','累計天數','略過天數'];
+      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '最大管數','開機管數','累計天數','略過天數'];
     } else {
       this.errorMSG("匯出失敗", "非直棒產能維護目前無資料");
       return;
@@ -484,7 +484,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
-    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "機台" || worksheet.D1.v !== "機群" || worksheet.E1.v !== "機群設備數量" || worksheet.F1.v !== "單設備生產量") {
+    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "機台" || worksheet.D1.v !== "機群" || worksheet.E1.v !== "機群設備數量" || worksheet.F1.v !== "最大管數") {
       this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -523,7 +523,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         let equipCode = _data[i].機台 !== undefined ? _data[i].機台.toString() : '';
         let equipGroup = _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
         let groupAmount = _data[i].機群設備數量 !== undefined ? _data[i].機群設備數量.toString() : '0';
-        let equipQuanity = _data[i].單設備生產量 !== undefined ? _data[i].單設備生產量.toString() : '0';
+        let equipQuanity = _data[i].最大管數 !== undefined ? _data[i].最大管數.toString() : '0';
         let bootControl = _data[i].開機管數	 !== undefined ? _data[i].開機管數.toString() : '0';
         let dateLimit = _data[i].略過天數 !== undefined ? _data[i].略過天數.toString() : '0';
         let accumulateDay = _data[i].累計天數 !== undefined ? _data[i].累計天數.toString() : '0';
@@ -653,7 +653,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     this.tbppsm013ListFilter("groupAmount", this.searchGroupAmountValue);
   }
 
-  // 資料過濾---產能維護 --> 單設備生產量
+  // 資料過濾---產能維護 --> 最大管數
   searchByEquipQuanity() : void{
     this.tbppsm013ListFilter("equipQuanity", this.searchEquipQuanityValue);
   } 

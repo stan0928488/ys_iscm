@@ -109,7 +109,7 @@
               </nz-filter-trigger>
               </th>
               <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >單設備生產量
+              >最大管數
               <nz-filter-trigger 
               [nzActive]="searchEquipQuanityValue.length > 0" 
               [nzDropdownMenu]="equipQuanityMenu">
@@ -170,7 +170,7 @@
                   <input nz-width="20%" nz-input placeholder="輸入機群設備數量" [(ngModel)]="editCache[data.idx].data.groupAmount" />
                 </td>
                 <td>
-                  <input nz-width="20%" nz-input placeholder="輸入單設備生產量" [(ngModel)]="editCache[data.idx].data.equipQuanity" />
+                  <input nz-width="20%" nz-input placeholder="輸入最大管數" [(ngModel)]="editCache[data.idx].data.equipQuanity" />
                 </td>
                 <td>
                   <nz-input-number nz-width="20%" placeholder="開機管數" [(ngModel)]="editCache[data.idx].data.bootControl" [nzMin]="0" [nzStep]="1"></nz-input-number>
@@ -232,9 +232,9 @@
           <td style = "width: 600px; background-color: #eee;">&nbsp;
             <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入機群設備數量" [(ngModel)]="groupAmount" />
           </td>
-          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;單設備生產量</td>
+          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;最大管數</td>
           <td style = "width: 600px; background-color: #eee;" colspan="3">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入單設備生產量" [(ngModel)]="equipQuanity" />
+            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入最大管數" [(ngModel)]="equipQuanity" />
           </td>
         </tr>
 
