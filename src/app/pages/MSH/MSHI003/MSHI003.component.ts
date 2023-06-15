@@ -7,7 +7,7 @@ import {MSHI003} from "./MSHI003.model";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
-import { CellEditingStartedEvent, ColDef, GridApi, GridReadyEvent, ICellEditorParams, IRowNode } from 'ag-grid-community';
+import { CellDoubleClickedEvent, CellEditingStartedEvent, ColDef, GridApi, GridReadyEvent, ICellEditorParams, IRowNode } from 'ag-grid-community';
 import { PrimeDatePickerCellEditorComponent } from './prime-date-picker-cell-editor';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { DataTransferService } from 'src/app/services/MSH/Data.transfer.service';
@@ -53,12 +53,21 @@ export class MSHI003Component implements AfterViewInit{
 
   isSpinning = false;
 
+  // 使用者選擇的EPST的idNo(Mo)是否存在於MySQL(ppsfcptb16)
+  existsInPpsfcptb16 = true;
+
+
   // 站別下拉選項
   shopCodeOfOption : string[] = [];
   // 使用者選中哪些站別
   shopCodeInputList : string[] = [];
   // 站別下拉是否正在載入選項
   shopCodeLoading = false;
+
+  // 調整站別(根據IdNo為條件查詢)下拉選項
+  shopCodeByIdNoOfOption : string[] = [];
+  // 調整站別(根據IdNo為條件查詢)下拉是否正在載入選項
+  shopCodeByIdNoLoading = false;
 
   // 機台下拉選項
   equipCodeOfOption : string[] = [];
@@ -71,6 +80,9 @@ export class MSHI003Component implements AfterViewInit{
   lineupProcessOfOptions : string[] = [];
   // 流程下拉是否正在載入選項
   lineupProcessLoading = false;
+
+  // 可以編輯的column
+  editableColumns = ['adjShopCode', 'adjLineupProcess', 'newEpst', 'comment'];
 
   // mo輸入
   moInput = "";
@@ -113,7 +125,7 @@ export class MSHI003Component implements AfterViewInit{
   gridOptions = {
     defaultColDef : {
       sortable: false,
-      resizable: true,
+      resizable: true
     },
     components: {
       primeDatePickerCellEditorComponent: PrimeDatePickerCellEditorComponent,
@@ -142,6 +154,7 @@ export class MSHI003Component implements AfterViewInit{
 
     // 實時根據調整站別與調整流程搜尋過站狀態與EPST
     this.realTimeSearchForShopStatusAndEPST();
+
   }
 
   ngAfterViewInit(): void {
@@ -172,7 +185,7 @@ export class MSHI003Component implements AfterViewInit{
       headerName: '調整流程', 
       field: 'adjLineupProcess', 
       width: 120,
-      editable: true,
+      editable:true,
       cellEditor: 'adjLineupProcessSelectEditorComponent',
       headerClass: 'header-editable-color',
       cellClass: 'cell-editable-color',
@@ -184,7 +197,7 @@ export class MSHI003Component implements AfterViewInit{
       valueFormatter : (params) =>{
         let overShopStatusStr = '';
         if(!_.isEmpty(params.value)){
-          overShopStatusStr = params.value === 'Y' ? '已過站' : '未過站';
+          overShopStatusStr = params.value === 'Y' ? '已過站' : params.value === 'X' ? '查無MO資訊' : '未過站';
         }
         return overShopStatusStr;
       }
@@ -206,7 +219,7 @@ export class MSHI003Component implements AfterViewInit{
       headerName: '調整日期', 
       field: 'newEpst', 
       width: 120, 
-      editable: true, 
+      editable: true,
       cellEditor: 'primeDatePickerCellEditorComponent',
       headerClass: 'header-editable-color',
       cellClass: 'cell-editable-color',
@@ -247,11 +260,23 @@ export class MSHI003Component implements AfterViewInit{
     {headerName: '更新日期', field: 'dateUpdate', width: 180}
   ];
 
-  async getLineupProcessAsync(adjShopCode : string) : Promise<void> {
+  async cellDoubleClickedHandler(event : CellDoubleClickedEvent<any,any>){
+    console.log("cellDoubleClickedHandler=>", event);
+    if(_.includes(this.editableColumns, event.colDef.field)){
+      await this.getShopCodeListByIdNo(event.node.data.idNo);
+       // 查無站別
+       if(!this.existsInPpsfcptb16) {
+        this.gridApi.stopEditing(true);
+        this.message.error('查無MO資訊，無法新增');
+     }
+    }
+  }
+
+  async getLineupProcessAsync(idNo : string, adjShopCode : string) : Promise<void> {
 
       this.lineupProcessLoading = true;
       try{
-        const res = await this.mshService.getLineupProcessListByShopCode(adjShopCode).toPromise();
+        const res = await this.mshService.getLineupProcessListByIdNoAndShopCode(idNo, adjShopCode).toPromise();
         if(res.code === 200){
           this.lineupProcessOfOptions = res.data;
         }
@@ -274,7 +299,7 @@ export class MSHI003Component implements AfterViewInit{
     new Promise<boolean>((resolve, reject) => {
       this.mshService.getShopCodeList().subscribe(res => {
         if(res.code === 200){
-          this.shopCodeOfOption = res.data;
+         this.shopCodeOfOption = res.data;
           resolve(true);
         }else{
           this.message.error('後台錯誤，獲取不到站別清單');
@@ -293,6 +318,33 @@ export class MSHI003Component implements AfterViewInit{
       this.shopCodeLoading = false;
     });
 
+  }
+  async getShopCodeListByIdNo(idNo : string) : Promise<void> {
+    
+    this.shopCodeByIdNoLoading = true;
+
+    try{
+      const res = await this.mshService.getShopCodeListByIdNo(idNo).toPromise();
+      if(res.code === 200){
+        if(res.data.length > 0){
+          this.shopCodeByIdNoOfOption = res.data;
+          this.existsInPpsfcptb16 = true;
+        }
+        else{
+          // 點擊選擇調整站別，使用者選擇的那一行資料的idNo(MO)不存在於於MySQL(ppsfcptb16)
+          this.existsInPpsfcptb16 = false;
+        }
+      }
+      else{
+        this.message.error('後台錯誤，獲取不到站別清單');
+      }
+    }
+    catch (error) {
+      this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+    }
+    finally{
+      this.shopCodeByIdNoLoading = false;
+    }
   }
 
   shopCodeChange() : void {
@@ -357,6 +409,7 @@ export class MSHI003Component implements AfterViewInit{
                                         this.equipCodeInputList,
                                         this.moInput,
                                         this.holeChecked)
+      this.currentEditRowIndex = null;
     }else{
       payloads = this.payloadcache;
     }
@@ -418,8 +471,10 @@ export class MSHI003Component implements AfterViewInit{
     .then(success =>{
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
-      this.isSpinning = false;
-     
+
+      // 清除過濾條件
+      this.gridApi.setFilterModel(null);
+
 		  // 使用者編輯後將滾動條定位到可以看到過站狀態與EPST的位置
      if(!_.isNil(this.currentEditRowIndex)){
         // 等待畫面渲染完畢
@@ -427,6 +482,7 @@ export class MSHI003Component implements AfterViewInit{
         this.gridApi.ensureIndexVisible(this.currentEditRowIndex, 'top');
         this.gridApi.ensureColumnVisible('comment', 'end');
       }
+      this.isSpinning = false;
     }).catch(error =>{
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
@@ -450,13 +506,28 @@ export class MSHI003Component implements AfterViewInit{
      }
 
     let missingNewEpst : MSHI003 = null;
+    let missingField : string = null;
     let missingNewEpstFlag = this.MSHI003PendingDataList.some(element => {
       missingNewEpst = element;
-      return _.isNil(element.newEpst);
+      if(_.isNil(missingNewEpst.adjShopCode)){
+        missingField = '請填寫「調整站別」'
+        return true;
+      }
+
+      if(_.isNil(missingNewEpst.adjLineupProcess)){
+      missingField = '請填寫「調整流程」'
+      return true;
+      }
+
+      if(_.isNil(missingNewEpst.newEpst)){
+      missingField = '請填寫「調整日期」'
+      return true;
+      }
+
      });
 
      if(missingNewEpstFlag){
-      this.errorMSG('無法儲存', `MO:「${missingNewEpst.idNo}」有編輯過備註，需填寫調整日期。<br>若需要放棄儲存編輯過的資料，請再重新執行「查詢」即可。`);
+      this.errorMSG('無法儲存', `MO:「${missingNewEpst.idNo}」，${missingField}。<br>若需要放棄儲存編輯過的資料，請再重新執行「查詢」即可。`);
       this.isSpinning = false;
       return;
      }
@@ -588,8 +659,10 @@ export class MSHI003Component implements AfterViewInit{
     // 將jsonData轉成英文的key
     this.convertJsonToEnglishkey();
 
+    console.log("this.jsonExcelData==>", JSON.stringify(this.jsonExcelData));
+  
     // 校驗Excel中的資料是否有重複
-   if(this.commonService.checkExcelDataDuplicate(this.jsonExcelData)){
+   if(this.checkExcelDataDuplicate(this.jsonExcelData)){
       this.isSpinning = false;
       this.renderer.setProperty(this.inputExcelFile, 'value', '');
       return;
@@ -601,17 +674,18 @@ export class MSHI003Component implements AfterViewInit{
         
         next : (res) =>{
           if(res.code === 200){
-            this.sucessMSG(res.message, res.message);
+            this.sucessMSG('Excel匯入成功', res.message);
           }else{
-            this.errorMSG(res.message, res.message);
+            this.errorMSG('Excel匯入失敗', res.message);
           }
+          resolve(true);
         },
         error : (err) => {
           this.errorMSG('Excel匯入失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
           reject(true);
         },
         complete : () => {
-          resolve(true);
+          
         }
       })
 
@@ -629,6 +703,34 @@ export class MSHI003Component implements AfterViewInit{
     this.renderer.setProperty(this.inputExcelFile, 'value', ''); 
   }
 
+  checkExcelDataDuplicate(jsonExcelData : any) : boolean{
+
+    let i = 0;
+    let j = 1;
+
+    while(true){
+
+      if(i === jsonExcelData.length-1) return false;
+
+      if(j > jsonExcelData.length-1){
+        i++;
+        j = i+1;
+      }
+
+      if(i === jsonExcelData.length-1) return false;
+
+
+      if(jsonExcelData[i].idNo === jsonExcelData[j].idNo){
+        this.errorMSG("匯入失敗", `第 ${i+2} 行資料的與第 ${j+2} 行資料MO已重複，請修改後再匯入`);
+        return true;
+      }
+      else{
+        j++;
+      }
+
+    }
+  }
+
   convertJsonToEnglishkey() : void {
 
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"MO":').join('"idNo":'));
@@ -641,7 +743,7 @@ export class MSHI003Component implements AfterViewInit{
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"現況MIC":').join('"finalMicNo":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"製程碼":').join('"processCode":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整站別":').join('"adjShopCode":'));
-    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整站別":').join('"adjLineupProcess":'));
+    this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整流程":').join('"adjLineupProcess":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"過站狀態":').join('"overShopStatus":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"EPST":').join('"epst":'));
     this.jsonExcelData = JSON.parse(JSON.stringify(this.jsonExcelData).split('"調整日期":').join('"newEpst":'));
@@ -671,10 +773,10 @@ export class MSHI003Component implements AfterViewInit{
         return false;
       }
 
-      if(_.isNull(item[this.SHOP_CODE])){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SHOP_CODE}」不得為空，請修正。`);
-        return false;
-      }
+      // if(_.isNull(item[this.SHOP_CODE])){
+      //   this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SHOP_CODE}」不得為空，請修正。`);
+      //   return false;
+      // }
 
       /*if(_.isNull(item[this.SALE_ORDER])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SALE_ORDER}」不得為空，請修正。`);
@@ -715,6 +817,26 @@ export class MSHI003Component implements AfterViewInit{
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.EPST}」不得為空，請修正。`);
         return false;
       }*/
+
+      if(_.isNull(item[this.ADJ_SHOP_CODE])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」不得為空，請修正。`);
+        return false;
+      }
+      else if (String(item[this.ADJ_SHOP_CODE]).length > 3){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」字串長度不得大於3，請修正。`);
+        return false;
+      }
+
+      if(_.isNull(item[this.ADJ_LINEUP_PROCESS])){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」不得為空，請修正。`);
+        return false;
+      }
+      else if (String(item[this.ADJ_LINEUP_PROCESS]).length > 30){
+        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」字串長度不得大於30，請修正。`);
+        return false;
+      }
+
+
       if(!_.isNull(item[this.EPST])){
         const isVerifyEpstDate = this.verifyDate(item, rowNumberInExcel, this.EPST);
         if(isVerifyEpstDate === false) return false;
@@ -838,22 +960,23 @@ export class MSHI003Component implements AfterViewInit{
     keys.forEach(k => {
       if(k === this.ID_NO) b1 = true;
       else if(k === this.SHOP_CODE) b2 = true;
-      else if(k === this.SALE_ORDER) b3 = true;
-      else if(k === this.SALE_ITEM) b4 = true;
-      else if(k === this.CUST_ABBR) b5 = true;
-      else if(k === this.PROC_STATUS) b6 = true;
-      else if(k === this.SFC_DIA) b7 = true;
-      else if(k === this.FINAL_MIC_NO) b8 = true;
-      else if(k === this.PROCESS_CODE) b9 = true;
+      // else if(k === this.SALE_ORDER) b3 = true;
+      // else if(k === this.SALE_ITEM) b4 = true;
+      // else if(k === this.CUST_ABBR) b5 = true;
+      // else if(k === this.PROC_STATUS) b6 = true;
+      // else if(k === this.SFC_DIA) b7 = true;
+      // else if(k === this.FINAL_MIC_NO) b8 = true;
+      // else if(k === this.PROCESS_CODE) b9 = true;
       else if(k === this.ADJ_SHOP_CODE) b10 = true;
       else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
-      else if(k === this.OVER_SHOP_STATUS) b12 = true;
-      else if(k === this.EPST) b13 = true;
+      // else if(k === this.OVER_SHOP_STATUS) b12 = true;
+      // else if(k === this.EPST) b13 = true;
       else if(k === this.NEW_EPST) b14 = true;
-      else if(k === this.COMMENT) b15 = true;
+      // else if(k === this.COMMENT) b15 = true;
     });
 
-    return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
+    return b1 && b2 && b10 && b11 && b14;
+    //return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
   }
 
 
@@ -872,7 +995,7 @@ export class MSHI003Component implements AfterViewInit{
     let MSHI003DataListClone = [];
     this.MSHI003DataList.forEach(item => {
       if(!_.isNil(item.overShopStatus)){
-        item.overShopStatus = item.overShopStatus === 'Y' ? '已過站' : '未過站';
+        item.overShopStatus = item.overShopStatus === 'Y' ? '已過站' : item.overShopStatus === 'X' ? '查無MO資訊' : '未過站';
       }
       MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno']));
     });
@@ -985,23 +1108,28 @@ export class MSHI003Component implements AfterViewInit{
 
       if(!_.isNil(rowNode.data.adjShopCode) && !_.isNil(rowNode.data.adjLineupProcess)){
         // 請求後端API查找EPST與判定過站狀態
-        this.findByIdNoAdjShopCodeAdjLineupProcess(rowNode.data.idNo, rowNode.data.adjShopCode, rowNode.data.adjLineupProcess).then(epst =>{
-          // 查找的到渲染EPST與過站狀態
-          if(!_.isNil(epst)){
-            rowNode.data.epst = epst;
+        this.findByIdNoAdjShopCodeAdjLineupProcess(rowNode.data.idNo, rowNode.data.adjShopCode, rowNode.data.adjLineupProcess).then(data =>{
+          // 查找的到EPST與過站狀態
+          if(!_.isNil(data.epst)){
+            rowNode.data.epst = data.epst;
             rowNode.data.overShopStatus = 'N';
+            rowNode.data.processCode = data.processCode
           }
-          // 查找不到渲染過站狀態
+          // 查找不到過站狀態
           else{
             rowNode.data.epst = null;
             rowNode.data.overShopStatus = 'Y';
+            rowNode.data.processCode = data.processCode
           }
+          // 渲染EPST與過站狀態至畫面上
           this.editAdjShopCodeAndAdjLineupProcessAfterHandler(rowNode);
         })
       }
       else{
         rowNode.data.epst = null;
         rowNode.data.overShopStatus = null;
+        rowNode.data.processCode = null;
+        // 渲染EPST與過站狀態至畫面上
         this.editAdjShopCodeAndAdjLineupProcessAfterHandler(rowNode);
       }
       this.isSpinning = false;
@@ -1024,7 +1152,7 @@ export class MSHI003Component implements AfterViewInit{
        this.dataTransferService.setData(rowNode);
   }
 
-  async findByIdNoAdjShopCodeAdjLineupProcess(idNo : string, adjShopCode : string, adjLineupProcess : string) : Promise<string>{
+  async findByIdNoAdjShopCodeAdjLineupProcess(idNo : string, adjShopCode : string, adjLineupProcess : string) : Promise<any>{
     try{
       const res = await this.mshService.findByIdNoAdjShopCodeAdjLineupProcess(idNo, adjShopCode, adjLineupProcess).toPromise();
       if(res.code === 200){

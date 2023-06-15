@@ -49,38 +49,35 @@ export class PPSR309Component implements OnInit {
   };
 
   columnDefs: ColDef<data>[] = [
-    { headerName: 'MO版本',field: "moEdition" , filter: false,width: 100 },
+    { headerName: 'MO版本',field: "moEdition" , filter: false,width: 150 },
     { headerName: '廠區別',field: "plantCode" , filter: false,width: 100 },
     { headerName: '來源',field: "source" , filter: false,width: 100 },
-    { headerName: '區別',field: "areaGroup" , filter: false,width: 100 },
-    { headerName: '客戶簡稱',field: "custAbbreviations" , filter: false,width: 100 },
+    { headerName: '區別',field: "areaGroup" , filter: false,width: 120 },
+    { headerName: '客戶簡稱',field: "custAbbreviations" , filter: false,width: 120 },
     { headerName: '業務員',field: "sales" , filter: false,width: 100 },
-    { headerName: 'MO',field: "idNo" , filter: false,width: 100 },
+    { headerName: 'MO',field: "idNo" , filter: false,width: 120 },
     { headerName: '訂單編號',field: "saleOrder" , filter: false,width: 100 },
     { headerName: '訂單項次',field: "saleItem" , filter: false,width: 100 },
-    { headerName: '生計交期',field: "dateDeliveryPp" , filter: false,width: 100 },
+    { headerName: '生計交期',field: "dateDeliveryPp" , filter: false,width: 120 },
     { headerName: '現況重量',field: "weight" , filter: false,width: 100 },
-    { headerName: 'PST',field: "pst" , filter: false,width: 100 },
-    { headerName: '缺項群組',field: "missingGroup" , filter: false,width: 100 },
-    { headerName: '允收截止日',field: "datePlanInStorage" , filter: false,width: 100 },
-    { headerName: '可接受交期',field: "dateAcceptable" , filter: false,width: 100 },
+    { headerName: 'PST',field: "pst" , filter: false,width: 120 },
+    { headerName: '缺項群組',field: "missingGroup" , filter: false,width: 120 },
+    { headerName: '允收截止日',field: "datePlanInStorage" , filter: false,width: 120 },
+    { headerName: '可接受交期',field: "dateAcceptable" , filter: false,width: 120 },
     { headerName: '區別修正',field: "fixAreaGroup" , filter: false,width: 100 },
     { headerName: '異型棒',field: "isProfield" , filter: false,width: 100 },
     { headerName: '大棒',field: "isBigStick" , filter: false,width: 100 },
-    { headerName: '是否符合允收截止日',field: "isDatePlanInStorage" , filter: false,width: 100 },
-    { headerName: '是否符合可接受交期',field: "isDateAcceptable" , filter: false,width: 100 },
+    { headerName: '是否符合允收截止日',field: "isDatePlanInStorage" , filter: false,width: 150 },
+    { headerName: '是否符合可接受交期',field: "isDateAcceptable" , filter: false,width: 150 },
     { headerName: '是否缺項',field: "isMissingGroup" , filter: false,width: 100 },
-    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 100 },
-    { headerName: '建立日期',field: "dateCreate" , filter: false,width: 100 },
-    { headerName: '建立者',field: "userCreate" , filter: false,width: 100 },
-    { headerName: '異動日期',field: "dateUpdate" , filter: false,width: 100 },
-    { headerName: '異動者',field: "userUpdate" , filter: false,width: 100 }
+    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 150 }
   ]
 
   rowData: data[] = [];    
 
-  getDataList(){
 
+  getDataList(){
+    this.isSpinning = true;
     let postData = {};
     this.PPSService.getR308Data(postData).subscribe(res =>{
       let result:any = res ;
@@ -90,7 +87,7 @@ export class PPSR309Component implements OnInit {
         this.message.error('無資料');
         return;
       }
-
+      this.isSpinning = false;
     },err => {
       this.message.error('網絡請求失敗');
     })
@@ -99,16 +96,14 @@ export class PPSR309Component implements OnInit {
   }
 
   dataConvert() {
-    
     this.isSpinning = true;
-
     let postData = {};
     this.PPSService.convertR308Data(postData).subscribe(res =>{
       if(res['code'] == 1){
-        this.message.info('截轉成功');
+        this.message.info('結轉成功');
         this.getDataList();
       }else{
-        this.message.error('截轉失敗');
+        this.message.error('結轉失敗');
       }
       this.isSpinning = false;
     });
@@ -116,7 +111,6 @@ export class PPSR309Component implements OnInit {
   }
 
   excelExport(){
-
     this.isSpinning = true;
     let headerArray = [] ;
 
