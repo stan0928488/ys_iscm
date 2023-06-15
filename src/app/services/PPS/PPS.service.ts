@@ -1703,4 +1703,17 @@ getEquipCodeList(_data){
     let queryUrl = this.APIURL + "/FCP/R307/getPPSR307List";
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  convertR308Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/converData`;
+    return this.http.post(queryUrl,body, this.httpOptions);
+  }
+
+  getR308Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308List`;
+    return this.http.post(queryUrl,body, this.httpOptions);
+  }
+
 }

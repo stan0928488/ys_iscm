@@ -107,6 +107,8 @@ import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { AdjShopCodeCellRendererComponent } from './pages/MSH/MSHI003/AdjShopCodeCellRenderer.componet';
 import { AdjShopCodeCellSelectEditorComponent } from './pages/MSH/MSHI003/adj-shop-code-cell-select-editor';
 import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-lineup-process-cell-select-editor';
+import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
+import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 
 registerLocaleData(zh);
 
@@ -194,7 +196,9 @@ registerLocaleData(zh);
     LABI003Component,
     AdjShopCodeCellRendererComponent,
     AdjShopCodeCellSelectEditorComponent,
-    AdjLineupProcessSelectEditorComponent
+    AdjLineupProcessSelectEditorComponent,
+    PPSR308Component,
+    PPSR309Component
    ],
   imports: [
     BrowserModule,
