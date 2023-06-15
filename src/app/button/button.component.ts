@@ -23,7 +23,8 @@ export class ButtonComponent implements ICellRendererAngularComp {
   }
 
   buttonClicked() {
-    alert(`${this.cellValue} FUCKKKKKKKK`);
+    alert(`${this.cellValue} medals won!`);
+    console.log('click');
   }
 
   getValueToDisplay(params: ICellRendererParams) {

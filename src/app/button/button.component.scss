@@ -1,14 +1,21 @@
 .button {
-  background-color: #555555;
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  font-size: 14px;
-  border-radius: 8px;
-  width: 120px;
-  height: 35px;
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
+  color: #fff;
+
+  background-color: #1677ff;
+
+  border-style: none;
+
+  width: 60%;
+
+  height: 100%;
+
+  display: inline-flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  flex-wrap: nowrap;
 }
 
 /*
@@ -48,12 +55,12 @@
 
   line-height: 0 !important;
 
-  width: 100%;
-
+  width: 60%;
+  background-color: #1677ff;
   // height: calc(100% - #{$a});
 
   height: 100%;
-
+  border-radius: 3px;
   display: inline-flex;
 
   justify-content: center;
@@ -66,24 +73,6 @@
 
   .puslish-btn {
     // border: 2px solid green;
-
-    color: #fff;
-
-    background-color: #1677ff;
-
-    width: 60%;
-
-    height: 100%;
-
-    border-radius: 3px;
-
-    display: inline-flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    flex-wrap: nowrap;
 
     // margin-top: -10px;
   }
