@@ -71,7 +71,7 @@ export class MSHI002Component implements OnInit {
     panels3:any = 
     {
       active: true,
-      name: '已挑選欄位 （MO必選）',
+      name: '已挑選欄位 （MO，投產機台 必選）',
     };
 
   selectColumChecked(value: string[]): void {

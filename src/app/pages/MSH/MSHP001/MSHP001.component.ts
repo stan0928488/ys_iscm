@@ -159,6 +159,7 @@ category = '' ;
 
 
  handleOpCodeModal(){
+  this.changeCarFlag = '1' ;
   let idsTemp = "" ;
   this.rowSelectData.forEach((item,index,array)=>{
     if(index == 0) {
@@ -193,7 +194,29 @@ category = '' ;
  }
 
  /******更換機台結束 */
+// 換車標識
+// 1 更換作業代碼 換車 
+changeCarFlag = '1' ;
 
+
+ /**同作業換車開始 */
+ sameOpCodeChangeCarModal = {
+  isVisible : false ,
+  title:'車次更換',
+  isConfirmLoading: false ,
+  table : {
+    header : [
+      {"label":'MO',"value":'ID_NO'},
+      {"label":'投產機台',"value":'PST_MACHINE_ADD'},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+      {"label":'',"value":''},
+    ] ,
+    tbData : [] ,
+  }
+ }
+ /**同作業換車結束 */
 
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
@@ -224,7 +247,6 @@ category = '' ;
  selectNewID = ""
 // 選擇車輛
  selectCarClick(id,selectedCarId){
-
   let newOpCode = "" ;
   this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
     if(item.ID === id) {
@@ -267,38 +289,43 @@ category = '' ;
  }
  // 確認保存
  comitHandleOpCodeModal(){
-  //批量存檔
-  console.log("批量存檔:" + JSON.stringify(this.changeOpCodeTable.tbData));
-  let saveOpCodeAndCarData = []
-  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
-   if(item.selectedOpCode !== "" && item.selectedCarId  !== "") {
-    let saveOpCodeAndCarDataTemp = {id:item.ID ,newOpCode:item.selectedOpCode,carId:item.selectedCarId}
-    saveOpCodeAndCarData.push(saveOpCodeAndCarDataTemp)
-   }
-  })
-  if(saveOpCodeAndCarData.length < 1){
-    this.nzMessageService.error("未選擇作業代碼及車次")
-    return
+  if(this.changeCarFlag === '1') {
+    this.saveChangeOpCodeAndCar();
+  } else if(this.changeCarFlag === '2') {
+    this.saveChangeSameOpCodeCar() ;
   }
-  this.handleOpCodeIsConfirmLoading = true
-  console.log("有效存檔:" + JSON.stringify(saveOpCodeAndCarData));
-  this.mshService.saveChangeOpCode(saveOpCodeAndCarData).subscribe(res=>{
-    this.handleOpCodeIsConfirmLoading = false
-    let result:any = res ;
-    if(result.code !== 200) {
-      this.nzMessageService.error(result.message) ;
-    } else {
-      this.nzMessageService.success(result.message);
-      this.changeOpCodeIsVisible = false ;
-      this.modalTableVisible = false ;
-      this.getTableData() ;
-    }
-  })
+  
   
  }
  //保存修改作業代碼及配車 
  saveChangeOpCodeAndCar(){
-
+      //批量存檔
+      console.log("批量存檔:" + JSON.stringify(this.changeOpCodeTable.tbData));
+      let saveOpCodeAndCarData = []
+      this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+      if(item.selectedOpCode !== "" && item.selectedCarId  !== "") {
+        let saveOpCodeAndCarDataTemp = {id:item.ID ,newOpCode:item.selectedOpCode,carId:item.selectedCarId,originalCarId:item.OLD_CAR_ID}
+        saveOpCodeAndCarData.push(saveOpCodeAndCarDataTemp)
+      }
+      })
+      if(saveOpCodeAndCarData.length < 1){
+        this.nzMessageService.error("未選擇作業代碼及車次")
+        return
+      }
+      this.handleOpCodeIsConfirmLoading = true
+      console.log("有效存檔:" + JSON.stringify(saveOpCodeAndCarData));
+      this.mshService.saveChangeOpCode(saveOpCodeAndCarData).subscribe(res=>{
+        this.handleOpCodeIsConfirmLoading = false
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.nzMessageService.success(result.message);
+          this.changeOpCodeIsVisible = false ;
+          this.modalTableVisible = false ;
+          this.getTableData() ;
+        }
+      })
  }
  // 保存狀態
  handleOpCodeIsConfirmLoading = false 
@@ -338,8 +365,8 @@ handleSelectCarCheckFun(carId){
 handleSelectCarIsConfirmLoading = false
 // 確認車輛選擇
 comitHandleSelectCarModal(){
+  console.log('this.changeCarFlag:'+this.changeCarFlag) ;
   let selectCarIdTemp = ""
-   
   this.selectCarTable.tbData.forEach((item, index, array)=>{
    if(item.checked === true) {
      //選擇當前車次
@@ -353,13 +380,28 @@ comitHandleSelectCarModal(){
  if(this.selectNewID === "") {
    this.nzMessageService.error("選擇作業丟失，請關閉重新選擇")
  }
-  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
-   if(item.ID === this.selectNewID) {
-     this.changeOpCodeTable.tbData[index].selectedCarId = selectCarIdTemp
-   }
- })
- this.handleSelectCarModal() ;
+ console.log('this.selectNewID:'+this.selectNewID) ;
+if(this.changeCarFlag === '1') {
 
+  this.changeOpCodeTable.tbData.forEach((item,index,array)=>{
+    if(item.ID === this.selectNewID) {
+      this.changeOpCodeTable.tbData[index].selectedCarId = selectCarIdTemp
+    }
+  })
+
+} else if(this.changeCarFlag === '2') {
+  this.sameOpCodeChangeCarModal.table.tbData.forEach((item,index,array)=>{
+    if(item.ID === this.selectNewID) {
+      console.log("index: " + index)
+      console.log("selectCarIdTemp: " + selectCarIdTemp)
+      this.sameOpCodeChangeCarModal.table.tbData[index].NEW_CAR_ID = selectCarIdTemp
+
+    }
+  })
+  console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+}
+ 
+this.handleSelectCarModal() ;
 
 }
 
@@ -414,7 +456,8 @@ comitHandleSelectCarModal(){
           if(params.data["CAR_WEIGHT_ADD"] < 3900) {
             return { background: 'lightcoral' };
           } else {
-            if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+            if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
+            &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
               if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
                 return { background: 'white' };
               } else {
@@ -515,7 +558,7 @@ comitHandleSelectCarModal(){
   public rowSelection: 'single' | 'multiple' = 'multiple';
   onCellClicked(event:any){
     console.log("cellClick :" + event.value )
-    if(event.colDef.field === 'ID_NO' || event.colDef.field ==="START_DATE_C" || event.colDef.field ==="END_DATE_C") {
+    if(event.colDef.field === 'ID_NO') {
       this.copy(event.value) ;
     }
    
@@ -792,7 +835,13 @@ comitHandleSelectCarModal(){
          this.outsideColumnDefs.push(index10);
          //数据类型
          this.columKeyType["PST_MACHINE_ADD"] = 0 ;
-
+          // 411 ORIGINAL_CAR_ID_ADD
+          let index12 = {headerName:'ORIGINAL_CAR_ID_ADD',field:'ORIGINAL_CAR_ID_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+          exportHeader.push("ORIGINAL_CAR_ID_ADD")
+          this.columnDefs.push(index12);
+          this.outsideColumnDefs.push(index12);
+          //数据类型
+          this.columKeyType["ORIGINAL_CAR_ID_ADD"] = 0 ;
         
       }
        //ORIGINAL_PST_MACHINE_ADD
@@ -1718,6 +1767,7 @@ comitHandleSelectCarModal(){
       //處理提交數據
       let comitData = []
       let checkData = true ;
+      console.log("")
       comitDataTemp.forEach((item,index,value)=>{
         const containsValue = this.shopMachineList.some(obj => obj.PST_MACHINE === item.PST_MACHINE_NEW);
       if (containsValue) {
@@ -1768,8 +1818,98 @@ comitHandleSelectCarModal(){
 
       });
      }
-
-
     /***機台更換結束 */
+
+    /**同作業換車開始 */
+    openSameOpCodeChangeCarModal(){
+      this.changeCarFlag = '2'
+      this.sameOpCodeChangeCarModal.table.tbData = [] ;
+      let sameOpCodeChangeCarModalTemp = [] ;
+      this.rowSelectData.forEach((item,index,array)=>{
+        let objTemp = {ID:item.ID,ID_NO: item.ID_NO, OP_CODE:item.OP_CODE,OLD_CAR_ID:item.CAR_ID_ADD,CAR_WEIGHT_ADD:item.CAR_WEIGHT_ADD,NEW_CAR_ID:""} ;
+        sameOpCodeChangeCarModalTemp.push(objTemp);
+      }) ;
+      this.sameOpCodeChangeCarModal.table.tbData = sameOpCodeChangeCarModalTemp ;
+      console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+      this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
+    }
+
+    selectSameOpCodeCarClick(id:any,opCode:any,oldCarId:any,newCarId:any) {
+      this.selectCarTable.tbData = [] ;
+      let para = "id="+id +"&opCode="+opCode ;
+      this.mshService.getFcpCarInfo(para).subscribe(res=>{
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          // 當前排程ID
+          this.selectNewID = id 
+          // 將當前CARID 過濾
+          this.selectCarTable.tbData = result.data.filter((item)=>{
+            return item.BATCH_411_CAR_ID !== oldCarId ;
+          }) ;
+          //將配車選項重置false 
+          this.selectCarTable.tbData.forEach((item, index, array)=>{
+            if(item.BATCH_411_CAR_ID === newCarId) {
+              this.selectCarTable.tbData[index].checked = true ;
+            } else {
+              this.selectCarTable.tbData[index].checked = false ;
+            }
+            
+          })
+       //開啟關閉選擇
+        this.handleSelectCarModal() ;
+        }
+         })
+    }
+
+    //清除已經選擇的CARID
+    handleClearCarID(id:any){
+      this.sameOpCodeChangeCarModal.table.tbData.forEach((item,index,array)=>{
+        if(item.ID === id) {
+          this.sameOpCodeChangeCarModal.table.tbData[index].NEW_CAR_ID = '' ;
+    
+        }
+      })
+
+    }
+    handleSameOpCodeChangeCarModal(){
+      this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
+    }
+    // 保存同作業換車
+    saveChangeSameOpCodeCar(){
+
+      console.log("換車批量存檔:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData));
+      let saveSameOpCodeChangeCarData = []
+      this.sameOpCodeChangeCarModal.table.tbData.forEach((item,index,array)=>{
+      if(item.NEW_CAR_ID  !== "") {
+        let saveOpCodeAndCarDataTemp = {id:item.ID ,newOpCode:"",carId:item.NEW_CAR_ID,originalCarId:item.OLD_CAR_ID}
+        saveSameOpCodeChangeCarData.push(saveOpCodeAndCarDataTemp)
+      }
+      })
+      if(saveSameOpCodeChangeCarData.length < 1){
+        this.nzMessageService.error("未選擇作業代碼及車次")
+        return
+      }
+      console.log("保存數據:" + JSON.stringify(saveSameOpCodeChangeCarData));
+      this.handleOpCodeIsConfirmLoading = true
+      console.log("有效存檔:" + JSON.stringify(saveSameOpCodeChangeCarData));
+      this.mshService.saveSameOpCodeChangeCar(saveSameOpCodeChangeCarData).subscribe(res=>{
+        this.handleOpCodeIsConfirmLoading = false
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.nzMessageService.success(result.message);
+          this.sameOpCodeChangeCarModal.isVisible = false ;
+          this.modalTableVisible = false ;
+          this.getTableData() ;
+        }
+      })
+
+    }
+    
+
+    /**同作業換車結束 */
 
 }
