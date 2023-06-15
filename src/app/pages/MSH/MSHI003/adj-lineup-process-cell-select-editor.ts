@@ -3,6 +3,7 @@ import { AgEditorComponent } from "ag-grid-angular";
 import { GridApi, ICellEditorParams } from "ag-grid-community";
 import { DataTransferService } from "src/app/services/MSH/Data.transfer.service";
 import * as _ from "lodash";
+import { NzMessageService } from "ng-zorro-antd/message";
 
 @Component({
     selector: 'app-adj-lineup-process-cell-select-editor',
@@ -29,6 +30,7 @@ import * as _ from "lodash";
   styles: [`
 
   `],
+  providers:[NzMessageService]
 })
 export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent, AfterViewInit{
   
@@ -49,7 +51,8 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
     // 提示必須先選擇調整流程
     adjLineupProcessTooltipTitle = '請先選擇調整站別'
 
-    constructor(private dataTransferService : DataTransferService){
+    constructor(private dataTransferService : DataTransferService,
+                private message:NzMessageService){
 
     }
 
@@ -57,7 +60,7 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
         //this.adjShopCodeCellSelect.nzOpen = true;
     }
 
-    agInit(params: ICellEditorParams<any, any>): void {
+    async agInit(params: ICellEditorParams<any, any>): Promise<void>  {
        // 獲取 MSHI003Component 的 this
        this.componentParent = params.context.componentParent;
 
@@ -76,7 +79,7 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
             this.adjLineupProcessTooltipTitle = '';
 
             // 調用 MSHI003Component 的方法撈取流程清單
-            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.adjShopCode);
+            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.idNo, this.currentRowNode.data.adjShopCode);
         }
     }
 

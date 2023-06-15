@@ -138,12 +138,23 @@ saveChangeOpCode(_param) {
     return this.http.get<any>(endpointUrl);
   }
 
-  // 獲取流程清單
-  getLineupProcessListByShopCode(adjShopCode : string){
-    console.log('獲取流程清單..');
+  // 獲取機台清單 by idNo
+  getShopCodeListByIdNo(idNo : string){
     const httpParams = new HttpParams()
+      .set('idNo', idNo);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getShopCodeListByIdNo`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Params參數 : idNo=${idNo}`);
+    return this.http.get<any>(endpointUrl, { params: httpParams });
+  }
+
+  // 根據idNo與站別獲取流程清單
+  getLineupProcessListByIdNoAndShopCode(idNo : string, adjShopCode : string){
+    console.log('根據idNo與站別獲取流程清單..');
+    const httpParams = new HttpParams()
+      .set('idNo', idNo)
       .set('adjShopCode', adjShopCode);
-    let endpointUrl = `${this.APIURL}/msh/MSHC003/getLineupProcessListByShopCode`;
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/getLineupProcessListByIdNoAndShopCode`;
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Body參數 : 無`);
     return this.http.get<any>(endpointUrl, { params: httpParams });
