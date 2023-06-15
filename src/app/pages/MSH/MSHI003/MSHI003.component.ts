@@ -299,7 +299,7 @@ export class MSHI003Component implements AfterViewInit{
     new Promise<boolean>((resolve, reject) => {
       this.mshService.getShopCodeList().subscribe(res => {
         if(res.code === 200){
-          this.shopCodeOfOption = res.data;
+         this.shopCodeOfOption = res.data;
           resolve(true);
         }else{
           this.message.error('後台錯誤，獲取不到站別清單');
@@ -506,13 +506,28 @@ export class MSHI003Component implements AfterViewInit{
      }
 
     let missingNewEpst : MSHI003 = null;
+    let missingField : string = null;
     let missingNewEpstFlag = this.MSHI003PendingDataList.some(element => {
       missingNewEpst = element;
-      return _.isNil(element.newEpst);
+      if(_.isNil(missingNewEpst.adjShopCode)){
+        missingField = '請填寫「調整站別」'
+        return true;
+      }
+
+      if(_.isNil(missingNewEpst.adjLineupProcess)){
+      missingField = '請填寫「調整流程」'
+      return true;
+      }
+
+      if(_.isNil(missingNewEpst.newEpst)){
+      missingField = '請填寫「調整日期」'
+      return true;
+      }
+
      });
 
      if(missingNewEpstFlag){
-      this.errorMSG('無法儲存', `MO:「${missingNewEpst.idNo}」有編輯過備註，需填寫調整日期。<br>若需要放棄儲存編輯過的資料，請再重新執行「查詢」即可。`);
+      this.errorMSG('無法儲存', `MO:「${missingNewEpst.idNo}」，${missingField}。<br>若需要放棄儲存編輯過的資料，請再重新執行「查詢」即可。`);
       this.isSpinning = false;
       return;
      }
@@ -758,10 +773,10 @@ export class MSHI003Component implements AfterViewInit{
         return false;
       }
 
-      if(_.isNull(item[this.SHOP_CODE])){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SHOP_CODE}」不得為空，請修正。`);
-        return false;
-      }
+      // if(_.isNull(item[this.SHOP_CODE])){
+      //   this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SHOP_CODE}」不得為空，請修正。`);
+      //   return false;
+      // }
 
       /*if(_.isNull(item[this.SALE_ORDER])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.SALE_ORDER}」不得為空，請修正。`);
