@@ -9,7 +9,7 @@
 
   <!-- 查询区域  -->
   <div nz-row>
-    <div nz-col nzSpan="14">
+    <div nz-col nzSpan="16">
       <div nz-row>
           <nz-radio-group [(ngModel)]="radioPointValue" nzButtonStyle="solid" disabled = "true" (ngModelChange)="onChangePoint($event)">
             <label nz-radio-button nzValue="A" checked>ASAP</label>
@@ -59,50 +59,52 @@
           <nz-option *ngFor="let option of optionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
           </nz-select>
 
+      <div nz-col nzSpan="1">
+        <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
+          <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
       </div>
-      <div nz-row>
-        <nz-radio-group style="margin-bottom: 8px;"
-        [(ngModel)]="searchData.saleAreaGroup" 
-        [nzButtonStyle]="'solid'">
-          <label nz-radio-button nzDisabled="true">區域別:</label>
-          <label nz-radio-button>ALL</label>
-          <label nz-radio-button nzValue="營三(內銷)">營三(內銷)</label>
-          <label nz-radio-button nzValue="營三(外銷)">營三(外銷)</label>
-          <label nz-radio-button nzValue="外銷">外銷</label>
-          <label nz-radio-button nzValue="鹽水">鹽水</label>
-          <label nz-radio-button nzValue="南區">南區</label>
-          <label nz-radio-button nzValue="大陸">大陸</label>
-          <label nz-radio-button nzValue="江陰">江陰</label>
-          <label nz-radio-button nzValue="常熟">常熟</label>
-        </nz-radio-group>
       </div>
-    </div>
-    <div nz-col nzSpan="6">
-      <nz-radio-group style="margin-bottom: 8px;" 
-        (ngModelChange)="onChangekindType($event)"
-        [(ngModel)]="searchData.kindType"
-        [nzButtonStyle]="'solid'">
-          <label nz-radio-button nzDisabled="true">產品別:</label>
-          <label nz-radio-button>ALL</label>
-          <label nz-radio-button nzValue="PL">PL</label>
-          <label nz-radio-button nzValue="BTB">BTB</label>
-          <label nz-radio-button nzValue="CTB">CTB</label>
-          <br>
-          <nz-radio-group style="margin-bottom: 8px;" 
-          [(ngModel)]="searchData.specialBar"
-          [nzButtonStyle]="'solid'">
-            <label nz-radio-button nzDisabled="true">高附加:</label>
-            <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE490">異型</label>
-            <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE49041TO67">大棒</label>
-          </nz-radio-group>
-        </nz-radio-group>
-    </div>
-    <div nz-col nzSpan="1">
-      <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
-        <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
     </div>
   </div>
 
+  <div nz-row>
+    
+    <nz-radio-group style="margin-top: 8px;" 
+      (ngModelChange)="onChangekindType($event)"
+      [(ngModel)]="searchData.kindType"
+      [nzButtonStyle]="'solid'">
+      <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">產品別:</label>
+      <label nz-radio-button>ALL</label>
+      <label nz-radio-button nzValue="PL">PL</label>
+      <label nz-radio-button nzValue="BTB">BTB</label>
+      <label nz-radio-button nzValue="CTB">CTB</label>
+    </nz-radio-group>
+    <p>
+    <nz-radio-group style="margin-top: 8px; margin-left: 10px;" 
+    [(ngModel)]="searchData.saleAreaGroup" 
+    [nzButtonStyle]="'solid'">
+      <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">區域別:</label>
+      <label nz-radio-button>ALL</label>
+      <label nz-radio-button nzValue="營三(內銷)">營三(內銷)</label>
+      <label nz-radio-button nzValue="營三(外銷)">營三(外銷)</label>
+      <label nz-radio-button nzValue="外銷">外銷</label>
+      <label nz-radio-button nzValue="鹽水">鹽水</label>
+      <label nz-radio-button nzValue="南區">南區</label>
+      <label nz-radio-button nzValue="大陸">大陸</label>
+      <label nz-radio-button nzValue="江陰">江陰</label>
+      <label nz-radio-button nzValue="常熟">常熟</label>
+    </nz-radio-group>    
+    <p>
+    <nz-radio-group style="margin-top: 8px; margin-left: 10px; margin-bottom: 8px;" 
+    [(ngModel)]="searchData.specialBar"
+    [nzButtonStyle]="'solid'">
+      <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">高附加:</label>
+      <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE490">異型</label>
+      <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE49041TO67">大棒</label>
+    </nz-radio-group>
+
+    <button style="margin-top: 8px; margin-left: 20px; margin-bottom: 8px;" (click)="openBiWeekWip()"  nz-button nzType="default" nzDanger>週入庫計畫表</button>
+  </div>
   
      <!-- 内容区  -->
      <div  *ngIf="loaded">
@@ -111,7 +113,7 @@
       <nz-table #basicTable [nzData]="tbodyList"  [nzShowPagination]="false"  >
         <thead>
           <tr>
-            <th colspan="2" style="text-align:left ;"> <button (click)="delayDataBtn(delayModalTitle, delayModalContent, delayModalFooter)"  nz-button nzType="primary" >列出遞延訂單</button> </th>
+            <th colspan="2" style="text-align:left ;"> <button (click)="delayDataBtn(delayModalTitle, delayModalContent, delayModalFooter)"  nz-button nzType="primary" nzDanger>列出遞延訂單</button> </th>
 
             <th *ngFor="let data of tableHeaderList">{{data.label}}</th>
           </tr>
@@ -339,3 +341,26 @@
         </button>
       </ng-template>
     </div>
+
+
+
+    
+<nz-modal
+[(nzVisible)]="isVisibleBiWeekWip"
+[nzTitle]="BiWeekWipTitle"
+[nzContent]="BiWeekWipContent"
+[nzFooter]="BiWeekWipFooter"
+(nzOnCancel)="BiWeekWipCancel()"
+[nzWidth]="1500"
+>
+<ng-template #BiWeekWipTitle>週入庫計畫表</ng-template>
+<ng-template #BiWeekWipContent>
+  <div>
+    <iframe title="pps_SQL_驗證區v3" width="1440" height="650" src="https://app.powerbi.com/reportEmbed?reportId=697a9ff9-6980-4a4b-8cfb-301074b2f781&autoAuth=true&ctid=97876bed-bb9a-4617-802b-94c62e7837b5&pageName=ReportSectionb22bee23a046539b10e5" frameborder="0" allowFullScreen="true"></iframe>
+  </div>
+</ng-template>
+<ng-template #BiWeekWipFooter>
+  <button nz-button nzType="primary" nzDanger><a target="_blank" [href]="'https://app.powerbi.com/reportEmbed?reportId=697a9ff9-6980-4a4b-8cfb-301074b2f781&autoAuth=true&ctid=97876bed-bb9a-4617-802b-94c62e7837b5&pageName=ReportSectionb22bee23a046539b10e5'">
+    開新分頁</a></button>
+</ng-template>
+</nz-modal>

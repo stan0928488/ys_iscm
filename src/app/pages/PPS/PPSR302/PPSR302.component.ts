@@ -42,6 +42,7 @@ export class PPSR302Component implements OnInit {
   //补充定义
   tplModalButtonLoading = false
   now :Date = new Date() ;
+  isVisibleBiWeekWip = false;
   headerFirst = [] ; //第一栏位  延迟订单
   tableHeaderList = [] ;  //头部内容
   tableHeaderLastList = [] ; //最后栏位 TOTAL
@@ -83,6 +84,7 @@ export class PPSR302Component implements OnInit {
     { label: '星期五', value: 4},
     { label: '星期六', value: 5},
     ];
+
   selectedValue = { label: '星期一', value: 0 };
   radioSelectValue = 'M' ; //初始化按月
   tbodyList ;
@@ -107,17 +109,20 @@ export class PPSR302Component implements OnInit {
     {label:'MAX 計畫入庫日'},
     {label:'預計入庫量(噸)'},
   ] ;
+
   totalWeight = 0 ;
   totalCount = 0 ;
   firstModalTableAppendList = [] ;
   firstModalListOfData = [] ; //
   testLength = [1,2,3,4,5,6,7,8,9,10]
   firstModalData = [] ;
+
   searchData = {
     kindType:"",
     specialBar:"",
     saleAreaGroup:""
   }
+
   firstSearchParamete = {
     fcpVer: this.selectedVer.value,
     pointStatus:this.selectedVer.pointStatus,
@@ -128,6 +133,8 @@ export class PPSR302Component implements OnInit {
     searchData:this.searchData
   }
   specialBarDisable:boolean;
+
+
 
   // tslint:disable-next-line:no-any
   compareFn1 = (o1: any, o2: any) => (o1 && o2 ? o1.value === o2.value : o1 === o2);
@@ -794,6 +801,14 @@ this.firstModalTableAppendList = [] ;
     }else{
       this.specialBarDisable = true;
     }
+  }
+
+  // 展開週計畫入庫表
+  openBiWeekWip() {
+    this.isVisibleBiWeekWip = true;
+  }
+  BiWeekWipCancel() {
+    this.isVisibleBiWeekWip = false;
   }
 
 }
