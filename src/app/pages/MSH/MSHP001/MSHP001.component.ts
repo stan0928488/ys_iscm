@@ -498,7 +498,8 @@ this.handleSelectCarModal() ;
         //   return { background: 'lightgray' };
         // }
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
-        if (params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0) {
+        if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
+        &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
           if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
             return { background: 'white' };
           } else {
@@ -1824,6 +1825,7 @@ this.handleSelectCarModal() ;
     openSameOpCodeChangeCarModal(){
       this.changeCarFlag = '2'
       this.sameOpCodeChangeCarModal.table.tbData = [] ;
+      this.handleOpCodeIsConfirmLoading = false;
       let sameOpCodeChangeCarModalTemp = [] ;
       this.rowSelectData.forEach((item,index,array)=>{
         let objTemp = {ID:item.ID,ID_NO: item.ID_NO, OP_CODE:item.OP_CODE,OLD_CAR_ID:item.CAR_ID_ADD,CAR_WEIGHT_ADD:item.CAR_WEIGHT_ADD,NEW_CAR_ID:""} ;
