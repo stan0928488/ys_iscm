@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
+import { MSHI004Service } from 'src/app/services/MSHI004/MSHI004.service';
 
 @Component({
   selector: 'app-button',
@@ -9,6 +10,8 @@ import { ICellRendererParams } from 'ag-grid-community';
 })
 export class ButtonComponent implements ICellRendererAngularComp {
   public cellValue!: string;
+
+  constructor(private MSHI004Service: MSHI004Service) {}
 
   // gets called once before the renderer is used
   agInit(params: ICellRendererParams): void {
@@ -24,6 +27,7 @@ export class ButtonComponent implements ICellRendererAngularComp {
 
   buttonClicked() {
     alert(`${this.cellValue} medals won!`);
+    this.MSHI004Service.getupdateEndDate();
     console.log('click');
   }
 

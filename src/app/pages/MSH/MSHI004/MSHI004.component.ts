@@ -206,8 +206,8 @@ export class MSHI004Component {
     { headerName: '已發佈機台', field: 'pstMachine', width: 200, filter: true },
     {
       headerName: '發佈時間區間',
-      field: 'startDatetime',
-      width: 200,
+      field: 'timeRegion',
+      width: 400,
       filter: true,
     },
   ];
