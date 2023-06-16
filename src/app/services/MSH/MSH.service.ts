@@ -213,5 +213,10 @@ saveChangeOpCode(_param) {
     let queryUrl = this.APIURL + "/msh/MSHP001/getCurrentMachineData";
     return this.http.post(queryUrl,_param,this.httpOptions);
   }
+  /**同作業代碼換車 */
+  saveSameOpCodeChangeCar(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/saveSameOpCodeChangeCar";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
 
 }

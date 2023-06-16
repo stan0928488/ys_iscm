@@ -129,6 +129,8 @@
     </div>
     <div *nzModalFooter>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
+      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="openSameOpCodeChangeCarModal()">同作業換車</button>
+
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode !== 'RF'"  (click)="handleChangeMachineModal()">更換機台</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
@@ -247,6 +249,7 @@ nzWidth="300"
     <thead>
       <tr>
         <th>MO</th>
+        <th>CARID</th>
         <th>作業代碼</th>
         <th>可替換作業</th>
         <th>選擇替換作業代碼</th>
@@ -257,6 +260,7 @@ nzWidth="300"
     <tbody>
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.ID_NO}}</td>
+        <td>{{data.OLD_CAR_ID}}</td>
         <td>{{data.OP_CODE}}</td>
         <td>{{data.NEW_OP_CODE}}</td>
         <td>
@@ -281,6 +285,57 @@ nzWidth="300"
   <button nz-button nzType="primary" (click)="comitHandleOpCodeModal()" [nzLoading]="handleOpCodeIsConfirmLoading">存檔</button>
 </ng-template>
 </nz-modal>
+<!---作業代碼更換-->
+<!---同作業換車開始-->
+<nz-modal
+[(nzVisible)]="sameOpCodeChangeCarModal.isVisible"
+[nzTitle]="sameOpCodeChangeCarModalTitle"
+[nzContent]="sameOpCodeChangeCarModalContent"
+[nzFooter]="sameOpCodeChangeCarModalFooter"
+(nzOnCancel)="handleSameOpCodeChangeCarModal()"
+nzWidth="300"
+>
+<ng-template #sameOpCodeChangeCarModalTitle></ng-template>
+
+<ng-template #sameOpCodeChangeCarModalContent>
+  <nz-table #sameOpCodeBasicTable [nzData]="sameOpCodeChangeCarModal.table.tbData" [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>MO</th>
+        <th>作業代碼</th>
+        <th>原始CARID</th>
+        <th>當前車重</th>
+        <th>新CARID</th>
+        <th>選擇配車</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of sameOpCodeBasicTable.data">
+        <td>{{data.ID_NO}}</td>
+        <td>{{data.OP_CODE}}</td>
+        <td>{{data.OLD_CAR_ID}}</td>
+        <td>{{data.CAR_WEIGHT_ADD}}</td>
+        <td>{{data.NEW_CAR_ID}} 
+          <ng-container *ngIf="data.NEW_CAR_ID !== ''"> <a nz-button (click)="handleClearCarID(data.ID)" nzType="text" >x</a> 
+          </ng-container>
+        </td>
+        <td><a (click)="selectSameOpCodeCarClick(data.ID,data.OP_CODE,data.OLD_CAR_ID, data.NEW_CAR_ID )">選車</a></td>
+        <!-- <td>
+        
+          <a>保存</a>
+        </td> -->
+      </tr>
+    </tbody>
+  </nz-table>
+  
+</ng-template>
+
+<ng-template #sameOpCodeChangeCarModalFooter>
+  <button nz-button nzType="default" (click)="handleSameOpCodeChangeCarModal()">關閉</button>
+  <button nz-button nzType="primary" (click)="comitHandleOpCodeModal()" [nzLoading]="handleOpCodeIsConfirmLoading">存檔</button>
+</ng-template>
+</nz-modal>
+<!---同作業換車結束-->
 
 <!---選車開始-->
 <nz-modal
