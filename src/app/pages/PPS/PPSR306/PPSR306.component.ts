@@ -123,18 +123,15 @@ export class PPSR306Component implements AfterViewInit {
     });
   }
   search(){
-    if(this.date == null || this.date == ''){
-      this.errorMSG("參數錯誤","請輸入 日期參數");
-      return;
-    }else{
+    
       this.getR306DataList();
-    }
+    
   }
   getR306DataList(){
     this.isLoading = true;
     let myObj = this ;
     
-    let comitParamete = {edition : this.edition, date: moment(this.date).format('YYYY-MM-DD') } ;
+    let comitParamete = {edition : this.edition} ;
     myObj.PPSService.getR306DataList(comitParamete).subscribe(res =>{
 
       let result : any = res;
@@ -143,8 +140,9 @@ export class PPSR306Component implements AfterViewInit {
 
       this.R306DataList = result;
       
-      this.redirect307Url = this.R307Url.concat("?edition=").concat(this.edition).concat("&date=").concat(moment(this.date).format('YYYY-MM-DD'));
+      this.redirect307Url = this.R307Url.concat("?edition=").concat(this.edition);
 
+      this.date = this.R306DataList[0]['insertDate'];
       this.sucessMSG("查詢成功",'查詢成功 結果為' + this.R306DataList.length + '筆');
       
       this.isLoading = false;
