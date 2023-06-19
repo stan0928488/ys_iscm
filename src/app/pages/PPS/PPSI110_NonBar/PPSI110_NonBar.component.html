@@ -116,27 +116,6 @@
               <span nz-icon nzType="search"></span>
               </nz-filter-trigger>
               </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">開機管數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.bootControlFilter.value > 0" 
-                [nzDropdownMenu]="bootControlMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">累計天數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.accumulateDayFilter.value > 0" 
-                [nzDropdownMenu]="accumulateDayMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">略過天數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.dateLimitFilter.value > 0" 
-                [nzDropdownMenu]="dateLimitMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
               <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
             </tr>
             </thead>
@@ -148,9 +127,6 @@
                 <td style="text-align:center; padding: 5px; height: 60px;">{{ data.equipGroup }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px;">{{ data.groupAmount | number }}</td>
                 <td style="text-align:center; padding: 5px; height: 60px;">{{ data.equipQuanity | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.bootControl | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.accumulateDay | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dateLimit | number }}</td>
                 <td style="text-align:center; padding: 0px; height: 60px;">
                   <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
                   <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.idx)">刪除</a>
@@ -171,15 +147,6 @@
                 </td>
                 <td>
                   <input nz-width="20%" nz-input placeholder="輸入單設備生產量" [(ngModel)]="editCache[data.idx].data.equipQuanity" />
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="開機管數" [(ngModel)]="editCache[data.idx].data.bootControl" [nzMin]="0" [nzStep]="1"></nz-input-number>
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="累計天數" [(ngModel)]="editCache[data.idx].data.accumulateDay" [nzMin]="0" [nzStep]="1"></nz-input-number>
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="略過天數" [(ngModel)]="editCache[data.idx].data.dateLimit" [nzMin]="0" [nzStep]="1"></nz-input-number>
                 </td>
                 <td>
                   <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
@@ -238,21 +205,6 @@
           </td>
         </tr>
 
-        <tr>
-          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;開機管數</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入開機管數" [(ngModel)]="insertData.bootControl" />
-          </td>
-          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;累計天數</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入累計天數" [(ngModel)]="insertData.accumulateDay" />
-          </td>
-          <td style = "width: 330px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;略過天數</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 80%; color: darkblue;" nz-input placeholder="輸入略過天數" [(ngModel)]="insertData.dateLimit" />
-          </td>
-        </tr>
-
       </table>
     </div>
   </ng-template>
@@ -308,36 +260,6 @@
       <input type="text" nz-input [(ngModel)]="searchEquipQuanityValue" />
       <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipQuanity()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByEquipQuanity()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #bootControlMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="filterObj.bootControlFilter.value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.bootControlFilter.search()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="filterObj.bootControlFilter.reset()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #accumulateDayMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="filterObj.accumulateDayFilter.value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.accumulateDayFilter.search()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="filterObj.accumulateDayFilter.reset()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #dateLimitMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="filterObj.dateLimitFilter.value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="filterObj.dateLimitFilter.search()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="filterObj.dateLimitFilter.reset()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>

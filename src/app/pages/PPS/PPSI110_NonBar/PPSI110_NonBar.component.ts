@@ -64,6 +64,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
 
+  /*
   filterObj = {
 
     bootControlFilter:{
@@ -122,6 +123,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     }
 
   }
+*/
 
   constructor(
     private PPSService: PPSService,
@@ -196,10 +198,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
           equipCode: this.tbppsm013Tmp[i].equipCode,
           equipGroup: this.tbppsm013Tmp[i].equipGroup,
           groupAmount: this.tbppsm013Tmp[i].groupAmount,
-          equipQuanity: this.tbppsm013Tmp[i].equipQuanity,
-          bootControl: this.tbppsm013Tmp[i].bootControl,
-          accumulateDay: this.tbppsm013Tmp[i].accumulateDay,
-          dateLimit: this.tbppsm013Tmp[i].dateLimit
+          equipQuanity: this.tbppsm013Tmp[i].equipQuanity
         });
       }
       this.tbppsm013List = data;
@@ -310,9 +309,9 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         groupAmount : this.groupAmount,
         equipQuanity : this.equipQuanity,
         userName : this.userName,
-        bootControl : this.insertData.bootControl,
-        accumulateDay : this.insertData.accumulateDay,
-        dateLimit : this.insertData.dateLimit
+        bootControl : 0,
+        accumulateDay : 0,
+        dateLimit : 0
       })
 
       myObj.PPSService.insertI106Save('2', obj).subscribe(res => {
@@ -346,9 +345,9 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         equipGroup : this.editCache[_id].data.equipGroup,
         groupAmount : this.editCache[_id].data.groupAmount,
         equipQuanity : this.editCache[_id].data.equipQuanity,
-        bootControl : this.editCache[_id].data.bootControl,
-        accumulateDay : this.editCache[_id].data.accumulateDay,
-        dateLimit : this.editCache[_id].data.dateLimit,
+        bootControl : 0,
+        accumulateDay : 0,
+        dateLimit : 0,
         userName : this.userName
       })
       myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
@@ -398,7 +397,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     if(this.tbppsm013List.length > 0) {
       data = this.formatDataForExcel(this.tbppsm013List);
       fileName = `非直棒產能維護`;
-      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量','開機管數','累計天數','略過天數'];
+      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量'];
     } else {
       this.errorMSG("匯出失敗", "非直棒產能維護目前無資料");
       return;
@@ -417,10 +416,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         equipCode: _.get(item, "equipCode"),
         equipGroup: _.get(item, "equipGroup"),
         groupAmount: _.get(item, "groupAmount"),
-        equipQuanity: _.get(item, "equipQuanity"),
-        bootControl: _.get(item, "bootControl"),
-        accumulateDay: _.get(item, "accumulateDay"),
-        dateLimit: _.get(item, "dateLimit")
+        equipQuanity: _.get(item, "equipQuanity")
       });
       excelData.push(obj);
     }
@@ -524,9 +520,9 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         let equipGroup = _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
         let groupAmount = _data[i].機群設備數量 !== undefined ? _data[i].機群設備數量.toString() : '0';
         let equipQuanity = _data[i].單設備生產量 !== undefined ? _data[i].單設備生產量.toString() : '0';
-        let bootControl = _data[i].開機管數	 !== undefined ? _data[i].開機管數.toString() : '0';
-        let dateLimit = _data[i].略過天數 !== undefined ? _data[i].略過天數.toString() : '0';
-        let accumulateDay = _data[i].累計天數 !== undefined ? _data[i].累計天數.toString() : '0';
+        let bootControl = '0';
+        let dateLimit = '0';
+        let accumulateDay = '0';
 
         this.importdata_new.push({
           plantCode: plantCode, schShopCode: schShopCode, equipCode: equipCode, equipGroup: equipGroup, groupAmount: groupAmount, equipQuanity: equipQuanity
