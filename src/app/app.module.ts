@@ -72,6 +72,8 @@ import { PPSI121Component } from './pages/PPS/PPSI121/PPSI121.component';
 import { PPSI122Component } from './pages/PPS/PPSI122/PPSI122.component';
 import { PPSI123Component } from './pages/PPS/PPSI123/PPSI123.component';
 import { PPSI130Component } from './pages/PPS/PPSI130/PPSI130.component';
+import { PPSI131Component } from './pages/PPS/PPSI131/PPSI131.component';
+import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
 import { PPSI200Component } from './pages/PPS/PPSI200/PPSI200.component';
 import { PPSI201Component } from './pages/PPS/PPSI201/PPSI201.component';
 import { PPSI202Component } from './pages/PPS/PPSI202/PPSI202.component';
@@ -166,6 +168,8 @@ registerLocaleData(zh);
     PPSI122Component,
     PPSI123Component,
     PPSI130Component,
+    PPSI131Component,
+    NonPpsiComponent,
     PPSI200Component,
     PPSI201Component,
     PPSI202Component,

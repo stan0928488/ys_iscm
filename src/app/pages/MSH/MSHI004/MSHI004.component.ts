@@ -39,7 +39,7 @@ export class MSHI004Component {
   id; //
 
   isSpinning = false;
-  datetime = new Date();
+
   shopCodeOfOption: string[] = [];
   // 使用者選中哪些站別
   shopCodeInputList: string;
@@ -190,7 +190,7 @@ export class MSHI004Component {
     },
     {
       headerName: '已配置機台數',
-      field: 'pstMachineSum',
+      field: 'publishMachine',
       width: 200,
       filter: true,
     },
@@ -203,7 +203,12 @@ export class MSHI004Component {
       cellRenderer: ButtonComponent,
     },
 
-    { headerName: '已發佈機台', field: 'pstMachine', width: 200, filter: true },
+    {
+      headerName: '已發佈機台',
+      field: 'publishMachineTotal',
+      width: 200,
+      filter: true,
+    },
     {
       headerName: '發佈時間區間',
       field: 'timeRegion',
@@ -247,13 +252,15 @@ export class MSHI004Component {
         //     item.id = this.id;
         //   }
         // });
-        this.MSHI004PendingDataList.forEach((item) => {
-          if (_.isNil(item.id)) {
-            item.id = this.id;
-          } else {
-            item.id = this.id;
-          }
-        });
+        // this.MSHI004PendingDataList.forEach((item) => {
+        //   if (_.isNil(item.id)) {
+        //     console.log('idddddddddd');
+        //     console.log(item.id);
+        //     item.id = this.id;
+        //   } else {
+        //     item.id = this.id;
+        //   }
+        // });
 
         new Promise<boolean>((resolve, reject) => {
           this.mshi004Service
@@ -289,6 +296,7 @@ export class MSHI004Component {
             // this.getData();
             this.isSpinning = false;
           });
+        // this.getData();
       },
       nzOnCancel: () => console.log('取消作業'),
     });
@@ -308,10 +316,6 @@ export class MSHI004Component {
     } else {
       this.serachEPST(isUserClick);
     }
-    let date = new Date(this.datetime);
-    date.setDate(date.getDate() + 500000);
-    console.log('fsddddddddddd');
-    console.log(this.datetime);
   }
 
   serachEPST(isUserClick: boolean): void {

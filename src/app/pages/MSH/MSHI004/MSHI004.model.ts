@@ -5,11 +5,12 @@ export class MSHI004 {
   shopCode: number; // 工作站數
   equipCode: number; // 機台數
   ppsControl: string; // 依PPS配置
-  pstMachineSum: string; //已發佈機台數\
+  publishMachine: string; //已配置機台數\
   publishSelf: string; //手動發佈
-  pstMachine: string; //已發佈機台
+  publishMachineTotal: string; //已發佈機台
   timeRegion: Date; //發佈時間區間
   zxcvb: number; //
+  fcpEdition: string;
 
   constructor(
     _id: string,
@@ -18,11 +19,12 @@ export class MSHI004 {
     _shopCode: number,
     _equipCode: number,
     _ppsControl: string,
-    _pstMachineSum: string,
+    _publishMachine: string,
     _publishSelf: string,
-    _pstMachine: string,
+    _publishMachineTotal: string,
     timeRegion: Date,
-    _zxcvb: number
+    _zxcvb: number,
+    _fcpEdition: string
   ) {
     this.id = _id;
     this.mesPublishGroup = _mesPublishGroup;
@@ -30,10 +32,11 @@ export class MSHI004 {
     this.shopCode = _shopCode;
     this.equipCode = _equipCode;
     this.ppsControl = _ppsControl;
-    this.pstMachineSum = _pstMachineSum;
-    this.pstMachine = _pstMachine;
+    this.publishMachine = _publishMachine;
+    this.publishMachineTotal = _publishMachineTotal;
     this.publishSelf = _publishSelf;
     this.timeRegion = timeRegion;
     this.zxcvb = _zxcvb;
+    this.fcpEdition = _fcpEdition;
   }
 }
