@@ -187,4 +187,51 @@ export class PPSR307Component implements AfterViewInit {
   saleInfoGetter(params){
     return params.data.saleOrder + '-' + params.data.saleItem;
   }
+
+  exportToExcel(){
+    let header = [];
+
+      var head = [];
+      for(var i in this.columnDefsTab){
+        
+        if(this.columnDefsTab[i]['hide'] == undefined || this.columnDefsTab[i]['hide'] != true)
+          head.push(this.columnDefsTab[i]['headerName']);
+      }
+      header.push(head);
+      console.log(header);
+      var dataReSort = {
+        data : []
+      };
+  
+      for(var i in this.R307DataList) {
+        
+        var temp = {}
+        for(var j in this.columnDefsTab){
+          
+          if(this.columnDefsTab[j]['hide'] == undefined || this.columnDefsTab[j]['hide'] != true){
+            var field = this.columnDefsTab[j]['field'];
+            console.log(field)
+            temp[field] = this.R307DataList[i][field];
+          }
+          
+        }
+        console.log(temp)
+        dataReSort.data.push(temp);
+
+      }
+  
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+      XLSX.utils.sheet_add_aoa(worksheet,header);
+      XLSX.utils.sheet_add_json(worksheet,dataReSort.data,{ origin: 'A2', skipHeader: true });//origin => started row
+  
+      const book: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+      XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'成品/半成品現況.xlsx');//filename => Date_
+      
+      this.Modal.info({
+        nzTitle: '提示訊息',
+        nzContent: 'excel 匯出完成' ,
+        nzOkText:'知道了'
+      })
+  }
 }
