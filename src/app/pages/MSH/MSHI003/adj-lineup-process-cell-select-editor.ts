@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { AgEditorComponent } from "ag-grid-angular";
-import { GridApi, ICellEditorParams } from "ag-grid-community";
+import { GridApi, ICellEditorParams, IRowNode } from "ag-grid-community";
 import { DataTransferService } from "src/app/services/MSH/Data.transfer.service";
 import * as _ from "lodash";
 import { NzMessageService } from "ng-zorro-antd/message";
+import { MSHI003 } from "./MSHI003.model";
 
 @Component({
     selector: 'app-adj-lineup-process-cell-select-editor',
@@ -43,7 +44,7 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
     componentParent : any;
 
     // 當前選中的那一個row的資料物件
-    currentRowNode : any;
+    currentRowNode : IRowNode<MSHI003> ;
 
     // 流程下拉是否禁用
     lineupProcessDisabled = true;
@@ -79,8 +80,14 @@ export class AdjLineupProcessSelectEditorComponent implements AgEditorComponent,
             this.adjLineupProcessTooltipTitle = '';
 
             // 調用 MSHI003Component 的方法撈取流程清單
-            this.componentParent.getLineupProcessAsync(this.currentRowNode.data.idNo, this.currentRowNode.data.adjShopCode);
+            this.getAdjLineupProcess(this.currentRowNode);
         }
+    }
+
+    getAdjLineupProcess(currentRowNode : IRowNode<MSHI003>){
+        this.componentParent.lineupProcessLoading = true;
+        this.componentParent.lineupProcessOfOptions = [currentRowNode.data.lineupProcess]
+        this.componentParent.lineupProcessLoading = false;
     }
 
     isPopup(): boolean {

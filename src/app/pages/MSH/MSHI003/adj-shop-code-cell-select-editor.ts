@@ -65,11 +65,20 @@ export class AdjShopCodeCellSelectEditorComponent implements AgEditorComponent, 
        // 將當前調整站別的值設定給<nz-select>雙向綁定的變數 
        this.selectedShopCodeValue = params.value;
 
-       // 調用 MSHI003Component 的方法撈取站別清單
-       await this.componentParent.getShopCodeListByIdNo(params.node.data.idNo);
-
        // 當前選中的那一個row的資料物件
        this.currentRowNode = params.node;
+
+       // 調整站別為當前從Oracle查出來的站別
+       this.getAdjShopCode(this.currentRowNode);
+
+       
+    }
+
+    getAdjShopCode(currentRowNode : IRowNode<MSHI003>){
+        this.componentParent.shopCodeByIdNoLoading = true;
+        this.componentParent.shopCodeByIdNoOfOption = [currentRowNode.data.shopCode];
+        this.componentParent.shopCodeByIdNoLoading = false;
+
     }
 
     isPopup(): boolean {
