@@ -32,8 +32,14 @@ export class PPSR308Component implements OnInit {
 
   ngOnInit(): void {
     this.getDataList();
-    this.getVerList();
+    this.getVerListData();
   }
+
+  selectedVer_default:string = null;
+
+  selectedVer = [{label:'',value:''}]; //版本选择
+
+  isSpinning = false;
 
   rowData: data[] = [];  
   
@@ -72,7 +78,7 @@ export class PPSR308Component implements OnInit {
             children: [{
               width:150,
               headerName: '區別',
-              field: "areaGroup"
+              field: "custAbbreviations"
             }],
           }],
         },
@@ -251,9 +257,10 @@ export class PPSR308Component implements OnInit {
 
 
   getDataList(){
+    this.isSpinning = true;
     let postData = {};
+    postData['mo_EDITION'] = this.selectedVer_default;
     this.PPSService.getR308Data(postData).subscribe(res =>{
-      console.log(res);
       let result:any = res ;
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
@@ -261,27 +268,24 @@ export class PPSR308Component implements OnInit {
         this.message.error('無資料');
         return;
       }
+      this.isSpinning = false;
     },err => {
+      this.isSpinning = false;
       this.message.error('網絡請求失敗');
     })
 
 
   }
 
-  getVerList(){
+  getVerListData(){
 
     let postData = {};
     this.PPSService.getR308VerListData(postData).subscribe(res =>{
       let result:any = res ;
       if(result.length > 0) {
-        var parseData = JSON.parse(JSON.stringify(result));
-        Object.keys(parseData).forEach(function(k){
-          var temp = {};
-          temp['label'] = parseData[k];
-          temp['value'] = parseData[k];
-          this.verList.push(temp);
-        });
-        console.log(this.verList);
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedVer.push({label:result[i].mo_EDITION, value:result[i].mo_EDITION})
+        }
       } else {
         this.message.error('無資料');
         return;

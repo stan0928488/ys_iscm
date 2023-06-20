@@ -1777,4 +1777,16 @@ export class PPSService {
     console.log(`請求API 參數 : 無`);
     return this.http.get<any>(endpointUrl);
   }
+
+  getR309Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/getPPSR309List`;
+    return this.http.post(queryUrl,body, this.httpOptions);
+  }
+
+  getR308VerListData(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
+    return this.http.post(queryUrl,body, this.httpOptions);
+  }
 }
