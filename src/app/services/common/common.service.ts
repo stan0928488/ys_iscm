@@ -83,6 +83,24 @@ export class CommonService {
     return this.http.get(queryUrl);
   }
 
+  // casLogin(_username, _password, _env) {
+  //   _password = encodeURIComponent(_password);
+  //   // let queryUrl = `${this.APIURL}/Login/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
+
+  //   const COIL_APIURL = this.configService.getAPIURL('1');
+  //   console.log(
+  //     '🚀 ~ file: common.service.ts:68 ~ CommonService ~ casLogin ~ COIL_APIURL:',
+  //     COIL_APIURL
+  //   );
+  //   let queryUrl = `${COIL_APIURL}/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
+
+  //   console.log(
+  //     '🚀 ~ file: common.service.ts:74 ~ CommonService ~ casLogin ~ queryUrl:',
+  //     queryUrl
+  //   );
+  //   return this.http.get(queryUrl);
+  // }
+
   casLoginWithPost(_result) {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');

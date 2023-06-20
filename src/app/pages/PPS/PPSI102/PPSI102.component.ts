@@ -144,6 +144,12 @@ export class PPSI102Component implements AfterViewInit {
     } else if (this.EQUIP_CODE_1 === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
+    } else if (
+      this.MES_PUBLISH_GROUP === undefined ||
+      this.MES_PUBLISH_GROUP === ''
+    ) {
+      myObj.message.create('error', '「發佈MES群組」不可為空');
+      return;
     } else if (this.VALID === undefined) {
       myObj.message.create('error', '「有效碼」不可為空');
       return;
@@ -204,6 +210,13 @@ export class PPSI102Component implements AfterViewInit {
       '' === this.editCache7[id].data.EQUIP_CODE_1
     ) {
       myObj.message.create('error', '「機台」不可為空');
+      return;
+    } else if (
+      this.editCache7[id].data.MES_PUBLISH_GROUP === undefined ||
+      this.MES_PUBLISH_GROUP === '' ||
+      '' === this.editCache7[id].data.MES_PUBLISH_GROUP
+    ) {
+      myObj.message.create('error', '「發佈MES群組」不可為空');
       return;
     } else if (
       this.editCache7[id].data.VALID === undefined ||
@@ -597,6 +610,16 @@ export class PPSI102Component implements AfterViewInit {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「機台」不可為空');
         this.clearFile();
         return;
+      } else if (
+        _data[i]['發佈MES群組'] === undefined ||
+        _data[i]['發佈MES群組'] === ''
+      ) {
+        this.errorMSG(
+          '第' + (i + 1) + '筆檔案內容錯誤',
+          '「發佈MES群組」不可為空'
+        );
+        this.clearFile();
+        return;
       } else if (_data[i]['有效碼'] === undefined) {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「有效碼」不可為空');
         this.clearFile();
@@ -608,7 +631,6 @@ export class PPSI102Component implements AfterViewInit {
 
       if (_data[i]['機台名稱'] == undefined) _data[i]['機台名稱'] = '';
       if (_data[i]['機台群組'] == undefined) _data[i]['機台群組'] = '';
-      if (_data[i]['發佈MES群組'] == undefined) _data[i]['發佈MES群組'] = '';
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
 
       upload_data.push({
