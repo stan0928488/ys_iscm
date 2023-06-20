@@ -1,56 +1,59 @@
 <nz-content style="margin:0 16px;">
 
-<nz-breadcrumb style="margin:16px 0;">
-
-<nz-breadcrumb-item>
-    <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
-    <ul>
-        <li class="active"><a href="#/FCPshipRepo/R308">出貨計畫主表</a></li>
-        <li><a href="#/FCPshipRepo/R309">出貨計畫彙總表</a></li>
-    </ul>
-    </tr>
-</nz-breadcrumb-item>
-</nz-breadcrumb>
-
-<nz-collapse>
-    <nz-collapse-panel nzActive="true">
-        <nz-radio-group style="margin-bottom: 8px;"
-        [nzButtonStyle]="'solid'">
-          <label nz-radio-button nzDisabled="true">產品:</label>
-          <label nz-radio-button>ALL</label>
-          <label nz-radio-button nzValue="營三(內銷)">大棒</label>
-          <label nz-radio-button nzValue="營三(外銷)">異型棒</label>
-        </nz-radio-group>
-        <br>
-        <nz-radio-group style="margin-bottom: 8px;"
-        [nzButtonStyle]="'solid'">
-          <label nz-radio-button nzDisabled="true">區域別:</label>
-          <label nz-radio-button>ALL</label>
-          <label nz-radio-button nzValue="營三(內銷)">營三(內銷)</label>
-          <label nz-radio-button nzValue="營三(外銷)">營三(外銷)</label>
-          <label nz-radio-button nzValue="外銷">外銷</label>
-          <label nz-radio-button nzValue="鹽水">鹽水</label>
-          <label nz-radio-button nzValue="南區">南區</label>
-          <label nz-radio-button nzValue="大陸">大陸</label>
-          <label nz-radio-button nzValue="江陰">江陰</label>
-          <label nz-radio-button nzValue="常熟">常熟</label>
-        </nz-radio-group>
-        <br>
-        <div nz-row>
-            <div nz-col nzSpan="4">
-                <input nz-input placeholder="客戶" />
+    <nz-breadcrumb style="margin:16px 0;">
+    
+    <nz-breadcrumb-item>
+        <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li class="active"><a href="#/FCPshipRepo/R308">出貨計畫主表</a></li>
+            <li><a href="#/FCPshipRepo/R309">出貨計畫彙總表</a></li>
+        </ul>
+        </tr>
+    </nz-breadcrumb-item>
+    </nz-breadcrumb>
+    
+    <nz-collapse>
+        <nz-collapse-panel>
+            <nz-radio-group style="margin-bottom: 8px;"
+            [nzButtonStyle]="'solid'">
+              <label nz-radio-button nzDisabled="true">產品:</label>
+              <label nz-radio-button>ALL</label>
+              <label nz-radio-button nzValue="營三(內銷)">大棒</label>
+              <label nz-radio-button nzValue="營三(外銷)">異型棒</label>
+            </nz-radio-group>
+            <br>
+            <nz-radio-group style="margin-bottom: 8px;"
+            [nzButtonStyle]="'solid'">
+              <label nz-radio-button nzDisabled="true">區域別:</label>
+              <label nz-radio-button>ALL</label>
+              <label nz-radio-button nzValue="營三(內銷)">營三(內銷)</label>
+              <label nz-radio-button nzValue="營三(外銷)">營三(外銷)</label>
+              <label nz-radio-button nzValue="外銷">外銷</label>
+              <label nz-radio-button nzValue="鹽水">鹽水</label>
+              <label nz-radio-button nzValue="南區">南區</label>
+              <label nz-radio-button nzValue="大陸">大陸</label>
+              <label nz-radio-button nzValue="江陰">江陰</label>
+              <label nz-radio-button nzValue="常熟">常熟</label>
+            </nz-radio-group>
+            <br>
+            <div nz-row>
+                <div nz-col nzSpan="4">
+                    <input nz-input placeholder="客戶" />
+                </div>
             </div>
-        </div>
-    </nz-collapse-panel>
-</nz-collapse>
-<br>
-
-<ag-grid-angular
-    style="width: 100%; height: 350px;"
-    class="ag-theme-alpine"
-    [gridOptions]="gridOptions"
-    [rowData]="rowData"
-    [columnDefs]="columnDefs">
-</ag-grid-angular>
-
-</nz-content>
+        </nz-collapse-panel>
+    </nz-collapse>
+    <br>
+    
+    <ag-grid-angular
+        [headerHeight]="40"
+        [rowHeight]="40"
+        style="width: 100%; height:500px;"
+        class="ag-theme-alpine"
+        [gridOptions]="gridOptions"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs">
+    </ag-grid-angular>
+    
+    </nz-content>
+    

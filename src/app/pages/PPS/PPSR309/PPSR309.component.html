@@ -14,6 +14,8 @@
         </nz-breadcrumb-item>
     </nz-breadcrumb>
 
+    <nz-spin [nzSize]="'large'" [nzSpinning] = "isSpinning">
+
     <nz-collapse>
         <nz-collapse-panel nzHeader="資料結轉與EXCEL匯出" nzActive="false">
             
@@ -26,8 +28,20 @@
             ><span nz-icon nzType="download" nzTheme="outline"></span>
               E X C E L 匯出
             </button>
+            
+            <nz-select
+            [(ngModel)]="selectedVer_default"
+            style="width: 220px; margin-left:50px;"
+            nzPlaceHolder="請選擇版本號"
+            (ngModelChange)="getDataList()"
+            >
+            <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+            </nz-select>
+
         </nz-collapse-panel>
     </nz-collapse>
+
+
     <br>
 
     <ag-grid-angular style="width: 100%; height: 550px; overflow: scroll;" class="ag-theme-alpine" [rowData]="rowData"
@@ -38,5 +52,6 @@
         >
     </ag-grid-angular>
 
-    
+    </nz-spin>
+
 </nz-content>
