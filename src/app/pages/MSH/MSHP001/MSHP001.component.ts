@@ -1276,14 +1276,16 @@ this.handleSelectCarModal() ;
         }  
         else if( key === 'DATE_DELIVERY_PP') {  // 若果是交期 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'PST') {  // 若果是投產日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
           preGroupObject[key] = r 
@@ -1293,14 +1295,16 @@ this.handleSelectCarModal() ;
         }  
         else if( key === 'DATE_PLAN_IN_STORAGE') {  // 若果是允收截止日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
           preGroupObject[key] = r 
         }
         else if( key === 'NEW_EPST') {  // 若果是允收截止日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
           preGroupObject[key] = r 
