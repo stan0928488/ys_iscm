@@ -10,26 +10,45 @@
       <button (click)="serach(true)" nz-button nzType="primary">
         <span nz-icon nzType="search" nzTheme="outline"></span>查詢
       </button>
+
+      <button
+        style="float: right; margin-left: 20px"
+        (click)="confirm()"
+        nz-button
+        nzType="primary"
+      >
+        <span nz-icon nzType="check-circle" nzTheme="outline"></span>儲存
+      </button>
+
+      <button
+        style="float: right; margin-left: 20px"
+        (click)="fcp('USERNAME')"
+        nz-button
+        nzType="primary"
+      >
+        <span nz-icon nzType="caret-right" nzTheme="outline"></span>重啟FCP
+      </button>
     </div>
 
     <div class="flex">
       <span
         style="
-          width: 50px;
+          width: 80px;
           height: 25px;
           font-size: 16px;
           background-color: rgb(156, 182, 206);
           font-weight: bold;
           border-radius: 5px;
+          text-align: center;
         "
-        >&nbsp;&nbsp;站別</span
+        >FCP版本</span
       >
       <nz-select
         nzPlaceHolder="請選擇版本"
-        style="width: 195px"
+        style="width: 195px; margin-left: 20px"
         [(ngModel)]="shopCodeInputList"
         nzAllowClear
-        (nzOpenChange)="getShopCodeList()"
+        (nzOpenChange)="getFcpList()"
       >
         <nz-option
           *ngFor="let shopCode of shopCodeOfOption"
@@ -53,9 +72,5 @@
       [paginationPageSize]="20"
     >
     </ag-grid-angular>
-
-    <button style="float: right" (click)="confirm()" nz-button nzType="primary">
-      <span nz-icon nzType="check-circle" nzTheme="outline"></span>儲存
-    </button>
   </nz-spin>
 </nz-content>

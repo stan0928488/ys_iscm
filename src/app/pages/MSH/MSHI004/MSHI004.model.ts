@@ -22,7 +22,7 @@ export class MSHI004 {
     _publishMachine: string,
     _publishSelf: string,
     _publishMachineTotal: string,
-    timeRegion: Date,
+    _timeRegion: Date,
     _zxcvb: number,
     _fcpEdition: string
   ) {
@@ -35,7 +35,7 @@ export class MSHI004 {
     this.publishMachine = _publishMachine;
     this.publishMachineTotal = _publishMachineTotal;
     this.publishSelf = _publishSelf;
-    this.timeRegion = timeRegion;
+    this.timeRegion = _timeRegion;
     this.zxcvb = _zxcvb;
     this.fcpEdition = _fcpEdition;
   }
