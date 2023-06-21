@@ -35,7 +35,12 @@ export class PPSR308Component implements OnInit {
     this.getVerListData();
   }
 
-  selectedVer_default:string = null;
+  searchData = {
+    specialBar:"",
+    saleAreaGroup:"",
+    selectedVer_default:"",
+    custAbbreviations:""
+  }
 
   selectedVer = [{label:'',value:''}]; //版本选择
 
@@ -258,8 +263,8 @@ export class PPSR308Component implements OnInit {
 
   getDataList(){
     this.isSpinning = true;
-    let postData = {};
-    postData['mo_EDITION'] = this.selectedVer_default;
+    let postData = this.searchData;
+    postData['mo_EDITION'] = this.searchData.selectedVer_default;
     this.PPSService.getR308Data(postData).subscribe(res =>{
       let result:any = res ;
       if(result.length > 0) {

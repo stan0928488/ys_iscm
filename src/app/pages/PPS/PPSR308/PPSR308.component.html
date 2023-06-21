@@ -20,14 +20,16 @@
 <nz-collapse>
     <nz-collapse-panel>
         <nz-radio-group style="margin-bottom: 8px;"
+        [(ngModel)]="searchData.specialBar"
+        (ngModelChange)="getDataList()"
         [nzButtonStyle]="'solid'">
           <label nz-radio-button nzDisabled="true">產品:</label>
-          <label nz-radio-button>ALL</label>
-          <label nz-radio-button nzValue="營三(內銷)">大棒</label>
-          <label nz-radio-button nzValue="營三(外銷)">異型棒</label>
+          <label nz-radio-button nzValue="">ALL</label>
+          <label nz-radio-button nzValue="IS_BIG_STICK">大棒</label>
+          <label nz-radio-button nzValue="IS_PROFIELD">異型棒</label>
         </nz-radio-group>
         <nz-select
-            [(ngModel)]="selectedVer_default"
+            [(ngModel)]="searchData.selectedVer_default"
             style="width: 220px; margin-left:50px;"
             nzPlaceHolder="請選擇版本號"
             (ngModelChange)="getDataList()"
@@ -36,9 +38,11 @@
         </nz-select>
         <br>
         <nz-radio-group style="margin-bottom: 8px;"
+        [(ngModel)]="searchData.saleAreaGroup"
+        (ngModelChange)="getDataList()"
         [nzButtonStyle]="'solid'">
           <label nz-radio-button nzDisabled="true">區域別:</label>
-          <label nz-radio-button>ALL</label>
+          <label nz-radio-button nzValue="">ALL</label>
           <label nz-radio-button nzValue="營三(內銷)">營三(內銷)</label>
           <label nz-radio-button nzValue="營三(外銷)">營三(外銷)</label>
           <label nz-radio-button nzValue="外銷">外銷</label>
@@ -51,8 +55,12 @@
         <br>
         <div nz-row>
             <div nz-col nzSpan="4">
-                <input nz-input placeholder="客戶" />
+                <input nz-input [(ngModel)]="searchData.custAbbreviations"
+                placeholder="客戶" />
             </div>
+            <button style="margin-left:20px ;"  (click) = "getDataList()"  nz-button nzType="primary" >
+                <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+            </button>
         </div>
     </nz-collapse-panel>
 </nz-collapse>
