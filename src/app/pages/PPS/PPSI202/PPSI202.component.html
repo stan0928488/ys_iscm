@@ -259,12 +259,12 @@
               </td>
               <td style="width: 80px; text-align:center;">
                 <nz-select style="max-width: 200px; width: 100%;" [(ngModel)]="data.SCH_SHOP_CODE" (click)="getSHOP_CODEList()">
-                  <nz-option *ngFor="let p of SHOP_CODEList" [nzValue]="p.SHOP_CODE" [nzLabel]="p.SHOP_CODE"></nz-option>
+                  <nz-option *ngFor="let p of SHOP_CODEList" [nzValue]="p.value" [nzLabel]="p.label"></nz-option>
                 </nz-select>
               </td>
               <td style="width: 70px; text-align:center;">
                 <nz-select style="max-width: 200px; width: 100%;" [(ngModel)]="data.EQUIP_CODE" (click)="getEQUIP_CODEList(data.SCH_SHOP_CODE)">
-                  <nz-option *ngFor="let p of EQUIP_CODEList" [nzValue]="p.EQUIP_CODE" [nzLabel]="p.EQUIP_CODE"></nz-option>
+                  <nz-option *ngFor="let p of EQUIP_CODEList" [nzValue]="p.value" [nzLabel]="p.value"></nz-option>
                 </nz-select>
               </td>
               <td style="width: 100px; text-align:center;">
