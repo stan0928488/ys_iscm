@@ -116,7 +116,7 @@ import { AdjShopCodeCellSelectEditorComponent } from './pages/MSH/MSHI003/adj-sh
 import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-lineup-process-cell-select-editor';
 import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
-import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
+import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 
 registerLocaleData(zh);
 
