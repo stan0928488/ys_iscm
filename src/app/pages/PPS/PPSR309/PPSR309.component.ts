@@ -128,6 +128,7 @@ export class PPSR309Component implements OnInit {
       if(res['code'] == 1){
         this.message.info('結轉成功');
         this.getDataList();
+        this.getVerListData();
       }else{
         this.message.error('結轉失敗');
       }
