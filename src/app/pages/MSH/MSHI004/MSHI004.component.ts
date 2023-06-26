@@ -236,7 +236,7 @@ export class MSHI004Component {
     this.message.create('success', `MES群組已複製：${value} `);
   }
 
-  confirm(): void {
+  confirm(isUserClick: boolean): void {
     if (_.isEmpty(this.MSHI004PendingDataList)) {
       this.message.error('尚無資料異動，無法儲存資料');
       this.isSpinning = false;
@@ -256,29 +256,6 @@ export class MSHI004Component {
             this.shopCodeInputList
           ).fcpEdition;
         }
-
-        // 1.將需要新增的資料設定建立者名稱與廠區別
-        // 2.將需要更新的資料設定異動者名稱
-
-        // this.MSHI004PendingDataList.forEach((item) => {
-        //   const { id } = item;
-
-        //   if (_.isNil(id)) {
-        //     console.log(this.id);
-
-        //     // assign   uuid
-        //     item.id = this.id;
-        //   }
-        // });
-        // this.MSHI004PendingDataList.forEach((item) => {
-        //   if (_.isNil(item.id)) {
-        //     console.log('idddddddddd');
-        //     console.log(item.id);
-        //     item.id = this.id;
-        //   } else {
-        //     item.id = this.id;
-        //   }
-        // });
 
         new Promise<boolean>((resolve, reject) => {
           this.mshi004Service
@@ -307,7 +284,7 @@ export class MSHI004Component {
           //成功或失敗都釋放掉原先準備新增的資料
           .then((success) => {
             this.MSHI004PendingDataList = [];
-            // this.getData();
+            this.serachEPST(isUserClick);
             this.isSpinning = false;
           })
           .catch((error) => {
@@ -411,6 +388,7 @@ export class MSHI004Component {
     new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.getFcpList().subscribe(
         (res) => {
+          console.log(res);
           if (res.code === 200) {
             this.shopCodeOfOption = res.data;
             resolve(true);
@@ -440,7 +418,7 @@ export class MSHI004Component {
     USERNAME = this.USERNAME;
     this.http
       .get<any>(
-        `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&username=${USERNAME}`
+        `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&username=${USERNAME}`
       )
       .subscribe(
         (response) => {

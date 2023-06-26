@@ -70,11 +70,11 @@ export class MSHI004Service {
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(endpointUrl);
   }
-  getupdateEndDate() {
-    console.log('計算結束時間');
-    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : 無`);
-    return this.http.get<any>(endpointUrl);
-  }
+  // getupdateEndDate() {
+  //   console.log('計算結束時間');
+  //   let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;
+  //   console.log(`API Url : ${endpointUrl}`);
+  //   console.log(`Body參數 : 無`);
+  //   return this.http.get<any>(endpointUrl);
+  // }
 }
