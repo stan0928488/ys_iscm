@@ -86,8 +86,6 @@ export class MSHI004Component {
     this.dataTransferService.getData().subscribe((node) => {
       this.isSpinning = true;
 
-      //
-
       const isSame = _.isEqual(
         this.MSHI004DataListDeepClone[node.rowIndex],
         node.data
@@ -127,21 +125,6 @@ export class MSHI004Component {
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
-
-  // getData() {
-  //   this.mshi004Service.getData().subscribe(
-  //     (response: any) => {
-  //       this.item = response;
-  //       const { data } = response;
-  //       console.log(
-  //         '🚀 ~ file: MSHI004.component.ts:147 ~ MSHI004Component ~ getData ~ data:',
-  //         data
-  //       );
-  //       this.MSHI004DataList = JSON.parse(data);
-  //     },
-  //     (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
-  //   );
-  // }
 
   isButtonDisabled: boolean = false;
 
@@ -209,16 +192,16 @@ export class MSHI004Component {
       field: 'zxcvb',
       width: 200,
       filter: true,
-      cellRenderer: ButtonComponent,
-      // cellRenderer: function () {
-      //   if (this.lock.fcpEdition.includes('鎖定')) {
-      //     console.log(this.lock);
-      //     console.log('aaaaaaaaaa');
-      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
-      //   } else {
-      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
-      //   }
-      // },
+      // cellRenderer: ButtonComponent,
+      cellRenderer: function (params) {
+        console.log('params:' + JSON.stringify(params.data));
+        console.log('=====================================');
+        if (params.data.fcpEditionLock == '1') {
+          return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
+        } else {
+          return '<button (click)="buttonClicked()" disabled class="button">非鎖定版</button>';
+        }
+      },
     },
 
     {
@@ -247,7 +230,7 @@ export class MSHI004Component {
     console.log('value:' + value);
     this.clipboardApi.copyFromContent(value);
     console.log('copyFromContent:' + value);
-    console.log(`=[===>已複製: ${value} `);
+    console.log(`====>已複製: ${value} `);
     this.message.create('success', `MES群組已複製：${value} `);
   }
 
@@ -304,10 +287,8 @@ export class MSHI004Component {
           })
           .catch((error) => {
             this.MSHI004PendingDataList = [];
-            // this.getData();
             this.isSpinning = false;
           });
-        // this.getData();
       },
       nzOnCancel: () => console.log('取消作業'),
     });
@@ -355,19 +336,7 @@ export class MSHI004Component {
 
           if (code === 200) {
             if (_.size(myDataList) > 0) {
-              // xxxx.lenght
-              /*
-              let resultDataList: fcpdata[] = res.data.map((item) => {
-                return new fcpdata(
-                  item.pstMachineSum,
-                  item.publishSelf,
-                  item.pstMachine,
-                  item.fcpDate
-                );
-              });
-              */
               this.MSHI004DataList = myDataList;
-
               this.MSHI004DataListDeepClone = _.cloneDeep(this.MSHI004DataList);
             } else {
               this.message.success(res.message);
@@ -375,13 +344,13 @@ export class MSHI004Component {
 
             resolve(true);
           } else {
-            this.message.error('後台錯誤，獲取不到EPST資料');
+            this.message.error('後台錯誤，獲取不到資料');
             reject(true);
           }
         },
         (error) => {
           this.errorMSG(
-            '獲取EPST資料失敗',
+            '獲取資料失敗',
             `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
           );
           reject(true);
@@ -408,6 +377,11 @@ export class MSHI004Component {
           console.log(res);
           if (res.code === 200) {
             this.shopCodeOfOption = res.data;
+            // this.MSHI004DataList.forEach((item, index, array) => {
+            //   if (this.shopCodeInputList.includes('鎖定')) {
+            //     this.MSHI004DataList[index].fcpEditionLock;
+            //   }
+            // });
             resolve(true);
           } else {
             this.message.error('後台錯誤，獲取不到站別清單');
@@ -436,11 +410,13 @@ export class MSHI004Component {
         (res) => {
           const { code, data } = res;
           const myDataList = JSON.parse(data);
-          console.log(data);
           if (res.code === 200) {
             console.log(data);
-            if (data.planStatus == '0') {
-              this.fcp;
+            if (data == '0') {
+              this.fcp(this.USERNAME);
+              this.message.success('開始重啟fcp');
+              console.log(this.USERNAME);
+              console.log('成功');
             } else {
               this.message.error('FCP正在執行');
             }
@@ -470,6 +446,7 @@ export class MSHI004Component {
     USERNAME = this.USERNAME;
     this.http
       .get<any>(
+        // `http://localhost:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
         `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&username=${USERNAME}`
       )
       .subscribe(
