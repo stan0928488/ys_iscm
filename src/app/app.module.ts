@@ -105,6 +105,7 @@ import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
 import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
+import { ButtonComponent } from 'src/app/button/button.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
@@ -115,7 +116,7 @@ import { AdjShopCodeCellSelectEditorComponent } from './pages/MSH/MSHI003/adj-sh
 import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-lineup-process-cell-select-editor';
 import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
-import { NonPpsiComponent } from './non-ppsi/non-ppsi.component';
+import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 
 registerLocaleData(zh);
 
@@ -209,6 +210,7 @@ registerLocaleData(zh);
     AdjLineupProcessSelectEditorComponent,
     PPSR308Component,
     PPSR309Component,
+    ButtonComponent,
   ],
   imports: [
     BrowserModule,

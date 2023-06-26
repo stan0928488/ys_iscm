@@ -51,7 +51,6 @@ export class MSHI004Service {
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/updateLDM`;
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Body參數 : ${body}`);
-    console.log(body);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
@@ -65,18 +64,24 @@ export class MSHI004Service {
   }
 
   // 獲取站別清單
-  getShopCodeList() {
+  getFcpList() {
     console.log('獲取版本清單..');
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getFcpVersionList`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : 無`);
     return this.http.get<any>(endpointUrl);
   }
-  getupdateEndDate() {
-    console.log('計算結束時間');
-    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;
+
+  runFcp() {
+    console.log('檢查有無執行fcp..');
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/runFcp`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : 無`);
     return this.http.get<any>(endpointUrl);
   }
+  // getupdateEndDate() {
+  //   console.log('計算結束時間');
+  //   let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;
+  //   console.log(`API Url : ${endpointUrl}`);
+  //   console.log(`Body參數 : 無`);
+  //   return this.http.get<any>(endpointUrl);
+  // }
 }
