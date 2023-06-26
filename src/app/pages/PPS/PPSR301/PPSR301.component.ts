@@ -36,7 +36,8 @@ interface data {
   outDia: String,
   datePlanInStorage: String,
   remarkPlanInStorage: String,
-  kindType: String
+  kindType: String,
+  lock: String
 }
 
 
@@ -752,7 +753,8 @@ export class PPSR301Component implements OnInit {
     { headerName: '產出尺寸',field: 'outDia' , filter: false,width: 100 },
     { headerName: '允收截止日' ,field: 'datePlanInStorage' , filter: false,width: 120 },
     { headerName: '入庫日的備註' ,field: 'remarkPlanInStorage' , filter: false,width: 120 },
-    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 }
+    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 },
+    { headerName: 'LOCK值' ,field: 'lock' , filter: false,width: 100 }
   ];
   
   rowData: data[] = [];    
@@ -1009,7 +1011,7 @@ export class PPSR301Component implements OnInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['FCP版次', '站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類']];
+    let header = [['FCP版次', '站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類', 'LOCK值']];
     var dataLoadMachineDtl = {
       data : []
     };
@@ -1039,7 +1041,8 @@ export class PPSR301Component implements OnInit {
             "outDia" : item.outDia,
             "datePlanInStorage" : item.datePlanInStorage,
             "remarkPlanInStorage" : item.remarkPlanInStorage,
-            "kindType" : item.kindType
+            "kindType" : item.kindType,
+            "lock" : item.lock
         });
     }
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
