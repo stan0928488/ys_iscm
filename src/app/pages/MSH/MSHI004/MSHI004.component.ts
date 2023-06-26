@@ -17,7 +17,7 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import { DataTransferService } from 'src/app/services/MSHI004/Data.transfer.service';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
 import { ButtonComponent } from 'src/app/button/button.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -36,7 +36,7 @@ class MSHI004Payload {
   providers: [NzMessageService],
 })
 export class MSHI004Component {
-  id; //
+  USERNAME; //
 
   isSpinning = false;
 
@@ -73,9 +73,12 @@ export class MSHI004Component {
     private cookieService: CookieService,
     private renderer: Renderer2,
     private commonService: CommonService,
-    private clipboardApi: ClipboardService
+    private clipboardApi: ClipboardService,
+    private http: HttpClient
   ) {
-    this.id = this.cookieService.getCookie('id');
+    this.USERNAME = this.cookieService.getCookie('USERNAME');
+    console.log(this.USERNAME);
+    console.log('順利的話以上是user');
 
     this.dataTransferService.getData().subscribe((node) => {
       this.isSpinning = true;
@@ -210,6 +213,12 @@ export class MSHI004Component {
       filter: true,
     },
     {
+      headerName: '已發佈FCP版本',
+      field: 'fcpEdition',
+      width: 200,
+      filter: true,
+    },
+    {
       headerName: '發佈時間區間',
       field: 'timeRegion',
       width: 400,
@@ -227,7 +236,7 @@ export class MSHI004Component {
     this.message.create('success', `MES群組已複製：${value} `);
   }
 
-  confirm(): void {
+  confirm(isUserClick: boolean): void {
     if (_.isEmpty(this.MSHI004PendingDataList)) {
       this.message.error('尚無資料異動，無法儲存資料');
       this.isSpinning = false;
@@ -238,29 +247,15 @@ export class MSHI004Component {
       nzTitle: '是否確定儲存資料?',
       nzOnOk: () => {
         this.isSpinning = true;
+        console.log(new MSHI004Payload(this.shopCodeInputList).fcpEdition);
+        console.log('版本');
+        console.log(this.MSHI004PendingDataList);
 
-        // 1.將需要新增的資料設定建立者名稱與廠區別
-        // 2.將需要更新的資料設定異動者名稱
-
-        // this.MSHI004PendingDataList.forEach((item) => {
-        //   const { id } = item;
-
-        //   if (_.isNil(id)) {
-        //     console.log(this.id);
-
-        //     // assign   uuid
-        //     item.id = this.id;
-        //   }
-        // });
-        // this.MSHI004PendingDataList.forEach((item) => {
-        //   if (_.isNil(item.id)) {
-        //     console.log('idddddddddd');
-        //     console.log(item.id);
-        //     item.id = this.id;
-        //   } else {
-        //     item.id = this.id;
-        //   }
-        // });
+        for (var i = 0; i < this.MSHI004PendingDataList.length; i++) {
+          this.MSHI004PendingDataList[i].fcpEdition = new MSHI004Payload(
+            this.shopCodeInputList
+          ).fcpEdition;
+        }
 
         new Promise<boolean>((resolve, reject) => {
           this.mshi004Service
@@ -269,8 +264,8 @@ export class MSHI004Component {
               (res) => {
                 if (res.code === 200) {
                   this.sucessMSG(res.message, res.message);
+                  console.log('以下是本次更新的資料');
                   console.log(this.MSHI004PendingDataList);
-                  console.log('fdfdfsfd');
                 } else {
                   this.errorMSG(res.message, res.message);
                 }
@@ -285,10 +280,11 @@ export class MSHI004Component {
               }
             );
         })
+
           //成功或失敗都釋放掉原先準備新增的資料
           .then((success) => {
             this.MSHI004PendingDataList = [];
-            // this.getData();
+            this.serachEPST(isUserClick);
             this.isSpinning = false;
           })
           .catch((error) => {
@@ -311,7 +307,7 @@ export class MSHI004Component {
         nzOnOk: () => {
           this.serachEPST(isUserClick);
         },
-        nzOnCancel: () => console.log('取消搜尋EPST資料'),
+        nzOnCancel: () => console.log('取消搜尋資料'),
       });
     } else {
       this.serachEPST(isUserClick);
@@ -329,12 +325,11 @@ export class MSHI004Component {
     }
 
     if (_.isNil(payloads)) return;
-    console.log(payloads);
+    console.log(payloads + '==================');
     new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.searchLdmData(payloads).subscribe(
         (res) => {
           const { code, data } = res;
-
           const myDataList = JSON.parse(data);
           console.log(
             '🚀 ~ file: MSHI004.component.ts:333 ~ MSHI004Component ~ serachEPST ~ myDataList:',
@@ -354,11 +349,9 @@ export class MSHI004Component {
                 );
               });
               */
-
               this.MSHI004DataList = myDataList;
 
               this.MSHI004DataListDeepClone = _.cloneDeep(this.MSHI004DataList);
-              console.log(this.MSHI004DataList);
             } else {
               this.message.success(res.message);
             }
@@ -390,11 +383,12 @@ export class MSHI004Component {
       });
   }
 
-  getShopCodeList(): void {
+  getFcpList(): void {
     this.shopCodeLoading = true;
     new Promise<boolean>((resolve, reject) => {
-      this.mshi004Service.getShopCodeList().subscribe(
+      this.mshi004Service.getFcpList().subscribe(
         (res) => {
+          console.log(res);
           if (res.code === 200) {
             this.shopCodeOfOption = res.data;
             resolve(true);
@@ -418,6 +412,25 @@ export class MSHI004Component {
       .catch((error) => {
         this.shopCodeLoading = false;
       });
+  }
+
+  fcp(USERNAME: string): void {
+    USERNAME = this.USERNAME;
+    this.http
+      .get<any>(
+        `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&username=${USERNAME}`
+      )
+      .subscribe(
+        (response) => {
+          // 处理API响应
+          console.log(response);
+          console.log(USERNAME);
+        },
+        (error) => {
+          // 处理API调用错误
+          console.error(error);
+        }
+      );
   }
 
   sucessMSG(_title, _plan): void {

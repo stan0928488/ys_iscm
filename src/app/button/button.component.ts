@@ -27,7 +27,7 @@ export class ButtonComponent implements ICellRendererAngularComp {
 
   buttonClicked() {
     alert(`${this.cellValue} medals won!`);
-    this.MSHI004Service.getupdateEndDate();
+
     console.log('click');
   }
 
