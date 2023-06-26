@@ -210,6 +210,7 @@ registerLocaleData(zh);
     AdjLineupProcessSelectEditorComponent,
     PPSR308Component,
     PPSR309Component,
+    ButtonComponent,
   ],
   imports: [
     BrowserModule,
