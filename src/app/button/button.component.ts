@@ -10,6 +10,7 @@ import { MSHI004Service } from 'src/app/services/MSHI004/MSHI004.service';
 })
 export class ButtonComponent implements ICellRendererAngularComp {
   public cellValue!: string;
+  fieldStatus: String;
 
   constructor(private MSHI004Service: MSHI004Service) {}
 

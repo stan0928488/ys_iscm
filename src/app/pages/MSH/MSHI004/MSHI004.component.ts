@@ -65,6 +65,8 @@ export class MSHI004Component {
     },
   };
 
+  fieldStatus: string = '0';
+
   constructor(
     private mshi004Service: MSHI004Service,
     private Modal: NzModalService,
@@ -120,6 +122,7 @@ export class MSHI004Component {
       }
       this.isSpinning = false;
     });
+    this.isButtonDisabled = this.fieldStatus === '1';
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
@@ -138,6 +141,8 @@ export class MSHI004Component {
   //     (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
   //   );
   // }
+
+  isButtonDisabled: boolean = false;
 
   columnDefs: ColDef[] = [
     {
