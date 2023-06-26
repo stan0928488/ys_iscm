@@ -207,6 +207,7 @@ registerLocaleData(zh);
     AdjShopCodeCellRendererComponent,
     AdjShopCodeCellSelectEditorComponent,
     AdjLineupProcessSelectEditorComponent,
+
     ButtonComponent,
   ],
   imports: [
