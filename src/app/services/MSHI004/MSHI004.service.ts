@@ -70,6 +70,13 @@ export class MSHI004Service {
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(endpointUrl);
   }
+
+  runFcp() {
+    console.log('檢查有無執行fcp..');
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/runFcp`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(endpointUrl);
+  }
   // getupdateEndDate() {
   //   console.log('計算結束時間');
   //   let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;

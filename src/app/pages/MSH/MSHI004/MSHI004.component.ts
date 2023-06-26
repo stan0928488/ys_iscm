@@ -37,6 +37,7 @@ class MSHI004Payload {
 })
 export class MSHI004Component {
   USERNAME; //
+  lock;
 
   isSpinning = false;
 
@@ -209,6 +210,15 @@ export class MSHI004Component {
       width: 200,
       filter: true,
       cellRenderer: ButtonComponent,
+      // cellRenderer: function () {
+      //   if (this.lock.fcpEdition.includes('鎖定')) {
+      //     console.log(this.lock);
+      //     console.log('aaaaaaaaaa');
+      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
+      //   } else {
+      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
+      //   }
+      // },
     },
 
     {
@@ -325,12 +335,14 @@ export class MSHI004Component {
 
     if (isUserClick) {
       payloads = new MSHI004Payload(this.shopCodeInputList);
+      this.lock = payloads;
+      console.log(this.lock.fcpEdition);
+      console.log('以上是fcp版本');
     } else {
       payloads = this.payloadcache;
     }
 
     if (_.isNil(payloads)) return;
-    console.log(payloads + '==================');
     new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.searchLdmData(payloads).subscribe(
         (res) => {
@@ -418,7 +430,42 @@ export class MSHI004Component {
         this.shopCodeLoading = false;
       });
   }
-
+  runFcp(): void {
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.runFcp().subscribe(
+        (res) => {
+          const { code, data } = res;
+          const myDataList = JSON.parse(data);
+          console.log(data);
+          if (res.code === 200) {
+            console.log(data);
+            if (data.planStatus == '0') {
+              this.fcp;
+            } else {
+              this.message.error('FCP正在執行');
+            }
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到站別清單');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取站別清單失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.shopCodeLoading = false;
+      })
+      .catch((error) => {
+        this.shopCodeLoading = false;
+      });
+  }
   fcp(USERNAME: string): void {
     USERNAME = this.USERNAME;
     this.http
