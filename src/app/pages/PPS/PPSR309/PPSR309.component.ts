@@ -47,7 +47,7 @@ export class PPSR309Component implements OnInit {
         enableRowGroup: false,
         enablePivot: false,
         enableValue: false,
-        sortable: false,
+        sortable: true,
         resizable: true,
         filter: true
     }
@@ -75,7 +75,9 @@ export class PPSR309Component implements OnInit {
     { headerName: '是否符合允收截止日',field: "isDatePlanInStorage" , filter: false,width: 150 },
     { headerName: '是否符合可接受交期',field: "isDateAcceptable" , filter: false,width: 150 },
     { headerName: '是否缺項',field: "isMissingGroup" , filter: false,width: 100 },
-    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 150 }
+    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 150 },
+    { headerName: '現況MIC_NO',field: "lineupMicNo" , filter: false,width: 100 },
+    { headerName: '尺寸',field: "outDia" , filter: false,width: 100 }
   ]
 
   rowData: data[] = [];    
@@ -128,6 +130,7 @@ export class PPSR309Component implements OnInit {
       if(res['code'] == 1){
         this.message.info('結轉成功');
         this.getDataList();
+        this.getVerListData();
       }else{
         this.message.error('結轉失敗');
       }
