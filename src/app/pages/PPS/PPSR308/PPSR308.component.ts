@@ -17,6 +17,7 @@ export class PPSR308Component implements OnInit {
 
   USERNAME;
   PLANT_CODE;
+  tooltipShowDelay = 500;
 
   constructor(
     private PPSService: PPSService,
@@ -38,7 +39,7 @@ export class PPSR308Component implements OnInit {
   searchData = {
     specialBar:"",
     saleAreaGroup:"",
-    selectedVer_default:"",
+    selectedVer_default:null,
     custAbbreviations:""
   }
 
@@ -90,7 +91,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
-              headerName: '負責業務',
+              headerName: 'A.負責業務',
               field: "sales",
               width:120,
             }],
@@ -99,7 +100,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
-              headerName: '訂單餘量',
+              headerName: 'B.訂單餘量',
               width:120,
             }],
           }],
@@ -107,7 +108,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
-              headerName: '出貨目標',
+              headerName: 'C.出貨目標',
               field: "shippingTarget",
               width:120,
             }],
@@ -116,25 +117,28 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
-              headerName: '出貨進度',
+              headerTooltip: "已出貨(H)/出貨目標(C.)",
+              headerName: 'D.出貨進度',
               field: "shippingProgress",
               width:120,
             }],
           }],
         },
         {
-          headerName: '可供出貨量(無卡計畫量)',
+          headerName: 'E.可供出貨量(無卡計畫量)',
           children: [
             {
               children: [{
-                headerName: '可供出貨量',
+                headerTooltip: "已出貨(H)+ 成品_交期符合_足項(I1.1)+ 生產計劃_交期符合_足項(J1.1)",
+                headerName: '1.可供出貨量',
                 field: "availableToShipNoCard",
                 width:120,
               }],
             },
             {
               children: [{
-                headerName: 'GAP',
+                headerTooltip: "可供出貨量(E1)-出貨目標(C.)",
+                headerName: '2.GAP',
                 field: "gapNoCard",
                 width:120,
               }],
@@ -142,18 +146,20 @@ export class PPSR308Component implements OnInit {
           ],
         },
         {
-          headerName: '可供出貨量(符合計畫量/缺項)',
+          headerName: 'F.可供出貨量(符合計畫量/缺項)',
           children: [
             {
               children: [{
-                headerName: '可供出貨量',
+                headerTooltip: "若E1-C>=0則此欄位值為C，若E1-C<0則此欄位值為E1",
+                headerName: '1.可供出貨量',
                 field: "availableToShipMeetThePlanned",
                 width:120,
               }],
             },
             {
               children: [{
-                headerName: 'GAP',
+                headerTooltip: "可供出貨量(F1)-出貨目標(C.)",
+                headerName: '2.GAP',
                 field: "gapMeetThePlanned",
                 width:120,
               }],
@@ -161,18 +167,20 @@ export class PPSR308Component implements OnInit {
           ],
         },
         {
-          headerName: '至月底可供出貨量(符合計畫量/缺項)',
+          headerName: 'G.至月底可供出貨量(符合計畫量/缺項)',
           children: [
             {
               children: [{
-                headerName: '可供出貨量',
+                headerTooltip: "已出貨(H)+ 成品_至月底足項(I3)+ 生產計劃_至月底足項(J3)",
+                headerName: '1.可供出貨量',
                 field: "endOfMonthAvailableToShipMeetThePlanned",
                 width:120,
               }],
             },
             {
               children: [{
-                headerName: 'GAP',
+                headerTooltip: "可供出貨量(G1)-出貨目標(C.)",
+                headerName: '2.GAP',
                 field: "endOfMonthgapMeetThePlanned",
                 width:120,
               }],
@@ -182,40 +190,46 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
-              headerName: '已出貨',
+              headerName: 'H.已出貨',
               field: "shipped",
               width:120,
             }],
           }],
         },
         {
-          headerName: '成品',
+          headerName: 'I.成品',
           children: [
             {
-              headerName: '交期符合',
+              headerName: '1.交期符合',
               children: [
                 {
+                  headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
+                  "是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
                   width:120,
-                  headerName: '足項',
+                  headerName: '1.足項',
                   field: "finishedProductDateAcceptableEnough",
                 },
                 {
+                  headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
+                  "是否符合允收截止日Y、是否符合可接受交期Y、是否缺項N者",
                   width:120,
-                  headerName: '缺項',
+                  headerName: '2.缺項',
                   field: "finishedProductDateAcceptableNotEnough",
                 }
               ],
             },
             {
               children: [{
-                headerName: '交期不符',
+                headerTooltip:"生計交期>可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)",
+                headerName: '2.交期不符',
                 field: "finishedProductDateNotMatch",
                 width:120,
               }],
             },
             {
               children: [{
-                headerName: '至月底足項',
+                headerTooltip:"是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
+                headerName: '3.至月底足項',
                 field: "finishedProductEnoughBeforeEndOfMonth",
                 width:120,
               }],
@@ -223,33 +237,42 @@ export class PPSR308Component implements OnInit {
           ],
         },
         {
-          headerName: '生產計劃',
+          headerName: 'J.生產計劃',
           children: [
             {
-              headerName: '交期符合',
+              headerName: '1.交期符合',
               children: [
                 {
+                  headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
+                  "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)"+
+                  "是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
                   width:120,
-                  headerName: '足項',
+                  headerName: '1.足項',
                   field: "productPlanDateAcceptableEnough",
                 },
                 {
+                  headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
+                  "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)"+
+                  "是否符合允收截止日Y、是否符合可接受交期Y、是否缺項N者",
                   width:120,
-                  headerName: '缺項',
+                  headerName: '2.缺項',
                   field: "productPlanDateAcceptableNotEnough",
                 }
               ],
             },
             {
               children: [{
-                headerName: '交期不符',
+                headerTooltip:"生計交期>可接受交期 (DATE_DELIVERY_PP>DATE_ACCEPTABLE)"+
+                "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)",
+                headerName: '2.交期不符',
                 width:120,
                 field: "productPlanDateNotMatch",
               }],
             },
             {
               children: [{
-                headerName: '至月底足項',
+                headerTooltip:"是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
+                headerName: '3.至月底足項',
                 field: "productPlanEnoughBeforeEndOfMonth",
                 width:120,
               }],
