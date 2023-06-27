@@ -163,7 +163,7 @@
       </div>
     </div>
     <div *nzModalFooter>
-      <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
+      <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
       <button  nz-button style="margin-left:15px;"  nzType="primary" (click)="exportRowSortedData()">匯出</button>
       <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('3')">確認</button>
       <button nz-button style="margin-left:15px;"  nzType="default" (click)="handleChangeRowDataModal()">关闭</button>

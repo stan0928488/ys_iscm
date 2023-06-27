@@ -1423,12 +1423,39 @@ this.handleSelectCarModal() ;
    }
   //排序後的數據送入MES
    sendSortedDataToMES(){
-    this.nzMessageService.info("開發中");
+    
+    //this.nzMessageService.info("開發中");
+    if(this.category === 'M') {
+      this.nzMessageService.info("當前機台已送出");
+      return ;
+    }
+    this.isConfirmLoading = true ;
+    this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
+    this.searchV0.fcpVer = this.selectFcpVer
+    this.mshService.sendSortedDataToMES(this.searchV0).subscribe(res=>{
+      this.isConfirmLoading = false ;
+      this.shopMachineList = []
+      let result:any = res ;
+      if(result.code === 200) {
+        this.nzMessageService.success(result.message) ;
+        this.modalTableRowDataVisible = false ;
+        this.getTableData() ;
+        
+      } else {
+        this.nzMessageService.error(result.message) ;
+      }
+      
+    });
    }
 
    saveSortedModal(flag:string){
      if(this.selectFcpVerObj.fcpLockStatus === '0') {
       this.nzMessageService.error("必須是鎖定版本才能保存！") ;
+      return ;
+     }
+     if(this.category === 'M') {
+      this.nzMessageService.error("當前版已送入MES，不能保存！") ;
       return ;
      }
      this.saveLoading = true ;

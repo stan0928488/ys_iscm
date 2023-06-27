@@ -218,5 +218,10 @@ saveChangeOpCode(_param) {
     let queryUrl = this.APIURL + "/msh/MSHP001/saveSameOpCodeChangeCar";
     return this.http.post(queryUrl,_param,this.httpOptions);
   }
+  /***发送 数据至mes */
+  sendSortedDataToMES(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/sendSortedDataToMES";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
 
 }
