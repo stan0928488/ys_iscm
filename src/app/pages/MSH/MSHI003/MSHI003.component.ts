@@ -847,42 +847,46 @@ export class MSHI003Component implements AfterViewInit{
         return false;
       }
 
-      if(_.isNull(item[this.ADJ_SHOP_CODE])){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」不得為空，請修正。`);
-        return false;
-      }
-      else if (String(item[this.ADJ_SHOP_CODE]).length > 3){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」字串長度不得大於3，請修正。`);
-        return false;
-      }
-
-      if(_.isNull(item[this.ADJ_LINEUP_PROCESS])){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」不得為空，請修正。`);
-        return false;
-      }
-      else if (String(item[this.ADJ_LINEUP_PROCESS]).length > 30){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」字串長度不得大於30，請修正。`);
-        return false;
-      }
-
-
       if(!_.isNull(item[this.EPST])){
         const isVerifyEpstDate = this.verifyDate(item, rowNumberInExcel, this.EPST);
         if(isVerifyEpstDate === false) return false;
       }*/
 
-      if(_.isNull(item[this.NEW_EPST])){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.NEW_EPST}」不得為空，請修正。`);
-        return false;
-      }
-      else{
-        const isVerifyNewEpstDate = this.verifyDate(item, rowNumberInExcel, this.NEW_EPST);
-        if(isVerifyNewEpstDate === false) return false;
-      }
+      // 若「調整站別」、「調整流程」、「調整日期」任一不為空則這三個都要填寫
+      if(!_.isNull(item[this.NEW_EPST]) || !_.isNull(item[this.ADJ_SHOP_CODE]) || !_.isNull(item[this.ADJ_LINEUP_PROCESS])){
 
-      if(!_.isNull(item[this.COMMENT]) && String(item[this.COMMENT]).length > 50){
-        this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.COMMENT}」字串長度不得大於50，請修正。`);
-        return false;
+        if(_.isNull(item[this.ADJ_SHOP_CODE])){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」不得為空，請修正。`);
+          return false;
+        }
+        else if (String(item[this.ADJ_SHOP_CODE]).length > 3){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」字串長度不得大於3，請修正。`);
+          return false;
+        }
+
+        if(_.isNull(item[this.ADJ_LINEUP_PROCESS])){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」不得為空，請修正。`);
+          return false;
+        }
+        else if (String(item[this.ADJ_LINEUP_PROCESS]).length > 30){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_LINEUP_PROCESS}」字串長度不得大於30，請修正。`);
+          return false;
+        }
+
+        if(_.isNull(item[this.NEW_EPST])){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.NEW_EPST}」不得為空，請修正。`);
+          return false;
+        }
+        else{
+          const isVerifyNewEpstDate = this.verifyDate(item, rowNumberInExcel, this.NEW_EPST);
+          if(isVerifyNewEpstDate === false) return false;
+        }
+
+        if(!_.isNull(item[this.COMMENT]) && String(item[this.COMMENT]).length > 50){
+          this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.COMMENT}」字串長度不得大於50，請修正。`);
+          return false;
+        }
+
       }
     }
 
@@ -988,24 +992,23 @@ export class MSHI003Component implements AfterViewInit{
 
     keys.forEach(k => {
       if(k === this.ID_NO) b1 = true;
-      //else if(k === this.SHOP_CODE) b2 = true;
-      // else if(k === this.SALE_ORDER) b3 = true;
-      // else if(k === this.SALE_ITEM) b4 = true;
-      // else if(k === this.CUST_ABBR) b5 = true;
-      // else if(k === this.PROC_STATUS) b6 = true;
-      // else if(k === this.SFC_DIA) b7 = true;
-      // else if(k === this.FINAL_MIC_NO) b8 = true;
-      // else if(k === this.PROCESS_CODE) b9 = true;
-      //else if(k === this.ADJ_SHOP_CODE) b10 = true;
-      //else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
-      // else if(k === this.OVER_SHOP_STATUS) b12 = true;
-      // else if(k === this.EPST) b13 = true;
+      else if(k === this.SHOP_CODE) b2 = true;
+      else if(k === this.SALE_ORDER) b3 = true;
+      else if(k === this.SALE_ITEM) b4 = true;
+      else if(k === this.CUST_ABBR) b5 = true;
+      else if(k === this.PROC_STATUS) b6 = true;
+      else if(k === this.SFC_DIA) b7 = true;
+      else if(k === this.FINAL_MIC_NO) b8 = true;
+      else if(k === this.PROCESS_CODE) b9 = true;
+      else if(k === this.ADJ_SHOP_CODE) b10 = true;
+      else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
+      else if(k === this.OVER_SHOP_STATUS) b12 = true;
+      else if(k === this.EPST) b13 = true;
       else if(k === this.NEW_EPST) b14 = true;
-      // else if(k === this.COMMENT) b15 = true;
+      else if(k === this.COMMENT) b15 = true;
     });
 
-    return b1 && b14;
-    //return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
+    return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12 && b13 && b14 && b15;
   }
 
 
@@ -1029,8 +1032,8 @@ export class MSHI003Component implements AfterViewInit{
       MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno']));
     });
 
-    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "lineupProcess", "processCode", "adjShopCode", "adjLineupProcess", "overShopStatus", "epst", "newEpst", "comment", "userCreate", "dateCreate", "userUpdate", "dateUpdate"];
-    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, lineupProcess:this.LINEUP_PROCESS, processCode:this.PROCESS_CODE, adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, newEpst:this.NEW_EPST, comment:this.COMMENT, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期"};
+    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "lineupProcess", "processCode", "overShopStatus", "epst", "userCreate", "dateCreate", "userUpdate", "dateUpdate", "adjShopCode", "adjLineupProcess", "newEpst", "comment"];
+    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, lineupProcess:this.LINEUP_PROCESS, processCode:this.PROCESS_CODE, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期", adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, newEpst:this.NEW_EPST, comment:this.COMMENT};
     const exportData = [firstRowDisplay, ...MSHI003DataListClone]; 
 
     const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
