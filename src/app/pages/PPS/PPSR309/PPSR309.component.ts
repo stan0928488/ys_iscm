@@ -16,6 +16,10 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class PPSR309Component implements OnInit {
 
+  selectedVer_default:string = null;
+
+  selectedVer = [{label:'',value:''}]; //版本选择
+
   isSpinning = false;
 
   USERNAME;
@@ -34,6 +38,7 @@ export class PPSR309Component implements OnInit {
   }
   ngOnInit(): void {
     this.getDataList();
+    this.getVerListData();
   }
 
   gridOptions = {
@@ -42,7 +47,7 @@ export class PPSR309Component implements OnInit {
         enableRowGroup: false,
         enablePivot: false,
         enableValue: false,
-        sortable: false,
+        sortable: true,
         resizable: true,
         filter: true
     }
@@ -70,16 +75,39 @@ export class PPSR309Component implements OnInit {
     { headerName: '是否符合允收截止日',field: "isDatePlanInStorage" , filter: false,width: 150 },
     { headerName: '是否符合可接受交期',field: "isDateAcceptable" , filter: false,width: 150 },
     { headerName: '是否缺項',field: "isMissingGroup" , filter: false,width: 100 },
-    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 150 }
+    { headerName: '月底是否可足項',field: "isEnoughBeforeEndOfMonth" , filter: false,width: 150 },
+    { headerName: '現況MIC_NO',field: "lineupMicNo" , filter: false,width: 100 },
+    { headerName: '尺寸',field: "outDia" , filter: false,width: 100 }
   ]
 
   rowData: data[] = [];    
 
+  getVerListData(){
+
+    this.isSpinning = true;
+    let postData = {};
+    this.PPSService.getR308VerListData(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedVer.push({label:result[i].mo_EDITION, value:result[i].mo_EDITION})
+        }
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+      this.isSpinning = false;
+    },err => {
+      this.message.error('網絡請求失敗');
+    })
+
+  }
 
   getDataList(){
     this.isSpinning = true;
     let postData = {};
-    this.PPSService.getR308Data(postData).subscribe(res =>{
+    postData['mo_EDITION'] = this.selectedVer_default;
+    this.PPSService.getR309Data(postData).subscribe(res =>{
       let result:any = res ;
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
@@ -102,6 +130,7 @@ export class PPSR309Component implements OnInit {
       if(res['code'] == 1){
         this.message.info('結轉成功');
         this.getDataList();
+        this.getVerListData();
       }else{
         this.message.error('結轉失敗');
       }

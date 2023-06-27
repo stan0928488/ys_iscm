@@ -148,6 +148,16 @@ saveChangeOpCode(_param) {
     return this.http.get<any>(endpointUrl, { params: httpParams });
   }
 
+  // 檢查 idNo(MO) 是否存在於MySql(表:PPSFCPTB16)
+  checkIdNoExists(idNo : string){
+    const httpParams = new HttpParams()
+      .set('idNo', idNo);
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/checkIdNoExists`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Params參數 : idNo=${idNo}`);
+    return this.http.get<any>(endpointUrl, { params: httpParams });
+  }
+
   // 根據idNo與站別獲取流程清單
   getLineupProcessListByIdNoAndShopCode(idNo : string, adjShopCode : string){
     console.log('根據idNo與站別獲取流程清單..');

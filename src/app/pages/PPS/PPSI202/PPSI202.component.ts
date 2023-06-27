@@ -539,9 +539,12 @@ export class PPSI202Component implements AfterViewInit {
     console.log("convertToExcel");
     console.log(this.dateFormat(new Date().getMonth(), 5))
     console.log(this.dateFormat(moment(), 5))
+    console.log(this.selectedValue);
     console.log(this.dateFormat(this.selectedValue, 5));
+    let date;
+    if (this.selectedValue == "" || this.selectedValue == undefined) date = this.dateFormat(moment(), 5); else date = this.dateFormat(this.selectedValue,  5);
 
-    this.getPPSService.getCalendarDtlList('1', this.dateFormat(this.selectedValue,  5), 'x', 'x', 'x').subscribe(res => {
+    this.getPPSService.getCalendarDtlList('1', date, 'x', 'x', 'x').subscribe(res => {
       console.log("getCalendarDtlList success");
       this.CalendarDisplay = res;
 

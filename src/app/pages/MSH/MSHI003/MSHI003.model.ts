@@ -10,6 +10,7 @@ export class MSHI003{
     procStatus : string; // 放行碼
     sfcDia : string; // 尺寸
     finalMicNo : string; // 現況MIC
+    lineupProcess : string //現況流程
     processCode : string; // 製程碼
     adjShopCode : string; // 調整站別
     adjLineupProcess : string; // 調整流程
@@ -34,6 +35,7 @@ export class MSHI003{
       _procStatus : string,
       _sfcDia : string,
       _finalMicNo : string,
+      _lineupProcess : string,
       _processCode : string,
       _adjShopCode : string,
       _adjLineupProcess : string,
@@ -57,6 +59,7 @@ export class MSHI003{
         this.procStatus = _procStatus
         this.sfcDia = _sfcDia
         this.finalMicNo = _finalMicNo;
+        this.lineupProcess = _lineupProcess;
         this.processCode = _processCode;
         this.adjShopCode = _adjShopCode;
         this.adjLineupProcess = _adjLineupProcess;
