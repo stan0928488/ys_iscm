@@ -56,6 +56,25 @@ export class MSHI004Component {
 
   payloadcache: MSHI004Payload;
 
+  buttonStyle: string = `color: #fff;
+  background-color: #1677ff;
+  border-style: none;
+  width: 60%;
+  height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  width: 60%;
+  background-color: #1677ff;
+  height: 100%;
+  border-radius: 3px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; `;
+
   gridOptions = {
     defaultColDef: {
       sortable: false,
@@ -122,6 +141,17 @@ export class MSHI004Component {
       this.isSpinning = false;
     });
     this.isButtonDisabled = this.fieldStatus === '1';
+  }
+
+  async ngOnInit() {
+    console.log('預載入');
+    await this.getFcpList();
+    for (let value of this.shopCodeOfOption) {
+      if (value.indexOf('(鎖定)') >= 0) {
+        this.shopCodeInputList = value;
+        this.serach(true);
+      }
+    }
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
@@ -192,14 +222,49 @@ export class MSHI004Component {
       field: 'zxcvb',
       width: 200,
       filter: true,
+      // cellClass: 'custom-cell',
       // cellRenderer: ButtonComponent,
       cellRenderer: function (params) {
         console.log('params:' + JSON.stringify(params.data));
         console.log('=====================================');
         if (params.data.fcpEditionLock == '1') {
-          return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
+          if (params.data.equipCode == params.data.publishMachine) {
+            return `<button (click)="buttonClicked()" style='color: #fff;
+            border-style: none;
+            line-height: 0 !important;
+            width: 60%;
+            background-color: #1677ff;
+            height: 100%;
+            border-radius: 3px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap; '>PUBLISH</button>`;
+          } else {
+            return `<button (click)="buttonClicked()" disabled style='color: #fff;
+            border-style: none;
+            line-height: 0 !important;
+            width: 60%;
+            background-color: #1677ff;
+            height: 100%;
+            border-radius: 3px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap; '>數量不一致</button>`;
+          }
         } else {
-          return '<button (click)="buttonClicked()" disabled class="button">非鎖定版</button>';
+          return `<button (click)="buttonClicked()" disabled style='color: #fff;
+          border-style: none;
+            line-height: 0 !important;
+            width: 60%;
+            background-color: #1677ff;
+            height: 100%;
+            border-radius: 3px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+          flex-wrap: nowrap; '>非鎖定版</button>`;
         }
       },
     },
@@ -223,6 +288,8 @@ export class MSHI004Component {
       filter: true,
     },
   ];
+
+  nzOnOk: () => {};
   //點擊一下即可複製的功能
   onCellClicked(e: CellClickedEvent): void {
     console.log('=======>>>>cellClicked', e);
@@ -369,9 +436,9 @@ export class MSHI004Component {
       });
   }
 
-  getFcpList(): void {
+  async getFcpList(): Promise<void> {
     this.shopCodeLoading = true;
-    new Promise<boolean>((resolve, reject) => {
+    await new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.getFcpList().subscribe(
         (res) => {
           console.log(res);
