@@ -12,6 +12,8 @@ export class MSHI004 {
   zxcvb: number; //
   fcpEdition: string;
   fcpEditionLock: string;
+  mesPublishDay: string;
+  userCreate: string;
 
   constructor(
     _id: string,
@@ -26,7 +28,9 @@ export class MSHI004 {
     _timeRegion: Date,
     _zxcvb: number,
     _fcpEdition: string,
-    _fcpEditionLock: string
+    _fcpEditionLock: string,
+    _mesPublishDay: string,
+    _userCreate: string
   ) {
     this.id = _id;
     this.mesPublishGroup = _mesPublishGroup;
@@ -41,5 +45,7 @@ export class MSHI004 {
     this.zxcvb = _zxcvb;
     this.fcpEdition = _fcpEdition;
     this.fcpEditionLock = _fcpEditionLock;
+    this.mesPublishDay = _mesPublishDay;
+    this.userCreate = _userCreate;
   }
 }

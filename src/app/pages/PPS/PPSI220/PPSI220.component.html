@@ -58,7 +58,7 @@
           <tr *ngFor="let data of editRowTable.data; let i = index" class="editable-row">
 
             <td nzLeft="0px" style="text-align:center; font-size: 11px; padding: 4px;">
-              <a [attr.disabled]="data.PLAN_STATU === 'Plan' ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
+              <a [attr.disabled]="isRunFCP ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
               <a [attr.disabled]="data.PLAN_STATU !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.PLAN_EDITION, data.PLAN_STATU)">刪除</a>
               <p><a disabled = false>結果表</a></p>
             </td>                                               <!--  (click)="routerRun(data.STARTRUN_TIME, data.PLAN_EDITION)" -->

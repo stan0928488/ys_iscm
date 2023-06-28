@@ -484,7 +484,7 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=0 & 合併單號開頭=0C 的總重，依機台、交期月份顯示'
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭=Y & MO開頭=0X & LOCK=0 & 合併單號開頭=0C 的總重，以及包含 < 400 不含 334 站的總重，依機台、交期月份顯示'
     },
 
     {
@@ -493,7 +493,7 @@ export class PPSR301Component implements OnInit {
       mergeCol: 0,
       showCell : true,
       hoverTitle:'說明',
-      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別不等於現況站別 的總重，依機台、交期月份顯示'
+      hoverContent:'來源：FCP結果表，不含跨天 & MO開頭<>Y & MO開頭<>0X & 預計安排站別不等於現況站別 & 現況站別 >= 400 站 & 現況站別 = 334 站 的總重，依機台、交期月份顯示'
     },
     {
       value : 'WIP已到站' ,
