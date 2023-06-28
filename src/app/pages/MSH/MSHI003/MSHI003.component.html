@@ -43,7 +43,7 @@
 
         <div class="flex">
             <span style ="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px;">&nbsp;&nbsp;站別</span>
-            <nz-select nzPlaceHolder="請選擇站別" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="shopCodeInputList" (ngModelChange)="shopCodeChange()" nzAllowClear (nzOpenChange) = "getShopCodeList()">
+            <nz-select nzPlaceHolder="請選擇站別" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="shopCodeInputList" (ngModelChange)="shopCodeChange()" nzAllowClear (nzOpenChange) = "getShopCodeList()" (ngModelChange)="shopCodeInputListChange()">
                 <nz-option *ngFor="let shopCode of shopCodeOfOption" [nzLabel]="shopCode" [nzValue]="shopCode"></nz-option>
                 <nz-option *ngIf="shopCodeLoading" nzDisabled nzCustomContent>
                     <span nz-icon nzType="loading" class="loading-icon"></span>
@@ -52,7 +52,7 @@
             </nz-select>
 
             <span style ="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; margin-left:30px;">&nbsp;&nbsp;機台</span>
-            <nz-select nzPlaceHolder="請選擇機台" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="equipCodeInputList" nzShowSearch nzAllowClear (nzOpenChange) = "getEquipCodeList()">
+            <nz-select nzPlaceHolder="請選擇機台" style="width:150px; margin-left:5px;" nzMode="multiple" [(ngModel)]="equipCodeInputList" nzShowSearch nzAllowClear (nzOpenChange)="getEquipCodeList()" (ngModelChange)="equipCodeInputListChange()">
                 <nz-option *ngFor="let equipCode of equipCodeOfOption" [nzLabel]="equipCode" [nzValue]="equipCode"></nz-option>
                 <nz-option *ngIf="equipCodeLoading" nzDisabled nzCustomContent>
                     <span nz-icon nzType="loading" class="loading-icon"></span>
@@ -61,11 +61,16 @@
             </nz-select>
 
             <span style="width:50px; height:25px; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; margin-left:30px;">&nbsp;&nbsp;MO</span>
-            <input nz-input style="width:150px; margin-left:5px;" placeholder="MO" [(ngModel)]="moInput"/>
+            <input nz-input style="width:150px; margin-left:5px;" placeholder="MO" [(ngModel)]="moInput" (ngModelChange)="moInputChange()"/>
 
-            <label style="margin-left:30px;" nz-checkbox [(ngModel)]="holeChecked">
+            <label style="margin-left:30px;" nz-checkbox [(ngModel)]="holeChecked" (ngModelChange)="holeCheckedChange()">
                 <td style="font-weight:bold;">HOLD狀態</td>
             </label>
+
+            <label style="margin-left:30px;" nz-checkbox [(ngModel)]="isViewChangedEPSTData" (ngModelChange)="viewChangedEPSTDataConfirm()">
+                <td style="font-weight:bold;">僅顯示已變更EPST資料</td>
+            </label>
+
         </div>
 
         <ag-grid-angular

@@ -213,6 +213,14 @@ saveChangeOpCode(_param) {
   return this.http.get<any>(endpointUrl, { params: httpParams });
 }
 
+  //僅顯示已變更EPST資料
+  listChangedEPSTData(){
+    let endpointUrl = `${this.APIURL}/msh/MSHC003/listChangedEPSTData`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`參數 : 無`);
+    return this.http.get<any>(endpointUrl);
+  }
+
   /****機台更換 */
   saveChangeMachine(_param) {
     let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeMachine";

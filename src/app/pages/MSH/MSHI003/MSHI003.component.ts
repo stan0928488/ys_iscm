@@ -16,6 +16,7 @@ import { CommonService } from 'src/app/services/common/common.service';
 import { AdjShopCodeCellRendererComponent } from './AdjShopCodeCellRenderer.componet';
 import { AdjShopCodeCellSelectEditorComponent } from './adj-shop-code-cell-select-editor';
 import { AdjLineupProcessSelectEditorComponent } from './adj-lineup-process-cell-select-editor';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 class MSHI003Payload {
   shopCode : string[];
@@ -89,6 +90,9 @@ export class MSHI003Component implements AfterViewInit{
 
   // hole狀態選擇
   holeChecked = false;
+
+  // 是否只顯示已變更的EPST資料
+  isViewChangedEPSTData = false;
 
   MSHI003DataList : MSHI003[] = [];
 
@@ -414,20 +418,20 @@ export class MSHI003Component implements AfterViewInit{
       this.Modal.confirm({
         nzTitle: '資料尚未儲存，是否放棄儲存執行搜尋?',
         nzOnOk: () => {
-          this.serachEPST(isUserClick);
+          this.searchEPST(isUserClick);
         },
         nzOnCancel: () =>
           console.log("取消搜尋EPST資料")
       });
      }
      else{
-      this.serachEPST(isUserClick);
+      this.searchEPST(isUserClick);
      }
 
   }
 
 
-  serachEPST(isUserClick : boolean) : void {
+  searchEPST(isUserClick : boolean) : void {
     this.isSpinning = true;
     let payloads = null;
 
@@ -497,6 +501,7 @@ export class MSHI003Component implements AfterViewInit{
 
     })
     .then(success =>{
+      this.isViewChangedEPSTData = false;
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
 
@@ -512,6 +517,7 @@ export class MSHI003Component implements AfterViewInit{
       }
       this.isSpinning = false;
     }).catch(error =>{
+      this.isViewChangedEPSTData = false;
       this.payloadcache = payloads;
       this.MSHI003PendingDataList = [];
       this.isSpinning = false;
@@ -594,12 +600,31 @@ export class MSHI003Component implements AfterViewInit{
         })
         .then(success =>{
           this.MSHI003PendingDataList = [];
-          this.serach(false);
           this.isSpinning = false;
+
+          // 如果上一次搜尋的條件是「僅顯示已變更EPST資料」
+          // 則執行搜尋已變更的EPST資料
+          if(this.isViewChangedEPSTData){
+            this.viewChangedEPSTData();
+            return;
+          }
+
+          // 否則則進行一般搜尋
+          this.serach(false);
+          
         }).catch(error =>{
           this.MSHI003PendingDataList = [];
-          this.serach(false);
           this.isSpinning = false;
+
+          // 如果上一次搜尋的條件是「僅顯示已變更EPST資料」
+          // 則執行搜尋已變更的EPST資料
+          if(this.isViewChangedEPSTData){
+            this.viewChangedEPSTData();
+            return;
+          }
+
+          // 否則則進行一般搜尋
+          this.serach(false);
         });
       },
       nzOnCancel: () =>
@@ -1088,6 +1113,7 @@ export class MSHI003Component implements AfterViewInit{
 
       this.dataTransferService.getData().subscribe((node) => {
       this.isSpinning = true;
+
       // 判斷使用者經過一連串的編輯後，是否仍然與原資料相同
       // 若相同該筆資料則不進行儲存
       if(!_.isNil(this.MSHI003DataListDeepClone[node.rowIndex].newEpst)){
@@ -1200,6 +1226,156 @@ export class MSHI003Component implements AfterViewInit{
     }
     finally{
       
+    }
+  }
+
+  async viewChangedEPSTDataConfirm(){
+
+    // 若存在編輯過待儲存的資料且「僅顯示已變更EPST資料」checkbox被勾選
+    if(!_.isEmpty(this.MSHI003PendingDataList) && this.isViewChangedEPSTData){
+       this.Modal.confirm({
+        nzTitle: '資料尚未儲存，是否放棄儲存，執行「僅顯示已變更EPST資料」?',
+        nzOnOk: async () => {
+          await this.viewChangedEPSTData();
+        },
+        nzOnCancel: () => console.log("取消「搜尋僅顯示已變更EPST資料」")
+      });
+    }
+    else if(_.isEmpty(this.MSHI003PendingDataList) && this.isViewChangedEPSTData){
+      await this.viewChangedEPSTData();
+    }
+    else if(!_.isEmpty(this.MSHI003PendingDataList) && !this.isViewChangedEPSTData){
+      this.Modal.confirm({
+        nzTitle: '資料尚未儲存，是否放棄儲存，執行取消「僅顯示已變更EPST資料」?',
+        nzOnOk: async () => {
+          this.MSHI003DataList = [];
+          this.MSHI003PendingDataList = [];
+        },
+        nzOnCancel: () => console.log("取消執行「取消僅顯示已變更EPST資料」")
+      });
+    }
+    else{
+      this.MSHI003DataList = [];
+      this.MSHI003PendingDataList = [];
+    }
+
+ }
+
+  async viewChangedEPSTData(){
+
+      this.isSpinning = true;
+
+      // 當勾選「僅顯示已變更EPST資料」
+      // 其他一般查詢EPST資訊的輸入全清空
+      this.shopCodeInputList = [];
+      this.equipCodeInputList = [];
+      this.moInput = '';
+      this.holeChecked = false;
+
+      try{
+        const resObservable$ = this.mshService.listChangedEPSTData();
+        const res = await firstValueFrom(resObservable$);
+        if(res.code === 200){
+          if(res.data.length > 0) {
+            let resultDataList : MSHI003[] =
+              res.data.map(item => {
+
+               return new MSHI003(
+                  item.id,
+                  item.plantCode,
+                  item.idNo,
+                  item.shopCode,
+                  item.saleOrder,
+                  item.saleItem,
+                  item.saleLineno,
+                  item.custAbbr,
+                  item.procStatus,
+                  item.sfcDia,
+                  item.finalMicNo,
+                  item.lineupProcess,
+                  item.processCode,
+                  item.adjShopCode,
+                  item.adjLineupProcess,
+                  item.overShopStatus,
+                  item.epst,
+                  item.comment,
+                  item.newEpst,
+                  item.dateCreate,
+                  item.userCreate,
+                  item.dateUpdate,
+                  item.userUpdate
+                  )
+                });
+
+              this.MSHI003DataList = resultDataList;
+              this.MSHI003DataListDeepClone = _.cloneDeep(this.MSHI003DataList);
+            } else{
+              this.message.success(res.message);
+            }
+        }
+        else {
+          this.message.error('後台錯誤，獲取不到EPST資料');
+        }
+      }
+      catch (error) {
+        this.errorMSG('獲取已變更的EPST資料失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
+      }
+      finally{
+        this.MSHI003PendingDataList = [];
+        this.isSpinning = false;
+      }
+  }
+
+  equipCodeInputListChange(){
+    this.confirmCancelViewChangedEPSTData().then(isClearInput =>{
+      if(isClearInput) this.equipCodeInputList = [];
+    });
+  }
+
+  shopCodeInputListChange(){
+    this.confirmCancelViewChangedEPSTData().then(isClearInput =>{
+      if(isClearInput) this.shopCodeInputList = [];
+    });
+  }
+
+  moInputChange(){
+    this.confirmCancelViewChangedEPSTData().then(isClearInput =>{
+      if(isClearInput) this.moInput = '';
+    });
+  }
+
+  holeCheckedChange(){
+    this.confirmCancelViewChangedEPSTData().then(isClearInput =>{
+      if(isClearInput) this.holeChecked = false;
+    });
+  }
+
+   confirmCancelViewChangedEPSTData() : Promise<boolean>{
+
+    if(!_.isEmpty(this.MSHI003PendingDataList)){
+      return new Promise<boolean>(resolve => {
+        this.Modal.confirm({
+          nzTitle: '有資料尚未儲存，是否放棄儲存?',
+            nzOnOk: () => {
+              this.MSHI003DataList = [];
+              this.MSHI003PendingDataList = [];
+              this.isViewChangedEPSTData = false;
+              return resolve(false);
+            },
+            nzOnCancel: () => {
+              console.log("取消執行「取消僅顯示已變更EPST資料」");
+              // 使用者取消執行「取消僅顯示已變更EPST資料」
+              // 表示放棄輸入，返回true，表示需將輸入的值清空
+              return resolve(true);
+            }
+          }); 
+      })
+    }
+    else{
+      this.MSHI003DataList = [];
+      this.MSHI003PendingDataList = [];
+      this.isViewChangedEPSTData = false;
+      return Promise.resolve(false);
     }
   }
 
