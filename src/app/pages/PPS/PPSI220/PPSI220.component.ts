@@ -974,6 +974,7 @@ export class PPSI220Component implements AfterViewInit {
       });
 
       this.sucessMSG("已啟動規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+      this.getRunFCPCount();
       await this.sleep(3000);
 
       myObj.loading = false;
@@ -1001,10 +1002,11 @@ export class PPSI220Component implements AfterViewInit {
 
           this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
           this.getPlanDataList();
+          this.getRunFCPCount();
         }
       },err => {
         reject('upload fail');
-        this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        this.errorMSG("停止失敗", "後台停止錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
       })
 		})
