@@ -91,8 +91,7 @@ export class MSHI004Service {
 
   sentMesData(_parms) {
     const body = JSON.stringify(_parms);
-    let endpointUrl = ``;
-    // let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
+    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
     console.log(`API Url : ${endpointUrl}`);
     console.log(`mes參數 : ${body}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
