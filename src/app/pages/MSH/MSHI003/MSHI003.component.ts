@@ -113,7 +113,8 @@ export class MSHI003Component implements AfterViewInit{
   CUST_ABBR = "客戶";
   PROC_STATUS = "放行碼";
   SFC_DIA = "現況尺寸";
-  FINAL_MIC_NO = "現況MIC";
+  FINAL_MIC_NO = "MIC";
+  LINEUP_PROCESS = "現況流程";
   PROCESS_CODE = "製程碼";
   EPST = "EPST";
   NEW_EPST = "調整日期";
@@ -620,10 +621,6 @@ export class MSHI003Component implements AfterViewInit{
   jsonExcelData : any[] = [];
   handleImport() : void {
 
-
-    this.errorMSG('開發中', '開發中');
-    return;
-
     const fileValue = this.inputExcelFile.value
     if(fileValue === "") {
       this.errorMSG('無檔案', '請先選擇要上傳的檔案');
@@ -673,12 +670,12 @@ export class MSHI003Component implements AfterViewInit{
 
     // 檢查欄位名稱是否都正確
     if(!this.checkExcelHeader(this.jsonExcelData[0])){
-      this.errorMSG('檔案欄位表頭錯誤', '請先匯出檔案後，再透過該檔案調整上傳。');
+      this.errorMSG('檔案欄位表頭錯誤', '需有「MO」與「調整日期」這兩個表頭。');
       this.renderer.setProperty(this.inputExcelFile, 'value', '');  
       this.isSpinning = false;
       return;
     }
-    console.log("匯入的Excle欄位名稱皆正確");
+    console.log("匯入的Excle表頭皆正確");
 
     // 校驗每個Excel欄位是否都有填寫
     if(!this.checkAllValuesNotEmpty(this.jsonExcelData)){
@@ -848,7 +845,7 @@ export class MSHI003Component implements AfterViewInit{
       if(_.isNull(item[this.EPST])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.EPST}」不得為空，請修正。`);
         return false;
-      }*/
+      }
 
       if(_.isNull(item[this.ADJ_SHOP_CODE])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.ADJ_SHOP_CODE}」不得為空，請修正。`);
@@ -872,7 +869,7 @@ export class MSHI003Component implements AfterViewInit{
       if(!_.isNull(item[this.EPST])){
         const isVerifyEpstDate = this.verifyDate(item, rowNumberInExcel, this.EPST);
         if(isVerifyEpstDate === false) return false;
-      }
+      }*/
 
       if(_.isNull(item[this.NEW_EPST])){
         this.errorMSG("匯入失敗", `第${rowNumberInExcel}行資料的「${this.NEW_EPST}」不得為空，請修正。`);
@@ -991,7 +988,7 @@ export class MSHI003Component implements AfterViewInit{
 
     keys.forEach(k => {
       if(k === this.ID_NO) b1 = true;
-      else if(k === this.SHOP_CODE) b2 = true;
+      //else if(k === this.SHOP_CODE) b2 = true;
       // else if(k === this.SALE_ORDER) b3 = true;
       // else if(k === this.SALE_ITEM) b4 = true;
       // else if(k === this.CUST_ABBR) b5 = true;
@@ -999,15 +996,15 @@ export class MSHI003Component implements AfterViewInit{
       // else if(k === this.SFC_DIA) b7 = true;
       // else if(k === this.FINAL_MIC_NO) b8 = true;
       // else if(k === this.PROCESS_CODE) b9 = true;
-      else if(k === this.ADJ_SHOP_CODE) b10 = true;
-      else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
+      //else if(k === this.ADJ_SHOP_CODE) b10 = true;
+      //else if(k === this.ADJ_LINEUP_PROCESS) b11 = true;
       // else if(k === this.OVER_SHOP_STATUS) b12 = true;
       // else if(k === this.EPST) b13 = true;
       else if(k === this.NEW_EPST) b14 = true;
       // else if(k === this.COMMENT) b15 = true;
     });
 
-    return b1 && b2 && b10 && b11 && b14;
+    return b1 && b14;
     //return b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10 && b11 && b12;
   }
 
@@ -1032,8 +1029,8 @@ export class MSHI003Component implements AfterViewInit{
       MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno']));
     });
 
-    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "processCode", "adjShopCode", "adjLineupProcess", "overShopStatus", "epst", "newEpst", "comment", "userCreate", "dateCreate", "userUpdate", "dateUpdate"];
-    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, processCode:this.PROCESS_CODE, adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, newEpst:this.NEW_EPST, comment:this.COMMENT, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期"};
+    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "lineupProcess", "processCode", "adjShopCode", "adjLineupProcess", "overShopStatus", "epst", "newEpst", "comment", "userCreate", "dateCreate", "userUpdate", "dateUpdate"];
+    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, lineupProcess:this.LINEUP_PROCESS, processCode:this.PROCESS_CODE, adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, newEpst:this.NEW_EPST, comment:this.COMMENT, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期"};
     const exportData = [firstRowDisplay, ...MSHI003DataListClone]; 
 
     const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});

@@ -29,6 +29,17 @@ class MSHI004Payload {
   }
 }
 
+class forMes {
+  fcpVer: string;
+  shopCode: string;
+  equipCode: string;
+  constructor(_fcpVer: string, _shopCode: string, _equipCode: string) {
+    this.fcpVer = _fcpVer;
+    this.shopCode = _shopCode;
+    this.equipCode = _shopCode;
+  }
+}
+
 @Component({
   selector: 'app-MSHI004',
   templateUrl: './MSHI004.component.html',
@@ -48,6 +59,7 @@ export class MSHI004Component {
   shopCodeLoading = false;
 
   MSHI004DataList: MSHI004[] = [];
+  mesData: string[] = [];
 
   MSHI004DataListDeepClone: MSHI004[] = [];
 
@@ -55,6 +67,25 @@ export class MSHI004Component {
   MSHI004PendingDataList: MSHI004[] = [];
 
   payloadcache: MSHI004Payload;
+
+  buttonStyle: string = `color: #fff;
+  background-color: #1677ff;
+  border-style: none;
+  width: 60%;
+  height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  width: 60%;
+  background-color: #1677ff;
+  height: 100%;
+  border-radius: 3px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; `;
 
   gridOptions = {
     defaultColDef: {
@@ -85,8 +116,6 @@ export class MSHI004Component {
 
     this.dataTransferService.getData().subscribe((node) => {
       this.isSpinning = true;
-
-      //
 
       const isSame = _.isEqual(
         this.MSHI004DataListDeepClone[node.rowIndex],
@@ -124,122 +153,361 @@ export class MSHI004Component {
       this.isSpinning = false;
     });
     this.isButtonDisabled = this.fieldStatus === '1';
+
+    this.getCellData();
+  }
+
+  async ngOnInit() {
+    console.log('預載入');
+    await this.getFcpList();
+    for (let value of this.shopCodeOfOption) {
+      if (value.indexOf('(鎖定)') >= 0) {
+        this.shopCodeInputList = value;
+        this.serach(true);
+      }
+    }
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
 
-  // getData() {
-  //   this.mshi004Service.getData().subscribe(
-  //     (response: any) => {
-  //       this.item = response;
-  //       const { data } = response;
-  //       console.log(
-  //         '🚀 ~ file: MSHI004.component.ts:147 ~ MSHI004Component ~ getData ~ data:',
-  //         data
-  //       );
-  //       this.MSHI004DataList = JSON.parse(data);
-  //     },
-  //     (error: HttpErrorResponse) => this.mshi004Service.HandleError(error)
-  //   );
-  // }
-
   isButtonDisabled: boolean = false;
 
-  columnDefs: ColDef[] = [
-    {
-      headerName: 'MES群組',
-      field: 'mesPublishGroup',
-      width: 200,
-      filter: true,
-      onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
-    },
-    {
-      headerName: '發佈MES天數',
-      field: 'mesPublishTime',
-      width: 200,
-      editable: true,
-      cellEditor: 'agLargeTextCellEditor',
-      headerClass: 'header-editable-color',
-      cellClass: 'cell-editable-color',
-      cellEditorParams: {
-        maxLength: 5,
-        cols: '5',
-        rows: '1',
-      },
-      onCellValueChanged: (event) => {
-        if (_.isEmpty(event.newValue)) {
-          event.data.comment = null;
-        }
+  // columnDefs: ColDef[] = [
+  //   {
+  //     headerName: 'MES群組',
+  //     field: 'mesPublishGroup',
+  //     width: 200,
+  //     filter: true,
+  //     onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
+  //   },
+  //   {
+  //     headerName: '發佈MES天數',
+  //     field: 'mesPublishTime',
+  //     width: 200,
+  //     editable: true,
+  //     cellEditor: 'agLargeTextCellEditor',
+  //     headerClass: 'header-editable-color',
+  //     cellClass: 'cell-editable-color',
+  //     cellEditorParams: {
+  //       maxLength: 5,
+  //       cols: '5',
+  //       rows: '1',
+  //     },
+  //     onCellValueChanged: (event) => {
+  //       if (_.isEmpty(event.newValue)) {
+  //         event.data.comment = null;
+  //       }
 
-        this.dataTransferService.setData(event.node);
-      },
-    },
-    { headerName: '工作站數', field: 'shopCode', width: 200, filter: true },
-    { headerName: '機台數', field: 'equipCode', width: 200, filter: true },
-    {
-      headerName: '依PPS配置',
-      field: 'ppsControl',
-      width: 200,
-      editable: true,
-      cellEditor: 'agLargeTextCellEditor',
-      headerClass: 'header-editable-color',
-      cellClass: 'cell-editable-color',
-      cellEditorParams: {
-        maxLength: 5,
-        cols: '5',
-        rows: '1',
-      },
-      onCellValueChanged: (event) => {
-        if (_.isEmpty(event.newValue)) {
-          event.data.comment = null;
-        }
+  //       this.dataTransferService.setData(event.node);
+  //     },
+  //   },
+  //   { headerName: '工作站數', field: 'shopCode', width: 200, filter: true },
+  //   { headerName: '機台數', field: 'equipCode', width: 200, filter: true },
+  //   {
+  //     headerName: '依PPS配置',
+  //     field: 'ppsControl',
+  //     width: 200,
+  //     editable: true,
+  //     cellEditor: 'agLargeTextCellEditor',
+  //     headerClass: 'header-editable-color',
+  //     cellClass: 'cell-editable-color',
+  //     cellEditorParams: {
+  //       maxLength: 5,
+  //       cols: '5',
+  //       rows: '1',
+  //     },
+  //     onCellValueChanged: (event) => {
+  //       if (_.isEmpty(event.newValue)) {
+  //         event.data.comment = null;
+  //       }
 
-        this.dataTransferService.setData(event.node);
-      },
-    },
-    {
-      headerName: '已配置機台數',
-      field: 'publishMachine',
-      width: 200,
-      filter: true,
-    },
-    { headerName: '手動發佈', field: 'publishSelf', width: 200, filter: true },
-    {
-      headerName: '確認發佈',
-      field: 'zxcvb',
-      width: 200,
-      filter: true,
-      cellRenderer: ButtonComponent,
-      // cellRenderer: function () {
-      //   if (this.lock.fcpEdition.includes('鎖定')) {
-      //     console.log(this.lock);
-      //     console.log('aaaaaaaaaa');
-      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
-      //   } else {
-      //     return '<button (click)="buttonClicked()" class="button">PUBLISH</button>';
-      //   }
-      // },
-    },
+  //       this.dataTransferService.setData(event.node);
+  //     },
+  //   },
+  //   {
+  //     headerName: '已配置機台數',
+  //     field: 'publishMachine',
+  //     width: 200,
+  //     filter: true,
+  //   },
+  //   {
+  //     headerName: '手動發佈',
+  //     field: 'publishSelf',
+  //     width: 200,
+  //     filter: true,
+  //     hide: true,
+  //   },
+  //   {
+  //     headerName: '確認發佈',
+  //     field: 'zxcvb',
+  //     width: 200,
+  //     filter: true,
+  //     // cellClass: 'custom-cell',
+  //     // cellRenderer: ButtonComponent,
+  //     cellRenderer: function (params) {
+  //       console.log('params:' + JSON.stringify(params.data));
+  //       console.log('=====================================');
+  //       if (params.data.fcpEditionLock == '1') {
+  //         if (params.data.equipCode == params.data.publishMachine) {
+  //           return `<button (click)="buttonClicked()" style='color: #fff;
+  //           border-style: none;
+  //           line-height: 0 !important;
+  //           width: 60%;
+  //           background-color: #1677ff;
+  //           height: 100%;
+  //           border-radius: 3px;
+  //           display: inline-flex;
+  //           justify-content: center;
+  //           align-items: center;
+  //           flex-wrap: nowrap; '>PUBLISH</button>`;
+  //         } else {
+  //           return `<button disabled style='color: #fff;
+  //           border-style: none;
+  //           line-height: 0 !important;
+  //           width: 60%;
+  //           background-color: #1677ff;
+  //           height: 100%;
+  //           border-radius: 3px;
+  //           display: inline-flex;
+  //           justify-content: center;
+  //           align-items: center;
+  //           flex-wrap: nowrap; '>數量不一致</button>`;
+  //         }
+  //       } else {
+  //         return `<button disabled style='color: #fff;
+  //         border-style: none;
+  //           line-height: 0 !important;
+  //           width: 60%;
+  //           background-color: #1677ff;
+  //           height: 100%;
+  //           border-radius: 3px;
+  //           display: inline-flex;
+  //           justify-content: center;
+  //           align-items: center;
+  //         flex-wrap: nowrap; '>非鎖定版</button>`;
+  //       }
+  //     },
+  //     onCellClicked: function (params) {
+  //       console.log('dfdfsf');
+  //     },
+  //   },
 
-    {
-      headerName: '已發佈機台',
-      field: 'publishMachineTotal',
-      width: 200,
-      filter: true,
-    },
-    {
-      headerName: '已發佈FCP版本',
-      field: 'fcpEdition',
-      width: 200,
-      filter: true,
-    },
-    {
-      headerName: '發佈時間區間',
-      field: 'timeRegion',
-      width: 400,
-      filter: true,
-    },
-  ];
+  //   {
+  //     headerName: '已發佈機台',
+  //     field: 'publishMachineTotal',
+  //     width: 200,
+  //     filter: true,
+  //   },
+  //   {
+  //     headerName: '已發佈FCP版本',
+  //     field: 'fcpEdition',
+  //     width: 200,
+  //     filter: true,
+  //   },
+  //   {
+  //     headerName: '發佈時間區間',
+  //     field: 'timeRegion',
+  //     width: 400,
+  //     filter: true,
+  //   },
+  //   {
+  //     headerName: '發佈者',
+  //     field: 'userCreate',
+  //     width: 200,
+  //     filter: true,
+  //   },
+  //   {
+  //     headerName: '發佈日期',
+  //     field: 'mesPublishDay',
+  //     width: 200,
+  //     filter: true,
+  //   },
+  // ];
+
+  columnDefs: ColDef[] = [];
+
+  getCellData() {
+    let _this = this;
+    this.columnDefs = [
+      {
+        headerName: 'MES群組',
+        field: 'mesPublishGroup',
+        width: 200,
+        filter: true,
+        onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
+      },
+      {
+        headerName: '發佈MES天數',
+        field: 'mesPublishTime',
+        width: 200,
+        editable: true,
+        cellEditor: 'agLargeTextCellEditor',
+        headerClass: 'header-editable-color',
+        cellClass: 'cell-editable-color',
+        cellEditorParams: {
+          maxLength: 5,
+          cols: '5',
+          rows: '1',
+        },
+        onCellValueChanged: (event) => {
+          if (_.isEmpty(event.newValue)) {
+            event.data.comment = null;
+          }
+
+          this.dataTransferService.setData(event.node);
+        },
+      },
+      { headerName: '工作站數', field: 'shopCode', width: 200, filter: true },
+      { headerName: '機台數', field: 'equipCode', width: 200, filter: true },
+      {
+        headerName: '依PPS配置',
+        field: 'ppsControl',
+        width: 200,
+        editable: true,
+        cellEditor: 'agLargeTextCellEditor',
+        headerClass: 'header-editable-color',
+        cellClass: 'cell-editable-color',
+        cellEditorParams: {
+          maxLength: 5,
+          cols: '5',
+          rows: '1',
+        },
+        onCellValueChanged: (event) => {
+          if (_.isEmpty(event.newValue)) {
+            event.data.comment = null;
+          }
+
+          this.dataTransferService.setData(event.node);
+        },
+      },
+      {
+        headerName: '已配置機台數',
+        field: 'publishMachine',
+        width: 200,
+        filter: true,
+      },
+      {
+        headerName: '手動發佈',
+        field: 'publishSelf',
+        width: 200,
+        filter: true,
+        hide: true,
+      },
+      {
+        headerName: '確認發佈',
+        field: 'zxcvb',
+        width: 200,
+        filter: true,
+        // cellClass: 'custom-cell',
+        // cellRenderer: ButtonComponent,
+        cellRenderer: function (params) {
+          console.log('params:' + JSON.stringify(params.data));
+          console.log('=====================================');
+
+          if (params.data.fcpEditionLock == '1') {
+            if (params.data.equipCode == params.data.publishMachine) {
+              // return `<button (click)="buttonClicked()" style='color: #fff;
+              // border-style: none;
+              // line-height: 0 !important;
+              // width: 60%;
+              // background-color: #1677ff;
+              // height: 100%;
+              // border-radius: 3px;
+              // display: inline-flex;
+              // justify-content: center;
+              // align-items: center;
+              // flex-wrap: nowrap; '>PUBLISH</button>`;
+
+              const buttonElement = _this.renderer.createElement('button');
+              const buttonText = _this.renderer.createText('PUBLISH');
+
+              _this.renderer.appendChild(buttonElement, buttonText);
+              _this.renderer.addClass(buttonElement, 'button');
+
+              _this.renderer.listen(buttonElement, 'click', () => {
+                _this.buttonClicked(params.data);
+              });
+
+              return buttonElement;
+            } else {
+              //   return `<button disabled style='color: #fff;
+              // border-style: none;
+              // line-height: 0 !important;
+              // width: 60%;
+              // background-color: #1677ff;
+              // height: 100%;
+              // border-radius: 3px;
+              // display: inline-flex;
+              // justify-content: center;
+              // align-items: center;
+              // flex-wrap: nowrap; '>數量不一致</button>`;
+
+              const buttonElement = _this.renderer.createElement('button');
+              const buttonText = _this.renderer.createText('數量不一致');
+              _this.renderer.appendChild(buttonElement, buttonText);
+              _this.renderer.addClass(buttonElement, 'button');
+
+              // _this.renderer.listen(buttonElement, 'click', () => {
+              //   _this.buttonClicked(params.data);
+              // });
+              return buttonElement;
+            }
+          } else {
+            //   return `<button disabled style='color: #fff;
+            // border-style: none;
+            //   line-height: 0 !important;
+            //   width: 60%;
+            //   background-color: #1677ff;
+            //   height: 100%;
+            //   border-radius: 3px;
+            //   display: inline-flex;
+            //   justify-content: center;
+            //   align-items: center;
+            // flex-wrap: nowrap; '>非鎖定版</button>`;
+
+            const buttonElement = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('非鎖定版');
+            _this.renderer.appendChild(buttonElement, buttonText);
+            _this.renderer.addClass(buttonElement, 'button');
+            return buttonElement;
+          }
+        },
+      },
+
+      {
+        headerName: '已發佈機台',
+        field: 'publishMachineTotal',
+        width: 200,
+        filter: true,
+      },
+      {
+        headerName: '已發佈FCP版本',
+        field: 'fcpEdition',
+        width: 200,
+        filter: true,
+      },
+      {
+        headerName: '發佈時間區間',
+        field: 'timeRegion',
+        width: 400,
+        filter: true,
+      },
+      {
+        headerName: '發佈者',
+        field: 'userCreate',
+        width: 200,
+        filter: true,
+      },
+      {
+        headerName: '發佈日期',
+        field: 'mesPublishDay',
+        width: 200,
+        filter: true,
+      },
+    ];
+  }
+
+  nzOnOk: () => {};
   //點擊一下即可複製的功能
   onCellClicked(e: CellClickedEvent): void {
     console.log('=======>>>>cellClicked', e);
@@ -247,8 +515,72 @@ export class MSHI004Component {
     console.log('value:' + value);
     this.clipboardApi.copyFromContent(value);
     console.log('copyFromContent:' + value);
-    console.log(`=[===>已複製: ${value} `);
+    console.log(`====>已複製: ${value} `);
     this.message.create('success', `MES群組已複製：${value} `);
+  }
+
+  buttonClicked(params: any) {
+    console.log('呼叫PUBLISH API');
+    let a = this.lock.fcpEdition;
+    let b = params.mesPublishGroup;
+    let preMes = {
+      fcpEdition: a,
+      mesPublishGroup: b,
+    };
+    console.log(preMes);
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.getMesData(preMes).subscribe(
+        (res) => {
+          const { code, data } = res;
+          const forMesData = JSON.parse(data);
+          console.log(forMesData);
+          console.log('forMes');
+          if (code === 200) {
+            if (_.size(forMesData) > 0) {
+              this.mesData = forMesData;
+              this.mshi004Service.sentMesData(this.mesData).subscribe(
+                (response) => {
+                  console.log('呼叫成功');
+                },
+                (error) => {
+                  console.log('呼叫失敗');
+                }
+              );
+            } else {
+              this.message.success('查無資料');
+              this.mesData = [];
+            }
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到資料');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.mesData = [];
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.mesData = [];
+        this.isSpinning = false;
+      });
+
+    let c = params.id;
+    let d = this.USERNAME;
+    let user = {
+      id: c,
+      userCreate: d,
+    };
+    this.mshi004Service.publishData(user);
   }
 
   confirm(isUserClick: boolean): void {
@@ -270,6 +602,9 @@ export class MSHI004Component {
           this.MSHI004PendingDataList[i].fcpEdition = new MSHI004Payload(
             this.shopCodeInputList
           ).fcpEdition;
+        }
+        for (var i = 0; i < this.MSHI004PendingDataList.length; i++) {
+          this.MSHI004PendingDataList[i].userCreate = this.USERNAME;
         }
 
         new Promise<boolean>((resolve, reject) => {
@@ -304,10 +639,8 @@ export class MSHI004Component {
           })
           .catch((error) => {
             this.MSHI004PendingDataList = [];
-            // this.getData();
             this.isSpinning = false;
           });
-        // this.getData();
       },
       nzOnCancel: () => console.log('取消作業'),
     });
@@ -344,6 +677,7 @@ export class MSHI004Component {
 
     if (_.isNil(payloads)) return;
     new Promise<boolean>((resolve, reject) => {
+      console.log(payloads + 'hiiii');
       this.mshi004Service.searchLdmData(payloads).subscribe(
         (res) => {
           const { code, data } = res;
@@ -355,33 +689,22 @@ export class MSHI004Component {
 
           if (code === 200) {
             if (_.size(myDataList) > 0) {
-              // xxxx.lenght
-              /*
-              let resultDataList: fcpdata[] = res.data.map((item) => {
-                return new fcpdata(
-                  item.pstMachineSum,
-                  item.publishSelf,
-                  item.pstMachine,
-                  item.fcpDate
-                );
-              });
-              */
               this.MSHI004DataList = myDataList;
-
               this.MSHI004DataListDeepClone = _.cloneDeep(this.MSHI004DataList);
             } else {
-              this.message.success(res.message);
+              this.message.success('查無資料');
+              this.MSHI004DataList = [];
             }
 
             resolve(true);
           } else {
-            this.message.error('後台錯誤，獲取不到EPST資料');
+            this.message.error('後台錯誤，獲取不到資料');
             reject(true);
           }
         },
         (error) => {
           this.errorMSG(
-            '獲取EPST資料失敗',
+            '獲取資料失敗',
             `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
           );
           reject(true);
@@ -400,14 +723,19 @@ export class MSHI004Component {
       });
   }
 
-  getFcpList(): void {
+  async getFcpList(): Promise<void> {
     this.shopCodeLoading = true;
-    new Promise<boolean>((resolve, reject) => {
+    await new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.getFcpList().subscribe(
         (res) => {
           console.log(res);
           if (res.code === 200) {
             this.shopCodeOfOption = res.data;
+            // this.MSHI004DataList.forEach((item, index, array) => {
+            //   if (this.shopCodeInputList.includes('鎖定')) {
+            //     this.MSHI004DataList[index].fcpEditionLock;
+            //   }
+            // });
             resolve(true);
           } else {
             this.message.error('後台錯誤，獲取不到站別清單');
@@ -436,11 +764,13 @@ export class MSHI004Component {
         (res) => {
           const { code, data } = res;
           const myDataList = JSON.parse(data);
-          console.log(data);
           if (res.code === 200) {
             console.log(data);
-            if (data.planStatus == '0') {
-              this.fcp;
+            if (data == '0') {
+              this.fcp(this.USERNAME);
+              this.message.success('開始重啟fcp');
+              console.log(this.USERNAME);
+              console.log('成功');
             } else {
               this.message.error('FCP正在執行');
             }
@@ -466,23 +796,20 @@ export class MSHI004Component {
         this.shopCodeLoading = false;
       });
   }
+
   fcp(USERNAME: string): void {
     USERNAME = this.USERNAME;
-    this.http
-      .get<any>(
-        `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&username=${USERNAME}`
-      )
-      .subscribe(
-        (response) => {
-          // 处理API响应
-          console.log(response);
-          console.log(USERNAME);
-        },
-        (error) => {
-          // 处理API调用错误
-          console.error(error);
-        }
-      );
+    this.mshi004Service.getReRunFcp(USERNAME).subscribe(
+      (response) => {
+        // 处理API响应
+        console.log(response);
+        console.log(USERNAME);
+      },
+      (error) => {
+        // 处理API调用错误
+        console.error(error);
+      }
+    );
   }
 
   sucessMSG(_title, _plan): void {

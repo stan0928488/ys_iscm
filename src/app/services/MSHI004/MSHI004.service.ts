@@ -38,12 +38,6 @@ export class MSHI004Service {
     alert(e.error.error);
   }
 
-  // getData() {
-  //   let queryUrl = this.APIURL + `/mshi/tbppsm117/get/117/log/list`;
-  //   console.log(queryUrl);
-  //   return this.http.get(queryUrl);
-  // }
-
   // 批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料
   batchInsertOrUpdateLDM(MSHI004PendingDataList) {
     console.log('批次修改整個資料表');
@@ -77,11 +71,37 @@ export class MSHI004Service {
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(endpointUrl);
   }
-  // getupdateEndDate() {
-  //   console.log('計算結束時間');
-  //   let endpointUrl = `${this.APIURL}/mshi/tbppsm117/getEndDate`;
-  //   console.log(`API Url : ${endpointUrl}`);
-  //   console.log(`Body參數 : 無`);
-  //   return this.http.get<any>(endpointUrl);
-  // }
+
+  getMesData(_parms) {
+    // const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/forMesData`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${_parms}`);
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  }
+
+  getReRunFcp(USERNAME: string) {
+    let endpointUrl = `${this.APIURL}/pps_FCP/rest/run/execute_FS`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(
+      // `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
+      `${this.APIURL}?startPoint=ASAP&username=${USERNAME}`
+    );
+  }
+
+  sentMesData(_parms) {
+    const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`mes參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  }
+
+  publishData(_parms) {
+    const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/publishData`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`Body參數 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
 }

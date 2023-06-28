@@ -11,6 +11,9 @@ export class MSHI004 {
   timeRegion: Date; //發佈時間區間
   zxcvb: number; //
   fcpEdition: string;
+  fcpEditionLock: string;
+  mesPublishDay: string;
+  userCreate: string;
 
   constructor(
     _id: string,
@@ -24,7 +27,10 @@ export class MSHI004 {
     _publishMachineTotal: string,
     _timeRegion: Date,
     _zxcvb: number,
-    _fcpEdition: string
+    _fcpEdition: string,
+    _fcpEditionLock: string,
+    _mesPublishDay: string,
+    _userCreate: string
   ) {
     this.id = _id;
     this.mesPublishGroup = _mesPublishGroup;
@@ -38,5 +44,8 @@ export class MSHI004 {
     this.timeRegion = _timeRegion;
     this.zxcvb = _zxcvb;
     this.fcpEdition = _fcpEdition;
+    this.fcpEditionLock = _fcpEditionLock;
+    this.mesPublishDay = _mesPublishDay;
+    this.userCreate = _userCreate;
   }
 }
