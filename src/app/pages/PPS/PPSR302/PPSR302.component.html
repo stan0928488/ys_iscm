@@ -99,6 +99,7 @@
     [(ngModel)]="searchData.specialBar"
     [nzButtonStyle]="'solid'">
       <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">高附加:</label>
+      <label nz-radio-button [nzDisabled]="specialBarDisable">ALL</label>
       <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE490">異型</label>
       <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE49041TO67">大棒</label>
     </nz-radio-group>
