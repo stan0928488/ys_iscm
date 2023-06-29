@@ -76,7 +76,7 @@ export class MSHI004Service {
     // const body = JSON.stringify(_parms);
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/forMesData`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : ${_parms}`);
+    console.log(`取得mes引數 : ${JSON.stringify(_parms)}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 
@@ -91,9 +91,10 @@ export class MSHI004Service {
 
   sentMesData(_parms) {
     const body = JSON.stringify(_parms);
-    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
+    // let endpointUrl = ``;
+    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatchByShopCode`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`mes參數 : ${body}`);
+    console.log(`送出mes參數 : ${body}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 
@@ -101,7 +102,16 @@ export class MSHI004Service {
     const body = JSON.stringify(_parms);
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/publishData`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : ${body}`);
+    console.log(`發佈者；發佈日期 : ${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  getEquipCode(_parms) {
+    const body = JSON.stringify(_parms);
+    let endpointUrl = ``;
+    // let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`equipCode : ${body}`);
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 }

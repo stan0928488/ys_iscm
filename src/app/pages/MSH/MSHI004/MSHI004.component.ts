@@ -362,15 +362,14 @@ export class MSHI004Component {
       {
         headerName: '依PPS配置',
         field: 'ppsControl',
-        width: 200,
+        width: 300,
         editable: true,
-        cellEditor: 'agLargeTextCellEditor',
+        // cellEditor: 'agLargeTextCellEditor',
+        cellEditor: 'agSelectCellEditor',
         headerClass: 'header-editable-color',
         cellClass: 'cell-editable-color',
         cellEditorParams: {
-          maxLength: 5,
-          cols: '5',
-          rows: '1',
+          values: ['Y', 'N'],
         },
         onCellValueChanged: (event) => {
           if (_.isEmpty(event.newValue)) {
@@ -378,6 +377,33 @@ export class MSHI004Component {
           }
 
           this.dataTransferService.setData(event.node);
+        },
+        cellRenderer: function (params) {
+          const containerElement = _this.renderer.createElement('div');
+          const labelElement = _this.renderer.createElement('label');
+          labelElement.textContent = params.data.ppsControl;
+          _this.renderer.appendChild(containerElement, labelElement);
+
+          if (
+            params.data.ppsControl == 'Y' &&
+            params.data.equipCode != params.data.publishMachine &&
+            params.data.fcpEditionLock == '1'
+          ) {
+            const labelElement2 = _this.renderer.createElement('label');
+            labelElement2.textContent = '　　';
+            _this.renderer.appendChild(containerElement, labelElement2);
+
+            const buttonElement = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('下載機台什麼的');
+            _this.renderer.appendChild(buttonElement, buttonText);
+            _this.renderer.addClass(buttonElement, 'buttonCheck');
+            _this.renderer.listen(buttonElement, 'click', () => {
+              _this.downloadMachine(params.data);
+            });
+            _this.renderer.appendChild(containerElement, buttonElement);
+          }
+
+          return containerElement;
         },
       },
       {
@@ -420,51 +446,21 @@ export class MSHI004Component {
 
               const buttonElement = _this.renderer.createElement('button');
               const buttonText = _this.renderer.createText('PUBLISH');
-
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
-
               _this.renderer.listen(buttonElement, 'click', () => {
                 _this.buttonClicked(params.data);
+                _this.aaa(params.data);
               });
-
               return buttonElement;
             } else {
-              //   return `<button disabled style='color: #fff;
-              // border-style: none;
-              // line-height: 0 !important;
-              // width: 60%;
-              // background-color: #1677ff;
-              // height: 100%;
-              // border-radius: 3px;
-              // display: inline-flex;
-              // justify-content: center;
-              // align-items: center;
-              // flex-wrap: nowrap; '>數量不一致</button>`;
-
               const buttonElement = _this.renderer.createElement('button');
               const buttonText = _this.renderer.createText('數量不一致');
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
-
-              // _this.renderer.listen(buttonElement, 'click', () => {
-              //   _this.buttonClicked(params.data);
-              // });
               return buttonElement;
             }
           } else {
-            //   return `<button disabled style='color: #fff;
-            // border-style: none;
-            //   line-height: 0 !important;
-            //   width: 60%;
-            //   background-color: #1677ff;
-            //   height: 100%;
-            //   border-radius: 3px;
-            //   display: inline-flex;
-            //   justify-content: center;
-            //   align-items: center;
-            // flex-wrap: nowrap; '>非鎖定版</button>`;
-
             const buttonElement = _this.renderer.createElement('button');
             const buttonText = _this.renderer.createText('非鎖定版');
             _this.renderer.appendChild(buttonElement, buttonText);
@@ -505,6 +501,54 @@ export class MSHI004Component {
         filter: true,
       },
     ];
+  }
+  downloadMachine(data: any) {
+    console.log('未來呼叫彥敏API');
+    // new Promise<boolean>((resolve, reject) => {
+    //   this.mshi004Service.getEquipCode(preMes).subscribe(
+    //     (res) => {
+    //       const { code, data } = res;
+    //       const forMesData = JSON.parse(data);
+    //       console.log(forMesData);
+    //       console.log('forMes');
+    //       if (code === 200) {
+    //         if (_.size(forMesData) > 0) {
+    //           this.mesData = forMesData;
+    //           this.mshi004Service.sentMesData(this.mesData).subscribe(
+    //             (response) => {
+    //               console.log('呼叫成功');
+    //             },
+    //             (error) => {
+    //               console.log('呼叫失敗');
+    //             }
+    //           );
+    //         } else {
+    //           this.message.success('查無資料');
+    //           this.mesData = [];
+    //         }
+    //         resolve(true);
+    //       } else {
+    //         this.message.error('後台錯誤，獲取不到資料');
+    //         reject(true);
+    //       }
+    //     },
+    //     (error) => {
+    //       this.errorMSG(
+    //         '獲取資料失敗',
+    //         `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+    //       );
+    //       reject(true);
+    //     }
+    //   );
+    // })
+    // .then((success) => {
+    //   this.mesData = [];
+    //   this.isSpinning = false;
+    // })
+    // .catch((error) => {
+    //   this.mesData = [];
+    //   this.isSpinning = false;
+    // });
   }
 
   nzOnOk: () => {};
@@ -573,14 +617,45 @@ export class MSHI004Component {
         this.mesData = [];
         this.isSpinning = false;
       });
+  }
 
+  aaa(params) {
+    console.log('新增發佈者');
     let c = params.id;
     let d = this.USERNAME;
     let user = {
       id: c,
       userCreate: d,
     };
-    this.mshi004Service.publishData(user);
+    console.log(user);
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.publishData(user).subscribe(
+        (res) => {
+          const { code, data } = res;
+          if (code === 200) {
+            resolve(true);
+          } else {
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.message.success('成功');
+        this.serachEPST(true);
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.message.error('錯誤，獲取不到資料');
+        this.isSpinning = false;
+      });
   }
 
   confirm(isUserClick: boolean): void {
@@ -677,7 +752,6 @@ export class MSHI004Component {
 
     if (_.isNil(payloads)) return;
     new Promise<boolean>((resolve, reject) => {
-      console.log(payloads + 'hiiii');
       this.mshi004Service.searchLdmData(payloads).subscribe(
         (res) => {
           const { code, data } = res;
