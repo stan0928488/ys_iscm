@@ -295,7 +295,7 @@ export class MSHI003Component implements AfterViewInit{
           this.message.error('後台錯誤，獲取不到流程清單');
         }
       } catch (error) {
-        this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+        this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
       }
       finally{
         this.lineupProcessLoading = false;
@@ -318,7 +318,7 @@ export class MSHI003Component implements AfterViewInit{
         }
 
       }, error => {
-        this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+        this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
         reject(true);
       });
 
@@ -343,7 +343,7 @@ export class MSHI003Component implements AfterViewInit{
       }
     }
     catch (error) {
-      this.errorMSG('檢查MO資訊是否存在失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+      this.errorMSG('檢查MO資訊是否存在失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
     }
     finally{
       this.isSpinning = false;
@@ -371,7 +371,7 @@ export class MSHI003Component implements AfterViewInit{
       }
     }
     catch (error) {
-      this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+      this.errorMSG('獲取站別清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
     }
     finally{
       this.shopCodeByIdNoLoading = false;
@@ -398,7 +398,7 @@ export class MSHI003Component implements AfterViewInit{
         }
 
       }, error => {
-        this.errorMSG('獲取機台清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+        this.errorMSG('獲取機台清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
         reject(true);
       });
 
@@ -495,7 +495,7 @@ export class MSHI003Component implements AfterViewInit{
         }
 
       }, error => {
-        this.errorMSG('獲取EPST資料失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+        this.errorMSG('獲取EPST資料失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
         reject(true);
       });
 
@@ -593,7 +593,7 @@ export class MSHI003Component implements AfterViewInit{
             }
             resolve(true);
           }, error => {
-            this.errorMSG('EPST變更作業失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error)}`);
+            this.errorMSG('EPST變更作業失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
             reject(true);
           });
 
@@ -735,7 +735,7 @@ export class MSHI003Component implements AfterViewInit{
           resolve(true);
         },
         error : (err) => {
-          this.errorMSG('Excel匯入失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err)}`);
+          this.errorMSG('Excel匯入失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(err.message)}`);
           reject(true);
         },
         complete : () => {
@@ -1107,6 +1107,7 @@ export class MSHI003Component implements AfterViewInit{
     this.params = params;
     // this.setShopCodeCellEditorSelectValues();
     //gridApi.sizeColumnsToFit();
+    this.gridApi.getColumnDef
   }
 
   collectingDataForAdditionOrUpdate(){
@@ -1221,7 +1222,7 @@ export class MSHI003Component implements AfterViewInit{
         return null;
       }
     } catch (error) {
-      this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`);
+      this.errorMSG('獲取流程清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
       return null;
     }
     finally{
