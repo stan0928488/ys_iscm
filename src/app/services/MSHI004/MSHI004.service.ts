@@ -114,4 +114,16 @@ export class MSHI004Service {
 
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
+
+  /***发送批量 数据至mes */
+  sendSortedDataToMESBatch(_param) {
+    let queryUrl = this.APIURL + '/msh/MSHP001/sendMesBatchByShopCode';
+    return this.http.post(queryUrl, _param, this.httpOptions);
+  }
+
+  //鎖定版本
+  downloadAutoData(_param) {
+    let queryUrl = this.APIURL + '/msh/MSHP001/downloadAutoData/' + _param;
+    return this.http.get(queryUrl, this.httpOptions);
+  }
 }
