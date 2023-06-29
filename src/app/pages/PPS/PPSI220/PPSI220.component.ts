@@ -1315,8 +1315,11 @@ export class PPSI220Component implements AfterViewInit {
         REMARK_PLAN_IN_STORAGE: _.get(item, "REMARK_PLAN_IN_STORAGE"),
         ORIGINAL_OP_CODE: _.get(item, "ORIGINAL_OP_CODE"),
         ORIGINAL_PST_MACHINE: _.get(item, "ORIGINAL_PST_MACHINE"),
+        ORIGINAL_CAR_ID: _.get(item, "ORIGINAL_CAR_ID"),
         UPDATE_DATE: _.get(item, "UPDATE_DATE"),
-        MS_SORT: _.get(item, "MS_SORT")
+        MS_SORT: _.get(item, "MS_SORT"),
+        PLAN_START_TIME: _.get(item, "PLAN_START_TIME"),
+        PLAN_END_TIME: _.get(item, "PLAN_END_TIME")
     
       });
       excelData.push(obj);
