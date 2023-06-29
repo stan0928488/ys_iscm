@@ -82,6 +82,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
+              pinned: 'left',
               width:150,
               headerName: '區別',
               field: "custAbbreviations"
@@ -91,6 +92,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
+              pinned: 'left',
               headerName: 'A.負責業務',
               field: "sales",
               width:120,
@@ -100,6 +102,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
+              pinned: 'left',
               headerName: 'B.訂單餘量',
               width:120,
             }],
@@ -108,6 +111,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
+              pinned: 'left',
               headerName: 'C.出貨目標',
               field: "shippingTarget",
               width:120,
@@ -117,6 +121,7 @@ export class PPSR308Component implements OnInit {
         {
           children: [{
             children: [{
+              pinned: 'left',
               headerTooltip: "已出貨(H)/出貨目標(C.)",
               headerName: 'D.出貨進度',
               field: "shippingProgress",
