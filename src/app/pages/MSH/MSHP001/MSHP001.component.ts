@@ -962,7 +962,7 @@ this.handleSelectCarModal() ;
       let result:any = res ;
       let message = result.message ;
     this.modal.confirm({
-      nzTitle: message +'! 您確定鎖定該版本嗎?',
+      nzTitle: message +'! 您確定鎖定該版本嗎? 鎖定版本會下載自動發佈的機台，時間會有點久，請耐心等待！',
       nzContent: '<b style="color: red;"></b>',
       nzOkText: '確定',
       nzOkType: 'primary',
@@ -978,7 +978,10 @@ this.handleSelectCarModal() ;
 
 
   lockFcpVer(fcpVer:any) {
+    this.originalData = [] ;
+    this.isLoading = true ;
     this.mshService.lockFcpVer(fcpVer).subscribe(res=>{
+      this.isLoading = false ;
       let result:any = res ;
       let message = result.message ;
       this.nzMessageService.info(message);
@@ -1423,17 +1426,14 @@ this.handleSelectCarModal() ;
    }
   //排序後的數據送入MES
    sendSortedDataToMES(){
-    
     //this.nzMessageService.info("開發中");
-    if(this.category === 'M') {
+    /*if(this.category === 'M') {
       this.nzMessageService.info("當前機台已送出");
       return ;
-    }
+    }*/
+    let comitData = [{fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,mesPublishGroup:""}]
     this.isConfirmLoading = true ;
-    this.searchV0.shopCode = this.selectShopCode ;
-    this.searchV0.equipCode = this.selectEquipCode ;
-    this.searchV0.fcpVer = this.selectFcpVer
-    this.mshService.sendSortedDataToMES(this.searchV0).subscribe(res=>{
+    this.mshService.sendSortedDataToMESBatch(comitData).subscribe(res=>{
       this.isConfirmLoading = false ;
       this.shopMachineList = []
       let result:any = res ;
@@ -1944,5 +1944,30 @@ this.handleSelectCarModal() ;
     
 
     /**同作業換車結束 */
+    handleTest(index:any){
+      if(index === '1') {
+        let comitData = [
+          {fcpVer:"R20230626110457",shopCode:"420",mesPublishGroup:"CTB"},
+          {fcpVer:"R20230626110457",shopCode:"430",mesPublishGroup:"CTB"}]
+          this.mshService.sendSortedDataToMESBatch(comitData).subscribe(res=>{
+          let result:any = res ;
+          console.log("jieguo ：" + res)
+        })
+      } else if(index === '2'){
+        
+        this.mshService.downloadAutoData(this.selectFcpVer).subscribe(res=>{
+          this.isLoading = false ;
+          let result:any = res ;
+          let message = result.message ;
+          this.nzMessageService.info(message);
+          this.originalData = [] ;
+          this.rowData = [] ;
+          this.getFcpVerList() ;
+         
+        });
+
+      }
+      
+    }
 
 }
