@@ -395,7 +395,7 @@ export class MSHI004Component {
             _this.renderer.appendChild(containerElement, labelElement2);
 
             const buttonElement = _this.renderer.createElement('button');
-            const buttonText = _this.renderer.createText('下載機台什麼的');
+            const buttonText = _this.renderer.createText('下載');
             _this.renderer.appendChild(buttonElement, buttonText);
             _this.renderer.addClass(buttonElement, 'buttonCheck');
             _this.renderer.listen(buttonElement, 'click', () => {
