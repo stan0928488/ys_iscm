@@ -369,18 +369,19 @@ export class MSHI004Component {
         headerClass: 'header-editable-color',
         cellClass: 'cell-editable-color',
         cellEditorParams: {
-          values: ['Y', 'N'],
+          values: ['請選Y或N', 'Y', 'N'],
         },
+
         onCellValueChanged: (event) => {
           if (_.isEmpty(event.newValue)) {
             event.data.comment = null;
           }
-
           this.dataTransferService.setData(event.node);
         },
         cellRenderer: function (params) {
           const containerElement = _this.renderer.createElement('div');
           const labelElement = _this.renderer.createElement('label');
+          _this.renderer.setAttribute(labelElement, 'value', '');
           labelElement.textContent = params.data.ppsControl;
           _this.renderer.appendChild(containerElement, labelElement);
 
@@ -453,11 +454,27 @@ export class MSHI004Component {
                 _this.aaa(params.data);
               });
               return buttonElement;
+            } else if (
+              params.data.mesPublishTime == null ||
+              params.data.mesPublishTime < 1 ||
+              params.data.ppsControl == null
+            ) {
+              const buttonElement = _this.renderer.createElement('button');
+              const buttonText = _this.renderer.createText('群組未設置');
+              _this.renderer.appendChild(buttonElement, buttonText);
+              _this.renderer.addClass(buttonElement, 'button');
+              return buttonElement;
             } else {
               const buttonElement = _this.renderer.createElement('button');
               const buttonText = _this.renderer.createText('數量不一致');
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
+
+              _this.renderer.listen(buttonElement, 'click', () => {
+                _this.buttonClicked(params.data);
+                _this.aaa(params.data);
+              });
+
               return buttonElement;
             }
           } else {
