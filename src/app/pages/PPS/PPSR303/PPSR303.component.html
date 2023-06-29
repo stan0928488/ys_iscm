@@ -21,21 +21,32 @@
     </div>
     <nz-spin [nzTip]="spinType" [nzSize] ="'large'" [nzSpinning]="isLoading">
 
-        <ag-grid-angular
+      <ag-grid-angular
         style="width: 100% ; height:700px; overflow: scroll"
         class="ag-theme-alpine"
-        [columnDefs]="columnDefsTab1"
-        [defaultColDef]="defaultColDefTab1"
-        [rowData]="displayRowData"
         [suppressRowClickSelection]="true"
         [groupSelectsChildren]="true"
-        [rowSelection]="'multiple'"
-        [pagination]="true"
         [tooltipShowDelay]="tooltipShowDelay"
         [autoGroupColumnDef]="autoGroupColumnDef"
         [animateRows]="true"
+
+        [rowData]="displayRowData"
+        [rowModelType]="rowModelType"
+        [cacheBlockSize]="cacheBlockSize"
+        [columnDefs]="columnDefsTab1"
+        [defaultColDef]="defaultColDefTab1"
+        [rowBuffer]="rowBuffer"
+        [rowSelection]="rowSelection"
+        [infiniteInitialRowCount]="infiniteInitialRowCount"
+        [maxBlocksInCache]="maxBlocksInCache"
+        [maxConcurrentDatasourceRequests]="maxConcurrentDatasourceRequests"
+        [cacheOverflowSize]="cacheOverflowSize"
+        [pagination]="false"
+        
+        (gridReady)="onGridReady($event)"
         (cellClicked)="onCellClicked($event)"
-      ></ag-grid-angular>
+        >
+    </ag-grid-angular>
       
       <nz-modal  [(nzVisible)]="isShowTable2"  [nzWidth] = 1000 (nzOnCancel)="handleCancel()" [nzFooter] = null >
         <ng-container *nzModalContent >  
