@@ -24,6 +24,8 @@
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()" [nzLoading] = "isLoading">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
           <button style="margin-left: 20px;" nz-button nzType="primary"  *ngIf="selectEquipCode !== 'RF'"  (click)="handleExcelModelModal()">Excel模式</button>
+          <!-- <button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('1')">test</button>
+          <button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('2')">自動下載</button> -->
 
       </p>
         <!--站別機台選擇-->
@@ -59,6 +61,8 @@
           <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
           <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
           <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
+          <button  nz-button style="margin-left:15px;background-color: #e24d42; border-color: #e24d42;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
+
 
         </p>
       </nz-collapse-panel>
@@ -163,7 +167,6 @@
       </div>
     </div>
     <div *nzModalFooter>
-      <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
       <button  nz-button style="margin-left:15px;"  nzType="primary" (click)="exportRowSortedData()">匯出</button>
       <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('3')">確認</button>
       <button nz-button style="margin-left:15px;"  nzType="default" (click)="handleChangeRowDataModal()">关闭</button>
