@@ -21,6 +21,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
 import { ButtonComponent } from 'src/app/button/button.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { __param } from 'tslib';
 
 class MSHI004Payload {
   fcpEdition: string;
@@ -394,14 +395,14 @@ export class MSHI004Component {
             labelElement2.textContent = '　　';
             _this.renderer.appendChild(containerElement, labelElement2);
 
-            const buttonElement = _this.renderer.createElement('button');
-            const buttonText = _this.renderer.createText('下載機台什麼的');
-            _this.renderer.appendChild(buttonElement, buttonText);
-            _this.renderer.addClass(buttonElement, 'buttonCheck');
-            _this.renderer.listen(buttonElement, 'click', () => {
+            const buttonElement1 = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('下載');
+            _this.renderer.appendChild(buttonElement1, buttonText);
+            _this.renderer.addClass(buttonElement1, 'buttonCheck');
+            _this.renderer.listen(buttonElement1, 'click', () => {
               _this.downloadMachine(params.data);
             });
-            _this.renderer.appendChild(containerElement, buttonElement);
+            _this.renderer.appendChild(containerElement, buttonElement1);
           }
 
           return containerElement;
@@ -521,51 +522,50 @@ export class MSHI004Component {
   }
   downloadMachine(data: any) {
     console.log('未來呼叫彥敏API');
-    // new Promise<boolean>((resolve, reject) => {
-    //   this.mshi004Service.getEquipCode(preMes).subscribe(
-    //     (res) => {
-    //       const { code, data } = res;
-    //       const forMesData = JSON.parse(data);
-    //       console.log(forMesData);
-    //       console.log('forMes');
-    //       if (code === 200) {
-    //         if (_.size(forMesData) > 0) {
-    //           this.mesData = forMesData;
-    //           this.mshi004Service.sentMesData(this.mesData).subscribe(
-    //             (response) => {
-    //               console.log('呼叫成功');
-    //             },
-    //             (error) => {
-    //               console.log('呼叫失敗');
-    //             }
-    //           );
-    //         } else {
-    //           this.message.success('查無資料');
-    //           this.mesData = [];
-    //         }
-    //         resolve(true);
-    //       } else {
-    //         this.message.error('後台錯誤，獲取不到資料');
-    //         reject(true);
-    //       }
-    //     },
-    //     (error) => {
-    //       this.errorMSG(
-    //         '獲取資料失敗',
-    //         `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
-    //       );
-    //       reject(true);
-    //     }
-    //   );
-    // })
-    // .then((success) => {
-    //   this.mesData = [];
-    //   this.isSpinning = false;
-    // })
-    // .catch((error) => {
-    //   this.mesData = [];
-    //   this.isSpinning = false;
-    // });
+    console.log(data);
+    new Promise<boolean>((resolve, reject) => {
+      console.log(1);
+      let lock_data = JSON.parse(JSON.stringify(this.lock)).fcpEdition.split(
+        '('
+      )[0];
+      console.log(lock_data);
+      this.mshi004Service.getEquipCode(lock_data).subscribe(
+        (res) => {
+          console.log(this.lock.split('(')[0]);
+          const { code, data } = res;
+          if (code === 200) {
+            resolve(true);
+          } else {
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.mshi004Service.getEquipCode(this.lock.split('(')[0]).subscribe(
+          (res) => {
+            console.log(this.lock.split('(')[0]);
+            const { code, data } = res;
+          },
+          (error) => {
+            this.errorMSG(
+              '獲取資料失敗',
+              `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+            );
+          }
+        );
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.isSpinning = false;
+      });
   }
 
   nzOnOk: () => {};

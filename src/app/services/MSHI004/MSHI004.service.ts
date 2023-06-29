@@ -107,11 +107,11 @@ export class MSHI004Service {
   }
 
   getEquipCode(_parms) {
-    const body = JSON.stringify(_parms);
-    let endpointUrl = ``;
-    // let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
+    // let endpointUrl = ``;
+    console.log(`API Url :`);
+    let endpointUrl = `${this.APIURL}/MSHP001/downloadAutoData/${_parms}`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`equipCode : ${body}`);
+
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 }
