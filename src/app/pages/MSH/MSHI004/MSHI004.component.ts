@@ -471,10 +471,10 @@ export class MSHI004Component {
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
 
-              _this.renderer.listen(buttonElement, 'click', () => {
-                _this.buttonClicked(params.data);
-                _this.aaa(params.data);
-              });
+              //   _this.renderer.listen(buttonElement, 'click', () => {
+              //     _this.buttonClicked(params.data);
+              //     _this.aaa(params.data);
+              //   });
 
               return buttonElement;
             }
