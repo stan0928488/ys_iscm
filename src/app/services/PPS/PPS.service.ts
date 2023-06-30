@@ -846,9 +846,9 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  getR303AllFirstData(edition: string, pageIndex: number, pageSize: number) {
+  getR303AllFirstData(edition: string) {
     let queryUrl =
-      this.APINEWURL + `/ppsout004/getAllFirstData?edition=${edition}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+      this.APINEWURL + `/ppsout004/getAllFirstData?edition=${edition}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
