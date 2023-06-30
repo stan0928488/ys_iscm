@@ -89,14 +89,14 @@ export class MSHI004Service {
     );
   }
 
-  sentMesData(_parms) {
-    const body = JSON.stringify(_parms);
-    // let endpointUrl = ``;
-    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatchByShopCode`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`送出mes參數 : ${body}`);
-    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
-  }
+  // sentMesData(_parms) {
+  //   const body = JSON.stringify(_parms);
+  //   // let endpointUrl = ``;
+  //   let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatchByShopCode`;
+  //   console.log(`API Url : ${endpointUrl}`);
+  //   console.log(`送出mes參數 : ${body}`);
+  //   return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  // }
 
   publishData(_parms) {
     const body = JSON.stringify(_parms);
@@ -106,23 +106,25 @@ export class MSHI004Service {
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-  getEquipCode(_parms) {
-    // let endpointUrl = ``;
-    console.log(`API Url :`);
-    let endpointUrl = `${this.APIURL}/MSHP001/downloadAutoData/${_parms}`;
-    console.log(`API Url : ${endpointUrl}`);
+  // getEquipCode(_parms) {
+  //   // let endpointUrl = ``;
+  //   console.log(`API Url :`);
+  //   let endpointUrl = `${this.APIURL}/MSHP001/downloadAutoData/${_parms}`;
+  //   console.log(`API Url : ${endpointUrl}`);
 
-    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
-  }
+  //   return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  // }
 
   /***发送批量 数据至mes */
   sendSortedDataToMESBatch(_param) {
+    // let queryUrl = '';
     let queryUrl = this.APIURL + '/msh/MSHP001/sendMesBatchByShopCode';
     return this.http.post(queryUrl, _param, this.httpOptions);
   }
 
   //鎖定版本
   downloadAutoData(_param) {
+    // let queryUrl = '';
     let queryUrl = this.APIURL + '/msh/MSHP001/downloadAutoData/' + _param;
     return this.http.get(queryUrl, this.httpOptions);
   }
