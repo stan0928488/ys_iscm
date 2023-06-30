@@ -151,9 +151,9 @@ export class PPSI131Component implements AfterViewInit {
     this.id = this.cookieService.getCookie('id');
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     const p = this.getPPSI131List();
-    this.setupTableAndEditCache(p);
+    await this.setupTableAndEditCache(p);
   }
 
   getPPSI131List() {
@@ -198,18 +198,18 @@ export class PPSI131Component implements AfterViewInit {
         return;
       }
     } else {
-      this.errorMSG(response.message, ``);
+       this.errorMSG(response.message, ``);
     }
   }
 
-  setupTableAndEditCache(p: Promise<any>) {
+  async setupTableAndEditCache(p: Promise<any>) {
     const myThis = this;
     p.then((response) => {
       myThis.handleData(response);
       myThis.isSpinning = false;
     }).catch((error) => {
       myThis.isSpinning = false;
-      myThis.errorMSG(error.message, ``);
+      // myThis.errorMSG(error.message, ``);
     });
   }
 
