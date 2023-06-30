@@ -4,6 +4,17 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
+
+// // ag-grid
+// import { 
+//   ColDef, 
+//   RowModelType,
+//   IDatasource,
+//   IGetRowsParams, 
+//   GridOptions, 
+//   GridReadyEvent } from 'ag-grid-community';
+//   import { AgGridModule } from 'ag-grid-angular';
+
 import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
@@ -14,6 +25,7 @@ interface ItemData1 {
   GRADE_NO: string;
   GRADE_GROUP: string;
   SPECIAL_EQUIP_CODE: string;
+  ROLL_WEIGHT: number;
 }
 
 @Component({
@@ -34,10 +46,12 @@ export class PPSI101Component implements AfterViewInit {
   GRADE_NO;
   SPECIAL_EQUIP_CODE;
   GRADE_GROUP;
+  ROLL_WEIGHT; //鋼胚重(KG)
   isVisibleGrade = false;
   searchByGradeNoValue = '';
   searchBySpecialEquipCodeValue = '';
   searchByGradeGroupValue = '';
+  searchByRollWeightValue = '';
 
   // tab 1
   PPSINP01List_tmp;
@@ -49,8 +63,10 @@ export class PPSI101Component implements AfterViewInit {
   inputFileUseInUpload;
   arrayBuffer:any;
   importdata = [];
-  titleArray = ["鋼種","特殊機台使用","鋼種類別"];
+  titleArray = ["鋼種","特殊機台使用","鋼種類別","鋼胚重(KG)"];
   importdata_repeat = [];
+  pageIndex = 1;
+  pageSize = 20;
 
   constructor(
     private PPSService: PPSService,
@@ -65,19 +81,65 @@ export class PPSI101Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
   }
 
+  // public rowBuffer = 0;
+  // public rowSelection: 'single' | 'multiple' = 'multiple';
+  // public rowModelType: RowModelType = 'infinite';
+  // public cacheBlockSize = 100; //資料筆數
+  // public cacheOverflowSize = 2;
+  // public maxConcurrentDatasourceRequests = 1;
+  // public infiniteInitialRowCount = 1000;
+  // public maxBlocksInCache = 20;
+  // public rowData !: any[];
+  // public GridOptions : GridOptions;
+
+  // onGridReady(params: GridReadyEvent<any[]>) {
+  //   const dataSource: IDatasource = {
+  //     rowCount: undefined,
+
+  //     getRows: (params : IGetRowsParams) => {
+          
+  //       this.PPSINP01List_tmp(params.startRow, params.endRow);
+  //       console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+        
+  //       const data = [];
+
+  //       for (let i = 0; i < this.PPSINP01List_tmp.length ; i++) {
+  //           data.push({
+  //             id: `${i}`,
+  //             tab1ID: this.PPSINP01List_tmp[i].ID,
+  //             GRADE_NO: this.PPSINP01List_tmp[i].GRADE_NO,
+  //             SPECIAL_EQUIP_CODE: this.PPSINP01List_tmp[i].SPECIAL_EQUIP_CODE,
+  //             ROLL_WEIGHT: this.PPSINP01List_tmp[i].ROLL_WEIGHT,
+  //             GRADE_GROUP: this.PPSINP01List_tmp[i].GRADE_GROUP
+  //       });
+  //       const rowsThisPage = data.concat(params.startRow, params.endRow);
+
+  //       let lastRow = -1;
+  //       if(data.length <= params.endRow) {
+  //         lastRow = data.length;
+  //       }
+  //         params.successCallback(rowsThisPage, lastRow);
+  //       }
+  //     },
+  //     };
+  //     params.api!.setDatasource(dataSource);
+  //   }
+
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
-    this.getPPSINP01List();
+    this.getPPSINP01List(this.pageIndex, this.pageSize);
+
   }
   
-  
   //tab1_select 
-  getPPSINP01List() {
+  getPPSINP01List(pageIndex : number, pageSize : number) {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP01List().subscribe(res => {
+    this.PPSService.getPPSINP01List(pageIndex, pageSize).subscribe(res => {
       console.log("getFCPTB26List success");
       this.PPSINP01List_tmp = res;
+      console.log("this.PPSINP01List_tmp==>", JSON.stringify(this.PPSINP01List_tmp));
+      
 
       const data = [];
       for (let i = 0; i < this.PPSINP01List_tmp.length ; i++) {
@@ -86,6 +148,7 @@ export class PPSI101Component implements AfterViewInit {
           tab1ID: this.PPSINP01List_tmp[i].ID,
           GRADE_NO: this.PPSINP01List_tmp[i].GRADE_NO,
           SPECIAL_EQUIP_CODE: this.PPSINP01List_tmp[i].SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT: this.PPSINP01List_tmp[i].ROLL_WEIGHT,
           GRADE_GROUP: this.PPSINP01List_tmp[i].GRADE_GROUP
         });
       }
@@ -197,7 +260,7 @@ export class PPSI101Component implements AfterViewInit {
   changeTab(tab): void {
     console.log(tab)
     if(tab === 1) {
-      this.getPPSINP01List();
+      this.getPPSINP01List(10, 10);
     }
   }
   
@@ -214,6 +277,7 @@ export class PPSI101Component implements AfterViewInit {
           GRADE_NO : this.GRADE_NO,
           GRADE_GROUP : this.GRADE_GROUP,
           SPECIAL_EQUIP_CODE : this.SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT : this.ROLL_WEIGHT,
           USERNAME : this.USERNAME,
           DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
         })
@@ -225,7 +289,8 @@ export class PPSI101Component implements AfterViewInit {
             this.GRADE_NO = undefined;
             this.GRADE_GROUP = undefined;
             this.SPECIAL_EQUIP_CODE = undefined;
-            this.getPPSINP01List();
+            this.ROLL_WEIGHT = undefined;
+            this.getPPSINP01List(1, 0);
             this.sucessMSG("新增成功", ``);
           } else {
             this.errorMSG("新增失敗", res[0].MSG);
@@ -252,6 +317,7 @@ export class PPSI101Component implements AfterViewInit {
           GRADE_NO : this.editCache1[_id].data.GRADE_NO,
           GRADE_GROUP : this.editCache1[_id].data.GRADE_GROUP,
           SPECIAL_EQUIP_CODE : this.editCache1[_id].data.SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT : this.editCache1[_id].data.ROLL_WEIGHT,
           USERNAME : this.USERNAME,
           DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
         })
@@ -260,7 +326,7 @@ export class PPSI101Component implements AfterViewInit {
             this.GRADE_NO = undefined;
             this.GRADE_GROUP = undefined;
             this.SPECIAL_EQUIP_CODE = undefined;
-
+            this.ROLL_WEIGHT = undefined;
             this.sucessMSG("修改成功", ``);
 
             const index = this.PPSINP01List.findIndex(item => item.id === _id);
@@ -290,9 +356,10 @@ export class PPSI101Component implements AfterViewInit {
             this.GRADE_NO = undefined;
             this.GRADE_GROUP = undefined;
             this.SPECIAL_EQUIP_CODE = undefined;
-  
+            this.ROLL_WEIGHT = undefined;
+
             this.sucessMSG("刪除成功", ``);
-            this.getPPSINP01List();
+            this.getPPSINP01List(1, 0);
           }
         },err => {
           reject('upload fail');
@@ -370,9 +437,19 @@ export class PPSI101Component implements AfterViewInit {
    searchByGradeGroup() :void {
     this.ppsInp01ListFilter("GRADE_GROUP", this.searchByGradeGroupValue);
   }
+
   resetByGradeGroup() :void {
     this.searchByGradeGroupValue = '';
     this.ppsInp01ListFilter("GRADE_GROUP", this.searchByGradeGroupValue);
+  }
+
+  // 資料過濾---鋼種分類 --> 鋼胚重(KG)
+  searchByRollWeight() :void {
+    this.ppsInp01ListFilter("ROLL_WEIGHT", this.searchByRollWeightValue);
+  }
+  resetByRollWeight() :void {
+    this.searchByRollWeightValue = '';
+    this.ppsInp01ListFilter("ROLL_WEIGHT", this.searchByRollWeightValue);
   }
   
 
@@ -457,6 +534,7 @@ export class PPSI101Component implements AfterViewInit {
             GRADE_NO: _data[i]['鋼種'],
             SPECIAL_EQUIP_CODE: _data[i]['特殊機台使用'] ,
             GRADE_GROUP: _data[i]['鋼種類別'],
+            ROLL_WEIGHT: _data[i]['鋼胚重(KG)'],
             DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
             USERNAME : this.USERNAME,
             PLANT_CODE : this.PLANT_CODE
@@ -485,7 +563,7 @@ export class PPSI101Component implements AfterViewInit {
             
             this.sucessMSG("EXCCEL上傳成功", "");
             this.clearFile();
-            this.getPPSINP01List()
+            this.getPPSINP01List(10, 10);
             
           } else {
             this.errorMSG("匯入錯誤", res[0].MSG);
@@ -500,7 +578,7 @@ export class PPSI101Component implements AfterViewInit {
           this.LoadingPage = false;
         })
       });
-      this.getPPSINP01List();
+      this.getPPSINP01List(10, 10);
 
     }
 
@@ -515,7 +593,8 @@ export class PPSI101Component implements AfterViewInit {
         var ppsInP01 = {
           GRADE_NO: this.displayPPSINP01List[i].GRADE_NO,         
           SPECIAL_EQUIP_CODE: this.displayPPSINP01List[i].SPECIAL_EQUIP_CODE,
-          GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP
+          GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP,
+          ROLL_WEIGHT: this.displayPPSINP01List[i].ROLL_WEIGHT
         }
         arr.push(ppsInP01);
       }

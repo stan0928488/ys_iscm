@@ -12,6 +12,7 @@ registerLocaleData(zh);
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, 
+          PreConstruct,
           ColDef, 
           RowModelType,
           IDatasource,
@@ -20,7 +21,7 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { HttpClient } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
-import { number } from 'echarts';
+import { ModuleRegistry } from 'ag-grid-community';
 
 interface data {
 
@@ -30,7 +31,7 @@ interface data {
   selector: 'app-PPSR303',
   templateUrl: './PPSR303.component.html',
   styleUrls: ['./PPSR303.component.scss'],
-  providers:[NzMessageService,NzModalService,DatePipe, AgGridModule]
+  providers:[NzMessageService,NzModalService,DatePipe, AgGridModule, ModuleRegistry]
 })
 export class PPSR303Component implements OnInit {
 // 测试提交
@@ -44,12 +45,11 @@ export class PPSR303Component implements OnInit {
     private message:NzMessageService ,
     private Modal: NzModalService,
     private modalService: NzModalService,
-    private http: HttpClient
   ) { }
 
   ngOnInit() {
-    // this.isLoading = true;
-    // this.getAllEdition()
+    this.isLoading = true;
+    // this.getAllEdition(1, 1);
   }
   
   checked = false;
@@ -169,8 +169,6 @@ export class PPSR303Component implements OnInit {
     sortable: true,
     filter: true,
     resizable: true,
-    flex: 1,
-    minWidth: 100
   };
 
   public autoGroupColumnDef: ColDef = {
@@ -178,7 +176,7 @@ export class PPSR303Component implements OnInit {
   };
 
   public rowBuffer = 0;
-  public rowSelection: 'single' | 'multiple' = 'multiple';
+  public rowSelection: 'multiple';
   public rowModelType: RowModelType = 'infinite';
   public cacheBlockSize = 100; //資料筆數
   public cacheOverflowSize = 2;
@@ -328,25 +326,24 @@ export class PPSR303Component implements OnInit {
 
   async getR303Data(edition : string, pageIndex : number, pageSize : number){
     let myObj = this ;
-    myObj.getPPSService.getR303AllFirstData(edition, pageIndex, pageSize).subscribe(res => {
+     myObj.getPPSService.getR303AllFirstData(edition, pageIndex, pageSize).subscribe(res => {
       let result: any = res;
 
       this.rowDataTab1 = result.data;
 
-      if (this.rowDataTab1 != null){
+      if (this.rowDataTab1 != null)
 
         for (var i = 0; i < this.rowDataTab1.length; i++) {
           this.displayRowData.push(this.rowDataTab1[i]);
       }
-        // this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
-    }
+      // this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
       this.getR303ErrorData(this.edition);
     });
   }
 
   async getR303ErrorData(edition : string){
     let myObj = this ;
-    myObj.getPPSService.getR303AllFirstErrorData(edition).subscribe(res => {
+    await myObj.getPPSService.getR303AllFirstErrorData(edition).subscribe(res => {
       let result:any = res ;
       
       this.rowDataTab4 = result.data;
@@ -390,7 +387,7 @@ export class PPSR303Component implements OnInit {
     onCellClicked( e: CellClickedEvent): void {
       console.log('cellClicked', e.data.idNo);
 
-      this.isLoading = true ;
+      this.isLoading = false ;
 
       if(this.rowDataTab4 !=null &&this.rowDataTab4.some(element => element['idNo'] == e.data.idNo))
         this.isError = true;
@@ -428,10 +425,10 @@ export class PPSR303Component implements OnInit {
         this.displayRowData = [];
 
         if(this.rowDataTab1 !=null)
-          // this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
-          for (var i = 0; i < this.rowDataTab4.length; i++) {
-            this.displayRowData.push(this.rowDataTab4[i]);
-        }
+          this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
+        //   for (var i = 0; i < this.rowDataTab4.length; i++) {
+        //     this.displayRowData.push(this.rowDataTab4[i]);
+        // }
         if(this.rowDataTab4 !=null)
           this.displayRowData = this.displayRowData.concat(this.rowDataTab4);
       }
@@ -447,11 +444,11 @@ export class PPSR303Component implements OnInit {
       if(this.checkSecond){
         this.displayTable2Data = [];
 
-        for (var i = 0; i < this.displayTable2Data.length; i++) {
-          this.displayTable2Data.push(this.rowDataTab2[i]);
-          this.rowDataTab2.filter(element => element['violation'] != null)
-      }
-        // this.displayTable2Data = this.displayTable2Data.concat(this.rowDataTab2.filter(element => element['violation'] != null));
+      //   for (var i = 0; i < this.displayTable2Data.length; i++) {
+      //     this.displayTable2Data.push(this.rowDataTab2[i]);
+      //     this.rowDataTab2.filter(element => element['violation'] != null)
+      // }
+        this.displayTable2Data = this.displayTable2Data.concat(this.rowDataTab2.filter(element => element['violation'] != null));
         
       }else{
         this.displayTable2Data = [];

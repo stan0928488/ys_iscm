@@ -120,11 +120,14 @@ export class PPSService {
   }
 
   //Get getPPSINP01List 取得tab01 data
-  getPPSINP01List() {
+  getPPSINP01List(pageIndex : number, pageSize : number) {
+    const httpParams = new HttpParams()
+    .set('pageIndex', pageIndex)
+    .set('pageSize', pageSize);
     console.log('api service getPPSINP01List');
-    let queryUrl = this.APIURL + '/FCP/I101/getPPSINP01List';
+    let queryUrl = this.APIURL + `/FCP/I101/getPPSINP01List`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { params: httpParams });
   }
 
   //Get gettbppsm102List 取得tab14 data
@@ -1684,6 +1687,17 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  convertR308Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/converData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getR308Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308List`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   /////////////////////////////////////////////////////////////
   // PPSI131 直棒批次爐表
   /////////////////////////////////////////////////////////////
@@ -1767,19 +1781,6 @@ export class PPSService {
     return this.http.get<any>(endpointUrl);
   }
 
-
-  convertR308Data(_data) {
-    const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/converData`;
-    return this.http.post(queryUrl,body, this.httpOptions);
-  }
-
-  getR308Data(_data) {
-    const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308Data`;
-    return this.http.post(queryUrl,body, this.httpOptions);
-  }
-
   getR309Data(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APIURL + `/FCP/R308/getPPSR309List`;
@@ -1791,5 +1792,4 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
     return this.http.post(queryUrl,body, this.httpOptions);
   }
-  
 }
