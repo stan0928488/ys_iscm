@@ -88,7 +88,7 @@ export class MSHI004Service {
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(
       // `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
-      `${this.APIURL}?startPoint=ASAP&username=${USERNAME}`
+      `${endpointUrl}?startPoint=ASAP&username=${USERNAME}`
     );
   }
 
