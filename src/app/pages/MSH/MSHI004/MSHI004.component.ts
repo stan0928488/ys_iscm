@@ -50,6 +50,7 @@ class forMes {
 export class MSHI004Component {
   USERNAME; //
   lock;
+  mgroup;
 
   isSpinning = false;
 
@@ -370,12 +371,33 @@ export class MSHI004Component {
         headerClass: 'header-editable-color',
         cellClass: 'cell-editable-color',
         cellEditorParams: {
-          values: ['請選Y或N', 'Y', 'N'],
+          values: ['Y', 'N'],
+          // vcancelBeforeStart: function () {
+          //   // 在编辑开始之前调用，可以在此处进行一些检查或逻辑判断
+          //   // 如果返回 true，则取消编辑并回滚更改
+          //   // 如果返回 false，则继续进行编辑
+          //   return true; // 取消编辑
+          // },cancelAfterEnd: function (params) {
+          //   // 在编辑结束后调用，可以在此处进行一些检查或逻辑判断
+          //   // 如果返回 true，则取消编辑并回滚更改
+          //   // 如果返回 false，则保留编辑的更改
+          //   return true; // 取消编辑并回滚更改
+          // }
         },
 
         onCellValueChanged: (event) => {
           if (_.isEmpty(event.newValue)) {
             event.data.comment = null;
+          }
+          if (event.data.ppsControl == 'Y') {
+            if (
+              event.data.machineGroup.includes('RF') ||
+              event.data.machineGroup.includes('BA1')
+            ) {
+              this.message.info('機台包含RF或BA1');
+              event.api.undoCellEditing();
+              event.node.setDataValue('ppsControl', 'N');
+            }
           }
           this.dataTransferService.setData(event.node);
         },
@@ -550,21 +572,10 @@ export class MSHI004Component {
         let result: any = res;
         let message = result.message;
         this.message.info(message);
+        this.isSpinning = false;
       });
     })
       .then((success) => {
-        this.mshi004Service.getEquipCode(this.lock.split('(')[0]).subscribe(
-          (res) => {
-            console.log(this.lock.split('(')[0]);
-            const { code, data } = res;
-          },
-          (error) => {
-            this.errorMSG(
-              '獲取資料失敗',
-              `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
-            );
-          }
-        );
         this.isSpinning = false;
       })
       .catch((error) => {
@@ -588,6 +599,7 @@ export class MSHI004Component {
     console.log('呼叫PUBLISH API');
     let a = this.lock.fcpEdition;
     let b = params.mesPublishGroup;
+    this.mgroup = b;
     let preMes = {
       fcpEdition: a,
       mesPublishGroup: b,
@@ -618,14 +630,17 @@ export class MSHI004Component {
                   let result: any = res;
                   if (result.code === 200) {
                     this.message.success(result.message);
+                    this.isSpinning = false;
                   } else {
                     this.message.error(result.message);
+                    this.isSpinning = false;
                   }
                 });
             } else {
               this.message.success('查無資料');
               this.mesData = [];
             }
+            this.isSpinning = false;
             resolve(true);
           } else {
             this.message.error('後台錯誤，獲取不到資料');
@@ -703,7 +718,6 @@ export class MSHI004Component {
         this.isSpinning = true;
         console.log(new MSHI004Payload(this.shopCodeInputList).fcpEdition);
         console.log('版本');
-        console.log(this.MSHI004PendingDataList);
 
         // 校驗 如果機台有RF、BA1且依PPS配置=Y，就不可以儲存
 
@@ -711,6 +725,7 @@ export class MSHI004Component {
           this.MSHI004PendingDataList[i].fcpEdition = new MSHI004Payload(
             this.shopCodeInputList
           ).fcpEdition;
+          this.mgroup = this.MSHI004PendingDataList[i].mesPublishGroup;
         }
         // for (var i = 0; i < this.MSHI004PendingDataList.length; i++) {
         //   this.MSHI004PendingDataList[i].userCreate = this.USERNAME;
