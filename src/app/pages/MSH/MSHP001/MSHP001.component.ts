@@ -1454,10 +1454,12 @@ this.handleSelectCarModal() ;
       this.nzMessageService.error("必須是鎖定版本才能保存！") ;
       return ;
      }
-     if(this.category === 'M') {
-      this.nzMessageService.error("當前版已送入MES，不能保存！") ;
-      return ;
-     }
+     
+    //  if(this.category === 'M') {
+    //   this.nzMessageService.error("當前版已送入MES，不能保存！") ;
+    //   return ;
+    //  }
+    
      this.saveLoading = true ;
      this.isLoading = true ;
 
