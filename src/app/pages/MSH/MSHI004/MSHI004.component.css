@@ -22,12 +22,12 @@
 ::ng-deep .cell-editable-color{
     background-color: lightblue;
 }
+
 .button {
-  
     color: #fff;
     background-color: #1677ff;
     border-style: none;
-    width: 60%;
+    width: 20px;
     height: 100%;
     display: inline-flex;
     justify-content: center;
@@ -37,6 +37,25 @@
     width: 60%;
     background-color: #1677ff;
     height: 100%;
+    border-radius: 3px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap; 
+} 
+
+.buttonCheck {
+    color: #fff;
+    background-color: #1677ff;
+    border-style: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    line-height: 0 !important;
+    width: 40%;
+    background-color: #1677ff;
+    height: 35px;
     border-radius: 3px;
     display: inline-flex;
     justify-content: center;

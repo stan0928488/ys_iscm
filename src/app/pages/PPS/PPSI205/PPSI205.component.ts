@@ -149,10 +149,10 @@ export class PPSI205Component implements AfterViewInit {
     if(_type === '1') {
       if(this.tbppsm101List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm101List);
-        fileName = `尺寸優先順序`;
+        fileName = ` 盤元冷抽尺寸優先順序`;
         titleArray = this.titleArray1;
       } else {
-        this.errorMSG("匯出失敗", "尺寸優先順序表目前無資料");
+        this.errorMSG("匯出失敗", " 盤元冷抽尺寸優先順序表目前無資料");
         return;
       }
     } else if(_type === '2') {
