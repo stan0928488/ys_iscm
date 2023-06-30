@@ -81,7 +81,10 @@ export class MSHI004Service {
   }
 
   getReRunFcp(USERNAME: string) {
-    let endpointUrl = `${this.APIURL}/pps_FCP/rest/run/execute_FS`;
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps_FCP/rest/run/execute_FS`;
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(
       // `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
