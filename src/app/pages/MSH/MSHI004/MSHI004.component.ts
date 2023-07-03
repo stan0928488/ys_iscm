@@ -289,7 +289,12 @@ export class MSHI004Component {
         filter: true,
         cellRenderer: function (params) {
           if (params.data.fcpEditionLock == '1') {
-            if (params.data.equipCode == params.data.publishMachine) {
+            if (
+              params.data.equipCode == params.data.publishMachine &&
+              params.data.mesPublishTime != null &&
+              params.data.ppsControl != null &&
+              params.data.mesPublishTime > 0
+            ) {
               const buttonElement = _this.renderer.createElement('button');
               const buttonText = _this.renderer.createText('PUBLISH');
               _this.renderer.appendChild(buttonElement, buttonText);
