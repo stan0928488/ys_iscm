@@ -14,6 +14,7 @@ export class MSHI004 {
   fcpEditionLock: string;
   mesPublishDay: string;
   userCreate: string;
+  machineGroup: string;
 
   constructor(
     _id: string,
@@ -30,7 +31,8 @@ export class MSHI004 {
     _fcpEdition: string,
     _fcpEditionLock: string,
     _mesPublishDay: string,
-    _userCreate: string
+    _userCreate: string,
+    _machineGroup: string
   ) {
     this.id = _id;
     this.mesPublishGroup = _mesPublishGroup;
@@ -47,5 +49,6 @@ export class MSHI004 {
     this.fcpEditionLock = _fcpEditionLock;
     this.mesPublishDay = _mesPublishDay;
     this.userCreate = _userCreate;
+    this.machineGroup = _machineGroup;
   }
 }

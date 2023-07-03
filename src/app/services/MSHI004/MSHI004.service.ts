@@ -76,32 +76,59 @@ export class MSHI004Service {
     // const body = JSON.stringify(_parms);
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/forMesData`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : ${_parms}`);
+    console.log(`取得mes引數 : ${JSON.stringify(_parms)}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 
   getReRunFcp(USERNAME: string) {
-    let endpointUrl = `${this.APIURL}/pps_FCP/rest/run/execute_FS`;
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps_FCP/rest/run/execute_FS`;
     console.log(`API Url : ${endpointUrl}`);
     return this.http.get<any>(
       // `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
-      `${this.APIURL}?startPoint=ASAP&username=${USERNAME}`
+      `${endpointUrl}?startPoint=ASAP&username=${USERNAME}`
     );
   }
 
-  sentMesData(_parms) {
-    const body = JSON.stringify(_parms);
-    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatch`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`mes參數 : ${body}`);
-    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
-  }
+  // sentMesData(_parms) {
+  //   const body = JSON.stringify(_parms);
+  //   // let endpointUrl = ``;
+  //   let endpointUrl = `${this.APIURL}/msh/MSHP001/sendMesBatchByShopCode`;
+  //   console.log(`API Url : ${endpointUrl}`);
+  //   console.log(`送出mes參數 : ${body}`);
+  //   return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  // }
 
   publishData(_parms) {
     const body = JSON.stringify(_parms);
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/publishData`;
     console.log(`API Url : ${endpointUrl}`);
-    console.log(`Body參數 : ${body}`);
+    console.log(`發佈者；發佈日期 : ${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  // getEquipCode(_parms) {
+  //   // let endpointUrl = ``;
+  //   console.log(`API Url :`);
+  //   let endpointUrl = `${this.APIURL}/MSHP001/downloadAutoData/${_parms}`;
+  //   console.log(`API Url : ${endpointUrl}`);
+
+  //   return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  // }
+
+  /***发送批量 数据至mes */
+  sendSortedDataToMESBatch(_param) {
+    // let queryUrl = '';
+    let queryUrl = this.APIURL + '/msh/MSHP001/sendMesBatchByShopCode';
+    return this.http.post(queryUrl, _param, this.httpOptions);
+  }
+
+  //鎖定版本
+  downloadAutoData(_param) {
+    // let queryUrl = '';
+    let queryUrl = this.APIURL + '/msh/MSHP001/downloadAutoData/' + _param;
+    return this.http.get(queryUrl, this.httpOptions);
   }
 }

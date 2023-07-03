@@ -962,7 +962,7 @@ this.handleSelectCarModal() ;
       let result:any = res ;
       let message = result.message ;
     this.modal.confirm({
-      nzTitle: message +'! 您確定鎖定該版本嗎?',
+      nzTitle: message +'! 您確定鎖定該版本嗎? 鎖定版本會下載自動發佈的機台，時間會有點久，請耐心等待！',
       nzContent: '<b style="color: red;"></b>',
       nzOkText: '確定',
       nzOkType: 'primary',
@@ -978,7 +978,10 @@ this.handleSelectCarModal() ;
 
 
   lockFcpVer(fcpVer:any) {
+    this.originalData = [] ;
+    this.isLoading = true ;
     this.mshService.lockFcpVer(fcpVer).subscribe(res=>{
+      this.isLoading = false ;
       let result:any = res ;
       let message = result.message ;
       this.nzMessageService.info(message);
@@ -1276,14 +1279,16 @@ this.handleSelectCarModal() ;
         }  
         else if( key === 'DATE_DELIVERY_PP') {  // 若果是交期 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'PST') {  // 若果是投產日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
           preGroupObject[key] = r 
@@ -1293,14 +1298,16 @@ this.handleSelectCarModal() ;
         }  
         else if( key === 'DATE_PLAN_IN_STORAGE') {  // 若果是允收截止日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('MMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('MMDD') ;
           preGroupObject[key] = r 
         }
         else if( key === 'NEW_EPST') {  // 若果是允收截止日 從低到高
           let dateTimeStrings = preGroupObject[key].toString().split(",");
-          let dateObjects = dateTimeStrings.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
+          const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
+          let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
           let r = moment(dateObjects[0]).format('YYMMDD') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMMDD') ;
           preGroupObject[key] = r 
@@ -1419,7 +1426,27 @@ this.handleSelectCarModal() ;
    }
   //排序後的數據送入MES
    sendSortedDataToMES(){
-    this.nzMessageService.info("開發中");
+    //this.nzMessageService.info("開發中");
+    /*if(this.category === 'M') {
+      this.nzMessageService.info("當前機台已送出");
+      return ;
+    }*/
+    let comitData = [{fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,mesPublishGroup:""}]
+    this.isConfirmLoading = true ;
+    this.mshService.sendSortedDataToMESBatch(comitData).subscribe(res=>{
+      this.isConfirmLoading = false ;
+      this.shopMachineList = []
+      let result:any = res ;
+      if(result.code === 200) {
+        this.nzMessageService.success(result.message) ;
+        this.modalTableRowDataVisible = false ;
+        this.getTableData() ;
+        
+      } else {
+        this.nzMessageService.error(result.message) ;
+      }
+      
+    });
    }
 
    saveSortedModal(flag:string){
@@ -1427,6 +1454,12 @@ this.handleSelectCarModal() ;
       this.nzMessageService.error("必須是鎖定版本才能保存！") ;
       return ;
      }
+     
+    //  if(this.category === 'M') {
+    //   this.nzMessageService.error("當前版已送入MES，不能保存！") ;
+    //   return ;
+    //  }
+    
      this.saveLoading = true ;
      this.isLoading = true ;
 
@@ -1913,5 +1946,30 @@ this.handleSelectCarModal() ;
     
 
     /**同作業換車結束 */
+    handleTest(index:any){
+      if(index === '1') {
+        let comitData = [
+          {fcpVer:"R20230626110457",shopCode:"420",mesPublishGroup:"CTB"},
+          {fcpVer:"R20230626110457",shopCode:"430",mesPublishGroup:"CTB"}]
+          this.mshService.sendSortedDataToMESBatch(comitData).subscribe(res=>{
+          let result:any = res ;
+          console.log("jieguo ：" + res)
+        })
+      } else if(index === '2'){
+        
+        this.mshService.downloadAutoData(this.selectFcpVer).subscribe(res=>{
+          this.isLoading = false ;
+          let result:any = res ;
+          let message = result.message ;
+          this.nzMessageService.info(message);
+          this.originalData = [] ;
+          this.rowData = [] ;
+          this.getFcpVerList() ;
+         
+        });
+
+      }
+      
+    }
 
 }

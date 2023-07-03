@@ -5,51 +5,55 @@ import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService,NzModalRef} from "ng-zorro-antd/modal"
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import zh from '@angular/common/locales/zh';
 registerLocaleData(zh);
+import * as moment from 'moment';
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, 
-          ColDef, 
-          RowModelType,
-          IDatasource,
-          IGetRowsParams, GridOptions, GridReadyEvent } from 'ag-grid-community';
+  ColDef, 
+  GridReadyEvent,
+  PreConstruct, 
+  ICellRendererParams,
+  IDatasource,
+  IGetRowsParams,
+  RowModelType, } from 'ag-grid-community';
+import { ModuleRegistry } from 'ag-grid-community';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
-import { HttpClient } from '@angular/common/http';
-import { AgGridModule } from 'ag-grid-angular';
-import { number } from 'echarts';
-
 interface data {
 
 }
+
 
 @Component({
   selector: 'app-PPSR303',
   templateUrl: './PPSR303.component.html',
   styleUrls: ['./PPSR303.component.scss'],
-  providers:[NzMessageService,NzModalService,DatePipe, AgGridModule]
+  providers:[NzMessageService,NzModalService,DatePipe]
 })
 export class PPSR303Component implements OnInit {
 // 测试提交
   constructor(
     private nzInputModule:NzInputModule ,
-    private NzTimePickerModule:NzTimePickerModule,
-    private nzDatePickerModule:NzDatePickerModule,
+    private  NzTimePickerModule:NzTimePickerModule,
+    private  nzDatePickerModule:NzDatePickerModule,
     private datePipe : DatePipe,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private message:NzMessageService ,
     private Modal: NzModalService,
-    private modalService: NzModalService,
-    private http: HttpClient
+    private modalService: NzModalService
   ) { }
 
   ngOnInit() {
-    // this.isLoading = true;
-    // this.getAllEdition()
+    this.isLoading = true;
+    this.getAllEdition();
+    
   }
   
   checked = false;
@@ -169,25 +173,24 @@ export class PPSR303Component implements OnInit {
     sortable: true,
     filter: true,
     resizable: true,
-    flex: 1,
-    minWidth: 100
   };
 
   public autoGroupColumnDef: ColDef = {
+    // flex: 1,
+    // resizable: true,
     minWidth: 200,
   };
 
-  public rowBuffer = 0;
-  public rowSelection: 'single' | 'multiple' = 'multiple';
-  public rowModelType: RowModelType = 'infinite';
-  public cacheBlockSize = 100; //資料筆數
-  public cacheOverflowSize = 2;
-  public maxConcurrentDatasourceRequests = 1;
-  public infiniteInitialRowCount = 1000;
-  public maxBlocksInCache = 20;
-  public rowData !: any[];
-  public GridOptions : GridOptions;
- 
+  // infinite scroll
+  // public rowBuffer = 0;
+  // public rowSelection: 'single' | 'multiple' = 'multiple';
+  // public rowModelType: RowModelType = 'infinite';
+  // public cacheBlockSize = 100;
+  // public cacheOverflowSize = 2;
+  // public maxConcurrentDatasourceRequests = 1;
+  // public infiniteInitialRowCount = 1000;
+  // public maxBlocksInCache = 10;
+
   displayRowData : data[] = [];
   displayTable2Data = [];
   rowDataTab1 : data[] = [];
@@ -302,45 +305,35 @@ export class PPSR303Component implements OnInit {
                 {field : "remark_planInStorage" ,headerName : "入庫日的備註 "},
                 {field : "createDate" ,headerName : "建立日期 "}]
 
-  onGridReady(params: GridReadyEvent<any[]>) {
+  getAllEdition(){
+    this.isLoading = true ;
 
-    const dataSource: IDatasource = {
-          rowCount : undefined,
-              
-          getRows: (params: IGetRowsParams) => {
-            
-          this.getAllEdition(params.startRow, params.endRow)
-
-            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-
-                  const rowsThisPage = this.displayRowData.concat(params.startRow, params.endRow);
-
-                  let lastRow = -1;
-                  if (this.displayRowData.length <= params.endRow) {
-                    lastRow = this.displayRowData.length;
-            }
-                    params.successCallback(rowsThisPage, lastRow);
-              },
-            };
-           
-            params.api!.setDatasource(dataSource);
-            }
-
-  async getR303Data(edition : string, pageIndex : number, pageSize : number){
     let myObj = this ;
-    myObj.getPPSService.getR303AllFirstData(edition, pageIndex, pageSize).subscribe(res => {
-      let result: any = res;
+    myObj.getPPSService.getR303EditionList().subscribe(async res => {
+      let result:any = res ;
+      
+      this.edition = result.data[0];
+      this.editionList = result.data;
+
+      this.getR303Data(this.edition);
+
+    });
+  }
+
+
+  async getR303Data(edition : string){
+    let myObj = this ;
+    myObj.getPPSService.getR303AllFirstData(edition).subscribe(res => {
+      let result:any = res ;
+
 
       this.rowDataTab1 = result.data;
 
-      if (this.rowDataTab1 != null){
-
-        for (var i = 0; i < this.rowDataTab1.length; i++) {
-          this.displayRowData.push(this.rowDataTab1[i]);
-      }
-        // this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
-    }
-      this.getR303ErrorData(this.edition);
+      console.log(this.rowDataTab1)
+      if(this.rowDataTab1 !=null)
+        this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
+        this.getR303ErrorData(this.edition);
+        
     });
   }
 
@@ -351,28 +344,10 @@ export class PPSR303Component implements OnInit {
       
       this.rowDataTab4 = result.data;
       console.log(this.rowDataTab4);
-
-      for (var i = 0; i < this.rowDataTab4.length; i++) {
-        this.displayRowData.push(this.rowDataTab4[i]);
-    }
-      // if(this.rowDataTab4 !=null)
-      //   this.displayRowData = this.displayRowData.concat(this.rowDataTab4);
+      if(this.rowDataTab4 !=null)
+        this.displayRowData = this.displayRowData.concat(this.rowDataTab4);
 
         this.isLoading = false;
-    });
-  }
-
-  async getAllEdition(pageIndex : number, pageSize : number){
-    this.isLoading = true;
-
-    let myObj = this ;
-    await myObj.getPPSService.getR303EditionList().subscribe(async res => {
-      let result:any = res ;
-      
-      this.edition = result.data[0];
-      this.editionList = result.data;
-
-      await this.getR303Data(this.edition, pageIndex, pageSize);
     });
   }
 
@@ -382,8 +357,9 @@ export class PPSR303Component implements OnInit {
       this.isLoading = true;
       this.checked = false;
       this.checkSecond  = false;
-      this.getR303Data(this.edition, this.rowBuffer++, this.rowDataTab1.length);   
+      this.getR303Data(this.edition);
     }
+    
   }
 
     // Example of consuming Grid Event
@@ -402,8 +378,10 @@ export class PPSR303Component implements OnInit {
       myObj.getPPSService.getR303SecondData(e.data.idNo ,this.edition, this.isError,e.data.routingSeq).subscribe(res => {
         let result:any = res ;
         
+
         this.rowDataTab2 = result.data;
 
+        
         this.displayTable2Data = this.rowDataTab2;
         this.isLoading = false;
         this.isShowTable2 = true;
@@ -420,6 +398,7 @@ export class PPSR303Component implements OnInit {
       if(this.checked){
         this.displayRowData = [];
 
+
         this.displayRowData = this.rowDataTab4;
   
         this.displayRowData = this.displayRowData.concat(this.rowDataTab1.filter(element => element['violation'] != null));
@@ -428,10 +407,7 @@ export class PPSR303Component implements OnInit {
         this.displayRowData = [];
 
         if(this.rowDataTab1 !=null)
-          // this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
-          for (var i = 0; i < this.rowDataTab4.length; i++) {
-            this.displayRowData.push(this.rowDataTab4[i]);
-        }
+          this.displayRowData = this.displayRowData.concat(this.rowDataTab1);
         if(this.rowDataTab4 !=null)
           this.displayRowData = this.displayRowData.concat(this.rowDataTab4);
       }
@@ -447,11 +423,8 @@ export class PPSR303Component implements OnInit {
       if(this.checkSecond){
         this.displayTable2Data = [];
 
-        for (var i = 0; i < this.displayTable2Data.length; i++) {
-          this.displayTable2Data.push(this.rowDataTab2[i]);
-          this.rowDataTab2.filter(element => element['violation'] != null)
-      }
-        // this.displayTable2Data = this.displayTable2Data.concat(this.rowDataTab2.filter(element => element['violation'] != null));
+  
+        this.displayTable2Data = this.displayTable2Data.concat(this.rowDataTab2.filter(element => element['violation'] != null));
         
       }else{
         this.displayTable2Data = [];
@@ -650,14 +623,14 @@ export class PPSR303Component implements OnInit {
       
       
     }
-    sucessMSG(_title: any, _plan: any): void {
+    sucessMSG(_title, _plan): void {
       this.Modal.success({
         nzTitle: _title,
         nzContent: `${_plan}`
       });
     }
   
-    errorMSG(_title: string, _context: string): void {
+    errorMSG(_title, _context): void {
       this.Modal.error({
         nzTitle: _title,
         nzContent: `${_context}`

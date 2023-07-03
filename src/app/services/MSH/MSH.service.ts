@@ -236,5 +236,23 @@ saveChangeOpCode(_param) {
     let queryUrl = this.APIURL + "/msh/MSHP001/saveSameOpCodeChangeCar";
     return this.http.post(queryUrl,_param,this.httpOptions);
   }
+  /***发送 数据至mes */
+  sendSortedDataToMES(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/sendSortedDataToMES";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+
+   /***发送批量 数据至mes */
+   sendSortedDataToMESBatch(_param) {
+    let queryUrl = this.APIURL + "/msh/MSHP001/sendMesBatchByShopCode";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+
+  //鎖定版本
+  downloadAutoData(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/downloadAutoData/"+_param;
+  return this.http.get(queryUrl,this.httpOptions);
+  }
+
 
 }
