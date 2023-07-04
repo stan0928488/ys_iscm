@@ -962,7 +962,7 @@ this.handleSelectCarModal() ;
       let result:any = res ;
       let message = result.message ;
     this.modal.confirm({
-      nzTitle: message +'! 您確定鎖定該版本嗎? 鎖定版本會下載自動發佈的機台，時間會有點久，請耐心等待！',
+      nzTitle: message +'! 您確定鎖定該版本嗎?',
       nzContent: '<b style="color: red;"></b>',
       nzOkText: '確定',
       nzOkType: 'primary',
