@@ -412,7 +412,8 @@ export class MSHI004Component {
       let lock_data = JSON.parse(JSON.stringify(downloadMes));
       console.log(lock_data);
       this.isSpinning = true;
-      this.mshi004Service.downloadAutoData(lock_data).subscribe((res) => {
+      let paramete = downloadMes.fcpEdition + '/' + downloadMes.mesPublishGroup;
+      this.mshi004Service.downloadAutoData(paramete).subscribe((res) => {
         let result: any = res;
         let message = result.message;
         this.message.info(message);
