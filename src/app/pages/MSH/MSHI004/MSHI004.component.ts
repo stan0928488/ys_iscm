@@ -279,10 +279,6 @@ export class MSHI004Component {
         field: 'publishMachine',
         width: 150,
         filter: true,
-        onCellClicked: function (params): void {
-          _this.mgroup = params.data.mesPublishGroup;
-          _this.searchMachine(true);
-        },
       },
       {
         headerName: '手動發佈',
@@ -333,10 +329,10 @@ export class MSHI004Component {
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
 
-              //   _this.renderer.listen(buttonElement, 'click', () => {
-              //     _this.buttonClicked(params.data);
-              //     _this.aaa(params.data);
-              //   });
+              _this.renderer.listen(buttonElement, 'click', () => {
+                _this.mgroup = params.data.mesPublishGroup;
+                _this.searchMachine(true);
+              });
 
               return buttonElement;
             }
