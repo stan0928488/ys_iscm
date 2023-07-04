@@ -1695,7 +1695,7 @@ export class PPSService {
 
   getR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308List`;
+    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   /////////////////////////////////////////////////////////////
