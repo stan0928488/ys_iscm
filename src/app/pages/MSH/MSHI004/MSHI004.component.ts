@@ -8,6 +8,7 @@ import { MSHI004Service } from 'src/app/services/MSHI004/MSHI004.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { MSHI004 } from './MSHI004.model';
+import { MSHI004MACHINE } from './machine.model';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
@@ -59,6 +60,8 @@ export class MSHI004Component {
   shopCodeInputList: string;
   // 站別下拉是否正在載入選項
   shopCodeLoading = false;
+
+  machineDataList: MSHI004MACHINE[] = [];
 
   MSHI004DataList: MSHI004[] = [];
   mesData: string[] = [];
@@ -156,6 +159,7 @@ export class MSHI004Component {
     this.isButtonDisabled = this.fieldStatus === '1';
 
     this.getCellData();
+    this.getMachineData();
   }
 
   async ngOnInit() {
@@ -373,12 +377,39 @@ export class MSHI004Component {
       },
     ];
   }
+
+  machine: ColDef[] = [];
+
+  getMachineData() {
+    let _this = this;
+    this.machine = [
+      {
+        headerName: 'MES群組',
+        field: 'mesPublishGroup',
+        width: 120,
+        filter: true,
+      },
+      { headerName: '機台數', field: 'equipCode', width: 120, filter: true },
+      {
+        headerName: '已配置機台數',
+        field: 'publishMachine',
+        width: 150,
+        filter: true,
+      },
+    ];
+  }
   downloadMachine(data: any) {
+    let a = this.lock.fcpEdition.split('(')[0];
+    let b = data.mesPublishGroup;
+    this.mgroup = b;
+    let downloadMes = {
+      fcpEdition: a,
+      mesPublishGroup: b,
+    };
+    console.log(downloadMes);
     new Promise<boolean>((resolve, reject) => {
       console.log(1);
-      let lock_data = JSON.parse(JSON.stringify(this.lock)).fcpEdition.split(
-        '('
-      )[0];
+      let lock_data = JSON.parse(JSON.stringify(downloadMes));
       console.log(lock_data);
       this.isSpinning = true;
       this.mshi004Service.downloadAutoData(lock_data).subscribe((res) => {
