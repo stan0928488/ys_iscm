@@ -131,4 +131,10 @@ export class MSHI004Service {
     let queryUrl = this.APIURL + '/msh/MSHP001/downloadAutoData/' + _param;
     return this.http.get(queryUrl, this.httpOptions);
   }
+  machineData(_parms) {
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/machineData`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`機台資料 : ${JSON.stringify(_parms)}`);
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  }
 }

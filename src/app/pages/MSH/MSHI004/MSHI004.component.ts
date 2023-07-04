@@ -62,6 +62,7 @@ export class MSHI004Component {
   shopCodeLoading = false;
 
   machineDataList: MSHI004MACHINE[] = [];
+  machineDataListDeepClone: MSHI004MACHINE[] = [];
 
   MSHI004DataList: MSHI004[] = [];
   mesData: string[] = [];
@@ -278,6 +279,10 @@ export class MSHI004Component {
         field: 'publishMachine',
         width: 150,
         filter: true,
+        onCellClicked: function (params): void {
+          _this.mgroup = params.data.mesPublishGroup;
+          _this.searchMachine(true);
+        },
       },
       {
         headerName: '手動發佈',
@@ -386,14 +391,22 @@ export class MSHI004Component {
       {
         headerName: 'MES群組',
         field: 'mesPublishGroup',
-        width: 120,
+        width: 150,
         filter: true,
       },
-      { headerName: '機台數', field: 'equipCode', width: 120, filter: true },
       {
-        headerName: '已配置機台數',
+        headerName: '所有機台',
+        field: 'pstMachine',
+        width: 650,
+        filter: true,
+        cellStyle: {
+          'min-width': '120px',
+        },
+      },
+      {
+        headerName: '未配置機台',
         field: 'publishMachine',
-        width: 150,
+        width: 650,
         filter: true,
       },
     ];
@@ -787,5 +800,61 @@ export class MSHI004Component {
       nzTitle: _title,
       nzContent: `${_plan}`,
     });
+  }
+
+  searchMachine(isUserClick: boolean): void {
+    this.isSpinning = true;
+    let payloads = null;
+
+    let a = this.lock.fcpEdition.split('(')[0];
+    let b = this.mgroup;
+    let preMachine = {
+      fcpEdition: a,
+      mesPublishGroup: b,
+    };
+    console.log(preMachine);
+    if (_.isNil(preMachine)) return;
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.machineData(preMachine).subscribe(
+        (res) => {
+          const { code, data } = res;
+          const myDataList = JSON.parse(data);
+          console.log(
+            '🚀 ~ file: MSHI004.component.ts:333 ~ MSHI004Component ~ serachEPST ~ myDataList:',
+            myDataList
+          );
+
+          if (code === 200) {
+            if (_.size(myDataList) > 0) {
+              this.machineDataList = myDataList;
+              this.machineDataListDeepClone = _.cloneDeep(this.machineDataList);
+            } else {
+              this.message.success('查無資料');
+              this.machineDataList = [];
+            }
+
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到資料');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.machineDataListDeepClone = [];
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.machineDataListDeepClone = [];
+        this.isSpinning = false;
+      });
   }
 }
