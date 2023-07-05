@@ -64,9 +64,7 @@ export class PPSR308Component implements OnInit {
         filter: true,
     },
     getRowStyle: params => {
-      if (params.data.areaGroup == '外銷' || params.data.areaGroup == '內銷'
-      || params.data.areaGroup == '營三外銷(非預估)' || params.data.areaGroup == '營三內銷(非預估)'
-      || params.data.areaGroup == '營一(非預估)' || params.data.areaGroup == '計畫庫存') {
+      if (params.data.areaGroup.includes("合計") || params.data.areaGroup == '計畫庫存') {
         return { background: '#97CBFF' };
       }else if( params.data.areaGroup == '出貨總計' || params.data.areaGroup == '非預估總計'){
         return { background: 'yellow' };
@@ -85,6 +83,16 @@ export class PPSR308Component implements OnInit {
               pinned: 'left',
               width:150,
               headerName: '區別',
+              field: "areaGroup"
+            }],
+          }],
+        },
+        {
+          children: [{
+            children: [{
+              pinned: 'left',
+              width:150,
+              headerName: '客戶',
               field: "custAbbreviations"
             }],
           }],
@@ -105,6 +113,11 @@ export class PPSR308Component implements OnInit {
               pinned: 'left',
               headerName: 'B.訂單餘量',
               width:120,
+              cellStyle: params => {
+                if (params.value < 0) {
+                    return {backgroundColor: 'red'};
+                }
+              }
             }],
           }],
         },
@@ -115,6 +128,11 @@ export class PPSR308Component implements OnInit {
               headerName: 'C.出貨目標',
               field: "shippingTarget",
               width:120,
+              cellStyle: params => {
+                if (params.value < 0) {
+                    return {backgroundColor: 'red'};
+                }
+              }
             }],
           }],
         },
@@ -126,6 +144,11 @@ export class PPSR308Component implements OnInit {
               headerName: 'D.出貨進度',
               field: "shippingProgress",
               width:120,
+              cellStyle: params => {
+                if (params.value < 0) {
+                    return {backgroundColor: 'red'};
+                }
+              }
             }],
           }],
         },
@@ -138,6 +161,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '1.可供出貨量',
                 field: "availableToShipNoCard",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             },
             {
@@ -146,6 +174,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '2.GAP',
                 field: "gapNoCard",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             }
           ],
@@ -159,6 +192,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '1.可供出貨量',
                 field: "availableToShipMeetThePlanned",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             },
             {
@@ -167,6 +205,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '2.GAP',
                 field: "gapMeetThePlanned",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             }
           ],
@@ -180,6 +223,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '1.可供出貨量',
                 field: "endOfMonthAvailableToShipMeetThePlanned",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             },
             {
@@ -188,6 +236,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '2.GAP',
                 field: "endOfMonthgapMeetThePlanned",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             }
           ],
@@ -198,6 +251,11 @@ export class PPSR308Component implements OnInit {
               headerName: 'H.已出貨',
               field: "shipped",
               width:120,
+              cellStyle: params => {
+                if (params.value < 0) {
+                    return {backgroundColor: 'red'};
+                }
+              }
             }],
           }],
         },
@@ -213,6 +271,11 @@ export class PPSR308Component implements OnInit {
                   width:120,
                   headerName: '1.足項',
                   field: "finishedProductDateAcceptableEnough",
+                  cellStyle: params => {
+                    if (params.value < 0) {
+                        return {backgroundColor: 'red'};
+                    }
+                  }
                 },
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
@@ -220,6 +283,11 @@ export class PPSR308Component implements OnInit {
                   width:120,
                   headerName: '2.缺項',
                   field: "finishedProductDateAcceptableNotEnough",
+                  cellStyle: params => {
+                    if (params.value < 0) {
+                        return {backgroundColor: 'red'};
+                    }
+                  }
                 }
               ],
             },
@@ -229,6 +297,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '2.交期不符',
                 field: "finishedProductDateNotMatch",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             },
             {
@@ -237,6 +310,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '3.至月底足項',
                 field: "finishedProductEnoughBeforeEndOfMonth",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             }
           ],
@@ -254,6 +332,11 @@ export class PPSR308Component implements OnInit {
                   width:120,
                   headerName: '1.足項',
                   field: "productPlanDateAcceptableEnough",
+                  cellStyle: params => {
+                    if (params.value < 0) {
+                        return {backgroundColor: 'red'};
+                    }
+                  }
                 },
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
@@ -262,6 +345,11 @@ export class PPSR308Component implements OnInit {
                   width:120,
                   headerName: '2.缺項',
                   field: "productPlanDateAcceptableNotEnough",
+                  cellStyle: params => {
+                    if (params.value < 0) {
+                        return {backgroundColor: 'red'};
+                    }
+                  }
                 }
               ],
             },
@@ -272,6 +360,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '2.交期不符',
                 width:120,
                 field: "productPlanDateNotMatch",
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             },
             {
@@ -280,6 +373,11 @@ export class PPSR308Component implements OnInit {
                 headerName: '3.至月底足項',
                 field: "productPlanEnoughBeforeEndOfMonth",
                 width:120,
+                cellStyle: params => {
+                  if (params.value < 0) {
+                      return {backgroundColor: 'red'};
+                  }
+                }
               }],
             }
           ],
