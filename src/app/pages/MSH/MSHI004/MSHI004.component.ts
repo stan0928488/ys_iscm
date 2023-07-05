@@ -20,7 +20,6 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
-import { ButtonComponent } from 'src/app/button/button.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { __param } from 'tslib';
 
@@ -188,7 +187,10 @@ export class MSHI004Component {
         field: 'mesPublishGroup',
         width: 150,
         filter: true,
-        onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
+        onCellClicked: function (params): void {
+          _this.mgroup = params.data.mesPublishGroup;
+          _this.searchMachine(true);
+        },
       },
       {
         headerName: '發佈MES天數',
@@ -328,12 +330,6 @@ export class MSHI004Component {
               const buttonText = _this.renderer.createText('數量不一致');
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
-
-              _this.renderer.listen(buttonElement, 'click', () => {
-                _this.mgroup = params.data.mesPublishGroup;
-                _this.searchMachine(true);
-              });
-
               return buttonElement;
             }
           } else {
@@ -357,6 +353,7 @@ export class MSHI004Component {
         field: 'fcpEdition',
         width: 180,
         filter: true,
+        onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
       },
       {
         headerName: '發佈時間區間',
@@ -385,8 +382,8 @@ export class MSHI004Component {
     let _this = this;
     this.machine = [
       {
-        headerName: 'MES群組',
-        field: 'mesPublishGroup',
+        headerName: '站別',
+        field: 'schShopCode',
         width: 150,
         filter: true,
       },
