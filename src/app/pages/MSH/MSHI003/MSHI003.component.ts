@@ -1052,13 +1052,13 @@ export class MSHI003Component implements AfterViewInit{
     let MSHI003DataListClone = [];
     this.MSHI003DataList.forEach(item => {
       if(!_.isNil(item.overShopStatus)){
-        item.overShopStatus = item.overShopStatus === 'Y' ? '已過站' : item.overShopStatus === 'X' ? '查無MO資訊' : '未過站';
+        _.set(item, 'displayOverShopStatus', item.overShopStatus === 'Y' ? '已過站' : item.overShopStatus === 'X' ? '查無MO資訊' : '未過站');
       }
-      MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno']));
+      MSHI003DataListClone.push(_.omit(item, ['id', 'plantCode', 'saleLineno', 'overShopStatus']));
     });
 
-    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "lineupProcess", "processCode", "overShopStatus", "epst", "userCreate", "dateCreate", "userUpdate", "dateUpdate", "adjShopCode", "adjLineupProcess", "newEpst", "comment"];
-    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, lineupProcess:this.LINEUP_PROCESS, processCode:this.PROCESS_CODE, overShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期", adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, newEpst:this.NEW_EPST, comment:this.COMMENT};
+    const firstRow = ["idNo", "shopCode", "saleOrder", "saleItem", "custAbbr", "procStatus", "sfcDia", "finalMicNo", "lineupProcess", "processCode", "displayOverShopStatus", "epst", "userCreate", "dateCreate", "userUpdate", "dateUpdate", "adjShopCode", "adjLineupProcess", "newEpst", "comment"];
+    const firstRowDisplay = {idNo:this.ID_NO, shopCode:this.SHOP_CODE, saleOrder:this.SALE_ORDER, saleItem:this.SALE_ITEM, custAbbr:this.CUST_ABBR, procStatus:this.PROC_STATUS, sfcDia:this.SFC_DIA , finalMicNo:this.FINAL_MIC_NO, lineupProcess:this.LINEUP_PROCESS, processCode:this.PROCESS_CODE, displayOverShopStatus:this.OVER_SHOP_STATUS, epst:this.EPST, userCreate:"建立人員", dateCreate:"建立日期", userUpdate:"更新人員", dateUpdate:"更新日期", adjShopCode:this.ADJ_SHOP_CODE, adjLineupProcess:this.ADJ_LINEUP_PROCESS, newEpst:this.NEW_EPST, comment:this.COMMENT};
     const exportData = [firstRowDisplay, ...MSHI003DataListClone]; 
 
     const workSheet = XLSX.utils.json_to_sheet(exportData,{header:firstRow, skipHeader:true});
