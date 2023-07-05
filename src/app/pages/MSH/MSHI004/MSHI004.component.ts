@@ -8,6 +8,7 @@ import { MSHI004Service } from 'src/app/services/MSHI004/MSHI004.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { MSHI004 } from './MSHI004.model';
+import { MSHI004MACHINE } from './machine.model';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
@@ -19,7 +20,6 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/services/common/common.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ClipboardService } from 'ngx-clipboard';
-import { ButtonComponent } from 'src/app/button/button.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { __param } from 'tslib';
 
@@ -59,6 +59,9 @@ export class MSHI004Component {
   shopCodeInputList: string;
   // 站別下拉是否正在載入選項
   shopCodeLoading = false;
+
+  machineDataList: MSHI004MACHINE[] = [];
+  machineDataListDeepClone: MSHI004MACHINE[] = [];
 
   MSHI004DataList: MSHI004[] = [];
   mesData: string[] = [];
@@ -156,6 +159,7 @@ export class MSHI004Component {
     this.isButtonDisabled = this.fieldStatus === '1';
 
     this.getCellData();
+    this.getMachineData();
   }
 
   async ngOnInit() {
@@ -183,7 +187,10 @@ export class MSHI004Component {
         field: 'mesPublishGroup',
         width: 150,
         filter: true,
-        onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
+        onCellClicked: function (params): void {
+          _this.mgroup = params.data.mesPublishGroup;
+          _this.searchMachine(true);
+        },
       },
       {
         headerName: '發佈MES天數',
@@ -289,7 +296,12 @@ export class MSHI004Component {
         filter: true,
         cellRenderer: function (params) {
           if (params.data.fcpEditionLock == '1') {
-            if (params.data.equipCode == params.data.publishMachine) {
+            if (
+              params.data.equipCode == params.data.publishMachine &&
+              params.data.mesPublishTime != null &&
+              params.data.ppsControl != null &&
+              params.data.mesPublishTime > 0
+            ) {
               const buttonElement = _this.renderer.createElement('button');
               const buttonText = _this.renderer.createText('PUBLISH');
               _this.renderer.appendChild(buttonElement, buttonText);
@@ -318,12 +330,6 @@ export class MSHI004Component {
               const buttonText = _this.renderer.createText('數量不一致');
               _this.renderer.appendChild(buttonElement, buttonText);
               _this.renderer.addClass(buttonElement, 'button');
-
-              //   _this.renderer.listen(buttonElement, 'click', () => {
-              //     _this.buttonClicked(params.data);
-              //     _this.aaa(params.data);
-              //   });
-
               return buttonElement;
             }
           } else {
@@ -347,6 +353,7 @@ export class MSHI004Component {
         field: 'fcpEdition',
         width: 180,
         filter: true,
+        onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
       },
       {
         headerName: '發佈時間區間',
@@ -368,15 +375,51 @@ export class MSHI004Component {
       },
     ];
   }
+
+  machine: ColDef[] = [];
+
+  getMachineData() {
+    let _this = this;
+    this.machine = [
+      {
+        headerName: '站別',
+        field: 'schShopCode',
+        width: 150,
+        filter: true,
+      },
+      {
+        headerName: '所有機台',
+        field: 'pstMachine',
+        width: 650,
+        filter: true,
+        cellStyle: {
+          'min-width': '120px',
+        },
+      },
+      {
+        headerName: '未配置機台',
+        field: 'publishMachine',
+        width: 650,
+        filter: true,
+      },
+    ];
+  }
   downloadMachine(data: any) {
+    let a = this.lock.fcpEdition.split('(')[0];
+    let b = data.mesPublishGroup;
+    this.mgroup = b;
+    let downloadMes = {
+      fcpEdition: a,
+      mesPublishGroup: b,
+    };
+    console.log(downloadMes);
     new Promise<boolean>((resolve, reject) => {
       console.log(1);
-      let lock_data = JSON.parse(JSON.stringify(this.lock)).fcpEdition.split(
-        '('
-      )[0];
+      let lock_data = JSON.parse(JSON.stringify(downloadMes));
       console.log(lock_data);
       this.isSpinning = true;
-      this.mshi004Service.downloadAutoData(lock_data).subscribe((res) => {
+      let paramete = downloadMes.fcpEdition + '/' + downloadMes.mesPublishGroup;
+      this.mshi004Service.downloadAutoData(paramete).subscribe((res) => {
         let result: any = res;
         let message = result.message;
         this.message.info(message);
@@ -750,5 +793,61 @@ export class MSHI004Component {
       nzTitle: _title,
       nzContent: `${_plan}`,
     });
+  }
+
+  searchMachine(isUserClick: boolean): void {
+    this.isSpinning = true;
+    let payloads = null;
+
+    let a = this.lock.fcpEdition.split('(')[0];
+    let b = this.mgroup;
+    let preMachine = {
+      fcpEdition: a,
+      mesPublishGroup: b,
+    };
+    console.log(preMachine);
+    if (_.isNil(preMachine)) return;
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.machineData(preMachine).subscribe(
+        (res) => {
+          const { code, data } = res;
+          const myDataList = JSON.parse(data);
+          console.log(
+            '🚀 ~ file: MSHI004.component.ts:333 ~ MSHI004Component ~ serachEPST ~ myDataList:',
+            myDataList
+          );
+
+          if (code === 200) {
+            if (_.size(myDataList) > 0) {
+              this.machineDataList = myDataList;
+              this.machineDataListDeepClone = _.cloneDeep(this.machineDataList);
+            } else {
+              this.message.success('查無資料');
+              this.machineDataList = [];
+            }
+
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到資料');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.machineDataListDeepClone = [];
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.machineDataListDeepClone = [];
+        this.isSpinning = false;
+      });
   }
 }

@@ -451,6 +451,9 @@ this.handleSelectCarModal() ;
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          return { background: 'lightcoral' };
+        } else {
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
           if(params.data["CAR_WEIGHT_ADD"] < 3900) {
@@ -474,6 +477,7 @@ this.handleSelectCarModal() ;
             return { background: 'powderblue' };
           }
         }
+      }
        
       },
       //rowData: this.rowData,
@@ -497,6 +501,9 @@ this.handleSelectCarModal() ;
         // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
         //   return { background: 'lightgray' };
         // }
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          return { background: 'lightcoral' };
+        } else {
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
         &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
@@ -510,6 +517,7 @@ this.handleSelectCarModal() ;
           // Apply a different background color to odd rows
           return { background: 'yellow' };
         }
+      }
       },
       onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
@@ -521,6 +529,13 @@ this.handleSelectCarModal() ;
     this.gridOptionsRowDataModal = {
       rowDragMultiRow:true,
       rowDragManaged: true,
+      getRowStyle(params) {
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          return { background: 'lightcoral' };
+        } else {
+          return { background: 'white' };
+        }
+      },
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
     }
     // excel模式表格
@@ -853,6 +868,14 @@ this.handleSelectCarModal() ;
        //数据类型
        this.columKeyType["ORIGINAL_PST_MACHINE_ADD"] = 0 ;
 
+       // TIMEDIFFFLAG_ADD 添加跳時間
+
+       let index12 = {headerName:'時間違反',field:'TIMEDIFFFLAG_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("時間違反")
+       this.columnDefs.push(index12);
+       this.outsideColumnDefs.push(index12);
+       //数据类型
+       this.columKeyType["TIMEDIFFFLAG_ADD"] = 0 ;
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
@@ -962,7 +985,7 @@ this.handleSelectCarModal() ;
       let result:any = res ;
       let message = result.message ;
     this.modal.confirm({
-      nzTitle: message +'! 您確定鎖定該版本嗎? 鎖定版本會下載自動發佈的機台，時間會有點久，請耐心等待！',
+      nzTitle: message +'! 您確定鎖定該版本嗎?',
       nzContent: '<b style="color: red;"></b>',
       nzOkText: '確定',
       nzOkType: 'primary',
@@ -1324,7 +1347,13 @@ this.handleSelectCarModal() ;
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
           preGroupObject[key] = uniqueArr.join(','); 
-        }  
+        } 
+        else if( key === 'TIMEDIFFFLAG_ADD') { // 如果是包含跳的時間
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
+          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          preGroupObject[key] = arr[arr.length - 1]
+        }
         else {
          // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
