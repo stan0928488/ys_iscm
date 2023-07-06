@@ -21,7 +21,7 @@
 
   <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'">
 
-    <!--  盤元冷抽尺寸優先順序表 -->
+    <!-- 盤元冷抽尺寸優先順序 -->
     <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
 
       <div>
@@ -109,11 +109,11 @@
               [disabled]="isRunFCP"
               (click)="importCompaign()"
             ><span nz-icon nzType="upload" nzTheme="outline"></span>
-            轉入COMPAIGN表
+            轉入CAMPAIGN表
             </button>
           </td>
           <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
-          <td style="text-align:right;width:42%">
+          <td style="text-align:right;width:48%">
             &nbsp;&nbsp;
             <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
             <button
@@ -321,11 +321,81 @@
         </div>
       </div>
     </nz-tab>
-  
-    
 
-  
-    
+      <!-- 401 Auto Campaign -->
+      <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
+              <button
+                nz-button nzType="primary"
+                [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
+                [disabled]="isRunFCP"
+                (click)="getTbppsm102ListAll()"
+              ><span nzTheme="outline"></span>
+              Auto campaign 表
+              </button>
+              &nbsp;
+              <a
+                href="#/singleData/I205_401"
+                nz-button nzType="primary"
+                [disabled]="isRunFCP"
+            ><span nzTheme="outline"></span>
+              彙 整 資 料
+            </a>
 
+              <div style="text-align: right;">
+                <b style="font-size:x-large; font-weight: bold; padding-left: 60%;">更新時間 :  更新者 : </b>
+              </div>
+               
+        <div>
+          <tr>
+            <label style="text-align: right; font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+
+            <td style="text-align: left;">
+              &nbsp;&nbsp;
+              <button
+              nz-button
+              nzType="primary"
+              [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
+              [disabled]="isRunFCP"
+              (click)="importCompaign()"
+              ><span nzTheme="outline"></span>
+                轉入 CAMPAIGN 表
+              </button>
+            </td>
+
+            <td style="text-align: right; width: 48%;">
+              &nbsp;&nbsp;
+              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+              <button
+                nz-button
+                [ngClass]="{FCPdisable: isRunFCP, FCPenable: !isRunFCP}"
+                nzType="primary"
+                [disabled]="isRunFCP"
+                (click)="Upload('3')"
+              ><span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+              </button>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+                nzType="primary"
+                (click)="convertToExcel('3')"
+              ><span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
+              </button>
+            </td>
+          </tr>
+        </div>
+        <br>
+          <ag-grid-angular
+            [columnDefs]="columnDefs"
+            [headerHeight]="40"
+            [rowHeight]="40"
+            style="width: 100%; height:500px;"
+            class="ag-theme-alpine"
+            [rowData]="rowData">
+          </ag-grid-angular>
+
+      </nz-tab>
   </nz-tabset>
 </nz-content>

@@ -80,6 +80,7 @@ import { PPSI203Component } from './pages/PPS/PPSI203/PPSI203.component';
 import { PPSI204Component } from './pages/PPS/PPSI204/PPSI204.component';
 import { PPSI204_NonBarComponent } from './pages/PPS/PPSI204_NonBar/PPSI204_NonBar.component';
 import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
+import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210/PPSI210.component';
 import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230/PPSI230.component';
@@ -178,6 +179,7 @@ registerLocaleData(zh);
     PPSI204Component,
     PPSI204_NonBarComponent,
     PPSI205Component,
+    PPSI205_401Component,
     PPSI210Component,
     PPSI220Component,
     PPSI230Component,

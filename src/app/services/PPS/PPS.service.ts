@@ -20,6 +20,8 @@ export class PPSService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
+  getPPS
+
   //Get getPPSINP13List
   getPPSINP13List() {
     console.log('api service getPPSINP13List');
@@ -1060,6 +1062,29 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  //getTbppsm102ListAll 取得getTbppsm102ListAll
+  getTbppsm102ListAll(_plantCode) {
+    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  
+  // MO I205_401 DataList
+  getTbppsm119ListAll(_moEdition) {
+    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119ListAll/${_moEdition}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  // MO I205_401 MO Edition
+  getTbppsm119VerList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119VerList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+
   //getTbppsm113List getTbppsm113List
   getTbppsm113List(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
@@ -1695,7 +1720,7 @@ export class PPSService {
 
   getR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308Data`;
+    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308List`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   /////////////////////////////////////////////////////////////

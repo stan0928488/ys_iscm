@@ -4,18 +4,14 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import { registerLocaleData, DatePipe } from '@angular/common';
 import * as XLSX from 'xlsx';
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
-import {NzMessageService} from "ng-zorro-antd/message"
-import {NzModalService} from "ng-zorro-antd/modal"
+import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
+import {NzMessageService} from "ng-zorro-antd/message";
+import {NzModalService} from "ng-zorro-antd/modal";
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CellClickedEvent, 
   ColDef, 
   ColGroupDef,
-  GridReadyEvent,
-  PreConstruct, 
-  ICellRendererParams,
-  IDatasource,
-  IGetRowsParams,
-  RowModelType, } from 'ag-grid-community';
+} from 'ag-grid-community';
 
 import { Router } from "@angular/router";
 import * as moment from 'moment';
@@ -26,14 +22,18 @@ registerLocaleData(zh);
 interface data {
 
 }
-
 @Component({
-  selector: "app-PPSI205",
-  templateUrl: "./PPSI205.component.html",
-  styleUrls: ["./PPSI205.component.scss"],
+  selector: 'app-PPSI205_401',
+  templateUrl: './PPSI205_401.component.html',
+  styleUrls: ['./PPSI205_401.component.scss'],
   providers:[NzMessageService,DatePipe]
 })
-export class PPSI205Component implements AfterViewInit {
+export class PPSI205_401Component implements AfterViewInit {
+
+  selectedVer_default:string = null;
+
+  selectedVer = [{label:'',value:''}]; //版本选择
+
   PLANT_CODE;
   USERNAME;
 	loading = false; //loaging data flag
@@ -58,16 +58,21 @@ export class PPSI205Component implements AfterViewInit {
 
   rowData: data[] = [];
 
+  verList = [
+    { label: '', value: '' }
+  ];
+
   fileType: string = '.xls, .xlsx, .csv'; //檔案類型
   
   // tab 1
   tbppsm101List;
   // tab 2
   tbppsm102List;
-  // tab 2 All
-  tbppsm102ListAll;
   // tab 3
   tbppsm113List;
+
+  // MO Edition List
+  getTbppsm119List
 
   public defaultColDefTab1: ColDef = {
     sortable: true,
@@ -78,22 +83,14 @@ export class PPSI205Component implements AfterViewInit {
   isSpinning = false;
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-      { headerName:'匯入時間',field: 'IMPORTDATETIME' , filter: false,width: 200 },
-      { headerName:'廠區別(鹽水廠YS)',field: 'PLANT_CODE' , filter: false,width: 150 },
-      { headerName: '優先順序' ,field: 'ORDER_ID' , filter: false,width: 100 },
-      { headerName:'站別',field: 'SCH_SHOP_CODE' , filter: false,width: 100},
-      { headerName:'機台',field: 'EQUIP_CODE' , filter: false,width: 100 },
-      { headerName:'下一站站別',field: 'NEXT_SHOP_CODE' , filter: false,width: 120 },
-      { headerName:'max(EPST/ASAP)', field:'MAX_DATE', filter:false, width: 150},
-      { headerName: '天數' ,field: 'DAYS' , filter: false,width: 100 },
-      { headerName: '生產時間(起)' ,field: 'STARTDATE' , filter: false,width: 120 },
-      { headerName: 'TC頻率升降冪' ,field: 'TC_FREQUENCE_LIFT' , filter: false,width: 150 },
-      { headerName:'轉入COMPAIGN限制表時間',field: 'EXPORTDATETIME' , filter: false,width: 200 },
-      { headerName:'分類(A. 401 auto)', field: "CATEGORY", filter :false,width: 150 },
-      { headerName:'建立日期',field: 'DATE_CREATE' , filter: false,width: 200 },
-      { headerName: '建立者' ,field: 'USER_CREATE' , filter: false,width: 100 },
-      { headerName:'異動日期',field: 'DATE_UPDATE' , filter: false,width: 200 },
-      { headerName: '異動者' ,field: 'USER_UPDATE' , filter: false,width: 100 },
+      { headerName:'MO 版次',field: 'IMPORTDATETIME' , filter: false,width: 200 },
+      { headerName:'日期',field: 'PLANT_CODE' , filter: false,width: 100 },
+      { headerName: '401 到料工時(天)' ,field: 'ORDER_ID' , filter: false,width: 150 },
+      { headerName:'405 到料工時(天)',field: 'SCH_SHOP_CODE' , filter: false,width: 150},
+      { headerName:'401 剩餘工時(天)',field: 'EQUIP_CODE' , filter: false,width: 150 },
+      { headerName:'405 剩餘工時(天)',field: 'NEXT_SHOP_CODE' , filter: false,width: 150 },
+      { headerName:'401 投產日_起', field:'MAX_DATE', filter:false, width: 150},
+      { headerName: '401 投產日_迄' ,field: 'DAYS' , filter: false,width: 150 },
     ];
 
   constructor(
@@ -105,21 +102,24 @@ export class PPSI205Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService
   ) {
-
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
   }
-
+  
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getTbppsm101List();
-    this.getTbppsm102ListAll();
+    this.getTbppsm119ListAll();
+    this.getTbppsm119VerList();
+    let postData = {};
+    postData['mo_EDITION'] = this.selectedVer_default;
+    
     //this.getRunFCPCount();
   }
 
-  // 取得是否有正在執行的FCP
-  getRunFCPCount() {
+   // 取得是否有正在執行的FCP
+   getRunFCPCount() {
     let myObj = this;
     this.getPPSService.getRunFCPCount().subscribe(res => {
       console.log("getRunFCPCount success");
@@ -128,10 +128,8 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
-
-
-   //tab1
-   getTbppsm101List() {
+  //tab1
+  getTbppsm101List() {
     this.loading = true;
     let myObj = this;
     this.getPPSService.getTbppsm101List(this.PLANT_CODE).subscribe(res => {
@@ -152,15 +150,15 @@ export class PPSI205Component implements AfterViewInit {
       console.log("getTbppsm102List success");
       this.tbppsm102List = res;
       console.log(this.tbppsm102List)
+
       myObj.loading = false;
     });
   }
 
-  // tab2 All
-  getTbppsm102ListAll() {
-
-    this.getPPSService.getTbppsm102ListAll(this.PLANT_CODE).subscribe(res => {
-      console.log("getTbppsm102ListAll success");
+   //I205_401 DataList
+   getTbppsm119ListAll() {
+    this.getPPSService.getTbppsm119ListAll(this.PLANT_CODE).subscribe(res => {
+      console.log("getTbppsm119ListAll success");
       let result:any = res;
       if(result.length > 0) {       
         this.rowData = JSON.parse(JSON.stringify(result));
@@ -168,8 +166,28 @@ export class PPSI205Component implements AfterViewInit {
         this.message.error("無資料");
         return;
       }
-      console.log(this.tbppsm102ListAll)
+      console.log(this.getTbppsm119ListAll)
     });
+  }
+
+  //I205_401 MO_EDITION
+  getTbppsm119VerList(){
+
+    let postData = {};
+    this.getPPSService.getTbppsm119VerList(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedVer.push({label:result[i].mo_EDITION, value:result[i].mo_EDITION})
+        }
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+    },err => {
+      this.message.error('網絡請求失敗');
+    })
+
   }
 
   //tab3
@@ -194,12 +212,8 @@ export class PPSI205Component implements AfterViewInit {
       this.getTbppsm102List();
     } else if(tab === 3){
       this.getTbppsm113List();
-    } else if(tab === 4) {
-      this.getTbppsm102ListAll();
     }
   }
-  
-
 
   //convert to Excel and Download
   convertToExcel(_type) {
@@ -210,10 +224,10 @@ export class PPSI205Component implements AfterViewInit {
     if(_type === '1') {
       if(this.tbppsm101List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm101List);
-        fileName = `盤元冷抽尺寸優先順序`;
+        fileName = `尺寸優先順序`;
         titleArray = this.titleArray1;
       } else {
-        this.errorMSG("匯出失敗", "盤元冷抽尺寸優先順序目前無資料");
+        this.errorMSG("匯出失敗", "尺寸優先順序表目前無資料");
         return;
       }
     } else if(_type === '2') {
@@ -234,12 +248,7 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG("匯出失敗", "205站公版尺寸目前無資料");
         return;
       }
-    } else if(_type === '4') {
-      if(this.tbppsm102ListAll.length > 0) {
-        // data = this.formatDataForExcel(_type. this.tbppsm102ListAll);
-        fileName = ``;
-      }
-    }
+    } 
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
   }
 
@@ -295,36 +304,13 @@ export class PPSI205Component implements AfterViewInit {
         });
         excelData.push(obj);
       }
-    } else if (_type === '4') {
-      for(let item of _displayData) {
-        let obj = {};
-        _.extend(obj, {
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // PLANT_CODE: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-        })
-      }
-    }
+    } 
     console.log(excelData);
     return excelData;
   }
 
-
-  // excel檔名
-  incomingfile(event) {
+   // excel檔名
+   incomingfile(event) {
     this.file = event.target.files[0];
     console.log("incomingfile e1 : " + this.file);
     let lastname = this.file.name.split('.').pop();
@@ -1030,7 +1016,4 @@ export class PPSI205Component implements AfterViewInit {
     this.isErrorMsg = false;
 
   }
-
-
-
 }
