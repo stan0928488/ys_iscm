@@ -871,6 +871,43 @@
           >
             ※ 目前 FCP 執行中，不可異動資料！
           </label>
+        </tr>
+      </div>
+
+      <nz-collapse>
+        <nz-collapse-panel
+          *ngFor="let panel of panels"
+          [nzHeader]="panel.name"
+          [nzActive]="panel.active"
+          [nzDisabled]="panel.disabled"
+        >
+          <nz-select
+            nzPlaceHolder="請選擇版本"
+            style="width: 210px; margin-left: 20px"
+            [(ngModel)]="fcpEditionList"
+            nzAllowClear
+            (nzOpenChange)="getFcpList()"
+          >
+            <nz-option
+              *ngFor="let shopCode of shopCodeOfOption"
+              [nzLabel]="shopCode"
+              [nzValue]="shopCode"
+            ></nz-option>
+            <nz-option *ngIf="fcpEditionList" nzDisabled nzCustomContent>
+              <span nz-icon nzType="loading" class="loading-icon"></span>
+              版本清單載入中...
+            </nz-option>
+          </nz-select>
+        </nz-collapse-panel>
+      </nz-collapse>
+
+      <!-- <nz-collapse>
+        <nz-collapse-panel
+          *ngFor="let panel of panels"
+          [nzHeader]="panel.name"
+          [nzActive]="panel.active"
+          [nzDisabled]="panel.disabled"
+        >
           <td style="text-align: right; width: 42%">
             &nbsp;&nbsp;
             <input
@@ -906,8 +943,8 @@
               E X C E L 匯出
             </button>
           </td>
-        </tr>
-      </div>
+        </nz-collapse-panel>
+      </nz-collapse> -->
 
       <p></p>
       <div style="background: rgb(255, 255, 255); min-height: 800px">

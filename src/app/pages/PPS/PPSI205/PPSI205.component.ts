@@ -27,6 +27,15 @@ export class PPSI205Component implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   isErrorMsg = false;
+  fcpEditionList;
+
+  panels = [
+    {
+      active: true,
+      name: '資料結轉與EXCEL匯出',
+      disabled: false,
+    },
+  ];
 
   titleArray1 = [
     '月份',
@@ -90,6 +99,8 @@ export class PPSI205Component implements AfterViewInit {
   tbppsm113List;
 
   ppsfcptb16_ms_cust_sortList;
+  fcpEditionLoading = false;
+  fcpEditionOption: string[] = [];
 
   constructor(
     private router: Router,
@@ -109,6 +120,42 @@ export class PPSI205Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
     //this.getRunFCPCount();
+  }
+
+  async getFcpList(): Promise<void> {
+    this.fcpEditionLoading = true;
+    await new Promise<boolean>((resolve, reject) => {
+      this.getPPSService.getFcpList().subscribe(
+        (res) => {
+          console.log(res);
+          if (res.code === 200) {
+            this.fcpEditionOption = res.data;
+            // this.MSHI004DataList.forEach((item, index, array) => {
+            //   if (this.shopCodeInputList.includes('鎖定')) {
+            //     this.MSHI004DataList[index].fcpEditionLock;
+            //   }
+            // });
+            resolve(true);
+          } else {
+            this.message.error('後台錯誤，獲取不到站別清單');
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取站別清單失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.fcpEditionLoading = false;
+      })
+      .catch((error) => {
+        this.fcpEditionLoading = false;
+      });
   }
 
   // 取得是否有正在執行的FCP
