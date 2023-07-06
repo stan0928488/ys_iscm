@@ -870,12 +870,33 @@ this.handleSelectCarModal() ;
 
        // TIMEDIFFFLAG_ADD 添加跳時間
 
-       let index12 = {headerName:'時間違反',field:'TIMEDIFFFLAG_ADD',rowDrag: false,resizable:true,width:80,hide: true }
-       exportHeader.push("時間違反")
+       let index12 = {headerName:'NEWEPST修正',field:'TIMEDIFFFLAG_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("NEWEPST修正")
        this.columnDefs.push(index12);
        this.outsideColumnDefs.push(index12);
        //数据类型
        this.columKeyType["TIMEDIFFFLAG_ADD"] = 0 ;
+
+       //可替换机台 1 ，2， 3
+       let indexMachine1 = {headerName:'替換機台1',field:'MACHINE1_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台1")
+       this.columnDefs.push(indexMachine1);
+       this.outsideColumnDefs.push(indexMachine1);
+       //数据类型
+       this.columKeyType["MACHINE1_ADD"] = 0 ;
+       let indexMachine2 = {headerName:'替換機台2',field:'MACHINE2_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台2")
+       this.columnDefs.push(indexMachine2);
+       this.outsideColumnDefs.push(indexMachine2);
+       //数据类型
+       this.columKeyType["MACHINE2_ADD"] = 0 ;
+       let indexMachine3 = {headerName:'替換機台1',field:'MACHINE3_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台3")
+       this.columnDefs.push(indexMachine3);
+       this.outsideColumnDefs.push(indexMachine3);
+       //数据类型
+       this.columKeyType["MACHINE3_ADD"] = 0 ;
+
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
@@ -1739,27 +1760,55 @@ this.handleSelectCarModal() ;
      /***機台更換開始 */
      //更換機台，將數據從子層調出
      handleChangeMachineModal(){
-      this.changeMachineModal.isVisible = true ;
+       // 可選機台
+       this.equipCodeChangeList =  [] ;
+      
       this.selectChangeEquipCode = "" ;
-      this.equipCodeChangeList =  this.equipCodeList ;
-      this.equipCodeChangeListOption = this.equipCodeChangeList.filter((item)=>{
+      // 過濾掉非當前機台
+      /*this.equipCodeChangeListOption = this.equipCodeChangeList.filter((item)=>{
          return item.value !== this.selectEquipCode
-      })
-      console.log("equipCodeChangeListOption:" + this.equipCodeChangeListOption)
+      })*/
+
       let changeMachineTB = [] ;
+      let childChangeMachineListTotal = [] ;
       // 子層數據源
       this.rowSelectData.forEach((item,index,array)=>{
+        let childChangeMachineList = [] ;
+        if(item.MACHINE1_ADD !== null && item.MACHINE1_ADD !== '' && item.MACHINE1_ADD !== undefined ){
+          childChangeMachineList.push({"label":item.MACHINE1_ADD,"value":item.MACHINE1_ADD}) ;
+          childChangeMachineListTotal.push(item.MACHINE1_ADD)
+        }
+        if(item.MACHINE2_ADD !== null && item.MACHINE2_ADD !== '' && item.MACHINE2_ADD !== undefined ){
+          childChangeMachineList.push({"label":item.MACHINE2_ADD,"value":item.MACHINE2_ADD})
+          childChangeMachineListTotal.push(item.MACHINE2_ADD)
+        }
+        if(item.MACHINE3_ADD !== null && item.MACHINE3_ADD !== '' && item.MACHINE3_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE3_ADD,"value":item.MACHINE3_ADD})
+          childChangeMachineListTotal.push(item.MACHINE3_ADD)
+        }
        //  console.log("子層數據源：" + JSON.stringify(item))
-       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false }
+       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false ,"childChangeMachine":childChangeMachineList}
         changeMachineTB.push(changeMachineTBTemp) ;
       })
+       childChangeMachineListTotal = childChangeMachineListTotal.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+       let changeMachineList = [] ;
+       childChangeMachineListTotal.forEach((value,index,array)=>{
+        changeMachineList.push({"label":value,"value":value}) 
+       })
+       console.log("changeMachineList length : " + JSON.stringify(changeMachineList) )
+       if(changeMachineList.length < 1) {
+        this.nzMessageService.error("沒有可用的替換機台") ;
+        return ;
+       }
+        // 可選機台
+      this.equipCodeChangeList =  changeMachineList ;
+      //替換機台表格
       this.changeMachineModal.table.tbData = changeMachineTB ;
-      //當前站別的機台
+      console.log("changeMachineTB:" + JSON.stringify(changeMachineTB))
+      
+      //當前站別已配置的機台
       this.getCurrentMachineData() ;
-     //equipCodeChangeList
-      
-     
-      
+      this.changeMachineModal.isVisible = true ;
      }
      // 機台更換選擇
      selectChangeEquipCodeFunc(){
@@ -1826,7 +1875,7 @@ this.handleSelectCarModal() ;
       comitDataTemp = this.changeMachineModal.table.tbData.filter((item)=>{
        return item.checked === true 
       })
-      console.log("comitData : " + JSON.stringify(comitDataTemp))
+      //console.log("comitDataTemp : " + JSON.stringify(comitDataTemp))
       //處理提交數據
       let comitData = []
       let checkData = true ;
@@ -1845,6 +1894,8 @@ this.handleSelectCarModal() ;
       }) ;
       
       if(checkData === true) {
+        //console.log("提交參數：" + JSON.stringify(comitData))
+        
         this.changeMachineModal.isConfirmLoading = true ;
         this.mshService.saveChangeMachine(comitData).subscribe(res=>{
           this.changeMachineModal.isConfirmLoading = false

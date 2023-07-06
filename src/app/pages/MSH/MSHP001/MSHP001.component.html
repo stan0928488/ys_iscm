@@ -420,7 +420,7 @@ nzWidth="300"
               <ng-template #editChangeMachine>
                 <td>  <input style="width:80px;"  nz-input [disabled]="true"  [(ngModel)]="data.PST_MACHINE_NEW" />
                   <nz-radio-group style="margin-left:15px;" [(ngModel)]="data.PST_MACHINE_NEW" nzButtonStyle="solid" (ngModelChange)="selectChangeEquipCodeOptionFunc(i)">
-                    <ng-container *ngFor="let itemTemp of equipCodeChangeListOption" >
+                    <ng-container *ngFor="let itemTemp of data.childChangeMachine" >
                       <label   nz-radio-button [nzValue]="itemTemp.value"  >{{itemTemp.label}}</label>
                     </ng-container>
                   </nz-radio-group>
