@@ -54,6 +54,7 @@ import { PPSI203Component } from './pages/PPS/PPSI203/PPSI203.component';
 import { PPSI204Component } from './pages/PPS/PPSI204/PPSI204.component';
 import { PPSI204_NonBarComponent } from './pages/PPS/PPSI204_NonBar/PPSI204_NonBar.component';
 import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
+import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210/PPSI210.component';
 import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
@@ -190,7 +191,8 @@ const routes: Routes = [
       { path: 'I122', component: PPSI122Component },
       { path: 'I123', component: PPSI123Component },
       { path: 'I124', component: PPSI205Component },
-      { path: 'I205_401', component: PPSI205_401Component},
+      { path: 'I124_100', component: PPSI205_100Component },
+      { path: 'I205_401', component: PPSI205_401Component },
       { path: 'I130', component: PPSI130Component },
       { path: 'I131', component: PPSI131Component },
     ],

@@ -18,12 +18,12 @@ registerLocaleData(zh);
 interface data {}
 
 @Component({
-  selector: 'app-PPSI205',
-  templateUrl: './PPSI205.component.html',
-  styleUrls: ['./PPSI205.component.scss'],
+  selector: 'app-PPSI205_100',
+  templateUrl: './PPSI205_100.component.html',
+  styleUrls: ['./PPSI205_100.component.scss'],
   providers: [NzMessageService, DatePipe],
 })
-export class PPSI205Component implements AfterViewInit {
+export class PPSI205_100Component implements AfterViewInit {
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
@@ -95,6 +95,8 @@ export class PPSI205Component implements AfterViewInit {
   tbppsm102ListAll;
   // tab 3
   tbppsm113List;
+
+  tbppsm100List;
 
   ppsfcptb16_ms_cust_sortList;
   fcpEditionList;
@@ -188,6 +190,9 @@ export class PPSI205Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
   }
 
+  async ngOnInit() {
+    await this.changeTab(5);
+  }
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
@@ -270,6 +275,19 @@ export class PPSI205Component implements AfterViewInit {
 
         myObj.loading = false;
       });
+  }
+
+  getTbppsm100List() {
+    this.loading = true;
+    let myObj = this;
+    let FCP_EDITION = 'F20230705153099';
+    this.getPPSService.getTbppsm100List(FCP_EDITION).subscribe((res) => {
+      console.log('getppsfcptb16_ms_cust_sortList success');
+      this.tbppsm100List = res;
+      console.log(this.tbppsm100List);
+
+      myObj.loading = false;
+    });
   }
 
   getFcpList() {
