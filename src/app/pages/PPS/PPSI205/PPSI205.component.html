@@ -838,30 +838,23 @@
               nz-button
               style="
                 box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #e6a3c2;
-                border: 2px blue none;
+                margin: right 10px;
               "
               [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
               nzType="primary"
               [disabled]="isRunFCP"
               (click)="importCompaign()"
             >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
               公版維護表
             </button>
             <button
               nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #e6a3c2;
-                border: 2px blue none;
-              "
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
               [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
               nzType="primary"
               [disabled]="isRunFCP"
               (click)="importCompaign()"
             >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
               工廠排程公版匯入
             </button>
           </td>
@@ -889,11 +882,11 @@
             (nzOpenChange)="getFcpList()"
           >
             <nz-option
-              *ngFor="let shopCode of shopCodeOfOption"
-              [nzLabel]="shopCode"
-              [nzValue]="shopCode"
+              *ngFor="let fcpEdition of fcpEditionOption"
+              [nzLabel]="fcpEdition"
+              [nzValue]="fcpEdition"
             ></nz-option>
-            <nz-option *ngIf="fcpEditionList" nzDisabled nzCustomContent>
+            <nz-option *ngIf="fcpEditionLoading" nzDisabled nzCustomContent>
               <span nz-icon nzType="loading" class="loading-icon"></span>
               版本清單載入中...
             </nz-option>

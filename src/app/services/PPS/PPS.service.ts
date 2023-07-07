@@ -1075,6 +1075,12 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  getFcpList(_plantCode) {
+    let queryUrl = this.APIURL + `/FCP/I205/getFcpEditionList/${_plantCode}`;
+    console.log(`API Url : ${queryUrl}`);
+    return this.http.get<any>(queryUrl);
+  }
+
   //upd102ListData 修改102List
   upd102ListData(obj) {
     const body = JSON.stringify(obj);
