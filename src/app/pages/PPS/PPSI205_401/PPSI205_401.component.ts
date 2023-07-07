@@ -31,11 +31,13 @@ interface data {
 export class PPSI205_401Component implements AfterViewInit {
 
   selectedVer_default:string = null;
-
-  selectedVer = [{label:'',value:''}]; //版本选择
+  inputDate_val:number = 0;
+  selectedVer = [{label:'',value:''}]; //版本選擇
 
   PLANT_CODE;
   USERNAME;
+  DAY = this.inputDate_val;
+
 	loading = false; //loaging data flag
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -83,14 +85,14 @@ export class PPSI205_401Component implements AfterViewInit {
   isSpinning = false;
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-      { headerName:'MO 版次',field: 'MO_EDITION' , filter: true,width: 200 },
-      { headerName:'日期',field: 'EPST' , filter: true,width: 100 },
-      { headerName: '401 到料工時(天)' ,field: 'WORK_TIME1' , filter: true,width: 150 },
-      { headerName:'405 到料工時(天)',field: 'WORK_TIME2' , filter: true,width: 150},
-      { headerName:'401 剩餘工時(天)',field: 'LEAST_TIME1' , filter: true,width: 150 },
-      { headerName:'405 剩餘工時(天)',field: 'LEAST_TIME2' , filter: true,width: 150 },
-      { headerName:'401 投產日_起', field:'START_DATE', filter:true, width: 150},
-      { headerName: '401 投產日_迄' ,field: 'END_DATE' , filter: true,width: 150 },
+      { headerName:'MO 版次',field: 'moEdition' , filter: true,width: 200 },
+      { headerName:'日期',field: 'exportDateTime' , filter: true,width: 150 },
+      { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 150 },
+      { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 150},
+      { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 150 },
+      { headerName:'405 剩餘工時(天)',field: 'leastTime2' , filter: true,width: 150 },
+      { headerName:'401 投產日_起', field:'startDate', filter:true, width: 150},
+      { headerName: '401 投產日_迄' ,field: 'endDate' , filter: true,width: 150 },
     ];
     public ColGroupDef: ColDef = {
       filter: true,
@@ -117,7 +119,7 @@ export class PPSI205_401Component implements AfterViewInit {
     this.getTbppsm101List();
     this.getTbppsm119ListAll();
     this.getTbppsm119VerList();
-    this.getRunFCPCount();
+    // this.getRunFCPCount();
   }
 
    // 取得是否有正在執行的FCP
@@ -170,6 +172,27 @@ export class PPSI205_401Component implements AfterViewInit {
       }
       console.log(this.getTbppsm119ListAll)
     });
+  }
+
+  converTBPPSM119Data() {
+    let data = {"userName": "","day":this.inputDate_val, "moEdition": ""};
+    
+    data.moEdition = this.selectedVer_default;
+    data.userName = this.USERNAME;
+    data.day = this.inputDate_val;
+
+      console.log("converTBPPSM119Data success");
+      this.getPPSService.converTBPPSM119Data(data).subscribe(res =>{
+        let result:any = res ;
+        if(result.code == 0) {
+          this.message.error('結轉發生異常，請選擇版本號');
+        }else {
+        this.message.info('結轉成功');
+        }
+      },err => {
+        this.message.error('結轉發生異常，請選擇版本號');
+      });
+      console.log("Success");
   }
 
   //I205_401 MO_EDITION
