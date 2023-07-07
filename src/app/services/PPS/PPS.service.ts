@@ -20,7 +20,7 @@ export class PPSService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
-  getPPS
+  getPPS;
 
   //Get getPPSINP13List
   getPPSINP13List() {
@@ -122,10 +122,10 @@ export class PPSService {
   }
 
   //Get getPPSINP01List 取得tab01 data
-  getPPSINP01List(pageIndex : number, pageSize : number) {
+  getPPSINP01List(pageIndex: number, pageSize: number) {
     const httpParams = new HttpParams()
-    .set('pageIndex', pageIndex)
-    .set('pageSize', pageSize);
+      .set('pageIndex', pageIndex)
+      .set('pageSize', pageSize);
     console.log('api service getPPSINP01List');
     let queryUrl = this.APIURL + `/FCP/I101/getPPSINP01List`;
     console.log(queryUrl);
@@ -1069,7 +1069,6 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  
   // MO I205_401 DataList
   getTbppsm119ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
@@ -1084,10 +1083,17 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-
   //getTbppsm113List getTbppsm113List
   getTbppsm113List(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  //getppsfcptb16_ms_cust_sortList getppsfcptb16_ms_cust_sortList
+  getPpsfcptb16MsCustSortList(_plantCode) {
+    let queryUrl =
+      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1815,12 +1821,12 @@ export class PPSService {
   getR309Data(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APIURL + `/FCP/R308/getPPSR309List`;
-    return this.http.post(queryUrl,body, this.httpOptions);
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR308VerListData(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
-    return this.http.post(queryUrl,body, this.httpOptions);
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 }
