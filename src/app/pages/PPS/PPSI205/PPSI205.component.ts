@@ -10,12 +10,7 @@ import {NzModalService} from "ng-zorro-antd/modal"
 import { CellClickedEvent, 
   ColDef, 
   ColGroupDef,
-  GridReadyEvent,
-  PreConstruct, 
-  ICellRendererParams,
-  IDatasource,
-  IGetRowsParams,
-  RowModelType, } from 'ag-grid-community';
+  } from 'ag-grid-community';
 
 import { Router } from "@angular/router";
 import * as moment from 'moment';
@@ -69,32 +64,31 @@ export class PPSI205Component implements AfterViewInit {
   // tab 3
   tbppsm113List;
 
-  public defaultColDefTab1: ColDef = {
-    sortable: true,
-    filter: true,
-    resizable: true
-  };
-
   isSpinning = false;
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-      { headerName:'匯入時間',field: 'IMPORTDATETIME' , filter: false,width: 200 },
-      { headerName:'廠區別(鹽水廠YS)',field: 'PLANT_CODE' , filter: false,width: 150 },
-      { headerName: '優先順序' ,field: 'ORDER_ID' , filter: false,width: 100 },
-      { headerName:'站別',field: 'SCH_SHOP_CODE' , filter: false,width: 100},
-      { headerName:'機台',field: 'EQUIP_CODE' , filter: false,width: 100 },
-      { headerName:'下一站站別',field: 'NEXT_SHOP_CODE' , filter: false,width: 120 },
-      { headerName:'max(EPST/ASAP)', field:'MAX_DATE', filter:false, width: 150},
-      { headerName: '天數' ,field: 'DAYS' , filter: false,width: 100 },
-      { headerName: '生產時間(起)' ,field: 'STARTDATE' , filter: false,width: 120 },
-      { headerName: 'TC頻率升降冪' ,field: 'TC_FREQUENCE_LIFT' , filter: false,width: 150 },
-      { headerName:'轉入COMPAIGN限制表時間',field: 'EXPORTDATETIME' , filter: false,width: 200 },
-      { headerName:'分類(A. 401 auto)', field: "CATEGORY", filter :false,width: 150 },
-      { headerName:'建立日期',field: 'DATE_CREATE' , filter: false,width: 200 },
-      { headerName: '建立者' ,field: 'USER_CREATE' , filter: false,width: 100 },
-      { headerName:'異動日期',field: 'DATE_UPDATE' , filter: false,width: 200 },
-      { headerName: '異動者' ,field: 'USER_UPDATE' , filter: false,width: 100 },
+      { headerName:'匯入時間',field: 'IMPORTDATETIME' , filter: true,width: 200 },
+      { headerName:'廠區別(鹽水廠YS)',field: 'PLANT_CODE' , filter: true,width: 150 },
+      { headerName: '優先順序' ,field: 'ORDER_ID' , filter: true,width: 100 },
+      { headerName:'站別',field: 'SCH_SHOP_CODE' , filter: true,width: 100},
+      { headerName:'機台',field: 'EQUIP_CODE' , filter: true,width: 100 },
+      { headerName:'下一站站別',field: 'NEXT_SHOP_CODE' , filter: true,width: 120 },
+      { headerName:'max(EPST/ASAP)', field:'MAX_DATE', filter:true, width: 150},
+      { headerName: '天數' ,field: 'DAYS' , filter: true,width: 100 },
+      { headerName: '生產時間(起)' ,field: 'STARTDATE' , filter: true,width: 120 },
+      { headerName: 'TC頻率升降冪' ,field: 'TC_FREQUENCE_LIFT' , filter: true,width: 150 },
+      { headerName:'轉入COMPAIGN限制表時間',field: 'EXPORTDATETIME' , filter: true,width: 200 },
+      { headerName:'分類(A. 401 auto)', field: "CATEGORY", filter :true,width: 150 },
+      { headerName:'建立日期',field: 'DATE_CREATE' , filter: true,width: 200 },
+      { headerName: '建立者' ,field: 'USER_CREATE' , filter: true,width: 100 },
+      { headerName:'異動日期',field: 'DATE_UPDATE' , filter: true,width: 200 },
+      { headerName: '異動者' ,field: 'USER_UPDATE' , filter: true,width: 100 },
     ];
+    public ColGroupDef: ColDef = {
+        filter: true,
+        sortable: true,
+        resizable: true,
+    };
 
   constructor(
     private router: Router,
@@ -115,7 +109,7 @@ export class PPSI205Component implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getTbppsm101List();
     this.getTbppsm102ListAll();
-    //this.getRunFCPCount();
+    this.getRunFCPCount();
   }
 
   // 取得是否有正在執行的FCP
@@ -156,7 +150,7 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
-  // tab2 All
+  // tab4 All
   getTbppsm102ListAll() {
 
     this.getPPSService.getTbppsm102ListAll(this.PLANT_CODE).subscribe(res => {
@@ -213,7 +207,7 @@ export class PPSI205Component implements AfterViewInit {
         fileName = `盤元冷抽尺寸優先順序`;
         titleArray = this.titleArray1;
       } else {
-        this.errorMSG("匯出失敗", "盤元冷抽尺寸優先順序目前無資料");
+        this.errorMSG("匯出失敗", "盤元冷抽尺寸優先順序表目前無資料");
         return;
       }
     } else if(_type === '2') {

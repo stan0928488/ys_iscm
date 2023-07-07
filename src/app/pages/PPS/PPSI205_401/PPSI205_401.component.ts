@@ -83,16 +83,21 @@ export class PPSI205_401Component implements AfterViewInit {
   isSpinning = false;
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-      { headerName:'MO 版次',field: 'IMPORTDATETIME' , filter: false,width: 200 },
-      { headerName:'日期',field: 'PLANT_CODE' , filter: false,width: 100 },
-      { headerName: '401 到料工時(天)' ,field: 'ORDER_ID' , filter: false,width: 150 },
-      { headerName:'405 到料工時(天)',field: 'SCH_SHOP_CODE' , filter: false,width: 150},
-      { headerName:'401 剩餘工時(天)',field: 'EQUIP_CODE' , filter: false,width: 150 },
-      { headerName:'405 剩餘工時(天)',field: 'NEXT_SHOP_CODE' , filter: false,width: 150 },
-      { headerName:'401 投產日_起', field:'MAX_DATE', filter:false, width: 150},
-      { headerName: '401 投產日_迄' ,field: 'DAYS' , filter: false,width: 150 },
+      { headerName:'MO 版次',field: 'MO_EDITION' , filter: true,width: 200 },
+      { headerName:'日期',field: 'EPST' , filter: true,width: 100 },
+      { headerName: '401 到料工時(天)' ,field: 'WORK_TIME1' , filter: true,width: 150 },
+      { headerName:'405 到料工時(天)',field: 'WORK_TIME2' , filter: true,width: 150},
+      { headerName:'401 剩餘工時(天)',field: 'LEAST_TIME1' , filter: true,width: 150 },
+      { headerName:'405 剩餘工時(天)',field: 'LEAST_TIME2' , filter: true,width: 150 },
+      { headerName:'401 投產日_起', field:'START_DATE', filter:true, width: 150},
+      { headerName: '401 投產日_迄' ,field: 'END_DATE' , filter: true,width: 150 },
     ];
-
+    public ColGroupDef: ColDef = {
+      filter: true,
+      sortable: true,
+      resizable: true,
+  };
+  
   constructor(
     private router: Router,
     private getPPSService: PPSService,
@@ -112,10 +117,7 @@ export class PPSI205_401Component implements AfterViewInit {
     this.getTbppsm101List();
     this.getTbppsm119ListAll();
     this.getTbppsm119VerList();
-    let postData = {};
-    postData['mo_EDITION'] = this.selectedVer_default;
-    
-    //this.getRunFCPCount();
+    this.getRunFCPCount();
   }
 
    // 取得是否有正在執行的FCP
@@ -212,6 +214,8 @@ export class PPSI205_401Component implements AfterViewInit {
       this.getTbppsm102List();
     } else if(tab === 3){
       this.getTbppsm113List();
+    } else if(tab === 4) {
+      this.getTbppsm119ListAll();
     }
   }
 
@@ -224,10 +228,10 @@ export class PPSI205_401Component implements AfterViewInit {
     if(_type === '1') {
       if(this.tbppsm101List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm101List);
-        fileName = `尺寸優先順序`;
+        fileName = `盤元冷抽尺寸優先順序`;
         titleArray = this.titleArray1;
       } else {
-        this.errorMSG("匯出失敗", "尺寸優先順序表目前無資料");
+        this.errorMSG("匯出失敗", "盤元冷抽尺寸優先順序表目前無資料");
         return;
       }
     } else if(_type === '2') {
