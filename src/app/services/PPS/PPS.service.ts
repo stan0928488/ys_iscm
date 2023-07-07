@@ -1091,9 +1091,9 @@ export class PPSService {
   }
 
   //getppsfcptb16_ms_cust_sortList getppsfcptb16_ms_cust_sortList
-  getPpsfcptb16MsCustSortList(_plantCode) {
+  getPpsfcptb16MsCustSortList(fcpEditionList) {
     let queryUrl =
-      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_plantCode}`;
+      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${fcpEditionList}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }

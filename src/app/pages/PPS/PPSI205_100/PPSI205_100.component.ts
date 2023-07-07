@@ -55,7 +55,6 @@ export class PPSI205_100Component implements AfterViewInit {
   ];
   titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
   titleArray4 = [
-    'FCP版本',
     '站別',
     '投產機台',
     '製程碼',
@@ -190,14 +189,12 @@ export class PPSI205_100Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
   }
 
-  async ngOnInit() {
-    await this.changeTab(5);
-  }
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
     this.getTbppsm102ListAll();
     this.getRunFCPCount();
+    this.changeTab(5);
   }
 
   // 取得是否有正在執行的FCP
@@ -205,6 +202,7 @@ export class PPSI205_100Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getRunFCPCount().subscribe((res) => {
       console.log('getRunFCPCount success');
+      console.log(res);
       if (res > 0) this.isRunFCP = true;
     });
   }
@@ -262,20 +260,20 @@ export class PPSI205_100Component implements AfterViewInit {
     });
   }
 
-  getppsfcptb16_ms_cust_sortList() {
-    this.loading = true;
-    let myObj = this;
-    let FCP_EDITION = 'F20230705153099';
-    this.getPPSService
-      .getPpsfcptb16MsCustSortList(FCP_EDITION)
-      .subscribe((res) => {
-        console.log('getppsfcptb16_ms_cust_sortList success');
-        this.ppsfcptb16_ms_cust_sortList = res;
-        console.log(this.ppsfcptb16_ms_cust_sortList);
+  // getppsfcptb16_ms_cust_sortList() {
+  //   this.loading = true;
+  //   let myObj = this;
+  //   let FCP_EDITION = 'F20230705153099';
+  //   this.getPPSService
+  //     .getPpsfcptb16MsCustSortList(FCP_EDITION)
+  //     .subscribe((res) => {
+  //       console.log('getppsfcptb16_ms_cust_sortList success');
+  //       this.ppsfcptb16_ms_cust_sortList = res;
+  //       console.log(this.ppsfcptb16_ms_cust_sortList);
 
-        myObj.loading = false;
-      });
-  }
+  //       myObj.loading = false;
+  //     });
+  // }
 
   getTbppsm100List() {
     this.loading = true;
@@ -314,7 +312,7 @@ export class PPSI205_100Component implements AfterViewInit {
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
     } else if (tab === 5) {
-      this.getppsfcptb16_ms_cust_sortList();
+      this.getTbppsm100List();
     }
   }
 
@@ -355,6 +353,15 @@ export class PPSI205_100Component implements AfterViewInit {
       if (this.tbppsm102ListAll.length > 0) {
         // data = this.formatDataForExcel(_type. this.tbppsm102ListAll);
         fileName = ``;
+      }
+    } else if (_type === '5') {
+      if (this.tbppsm100List.length > 0) {
+        data = this.formatDataForExcel(_type, this.tbppsm100List);
+        fileName = `公版排程維護`;
+        titleArray = this.titleArray4;
+      } else {
+        this.errorMSG('匯出失敗', '公版排程維護目前無資料');
+        return;
       }
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
@@ -438,6 +445,28 @@ export class PPSI205_100Component implements AfterViewInit {
           // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
           // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
         });
+      }
+    } else if (_type === '5') {
+      for (let item of _displayData) {
+        let obj = {};
+        _.extend(obj, {
+          // ORDER_ID: _.get(item, "ORDER_ID"),
+          SCH_SHOP_CODE: _.get(item, 'schShopCode'),
+          PST_MACHINE: _.get(item, 'pstMachine'),
+          PROCESS_CODE: _.get(item, 'processCode'),
+          INPUT_TYPE: _.get(item, 'inputType'),
+          OUTPUT_SHAPE: _.get(item, 'outputShape'),
+          INPUT_DIA: _.get(item, 'inputDia'),
+          OUT_DIA: _.get(item, 'outDia'),
+          KIND_TYPE: _.get(item, 'kindType'),
+          NEXT_SCH_SHOP_CODE: _.get(item, 'nextSchShopCode'),
+          GRADE_GROUP: _.get(item, 'gradeGroup'),
+          NEW_EPST_YYMM: _.get(item, 'newEpstYymm'),
+          CAMPAIGN_SORT: _.get(item, 'campaignSort'),
+          DATE_CREATE: _.get(item, 'dateCreate'),
+          USER_CREATE: _.get(item, 'userCreate'),
+        });
+        excelData.push(obj);
       }
     }
     console.log(excelData);
@@ -600,6 +629,52 @@ export class PPSI205_100Component implements AfterViewInit {
         return;
       } else {
         this.importExcel3('3', importdata);
+      }
+    } else if (_type === '5') {
+      console.log('incomingfile e5 : ' + _type);
+      if (
+        worksheet.A1 === undefined ||
+        worksheet.B1 === undefined ||
+        worksheet.C1 === undefined ||
+        worksheet.D1 === undefined ||
+        worksheet.E1 === undefined ||
+        worksheet.F1 === undefined ||
+        worksheet.G1 === undefined ||
+        worksheet.H1 === undefined ||
+        worksheet.I1 === undefined ||
+        worksheet.J1 === undefined ||
+        worksheet.K1 === undefined ||
+        worksheet.L1 === undefined ||
+        worksheet.M1 === undefined ||
+        worksheet.N1 === undefined
+      ) {
+        this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+        return;
+      } else if (
+        worksheet.A1.v !== '站別' ||
+        worksheet.B1.v !== '投產機台' ||
+        worksheet.C1.v !== '製程碼' ||
+        worksheet.D1.v !== '投入型態' ||
+        worksheet.E1.v !== '產出型態' ||
+        worksheet.F1.v !== '投入尺寸' ||
+        worksheet.G1.v !== '產出尺寸' ||
+        worksheet.H1.v !== '產品種類' ||
+        worksheet.I1.v !== '下站別' ||
+        worksheet.J1 !== '鋼種群組' ||
+        worksheet.K1 !== '自訂月份' ||
+        worksheet.L1 !== '自訂排序' ||
+        worksheet.M1 !== '創建時間' ||
+        worksheet.N1 !== '創建者'
+      ) {
+        this.errorMSG(
+          '檔案樣板欄位表頭錯誤',
+          '請先下載資料後，再透過該檔案調整上傳。'
+        );
+        this.clearFile();
+        return;
+      } else {
+        this.importExcel5('5', importdata);
       }
     }
   }
@@ -939,6 +1014,126 @@ export class PPSI205_100Component implements AfterViewInit {
 
               this.sucessMSG('EXCCEL上傳成功', '');
               this.getTbppsm113List();
+              this.clearFile();
+            } else {
+              this.errorMSG('匯入錯誤', res[0].MSG);
+              this.clearFile();
+              this.LoadingPage = false;
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+            this.LoadingPage = false;
+          }
+        );
+        this.importdata = [];
+        this.importdata_new = [];
+        this.errorTXT = [];
+      });
+    }
+  }
+
+  importExcel5(_type, _data) {
+    console.log('incomingfile e6 : ' + _type);
+    for (let i = 0; i < _data.length; i++) {
+      let schShopCode = _data[i].站別;
+      let pstMachine = _data[i].投產機台;
+      let processCode = _data[i].製程碼;
+      let inputType = _data[i].投入型態;
+      let outputShape = _data[i].產出型態;
+      let inputDia = _data[i].投入尺寸;
+      let outDia = _data[i].產出尺寸;
+      let kindType = _data[i].產品種類;
+      let nextSchShopCode = _data[i].下站別;
+      let gradeGroup = _data[i].鋼種群組;
+      let newEpstYymm = _data[i].自訂月份;
+      let campaignSort = _data[i].自訂排序;
+      let dateCreate = _data[i].創建時間;
+      let userCreate = _data[i].創建者;
+
+      if (
+        schShopCode === undefined ||
+        pstMachine === undefined ||
+        processCode === undefined ||
+        inputType === undefined ||
+        outputShape === undefined ||
+        inputDia === undefined ||
+        outDia === undefined ||
+        kindType === undefined ||
+        nextSchShopCode === undefined ||
+        gradeGroup === undefined ||
+        newEpstYymm === undefined ||
+        campaignSort === undefined ||
+        dateCreate === undefined ||
+        userCreate === undefined
+      ) {
+        let col = i + 2;
+        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+        this.isERROR = true;
+      }
+    }
+
+    if (this.isERROR) {
+      // 匯入錯誤失敗訊息提醒
+      this.clearFile();
+      this.isErrorMsg = true;
+      this.importdata_new = [];
+      this.errorMSG('匯入錯誤', this.errorTXT);
+    } else {
+      for (let i = 0; i < _data.length; i++) {
+        let schShopCode = _data[i].站別.toString();
+        let pstMachine = _data[i].投產機台.toString();
+        let processCode = _data[i].製程碼.toString();
+        let inputType = _data[i].投入型態.toString();
+        let outputShape = _data[i].產出型態.toString();
+        let inputDia = _data[i].投入尺寸.toString();
+        let outDia = _data[i].產出尺寸.toString();
+        let kindType = _data[i].產品種類.toString();
+        let nextSchShopCode = _data[i].下站別.toString();
+        let gradeGroup = _data[i].鋼種群組.toString();
+        let newEpstYymm = _data[i].自訂月份.toString();
+        let campaignSort = _data[i].自訂排序.toString();
+        let dateCreate = _data[i].創建時間.toString();
+        let userCreate = _data[i].創建者.toString();
+
+        this.importdata_new.push({
+          schShopCode: schShopCode,
+          pstMachine: pstMachine,
+          processCode: processCode,
+          inputType: inputType,
+          outputShape: outputShape,
+          inputDia: inputDia,
+          outDia: outDia,
+          kindType: kindType,
+          nextSchShopCode: nextSchShopCode,
+          gradeGroup: gradeGroup,
+          newEpstYymm: newEpstYymm,
+          campaignSort: campaignSort,
+          dateCreate: dateCreate,
+          userCreate: userCreate,
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        this.LoadingPage = true;
+        let myObj = this;
+        let obj = {};
+        _.extend(obj, {
+          NOWTABS: _type,
+          EXCELDATA: this.importdata_new,
+          PLANT_CODE: this.PLANT_CODE,
+          USERCODE: this.USERNAME,
+          DATETIME: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
+        });
+        myObj.getPPSService.importI205Excel(obj).subscribe(
+          (res) => {
+            if (res[0].MSG === 'Y') {
+              this.loading = false;
+              this.LoadingPage = false;
+
+              this.sucessMSG('EXCCEL上傳成功', '');
+              this.getTbppsm102List();
               this.clearFile();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);

@@ -262,11 +262,11 @@ export class PPSI205Component implements AfterViewInit {
     let myObj = this;
     let FCP_EDITION = 'F20230705153099';
     this.getPPSService
-      .getPpsfcptb16MsCustSortList(FCP_EDITION)
+      .getPpsfcptb16MsCustSortList(this.fcpEditionList)
       .subscribe((res) => {
         console.log('getppsfcptb16_ms_cust_sortList success');
         this.ppsfcptb16_ms_cust_sortList = res;
-        console.log(this.ppsfcptb16_ms_cust_sortList);
+        console.log(this.fcpEditionList);
 
         myObj.loading = false;
       });
@@ -280,7 +280,7 @@ export class PPSI205Component implements AfterViewInit {
       this.fcpEditionOption = res;
       console.log(this.fcpEditionOption);
       console.log(res.fcpEdition);
-
+      this.getppsfcptb16_ms_cust_sortList();
       myObj.loading = false;
     });
   }

@@ -996,7 +996,7 @@
               [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
               nzType="primary"
               [disabled]="isRunFCP"
-              (click)="Upload('2')"
+              (click)="Upload('5')"
             >
               <span nz-icon nzType="upload" nzTheme="outline"></span>
               E X C E L 匯入
@@ -1010,7 +1010,7 @@
                 border: 2px blue none;
               "
               nzType="primary"
-              (click)="convertToExcel('2')"
+              (click)="convertToExcel('5')"
             >
               <span nz-icon nzType="download" nzTheme="outline"></span>
               E X C E L 匯出
@@ -1025,7 +1025,7 @@
           <nz-table
             #RowTable5
             nzBordered
-            [nzData]="ppsfcptb16_ms_cust_sortList"
+            [nzData]="tbppsm100List"
             [nzPageSize]="15"
             [nzScroll]="{ y: '600px' }"
           >
