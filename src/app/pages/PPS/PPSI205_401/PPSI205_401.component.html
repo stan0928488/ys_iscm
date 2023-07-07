@@ -24,7 +24,7 @@
 
         <div>
           <tr>
-              <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+              <!-- <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label> -->
   
             <td style="text-align:right;width:52%">
               &nbsp;&nbsp;
@@ -331,7 +331,8 @@
                 ><span nzTheme="outline"></span>
                 轉入 Campaign 表
                 </button>
-                &nbsp;  
+                &nbsp;
+               
                 <a 
                 href="#/singleData/I124"
                 nz-button nzType="primary"
@@ -346,7 +347,7 @@
                             style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold;"
                             [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
                             [disabled]="isRunFCP"
-                            (click)="importCompaign()"
+                            (click)="converTBPPSM119Data()"
                         ><span nzTheme="outline"></span>
                         資料結轉
                         </button>
@@ -360,9 +361,12 @@
                         E X C E L 匯出
                         </button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
+
+                          <nz-input-number style="width: 50px; height: 25px;" nz-input placeholder="天數" [(ngModel)]="inputDate_val" [nzMin]="0" [nzMax]="50" [nzStep]="1" nzSize="small"></nz-input-number>
+                         
                         <nz-select nzShowSearch nzAllowClear
                           [(ngModel)]="selectedVer_default"
-                          style="width: 220px; margin-left:50px;"
+                          style="width: 220px; margin-left:25px;"
                           nzPlaceHolder="請選擇版本號"
                           (ngModelChange)="getTbppsm119VerList()"
                           >
