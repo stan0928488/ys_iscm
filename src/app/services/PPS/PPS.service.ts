@@ -1104,6 +1104,12 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  getTbppsm100List(_plantCode) {
+    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm100List/${_plantCode}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
   getFcpList(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getFcpEditionList/${_plantCode}`;
     console.log(`API Url : ${queryUrl}`);
