@@ -55,21 +55,14 @@ export class PPSI205Component implements AfterViewInit {
   ];
   titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
   titleArray4 = [
-    'FCP版本',
-    '站別',
-    '投產機台',
-    '製程碼',
-    '投入型態',
-    '產出型態',
-    '投入尺寸',
-    '產出尺寸',
-    '產品種類',
-    '下站別',
-    '鋼種群組',
-    '自訂月份',
-    '自訂排序',
-    '創建時間',
-    '創建者',
+    'MO版本',
+    '轉入COMPAIGN限制表時間',
+    '401工時(天)',
+    '405工時(天)',
+    '401剩餘工時(天)',
+    '405剩餘工時(天)',
+    '401投產日期(起)',
+    '401投產日期(迄)',
   ];
   datetime = moment();
   arrayBuffer: any;
@@ -117,12 +110,6 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
       width: 200,
     },
-    {
-      headerName: '廠區別(鹽水廠YS)',
-      field: 'PLANT_CODE',
-      filter: true,
-      width: 150,
-    },
     { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
     { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
     { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
@@ -156,12 +143,6 @@ export class PPSI205Component implements AfterViewInit {
       field: 'EXPORTDATETIME',
       filter: true,
       width: 200,
-    },
-    {
-      headerName: '分類(A. 401 auto)',
-      field: 'CATEGORY',
-      filter: true,
-      width: 150,
     },
     { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 200 },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
@@ -335,12 +316,14 @@ export class PPSI205Component implements AfterViewInit {
       }
     } else if (_type === '4') {
       if (this.tbppsm102ListAll.length > 0) {
-        // data = this.formatDataForExcel(_type. this.tbppsm102ListAll);
-        fileName = ``;
+        data = this.formatDataForExcel(_type, this.tbppsm102ListAll);
+        fileName = `401 彙整資料表`;
+        titleArray = this.titleArray4;
       }
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
   }
+
 
   formatDataForExcel(_type, _displayData) {
     console.log('_displayData');
@@ -403,22 +386,14 @@ export class PPSI205Component implements AfterViewInit {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // PLANT_CODE: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
+          MO_EDITION: _.get(item, 'moEdition'),
+          EXPORTDATETIME: _.get(item, 'exportDateTime'),
+          WORK_TIME1: _.get(item, 'workTIme1'),
+          WORK_TIME2: _.get(item, 'workTIme2'),
+          LEAST_TIME1: _.get(item, 'leastTime1'),
+          LEAST_TIME2: _.get(item, 'leastTime2'),
+          START_DATE: _.get(item, 'startDate'),
+          END_DATE: _.get(item, 'endDate'),
         });
       }
     }
@@ -583,6 +558,39 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
+    } else if(_type === '4') {
+      console.log('incomingfile e5 : ' + _type);
+      if(
+        worksheet.A1.v !== undefined ||
+        worksheet.B1.v !== undefined ||
+        worksheet.C1.v !== undefined ||
+        worksheet.D1.v !== undefined ||
+        worksheet.E1.v !== undefined ||
+        worksheet.F1.v !== undefined ||
+        worksheet.G1.v !== undefined ||  
+        worksheet.H1.v !== undefined   
+      ) {
+        this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+        return;
+
+      }else if (
+        worksheet.A1.v !== 'MO版本' ||
+        worksheet.B1.v !== '轉入COMPAIGN限制表時間' ||
+        worksheet.C1.v !== '401到料工時(天)' ||
+        worksheet.D1.v !== '405到料工時(天)' ||
+        worksheet.E1.v !== '401剩餘工時(天)' ||
+        worksheet.F1.v !== '405剩餘工時(天)' ||
+        worksheet.G1.v !== '401投產日期(起)' ||  
+        worksheet.H1.v !== '401投產日期(迄)'  
+      ) {
+        this.errorMSG(
+          '檔案樣板欄位表頭錯誤',
+          '請先下載資料後，再透過該檔案調整上傳。'
+        );
+        this.clearFile();
+        return;
+        }
     }
   }
 
@@ -826,9 +834,7 @@ export class PPSI205Component implements AfterViewInit {
       let dia = _data[i].軋延尺寸;
       let cycleNo = _data[i].CYCLE;
       let startDate = this.dateFormat(
-        this.ExcelDateExchange(_data[i]['日期~起']),
-        2
-      );
+        this.ExcelDateExchange(_data[i]['日期~起']),2);
 
       if (startDate === 'Invalid date') {
         startDate = this.dateFormat(_data[i]['日期~起'], 2);
@@ -949,7 +955,7 @@ export class PPSI205Component implements AfterViewInit {
     console.log(JSON.stringify(this.file));
   }
 
-  // 上傳到compaign 資料到 ppsinptb16
+  // 上傳到campaign 資料到 
   importCompaign() {
     return new Promise((resolve, reject) => {
       this.LoadingPage = true;
@@ -967,7 +973,7 @@ export class PPSI205Component implements AfterViewInit {
             this.loading = false;
             this.LoadingPage = false;
 
-            this.sucessMSG('上傳Compaign成功', '');
+            this.sucessMSG('上傳Campaign成功', '');
             this.getTbppsm102List();
           } else {
             this.errorMSG('上傳失敗', res[0].MSG);
@@ -1299,4 +1305,25 @@ export class PPSI205Component implements AfterViewInit {
     this.errorTXT = [];
     this.isErrorMsg = false;
   }
+
+
+   // I205 Auto Campaign 匯出 Excel
+   excelExport(){
+    this.isSpinning = true;
+    let headerArray = [] ;
+
+    this.columnDefs.forEach(function(obj){
+      headerArray.push(obj['headerName']);
+    });
+
+    let exportTableName = "Auto Campaign 表"
+
+    let exportData = this.rowData;
+    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
+    
+    this.isSpinning = false;
+
+ }
+
+ 
 }
