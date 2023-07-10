@@ -952,31 +952,23 @@
     </nz-tab>
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)">
-      <div>
+      <div style="margin-bottom: 15px">
         <tr>
           <td>
             <a
+              class="Tab5-a"
+              style="background-color: #ffffff; color: dodgerblue"
               [routerLink]="['/singleData/I124']"
-              [queryParams]="{ selectedIndex: 4 }"
+              [queryParams]="{ selectedTabIndex: 4 }"
             >
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-                [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-                nzType="primary"
-              >
-                公版維護表
-              </button></a
+              公版維護表
+            </a>
+            <a
+              class="Tab5-a"
+              style="background-color: #fafafa; color: black"
+              [routerLink]="['/singleData/I124_100']"
             >
-            <a [routerLink]="['/singleData/I124_100']">
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-                [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-                nzType="primary"
-              >
-                工廠排程公版匯入
-              </button></a
+              工廠排程公版匯入</a
             >
           </td>
           <label

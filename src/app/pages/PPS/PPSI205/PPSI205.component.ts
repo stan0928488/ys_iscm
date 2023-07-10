@@ -202,6 +202,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getTbppsm101List();
     this.getTbppsm102ListAll();
     this.getRunFCPCount();
+    this.getTbppsm113List();
     this.changeTab(5);
   }
 

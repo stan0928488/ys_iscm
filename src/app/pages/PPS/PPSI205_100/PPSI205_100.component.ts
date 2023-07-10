@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
+import { promise } from 'protractor';
 registerLocaleData(zh);
 interface data {}
 
@@ -173,26 +174,20 @@ export class PPSI205_100Component implements AfterViewInit {
   async ngOnInit() {
     console.log('預載入');
     await this.getFcpList();
-    console.log(this.maxFcp);
+    console.log(this.maxFcp + '最大');
     this.fcpEditionList = this.maxFcp;
-    console.log(this.fcpEditionList);
-    console.log('================================');
-    await new Promise<boolean>((resolve, reject) => {
-      this.getPPSService
-        .getPpsfcptb16MsCustSortList(this.fcpEditionList)
-        .subscribe((res) => {
-          console.log('預載入 success');
-          this.ppsfcptb16_ms_cust_sortList = res;
-          console.log(this.maxFcp);
-          this.loading = false;
-        });
-    });
+    this.getPPSService
+      .getPpsfcptb16MsCustSortList(this.fcpEditionList)
+      .subscribe((res) => {
+        this.ppsfcptb16_ms_cust_sortList = res;
+        this.loading = false;
+      });
   }
 
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
-    // this.getTbppsm102ListAll();
+    this.getTbppsm102ListAll();
     this.getRunFCPCount();
   }
 
@@ -261,31 +256,34 @@ export class PPSI205_100Component implements AfterViewInit {
 
   getppsfcptb16_ms_cust_sortList() {
     this.loading = true;
-    let myObj = this;
-    myObj.getPPSService
-      .getPpsfcptb16MsCustSortList(myObj.fcpEditionList)
+    this.getPPSService
+      .getPpsfcptb16MsCustSortList(this.fcpEditionList)
       .subscribe((res) => {
         console.log('getppsfcptb16_ms_cust_sortList success');
-        myObj.ppsfcptb16_ms_cust_sortList = res;
-        console.log(myObj.fcpEditionList);
-
-        myObj.loading = false;
+        this.ppsfcptb16_ms_cust_sortList = res;
+        console.log(this.fcpEditionList);
+        this.loading = false;
       });
   }
 
-  async getFcpList() {
+  getFcpList(): Promise<void> {
     this.loading = true;
-    let myObj = this;
-    await new Promise<boolean>((resolve, reject) => {
-      this.getPPSService.getFcpList(this.PLANT_CODE).subscribe((res) => {
-        console.log('getFcpList success');
-        this.fcpEditionOption = res;
-        this.maxFcp = _.max(this.fcpEditionOption);
-        console.log(this.maxFcp);
-        console.log('hiiiiiiii');
-        this.getppsfcptb16_ms_cust_sortList();
-        myObj.loading = false;
-      });
+    return new Promise<void>((resolve, reject) => {
+      this.getPPSService.getFcpList(this.PLANT_CODE).subscribe(
+        (res) => {
+          console.log('getFcpList success');
+          this.fcpEditionOption = res;
+          this.maxFcp = _.max(this.fcpEditionOption);
+          this.getppsfcptb16_ms_cust_sortList();
+          this.loading = false;
+          resolve();
+        },
+        (error) => {
+          console.log('getFcpList error', error);
+          this.loading = false;
+          reject();
+        }
+      );
     });
   }
 
@@ -296,6 +294,7 @@ export class PPSI205_100Component implements AfterViewInit {
       .convertToTbppsm100(this.fcpEditionList)
       .subscribe((res) => {
         console.log('convertToTbppsm100 success');
+        this.message.success('轉入成功');
         console.log(this.fcpEditionList);
 
         myObj.loading = false;
