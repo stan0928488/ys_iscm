@@ -25,7 +25,7 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'">
+  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'" [nzSelectedIndex]="4">
     <!-- 盤元冷抽尺寸優先順序表 -->
     <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
       <div>
@@ -832,119 +832,129 @@
 
     <!-- 401 Auto Campaign -->
     <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
-      <button
-        nz-button
-        nzType="primary"
-        [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-        [disabled]="isRunFCP"
-        (click)="getTbppsm102ListAll()"
-      >
-        <span nzTheme="outline"></span>
-        Auto campaign 表
-      </button>
-      &nbsp;
-      <a
-        href="#/singleData/I205_401"
-        nz-button
-        nzType="primary"
-        [disabled]="isRunFCP"
-        ><span nzTheme="outline"></span>
-        彙 整 資 料
-      </a>
-
-      <div style="text-align: right">
-        <b style="font-size: x-large; font-weight: bold; padding-left: 60%"
-          >更新時間 : 更新者 :
-        </b>
-      </div>
-
-      <div>
-        <tr>
-          <label
-            style="
-              text-align: right;
-              font-weight: bold;
-              font-size: large;
-              color: rgb(214, 63, 63);
-            "
-            *ngIf="isRunFCP"
+      <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+        <nz-tab>
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['.']"
+            style="color: dodgerblue"
           >
-            ※ 目前 FCP 執行中，不可異動資料！
-          </label>
+            Auto campaign 表
+          </a>
+          <!--           
+          <div style="text-align: right">
+            <b style="font-size: x-large; font-weight: bold; padding-left: 60%"
+              >更新時間 : 更新者 :
+            </b>
+          </div>
+     -->
+          <div>
+            <tr>
+              <label
+                style="
+                  text-align: right;
+                  font-weight: bold;
+                  font-size: large;
+                  color: rgb(214, 63, 63);
+                "
+                *ngIf="isRunFCP"
+              >
+                ※ 目前 FCP 執行中，不可異動資料！
+              </label>
 
-          <td style="text-align: left">
-            &nbsp;&nbsp;
-            <button
-              nz-button
-              nzType="primary"
-              [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-              [disabled]="isRunFCP"
-              (click)="importCompaign()"
-            >
-              <span nzTheme="outline"></span>
-              轉入 CAMPAIGN 表
-            </button>
-          </td>
+              <td style="text-align: left">
+                &nbsp;&nbsp;
+                <button
+                  nz-button
+                  nzType="primary"
+                  [ngClass]="{
+                    FCPdisable: isRunFCP,
+                    FCPenableUpload: !isRunFCP
+                  }"
+                  [disabled]="isRunFCP"
+                  (click)="importCompaign()"
+                >
+                  <span nzTheme="outline"></span>
+                  轉入 CAMPAIGN 表
+                </button>
+              </td>
 
-          <td style="text-align: right; width: 50%">
-            &nbsp;&nbsp;
-            <input
-              type="file"
-              id="fileupload"
-              style="display: inline-block"
-              (change)="incomingfile($event)"
-              placeholder="Upload file"
-              accept=".xlsx, .xls, .csv"
-            />
-            <button
-              nz-button
-              [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
-              nzType="primary"
-              [disabled]="isRunFCP"
-              (click)="Upload('3')"
-            >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
-              E X C E L 匯入
-            </button>
-            &nbsp;&nbsp;
-            <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #4caf50;
-                border: 2px blue none;
-              "
-              nzType="primary"
-              (click)="convertToExcel('3')"
-            >
-              <span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-            </button>
-          </td>
-        </tr>
-      </div>
-      <br />
-      <ag-grid-angular
-        [columnDefs]="columnDefs"
-        [defaultColDef]="ColGroupDef"
-        [headerHeight]="40"
-        [rowHeight]="40"
-        style="width: 100%; height: 500px"
-        class="ag-theme-alpine"
-        [rowData]="rowData"
-        [suppressRowClickSelection]="true"
-        [groupSelectsChildren]="true"
-        [rowSelection]="'multiple'"
-        [animateRows]="true"
-      >
-      </ag-grid-angular>
+              <td style="text-align: right; width: 50%">
+                &nbsp;&nbsp;
+                <input
+                  type="file"
+                  id="fileupload"
+                  style="display: inline-block"
+                  (change)="incomingfile($event)"
+                  placeholder="Upload file"
+                  accept=".xlsx, .xls, .csv"
+                />
+                <button
+                  nz-button
+                  [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
+                  nzType="primary"
+                  [disabled]="isRunFCP"
+                  (click)="Upload('4')"
+                >
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  E X C E L 匯入
+                </button>
+                &nbsp;&nbsp;
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #4caf50;
+                    border: 2px blue none;
+                  "
+                  nzType="primary"
+                  (click)="convertToExcel('4')"
+                >
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                  E X C E L 匯出
+                </button>
+              </td>
+            </tr>
+          </div>
+          <br />
+          <ag-grid-angular
+            [columnDefs]="columnDefs"
+            [defaultColDef]="ColGroupDef"
+            [headerHeight]="40"
+            [rowHeight]="40"
+            style="width: 100%; height: 500px"
+            class="ag-theme-alpine"
+            [rowData]="rowData"
+            [suppressRowClickSelection]="true"
+            [groupSelectsChildren]="true"
+            [rowSelection]="'multiple'"
+            [animateRows]="true"
+          >
+          </ag-grid-angular>
+        </nz-tab>
+
+        <nz-tab>
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['../I205_401']"
+            style="color: gray"
+          >
+            彙整資料
+          </a>
+        </nz-tab>
+      </nz-tabset>
     </nz-tab>
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)">
       <div>
         <tr>
           <td>
-            <a [routerLink]="['/singleData/I124']">
+            <a
+              [routerLink]="['/singleData/I124']"
+              [queryParams]="{ selectedTabIndex: 4 }"
+            >
               <button
                 nz-button
                 style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
@@ -952,8 +962,8 @@
                 nzType="primary"
               >
                 公版維護表
-              </button></a
-            >
+              </button>
+            </a>
             <a [routerLink]="['/singleData/I124_100']">
               <button
                 nz-button
@@ -981,43 +991,79 @@
           [nzActive]="panel.active"
           [nzDisabled]="panel.disabled"
         >
-          <td style="text-align: right; width: 42%">
-            &nbsp;&nbsp;
-            <input
-              type="file"
-              id="fileupload"
-              style="display: inline-block"
-              (change)="incomingfile($event)"
-              placeholder="Upload file"
-              accept=".xlsx, .xls, .csv"
-            />
-            <button
-              nz-button
-              [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
-              nzType="primary"
-              [disabled]="isRunFCP"
-              (click)="Upload('5')"
-            >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
-              E X C E L 匯入
-            </button>
-            &nbsp;&nbsp;
-            <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #4caf50;
-                border: 2px blue none;
-              "
-              nzType="primary"
-              (click)="convertToExcel('5')"
-            >
-              <span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-            </button>
-          </td>
+          <nz-select
+            nzPlaceHolder="請選擇版本"
+            style="width: 210px; margin-left: 20px"
+            [(ngModel)]="fcpEditionList"
+            nzAllowClear
+            (nzOpenChange)="getFcpList()"
+          >
+            <nz-option
+              *ngFor="let fcpEdition of fcpEditionOption"
+              [nzLabel]="fcpEdition"
+              [nzValue]="fcpEdition"
+            ></nz-option>
+            <nz-option *ngIf="fcpEditionLoading" nzDisabled nzCustomContent>
+              <span nz-icon nzType="loading" class="loading-icon"></span>
+              版本清單載入中...
+            </nz-option>
+          </nz-select>
+
+          <button
+            style="margin-left: 20px"
+            nz-button
+            nzType="primary"
+            (click)="convertToTbppsm100(true)"
+          >
+            <span nz-icon nzType="edit" nzTheme="outline"></span>轉入排程公版
+          </button>
         </nz-collapse-panel>
       </nz-collapse>
+
+      <!-- <nz-collapse>
+          <nz-collapse-panel
+            *ngFor="let panel of panels"
+            [nzHeader]="panel.name"
+            [nzActive]="panel.active"
+            [nzDisabled]="panel.disabled"
+          >
+            <td style="text-align: right; width: 42%">
+              &nbsp;&nbsp;
+              <input
+                type="file"
+                id="fileupload"
+                style="display: inline-block"
+                (change)="incomingfile($event)"
+                placeholder="Upload file"
+                accept=".xlsx, .xls, .csv"
+              />
+              <button
+                nz-button
+                [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
+                nzType="primary"
+                [disabled]="isRunFCP"
+                (click)="Upload('2')"
+              >
+                <span nz-icon nzType="upload" nzTheme="outline"></span>
+                E X C E L 匯入
+              </button>
+              &nbsp;&nbsp;
+              <button
+                nz-button
+                style="
+                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                  background-color: #4caf50;
+                  border: 2px blue none;
+                "
+                nzType="primary"
+                (click)="convertToExcel('2')"
+              >
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                E X C E L 匯出
+              </button>
+            </td>
+          </nz-collapse-panel>
+        </nz-collapse> -->
 
       <p></p>
       <div style="background: rgb(255, 255, 255); min-height: 800px">
@@ -1025,7 +1071,7 @@
           <nz-table
             #RowTable5
             nzBordered
-            [nzData]="tbppsm100List"
+            [nzData]="ppsfcptb16_ms_cust_sortList"
             [nzPageSize]="15"
             [nzScroll]="{ y: '600px' }"
           >
@@ -1033,7 +1079,18 @@
               <tr>
                 <!-- <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">匯入時間</th> -->
                 <th
-                  nzWidth="75px"
+                  nzWidth="150px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  FCP版本
+                </th>
+                <th
+                  nzWidth="50px"
                   style="
                     text-align: center;
                     background-color: #eee;
@@ -1044,7 +1101,7 @@
                   站別
                 </th>
                 <th
-                  nzWidth="75px"
+                  nzWidth="100px"
                   style="
                     text-align: center;
                     background-color: #eee;
@@ -1143,7 +1200,18 @@
                   鋼種群組
                 </th>
                 <th
-                  nzWidth="90px"
+                  nzWidth="75px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  CAMPAIGN_ID
+                </th>
+                <th
+                  nzWidth="150px"
                   style="
                     text-align: center;
                     background-color: #eee;
@@ -1162,10 +1230,32 @@
                     height: 55px;
                   "
                 >
-                  自訂排序
+                  寫入排序
                 </th>
                 <th
-                  nzWidth="80px"
+                  nzWidth="150px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  開始時間
+                </th>
+                <th
+                  nzWidth="150px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  結束時間
+                </th>
+                <th
+                  nzWidth="150px"
                   style="
                     text-align: center;
                     background-color: #eee;
@@ -1197,6 +1287,9 @@
                   <!-- <ng-container> -->
                   <!-- <td style="text-align:center; padding: 5px; height: 40px;">{{ data.IMPORTDATETIME | date:'yyyy-MM-dd hh:mm:ss' }}</td> -->
                   <td style="text-align: center; padding: 5px; height: 40px">
+                    {{ data.fcpEdition }}
+                  </td>
+                  <td style="text-align: center; padding: 5px; height: 40px">
                     {{ data.schShopCode }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
@@ -1227,10 +1320,19 @@
                     {{ data.gradeGroup }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
+                    {{ data.campaignId }}
+                  </td>
+                  <td style="text-align: center; padding: 5px; height: 40px">
                     {{ data.newEpstYymm }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
                     {{ data.campaignSort }}
+                  </td>
+                  <td style="text-align: center; padding: 5px; height: 40px">
+                    {{ data.planStartTime }}
+                  </td>
+                  <td style="text-align: center; padding: 5px; height: 40px">
+                    {{ data.planEndTime }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
                     {{ data.dateCreate }}

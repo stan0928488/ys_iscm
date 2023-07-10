@@ -1112,10 +1112,11 @@ export class PPSService {
 
   convertToTbppsm100(_fcpEditionList) {
     const body = JSON.stringify(_fcpEditionList);
+    console.log(body);
     let queryUrl =
-      this.APIURL + `/FCP/I205/getTbppsm100List/${_fcpEditionList}`;
+      this.APIURL + `/FCP/I205/convertToTbppsm100/${_fcpEditionList}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getFcpList(_plantCode) {
