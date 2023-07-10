@@ -260,7 +260,6 @@ export class PPSI205Component implements AfterViewInit {
   getppsfcptb16_ms_cust_sortList() {
     this.loading = true;
     let myObj = this;
-    let FCP_EDITION = 'F20230705153099';
     this.getPPSService
       .getPpsfcptb16MsCustSortList(this.fcpEditionList)
       .subscribe((res) => {
@@ -283,6 +282,19 @@ export class PPSI205Component implements AfterViewInit {
       this.getppsfcptb16_ms_cust_sortList();
       myObj.loading = false;
     });
+  }
+
+  convertToTbppsm100(userClick: boolean) {
+    this.loading = true;
+    let myObj = this;
+    this.getPPSService
+      .convertToTbppsm100(this.fcpEditionList)
+      .subscribe((res) => {
+        console.log('convertToTbppsm100 success');
+        console.log(this.fcpEditionList);
+
+        myObj.loading = false;
+      });
   }
 
   changeTab(tab): void {
