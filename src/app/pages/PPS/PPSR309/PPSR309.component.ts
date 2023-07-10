@@ -126,6 +126,7 @@ export class PPSR309Component implements OnInit {
   dataConvert() {
     this.isSpinning = true;
     let postData = {};
+    postData['mo_EDITION'] = this.selectedVer_default;
     this.PPSService.convertR308Data(postData).subscribe(res =>{
       if(res['code'] == 1){
         this.message.info('結轉成功');
