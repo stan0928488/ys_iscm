@@ -1097,15 +1097,23 @@ export class PPSService {
   }
 
   //getppsfcptb16_ms_cust_sortList getppsfcptb16_ms_cust_sortList
-  getPpsfcptb16MsCustSortList(_plantCode) {
+  getPpsfcptb16MsCustSortList(_fcpEditionList) {
     let queryUrl =
-      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_plantCode}`;
+      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_fcpEditionList}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
   getTbppsm100List(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm100List/${_plantCode}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  convertToTbppsm100(_fcpEditionList) {
+    const body = JSON.stringify(_fcpEditionList);
+    let queryUrl =
+      this.APIURL + `/FCP/I205/getTbppsm100List/${_fcpEditionList}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
