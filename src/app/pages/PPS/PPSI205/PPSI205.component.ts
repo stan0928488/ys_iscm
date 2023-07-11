@@ -103,6 +103,7 @@ export class PPSI205Component implements AfterViewInit {
   fcpEditionLoading = false;
   fcpEditionOption: any[] = [];
   selectedTabIndex;
+  innerSelect;
   panels = [
     {
       active: true,
@@ -192,9 +193,10 @@ export class PPSI205Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.selectedTabIndex = +params['selectedTabIndex'] || 0;
+      this.innerSelect = +params['innerSelect'] || 0;
     });
   }
   ngAfterViewInit() {
@@ -203,7 +205,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getTbppsm102ListAll();
     this.getRunFCPCount();
     this.getTbppsm113List();
-    this.changeTab(5);
+    this.getTbppsm100List();
   }
 
   // 取得是否有正在執行的FCP
@@ -213,7 +215,6 @@ export class PPSI205Component implements AfterViewInit {
       console.log('getRunFCPCount success');
       console.log(res);
       if (res > 0) this.isRunFCP = true;
-      document.getElementById('number').innerHTML = 'PPSI205';
     });
   }
 
@@ -313,15 +314,20 @@ export class PPSI205Component implements AfterViewInit {
   changeTab(tab): void {
     console.log(tab);
     if (tab === 1) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=0';
       this.getTbppsm101List();
     } else if (tab === 2) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=1';
       this.getTbppsm102List();
     } else if (tab === 3) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=2';
       this.getTbppsm113List();
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
     } else if (tab === 5) {
       this.getTbppsm100List();
+      window.location.href =
+        '#/singleData/I124?selectedTabIndex=4&innerSelect=0';
     }
   }
 

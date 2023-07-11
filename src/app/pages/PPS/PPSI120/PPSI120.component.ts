@@ -107,7 +107,8 @@ export class PPSI120Component implements AfterViewInit {
       if (acss != null) {
         acss.style.cssText = 'color: blue; font-weight:bold;';
       }
-      document.getElementById('number').innerHTML = 'PPSI120';
+      document.getElementById('aaa').innerHTML = '直棒退火爐工時(PPSI120)';
+      document.getElementById('aaa').style.fontSize = '17px';
       console.log('getFCPTB26List success');
       this.PPSINP09List_tmp = res;
 

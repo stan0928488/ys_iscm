@@ -176,7 +176,9 @@ export class PPSI131Component implements AfterViewInit {
           if (acss != null) {
             acss.style.cssText = 'color: blue; font-weight:bold;';
           }
-          document.getElementById('number').innerHTML = 'PPSI131';
+          document.getElementById('gga').innerHTML =
+            '直棒BA1批次爐工時維護(PPSI131)';
+          document.getElementById('gga').style.fontSize = '17px';
         },
         (error) => {
           const errorMsg = JSON.stringify(error['error']);
@@ -198,7 +200,7 @@ export class PPSI131Component implements AfterViewInit {
         return;
       }
     } else {
-       this.errorMSG(response.message, ``);
+      this.errorMSG(response.message, ``);
     }
   }
 

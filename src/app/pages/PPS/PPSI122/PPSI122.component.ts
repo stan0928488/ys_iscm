@@ -104,7 +104,8 @@ export class PPSI122Component implements AfterViewInit {
       if (acss != null) {
         acss.style.cssText = 'color: blue; font-weight:bold;';
       }
-      document.getElementById('number').innerHTML = 'PPSI122';
+      document.getElementById('cca').innerHTML = '直棒桶槽式工時(PPSI122)';
+      document.getElementById('cca').style.fontSize = '17px';
       console.log('getFCPTB26List success');
       this.PPSINP10List_tmp = res;
 

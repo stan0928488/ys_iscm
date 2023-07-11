@@ -225,7 +225,9 @@ export class PPSI130Component implements AfterViewInit {
           if (acss != null) {
             acss.style.cssText = 'color: blue; font-weight:bold;';
           }
-          document.getElementById('number').innerHTML = 'PPSI130';
+          document.getElementById('ffa').innerHTML =
+            '精整批次爐鋼種捲數製程碼對應表(PPSI130)';
+          document.getElementById('ffa').style.fontSize = '17px';
         },
         (error) => {
           const errorMsg = JSON.stringify(error['error']);

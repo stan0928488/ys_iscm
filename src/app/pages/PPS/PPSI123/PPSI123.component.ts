@@ -87,7 +87,8 @@ export class PPSI123Component implements AfterViewInit {
       if (acss != null) {
         acss.style.cssText = 'color: blue; font-weight:bold;';
       }
-      document.getElementById('number').innerHTML = 'PPSI123';
+      document.getElementById('dda').innerHTML = '直棒清洗站設備能力(PPSI123)';
+      document.getElementById('dda').style.fontSize = '17px';
       console.log('getFCPTB26List success');
       this.PPSINP20List_tmp = res;
 
