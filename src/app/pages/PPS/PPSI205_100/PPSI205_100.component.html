@@ -20,10 +20,14 @@
           <li>
             <a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a>
           </li>
+          <li>
+            <a href="#/singleData/I131">直棒批次爐</a>
+          </li>
         </ul>
       </tr>
     </nz-breadcrumb-item>
   </nz-breadcrumb>
+  <h2 id="number" style="text-align: right; margin: 0"></h2>
 
   <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'" [nzSelectedIndex]="4">
     <!-- 盤元冷抽尺寸優先順序表 -->
@@ -1192,17 +1196,6 @@
                   鋼種群組
                 </th>
                 <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  CAMPAIGN_ID
-                </th>
-                <th
                   nzWidth="150px"
                   style="
                     text-align: center;
@@ -1275,7 +1268,7 @@
                 *ngFor="let data of RowTable5.data; let i = index"
                 class="editable-row"
               >
-                <ng-container *ngIf="!EditMode[i]; else editModeTD">
+                <ng-container>
                   <!-- <ng-container> -->
                   <!-- <td style="text-align:center; padding: 5px; height: 40px;">{{ data.IMPORTDATETIME | date:'yyyy-MM-dd hh:mm:ss' }}</td> -->
                   <td style="text-align: center; padding: 5px; height: 40px">
@@ -1312,9 +1305,6 @@
                     {{ data.gradeGroup }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.campaignId }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
                     {{ data.newEpstYymm }}
                   </td>
                   <td style="text-align: center; padding: 5px; height: 40px">
@@ -1342,75 +1332,6 @@
                       <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
                     </td> -->
                 </ng-container>
-
-                <ng-template #editModeTD>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.FCP_EDITION }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.SCH_SHOP_CODE }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.EQUIP_CODE }}
-                  </td>
-
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <input
-                      type="text"
-                      nz-input
-                      [(ngModel)]="data.NEXT_SHOP_CODE"
-                    />
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-input-number
-                      style="width: 60px"
-                      [(ngModel)]="data.DAYS"
-                      [nzMin]="0"
-                      [nzMax]="50"
-                      [nzStep]="1"
-                    ></nz-input-number>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-date-picker
-                      nzMode="month"
-                      [(ngModel)]="data.MAX_DATE"
-                      (ngModelChange)="onChange('1', i, $event)"
-                    ></nz-date-picker>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-date-picker
-                      [(ngModel)]="data.STARTDATE"
-                      (ngModelChange)="onChange('2', i, $event)"
-                    ></nz-date-picker>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.ENDDATE }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-radio-group
-                      [(ngModel)]="data.TC_FREQUENCE_LIFT"
-                      nzButtonStyle="solid"
-                    >
-                      <label nz-radio-button nzValue="ASC">升冪</label>
-                      <label nz-radio-button nzValue="DESC">降冪</label>
-                    </nz-radio-group>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.COMPAIGN_ID }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.EXPORTDATETIME | date : "yyyy-MM-dd HH:mm:ss" }}
-                  </td>
-                  <td style="width: 120px; text-align: center">
-                    <a (click)="save_dtlRow(i, data)">確認</a>&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to cancel?"
-                      (nzOnConfirm)="cancel_dtlRow(i, data)"
-                      >取消</a
-                    >
-                  </td>
-                </ng-template>
               </tr>
             </tbody>
           </nz-table>

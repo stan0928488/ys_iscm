@@ -1,274 +1,589 @@
-<nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>非通用</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
-        <ul>
-            <li><a href="#/singleData/I120">直棒退火爐工時</a></li>
-            <li><a href="#/singleData/I121">直棒研磨道次</a></li>
-            <li><a href="#/singleData/I122">直棒桶槽式工時</a></li>
-            <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
-            <li><a href="#/singleData/I124">公版設定維護</a></li>
-            <li class="active"><a href="#/singleData/I130"><label style="color:blue">精整批次爐鋼種捲數製程碼對應表</label></a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+<nz-content style="margin: 0 16px">
+  <app-non-ppsi></app-non-ppsi>
 
-  <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
-    <div style="background: rgb(255, 255, 255);  width:auto; min-height: 1200px;">
+  <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="isSpinning">
+    <div
+      style="background: rgb(255, 255, 255); width: auto; min-height: 1200px"
+    >
       <table>
         <tr>
-          <td style="text-align:left;width:73%">
+          <td style="text-align: left; width: 73%">
             <button
-            nz-button
-            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-            nzType="primary"
-            [nzSize]="'large'"
-            (click)="openBFSGCCPCInput()"
-            ><span nz-icon nzType="plus" nzTheme="outline"></span>
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+              nzType="primary"
+              [nzSize]="'large'"
+              (click)="openBFSGCCPCInput()"
+            >
+              <span nz-icon nzType="plus" nzTheme="outline"></span>
               新增
             </button>
           </td>
 
-          <td style="text-align:rifgt; width:0%; vertical-align: middle; padding-bottom: 20px;">
+          <td
+            style="
+              text-align: rifgt;
+              width: 0%;
+              vertical-align: middle;
+              padding-bottom: 20px;
+            "
+          >
             &nbsp;&nbsp;
             <!-- 匯入EXCEL功能 -->
-            <input style="display:inline; width:180px; " type="file" name="file" id="importExcel" required (change)="incomingFile($event)"
-            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <input
+              style="display: inline; width: 180px"
+              type="file"
+              name="file"
+              id="importExcel"
+              required
+              (change)="incomingFile($event)"
+              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            />
           </td>
 
-          <td style="text-align:rifgt; width:40%; vertical-align: middle;">
-            <button 
-              id="bacthAdd" 
-              nz-button 
+          <td style="text-align: rifgt; width: 40%; vertical-align: middle">
+            <button
+              id="bacthAdd"
+              nz-button
               nzType="primary"
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-              (click)="handleImport()" >
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+              "
+              (click)="handleImport()"
+            >
               <span nz-icon nzType="upload" nzTheme="outline"></span>
               E X C E L 匯入
             </button>
-            
+
             &nbsp;&nbsp;
             <!-- 匯出EXCEL功能 -->
-            <button 
-              id="download" 
+            <button
+              id="download"
               nz-button
               nzType="primary"
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-              (click)="exportToExcel()" 
-              role="button">
-              <span nz-icon nzType="download" nzTheme="outline" ></span>
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+              "
+              (click)="exportToExcel()"
+              role="button"
+            >
+              <span nz-icon nzType="download" nzTheme="outline"></span>
               E X C E L 匯出
             </button>
           </td>
-
         </tr>
       </table>
-      <p></p><p></p>
+      <p></p>
+      <p></p>
 
       <div nz-col [nzSpan]="25">
-        <nz-table #displayTbppsm014Rows nzBordered [nzFrontPagination]="false" [nzTotal]="tbppsm014DataTotal" [(nzPageIndex)]="currentPageIndex" (nzPageIndexChange)="tablePageChange()" [nzData]="displayTbppsm014List" [nzPageSize]="pageSize" [nzScroll]="{ y: '500px' }">
+        <nz-table
+          #displayTbppsm014Rows
+          nzBordered
+          [nzFrontPagination]="false"
+          [nzTotal]="tbppsm014DataTotal"
+          [(nzPageIndex)]="currentPageIndex"
+          (nzPageIndexChange)="tablePageChange()"
+          [nzData]="displayTbppsm014List"
+          [nzPageSize]="pageSize"
+          [nzScroll]="{ y: '500px' }"
+        >
           <thead>
-          <tr>
+            <tr>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 100px;
+                "
+              >
+                廠區別
+                <nz-filter-trigger
+                  [(nzVisible)]="plantCodeFilterVisible"
+                  [nzActive]="searchPlantCodeValue.length > 0"
+                  [nzDropdownMenu]="plantCodeMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
 
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-            >廠區別
-            <nz-filter-trigger 
-            [(nzVisible)]="plantCodeFilterVisible"
-            [nzActive]="searchPlantCodeValue.length > 0" 
-            [nzDropdownMenu]="plantCodeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 100px;
+                "
+              >
+                站別
+                <nz-filter-trigger
+                  [(nzVisible)]="shopCodeFilterVisible"
+                  [nzActive]="searchShopCodeValue.length > 0"
+                  [nzDropdownMenu]="shopCodeMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
 
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-            >站別
-            <nz-filter-trigger 
-            [(nzVisible)]="shopCodeFilterVisible"
-            [nzActive]="searchShopCodeValue.length > 0" 
-            [nzDropdownMenu]="shopCodeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-            >鋼種
-            <nz-filter-trigger 
-            [(nzVisible)]="steelTypeFilterVisible"
-            [nzActive]="searchSteelTypeValue.length > 0" 
-            [nzDropdownMenu]="steelTypeMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >尺寸MIN
-            <nz-filter-trigger 
-            [(nzVisible)]="diaMinFilterVisible"
-            [nzActive]="searchDiaMinValue.length > 0" 
-            [nzDropdownMenu]="diaMinMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >尺寸MAX
-            <nz-filter-trigger 
-            [(nzVisible)]="diaMaxFilterVisible"
-            [nzActive]="searchDiaMaxValue.length > 0" 
-            [nzDropdownMenu]="diaMaxMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >製程碼_一爐兩捲
-            <nz-filter-trigger 
-            [(nzVisible)]="processCode2pcsFilterVisible"
-            [nzActive]="searchProcessCode2pcsValue.length > 0" 
-            [nzDropdownMenu]="processCode2pcsMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-            >製程碼_一爐四捲
-            <nz-filter-trigger 
-            [(nzVisible)]="processCode4pcsFilterVisible"
-            [nzActive]="searchProcessCode4pcsValue.length > 0" 
-            [nzDropdownMenu]="processCode4pcsMenu">
-            <span nz-icon nzType="search"></span>
-            </nz-filter-trigger>
-            </th>
-            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:80px">Action</th>
-          </tr>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 150px;
+                "
+              >
+                鋼種
+                <nz-filter-trigger
+                  [(nzVisible)]="steelTypeFilterVisible"
+                  [nzActive]="searchSteelTypeValue.length > 0"
+                  [nzDropdownMenu]="steelTypeMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 120px;
+                "
+              >
+                尺寸MIN
+                <nz-filter-trigger
+                  [(nzVisible)]="diaMinFilterVisible"
+                  [nzActive]="searchDiaMinValue.length > 0"
+                  [nzDropdownMenu]="diaMinMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 120px;
+                "
+              >
+                尺寸MAX
+                <nz-filter-trigger
+                  [(nzVisible)]="diaMaxFilterVisible"
+                  [nzActive]="searchDiaMaxValue.length > 0"
+                  [nzDropdownMenu]="diaMaxMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 120px;
+                "
+              >
+                製程碼_一爐兩捲
+                <nz-filter-trigger
+                  [(nzVisible)]="processCode2pcsFilterVisible"
+                  [nzActive]="searchProcessCode2pcsValue.length > 0"
+                  [nzDropdownMenu]="processCode2pcsMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 120px;
+                "
+              >
+                製程碼_一爐四捲
+                <nz-filter-trigger
+                  [(nzVisible)]="processCode4pcsFilterVisible"
+                  [nzActive]="searchProcessCode4pcsValue.length > 0"
+                  [nzDropdownMenu]="processCode4pcsMenu"
+                >
+                  <span nz-icon nzType="search"></span>
+                </nz-filter-trigger>
+              </th>
+              <th
+                style="
+                  text-align: center;
+                  background-color: #eee;
+                  padding: 0px;
+                  height: 55px;
+                  width: 80px;
+                "
+              >
+                Action
+              </th>
+            </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let data of displayTbppsm014Rows.data;let i = index" class="editable-row">
-            <ng-container *ngIf="!editCache[data.id].isEdit; else editTemplate">
-              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.plantCode }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 100px;">{{ data.shopCode }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 150px;">{{ data.steelType }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.diaMin }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.dixMax }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.processCode2pcs }}</td>
-              <td style="text-align:center; padding: 5px; height: 60px; width: 120px;">{{ data.processCode4pcs }}</td>
-              <td style="text-align:center; padding: 0px; height: 60px; width: 120px;">
-                <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
-              </td>
-            </ng-container>
-            <ng-template #editTemplate>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入廠區別" [(ngModel)]="editCache[data.id].data.plantCode" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache[data.id].data.shopCode" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache[data.id].data.steelType" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入尺寸_min(含)" [(ngModel)]="editCache[data.id].data.diaMin" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入尺寸_max(含)" [(ngModel)]="editCache[data.id].data.dixMax" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入製程碼_一爐兩捲" [(ngModel)]="editCache[data.id].data.processCode2pcs" />
-              </td>
-              <td>
-                <input nz-width="20%" nz-input placeholder="輸入製程碼_一爐四捲" [(ngModel)]="editCache[data.id].data.processCode4pcs" />
-              </td>
-              <td>
-                <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
-              </td>
-            </ng-template>
-          </tr>
+            <tr
+              *ngFor="let data of displayTbppsm014Rows.data; let i = index"
+              class="editable-row"
+            >
+              <ng-container
+                *ngIf="!editCache[data.id].isEdit; else editTemplate"
+              >
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 100px;
+                  "
+                >
+                  {{ data.plantCode }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 100px;
+                  "
+                >
+                  {{ data.shopCode }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 150px;
+                  "
+                >
+                  {{ data.steelType }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 120px;
+                  "
+                >
+                  {{ data.diaMin }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 120px;
+                  "
+                >
+                  {{ data.dixMax }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 120px;
+                  "
+                >
+                  {{ data.processCode2pcs }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 5px;
+                    height: 60px;
+                    width: 120px;
+                  "
+                >
+                  {{ data.processCode4pcs }}
+                </td>
+                <td
+                  style="
+                    text-align: center;
+                    padding: 0px;
+                    height: 60px;
+                    width: 120px;
+                  "
+                >
+                  <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+                  <a
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to delete?"
+                    (nzOnConfirm)="deleteRow(data.id)"
+                    >刪除</a
+                  >
+                </td>
+              </ng-container>
+              <ng-template #editTemplate>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入廠區別"
+                    [(ngModel)]="editCache[data.id].data.plantCode"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入站別"
+                    [(ngModel)]="editCache[data.id].data.shopCode"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入鋼種"
+                    [(ngModel)]="editCache[data.id].data.steelType"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入尺寸_min(含)"
+                    [(ngModel)]="editCache[data.id].data.diaMin"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入尺寸_max(含)"
+                    [(ngModel)]="editCache[data.id].data.dixMax"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入製程碼_一爐兩捲"
+                    [(ngModel)]="editCache[data.id].data.processCode2pcs"
+                  />
+                </td>
+                <td>
+                  <input
+                    nz-width="20%"
+                    nz-input
+                    placeholder="輸入製程碼_一爐四捲"
+                    [(ngModel)]="editCache[data.id].data.processCode4pcs"
+                  />
+                </td>
+                <td>
+                  <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+                  <a
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to cancel?"
+                    (nzOnConfirm)="cancelEdit(data.id)"
+                    >取消</a
+                  >
+                </td>
+              </ng-template>
+            </tr>
           </tbody>
         </nz-table>
       </div>
     </div>
   </nz-spin>
-
 </nz-content>
-
-
 
 <nz-modal
   [(nzVisible)]="isVisibleBFSGCCPC"
   [nzWidth]="800"
   [nzContent]="BFSGCCPCInputContent"
   [nzFooter]="BFSGCCPCInputFooter"
-  (nzOnCancel)="cancelBFSGCCPCInput()">
-
+  (nzOnCancel)="cancelBFSGCCPCInput()"
+>
   <ng-template #BFSGCCPCInputContent>
-    <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+    <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="isSpinning">
       <div>
-        <table style="border-collapse: separate;">
-
+        <table style="border-collapse: separate">
           <tr>
-            <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站別</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入站別" [(ngModel)]="shopCodeInput" maxlength="4"/>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;站別
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入站別"
+                [(ngModel)]="shopCodeInput"
+                maxlength="4"
+              />
             </td>
           </tr>
 
           <tr>
-            <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼種</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入鋼種" [(ngModel)]="steelTypeInput" maxlength="8"/>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;鋼種
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入鋼種"
+                [(ngModel)]="steelTypeInput"
+                maxlength="8"
+              />
             </td>
           </tr>
 
           <tr>
-            <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;尺寸_min(含)</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <nz-input-number style="width: 22%;" nzPlaceHolder = "輸入尺寸_min(含)" [(ngModel)]="diaMinInput" [nzMin]="0" [nzMax]="100000" [nzStep]="1"></nz-input-number>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;尺寸_min(含)
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <nz-input-number
+                style="width: 22%"
+                nzPlaceHolder="輸入尺寸_min(含)"
+                [(ngModel)]="diaMinInput"
+                [nzMin]="0"
+                [nzMax]="100000"
+                [nzStep]="1"
+              ></nz-input-number>
             </td>
           </tr>
 
           <tr>
-            <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;尺寸_max(含)</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <nz-input-number style="width: 22%;" nzPlaceHolder = "輸入尺寸_max(含)" [(ngModel)]="dixMaxInput" [nzMin]="0" [nzMax]="100000" [nzStep]="1"></nz-input-number>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;尺寸_max(含)
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <nz-input-number
+                style="width: 22%"
+                nzPlaceHolder="輸入尺寸_max(含)"
+                [(ngModel)]="dixMaxInput"
+                [nzMin]="0"
+                [nzMax]="100000"
+                [nzStep]="1"
+              ></nz-input-number>
             </td>
           </tr>
 
           <tr>
-            <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;製程碼_一爐兩捲</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入製程碼_一爐兩捲" [(ngModel)]="processCode2pcsInput" maxlength="8"/>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;製程碼_一爐兩捲
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入製程碼_一爐兩捲"
+                [(ngModel)]="processCode2pcsInput"
+                maxlength="8"
+              />
             </td>
           </tr>
 
           <tr>
-            <td style = "width: 150px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;製程碼_一爐四捲</td>
-            <td style = "width: 600px; background-color: #eee;">&nbsp;
-              <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入製程碼_一爐四捲" [(ngModel)]="processCode4pcsInput" maxlength="8"/>
+            <td
+              style="
+                width: 150px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;製程碼_一爐四捲
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入製程碼_一爐四捲"
+                [(ngModel)]="processCode4pcsInput"
+                maxlength="8"
+              />
             </td>
           </tr>
-
         </table>
       </div>
     </nz-spin>
-    
   </ng-template>
 
   <ng-template #BFSGCCPCInputFooter>
-    <button nz-button nzType="default" (click)="cancelBFSGCCPCInput()">取消新增</button>
+    <button nz-button nzType="default" (click)="cancelBFSGCCPCInput()">
+      取消新增
+    </button>
     <button nz-button nzType="primary" (click)="insertData()">確定</button>
   </ng-template>
-
 </nz-modal>
-
 
 <nz-dropdown-menu #plantCodeMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchPlantCodeValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByPlantCode(true)" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByPlantCode()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByPlantCode(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByPlantCode()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -277,7 +592,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByShopCode(true)" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByShopCode(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
     </div>
   </div>
@@ -287,8 +610,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchSteelTypeValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchBySteelType(true)" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetBySteelType()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchBySteelType(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetBySteelType()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -297,7 +630,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchDiaMinValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMin(true)" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByDiaMin(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetByDiaMin()">重設</button>
     </div>
   </div>
@@ -307,7 +648,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchDiaMaxValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMax(true)" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByDiaMax(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetByDiaMax()">重設</button>
     </div>
   </div>
@@ -317,8 +666,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchProcessCode2pcsValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByProcessCode2pcs(true)" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByProcessCode2pcs()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByProcessCode2pcs(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByProcessCode2pcs()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -327,8 +686,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchProcessCode4pcsValue" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByProcessCode4pcs(true)" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByProcessCode4pcs()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByProcessCode4pcs(true)"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByProcessCode4pcs()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
