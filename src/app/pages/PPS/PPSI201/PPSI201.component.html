@@ -7,7 +7,8 @@
   </nz-breadcrumb>
 
   <nz-divider nzOrientation="left"></nz-divider>
-  <div nz-row [nzGutter]="0">
+  <div nz-row [nzGutter]="0" style="margin-top: 20px; ">
+
     <div nz-col class="gutter-row"><div class="inner-box">
       <nz-card style="width:90%; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)" nzTitle="站別">
         <ng-container *ngIf="SHOP_splitList">
@@ -82,6 +83,30 @@
         確認
       </button>
       </td>
+      <td  style="width: 100px ;">
+        <button
+          nz-button
+          style="margin-left:30px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+          nzType="primary"
+          (click)="exportExcel()"
+        ><span nz-icon nzType="download" nzTheme="outline"></span>
+          E X C E L 匯出
+        </button>
+      </td>
+      <td  style="width: 100px ;">
+        <button
+          nz-button
+          style="margin-left:30px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+          nzType="primary"
+          (click)="uploadExcel()"
+        >
+        <span nz-icon nzType="upload" nzTheme="outline"></span>
+        E X C E L 匯入
+        </button>
+      </td>
+      <td  style="width: 100px ;">
+        <input type="file" id="fileupload" style="display: inline-block;" placeholder="Upload file" (change)="incomingfile($event)"  accept=".xlsx">
+      </td>
       <!-- <td><button (click) = "getSHOP_CODEList()">测试获取站别</button></td>
       <td><button (click) = "getSetShopEQUIP()">获取已设定值</button></td> -->
       <td style="text-align:right; width: 880px;font-weight: bolder;">( ↑ 表示：由小到大，由近到遠)</td>
@@ -91,24 +116,25 @@
   <p></p>
   <!-- 挑选区域处理 -->
   <div nz-row>
-    <div nz-col nzSpan="14">
+    <div nz-col nzSpan="17">
       <div style="width: 90%;">
         <h2>已設定排序</h2>
         <nz-pagination [nzPageIndex]="pageNum" [nzTotal]="totalCount" [nzPageSize] = "pageSize"  (nzPageIndexChange) = "changePage($event)"></nz-pagination>
         <nz-list nzBordered nzSize="large"  *ngFor="let item of setData">
           <nz-list-item style="background-color: #fff;" >
-            <span> <a nz-radio-button nzValue="default" nzType="link" (click)="editFunc(item)">編輯</a>
-
-              
+            <span>
+              <a nz-radio-button nzValue="default" nzType="link" (click)="editFunc(item)">編輯</a>
             </span>
             <span nz-typography> <mark>{{item.sch_SHOP_CODE}} -> {{item.machine}}</mark></span>
             <span style="margin-left: 20px ;">{{ item.sorting_CN }}</span>
-
+            <span>
+              <a nz-radio-button nzValue="default" nzType="link" (click)="deleteFunc(item)">刪除</a>
+            </span>
           </nz-list-item>
         </nz-list>
       </div>
     </div>
-    <div nz-col nzSpan="10">
+    <div nz-col nzSpan="7">
       <div cdkDropListGroup>
         <div class="example-container">
           <h2>原始欄位</h2>
@@ -156,6 +182,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </nz-content>
