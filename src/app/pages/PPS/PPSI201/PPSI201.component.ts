@@ -795,7 +795,7 @@ export class PPSI201Component implements AfterViewInit {
           console.log("匯入開始");
           myObj.getPPSService.importppsfcptb13TablExcel(this.importdata).subscribe(res => {
             var ress:any = res;
-            if(ress.MSG === "Y") { 
+            if(ress.code === "Y") { 
               this.message.info("EXCCEL上傳成功");
               this.clearFile();
             } else {
