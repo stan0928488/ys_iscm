@@ -21,7 +21,7 @@
             <a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a>
           </li>
           <li>
-            <a href="#/singleData/I131">直棒批次爐</a>
+            <a href="#/singleData/I131">直棒BA1批次爐工時維護</a>
           </li>
         </ul>
       </tr>
@@ -952,377 +952,365 @@
     </nz-tab>
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)">
-      <div style="margin-bottom: 15px">
-        <tr>
-          <td>
-            <a
-              class="Tab5-a"
-              style="background-color: #fafafa; color: black"
-              [routerLink]="['/singleData/I124']"
-              [queryParams]="{ selectedTabIndex: 4 }"
-            >
-              公版維護表
-            </a>
-            <a
-              class="Tab5-a"
-              style="background-color: #ffffff; color: dodgerblue"
-              [routerLink]="['/singleData/I124_100']"
-            >
-              工廠排程公版匯入</a
-            >
-          </td>
-          <label
-            style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
-            *ngIf="isRunFCP"
-          >
-            ※ 目前 FCP 執行中，不可異動資料！
-          </label>
-        </tr>
-      </div>
+      <label
+        style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
+        *ngIf="isRunFCP"
+      >
+        ※ 目前 FCP 執行中，不可異動資料！
+      </label>
 
-      <nz-collapse>
-        <nz-collapse-panel
-          *ngFor="let panel of panels"
-          [nzHeader]="panel.name"
-          [nzActive]="panel.active"
-          [nzDisabled]="panel.disabled"
+      <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+        <nz-tab class="Tab5-a" style="background-color: #ffffff">
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['/singleData/I124']"
+            [queryParams]="{ selectedTabIndex: 4, innerSelect: 0 }"
+            style="color: black"
+          >
+            公版維護表
+          </a>
+        </nz-tab>
+        <nz-tab
+          class="Tab5-a"
+          style="background-color: #ffffff; color: dodgerblue"
         >
-          <nz-select
-            nzPlaceHolder="請選擇版本"
-            style="width: 210px; margin-left: 20px"
-            [(ngModel)]="fcpEditionList"
-            nzAllowClear
-            (nzOpenChange)="getFcpList()"
+          <a *nzTabLink nz-tab-link [routerLink]="['/singleData/I124_100']">
+            工廠排程公版匯入</a
           >
-            <nz-option
-              *ngFor="let fcpEdition of fcpEditionOption"
-              [nzLabel]="fcpEdition"
-              [nzValue]="fcpEdition"
-            ></nz-option>
-            <nz-option *ngIf="fcpEditionLoading" nzDisabled nzCustomContent>
-              <span nz-icon nzType="loading" class="loading-icon"></span>
-              版本清單載入中...
-            </nz-option>
-          </nz-select>
+          <nz-collapse>
+            <nz-collapse-panel
+              *ngFor="let panel of panels"
+              [nzHeader]="panel.name"
+              [nzActive]="panel.active"
+              [nzDisabled]="panel.disabled"
+            >
+              <nz-select
+                nzPlaceHolder="請選擇版本"
+                style="width: 210px; margin-left: 20px"
+                [(ngModel)]="fcpEditionList"
+                nzAllowClear
+                (nzOpenChange)="getFcpList()"
+              >
+                <nz-option
+                  *ngFor="let fcpEdition of fcpEditionOption"
+                  [nzLabel]="fcpEdition"
+                  [nzValue]="fcpEdition"
+                ></nz-option>
+                <nz-option *ngIf="fcpEditionLoading" nzDisabled nzCustomContent>
+                  <span nz-icon nzType="loading" class="loading-icon"></span>
+                  版本清單載入中...
+                </nz-option>
+              </nz-select>
 
-          <button
-            style="margin-left: 20px"
-            nz-button
-            nzType="primary"
-            (click)="convertToTbppsm100(true)"
-          >
-            <span nz-icon nzType="edit" nzTheme="outline"></span>轉入排程公版
-          </button>
-        </nz-collapse-panel>
-      </nz-collapse>
-
-      <!-- <nz-collapse>
-          <nz-collapse-panel
-            *ngFor="let panel of panels"
-            [nzHeader]="panel.name"
-            [nzActive]="panel.active"
-            [nzDisabled]="panel.disabled"
-          >
-            <td style="text-align: right; width: 42%">
-              &nbsp;&nbsp;
-              <input
-                type="file"
-                id="fileupload"
-                style="display: inline-block"
-                (change)="incomingfile($event)"
-                placeholder="Upload file"
-                accept=".xlsx, .xls, .csv"
-              />
               <button
+                style="margin-left: 20px"
                 nz-button
-                [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
                 nzType="primary"
+                (click)="convertToTbppsm100(true)"
                 [disabled]="isRunFCP"
-                (click)="Upload('2')"
               >
-                <span nz-icon nzType="upload" nzTheme="outline"></span>
-                E X C E L 匯入
+                <span nz-icon nzType="edit" nzTheme="outline"></span
+                >轉入排程公版
               </button>
-              &nbsp;&nbsp;
-              <button
-                nz-button
-                style="
-                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                  background-color: #4caf50;
-                  border: 2px blue none;
-                "
-                nzType="primary"
-                (click)="convertToExcel('2')"
+            </nz-collapse-panel>
+          </nz-collapse>
+          <p></p>
+          <div style="background: rgb(255, 255, 255); min-height: 800px">
+            <div>
+              <nz-table
+                #RowTable5
+                nzBordered
+                [nzData]="ppsfcptb16_ms_cust_sortList"
+                [nzPageSize]="15"
+                [nzScroll]="{ y: '600px' }"
               >
-                <span nz-icon nzType="download" nzTheme="outline"></span>
-                E X C E L 匯出
-              </button>
-            </td>
-          </nz-collapse-panel>
-        </nz-collapse> -->
-
-      <p></p>
-      <div style="background: rgb(255, 255, 255); min-height: 800px">
-        <div>
-          <nz-table
-            #RowTable5
-            nzBordered
-            [nzData]="ppsfcptb16_ms_cust_sortList"
-            [nzPageSize]="15"
-            [nzScroll]="{ y: '600px' }"
-          >
-            <thead>
-              <tr>
-                <!-- <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">匯入時間</th> -->
-                <th
-                  nzWidth="150px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  FCP版本
-                </th>
-                <th
-                  nzWidth="50px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  站別
-                </th>
-                <th
-                  nzWidth="100px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  投產機台
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  製程碼
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  投入型態
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  產出型態
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  投入尺寸
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  產出尺寸
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  產品種類
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  下站別
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  鋼種群組
-                </th>
-                <th
-                  nzWidth="150px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  自訂月份
-                </th>
-                <th
-                  nzWidth="75px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  寫入排序
-                </th>
-                <th
-                  nzWidth="150px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  開始時間
-                </th>
-                <th
-                  nzWidth="150px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  結束時間
-                </th>
-                <th
-                  nzWidth="150px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  創建時間
-                </th>
-                <th
-                  nzWidth="80px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  創建者
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let data of RowTable5.data; let i = index"
-                class="editable-row"
-              >
-                <ng-container>
-                  <!-- <ng-container> -->
-                  <!-- <td style="text-align:center; padding: 5px; height: 40px;">{{ data.IMPORTDATETIME | date:'yyyy-MM-dd hh:mm:ss' }}</td> -->
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.fcpEdition }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.schShopCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.pstMachine }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.processCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.inputType }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.outputShape }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.inputDia }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.outDia }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.kindType }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.nextSchShopCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.gradeGroup }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.newEpstYymm }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.campaignSort }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.planStartTime }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.planEndTime }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.dateCreate }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.userCreate }}
-                  </td>
-                  <!-- <td style="text-align: center; padding: 5px; height: 40px">
+                <thead>
+                  <tr>
+                    <!-- <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">匯入時間</th> -->
+                    <th
+                      nzWidth="150px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      FCP版本
+                    </th>
+                    <th
+                      nzWidth="50px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      站別
+                    </th>
+                    <th
+                      nzWidth="100px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      投產機台
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      製程碼
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      投入型態
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      產出型態
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      投入尺寸
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      產出尺寸
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      產品種類
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      下站別
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      鋼種群組
+                    </th>
+                    <th
+                      nzWidth="150px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      自訂月份
+                    </th>
+                    <th
+                      nzWidth="75px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      寫入排序
+                    </th>
+                    <th
+                      nzWidth="150px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      開始時間
+                    </th>
+                    <th
+                      nzWidth="150px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      結束時間
+                    </th>
+                    <th
+                      nzWidth="150px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      創建時間
+                    </th>
+                    <th
+                      nzWidth="80px"
+                      style="
+                        text-align: center;
+                        background-color: #eee;
+                        padding: 0px;
+                        height: 55px;
+                      "
+                    >
+                      創建者
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let data of RowTable5.data; let i = index"
+                    class="editable-row"
+                  >
+                    <ng-container>
+                      <!-- <ng-container> -->
+                      <!-- <td style="text-align:center; padding: 5px; height: 40px;">{{ data.IMPORTDATETIME | date:'yyyy-MM-dd hh:mm:ss' }}</td> -->
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.fcpEdition }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.schShopCode }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.pstMachine }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.processCode }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.inputType }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.outputShape }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.inputDia }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.outDia }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.kindType }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.nextSchShopCode }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.gradeGroup }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.newEpstYymm }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.campaignSort }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.planStartTime }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.planEndTime }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.dateCreate }}
+                      </td>
+                      <td
+                        style="text-align: center; padding: 5px; height: 40px"
+                      >
+                        {{ data.userCreate }}
+                      </td>
+                      <!-- <td style="text-align: center; padding: 5px; height: 40px">
                       <a
                         [attr.disabled]="isRunFCP ? true : null"
                         (click)="upd_dtlRow(i, data)"
@@ -1331,12 +1319,14 @@
                       <a *ngIf="!isRunFCP" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
                       <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
                     </td> -->
-                </ng-container>
-              </tr>
-            </tbody>
-          </nz-table>
-        </div>
-      </div>
+                    </ng-container>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </div>
+          </div>
+        </nz-tab>
+      </nz-tabset>
     </nz-tab>
   </nz-tabset>
 </nz-content>

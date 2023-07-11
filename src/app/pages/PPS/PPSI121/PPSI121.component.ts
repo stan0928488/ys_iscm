@@ -86,7 +86,8 @@ export class PPSI121Component implements AfterViewInit {
       if (acss != null) {
         acss.style.cssText = 'color: blue; font-weight:bold;';
       }
-      document.getElementById('number').innerHTML = 'PPSI121';
+      document.getElementById('bba').innerHTML = '直棒研磨道次(PPSI121)';
+      document.getElementById('bba').style.fontSize = '17px';
       console.log('getPPSINP13List success');
       this.PPSINP13List_tmp = res;
 

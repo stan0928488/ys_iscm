@@ -198,7 +198,6 @@ export class PPSI205_100Component implements AfterViewInit {
       console.log('getRunFCPCount success');
       console.log(res);
       if (res > 0) this.isRunFCP = true;
-      document.getElementById('number').innerHTML = 'PPSI205';
     });
   }
 
