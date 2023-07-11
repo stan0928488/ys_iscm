@@ -200,9 +200,10 @@ export class PPSI205Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
-    this.getTbppsm102ListAll();
+    // this.getTbppsm102List();
+    // this.getTbppsm102ListAll();
     this.getRunFCPCount();
-    this.getTbppsm113List();
+    // this.getTbppsm113List();
     this.changeTab(5);
   }
 
