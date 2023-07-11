@@ -787,6 +787,16 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  //刪除排序數據
+  deleteSortData(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + '/FCP/I201/deleteSortData';
+    console.log(queryUrl);
+    console.log(body);
+
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //Get getPickerShopEQUIP 下拉選擇站別 / 機台
   getPickerShopEQUIP(_type, _ShopArr) {
     console.log('api service getPickerShopEQUIP');
@@ -1800,4 +1810,13 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  importppsfcptb13TablExcel(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I201/importppsfcptb13TablExcel`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 }
