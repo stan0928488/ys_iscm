@@ -560,7 +560,7 @@ this.handleSelectCarModal() ;
     //當月月底
     //this.searchV0.endDate = moment().endOf('month').format(this.mdateFormat) ;
     //一個月後
-    this.searchV0.endDate = moment(new Date()).add(7, "days").format(this.mdateFormat) ;
+    this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
     //this.getTableData();
   }
   //初始化數據
@@ -804,7 +804,7 @@ this.handleSelectCarModal() ;
         this.outsideColumnDefs.push(index4);
         //数据类型
         this.columKeyType["END_DATE_C"] = 0 ;
-        if(this.selectEquipCode === 'RF' ||this.selectEquipCode === 'BA1' ) {
+        if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1' ) {
         // 411 CARID
         let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
         exportHeader.push("CAR_ID_ADD")
@@ -1055,6 +1055,11 @@ this.handleSelectCarModal() ;
     })[0] 
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
+    if(this.selectShopCode !== '401' && this.selectShopCode !== '411' ){
+      //日期重置 
+      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+    }
+
     this.originalData = [] ;
     this.rowData = [] ;
     //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
@@ -1063,6 +1068,45 @@ this.handleSelectCarModal() ;
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
+    if(this.selectEquipCode !== 'RF' && this.selectEquipCode !== 'BA1' ){
+      //日期重置 
+      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      // 移除carid
+      this.groupColumList = this.groupColumList.filter((item)=>{
+        return item.columValue !== 'CAR_ID_ADD'
+      })
+      this.columnDefs.forEach((item,index,array)=>{
+        if(item.field === 'CAR_ID_ADD' || item.field === 'CAR_EPST_ADD' || item.field === 'CAR_LPST_ADD'  || item.field === 'CAR_WEIGHT_ADD' ) {
+          this.columnDefs[index].hide = true ;
+        }
+
+      })
+
+      this.outsideColumnDefs.forEach((item,index,array)=>{
+        if(item.field === 'CAR_ID_ADD' || item.field === 'CAR_EPST_ADD' || item.field === 'CAR_LPST_ADD'  || item.field === 'CAR_WEIGHT_ADD' ) {
+          this.outsideColumnDefs[index].hide = true ;
+        }
+      })
+    } else {
+      this.columnDefs.forEach((item,index,array)=>{
+        if(item.field === 'CAR_ID_ADD' || item.field === 'CAR_EPST_ADD' || item.field === 'CAR_LPST_ADD'  || item.field === 'CAR_WEIGHT_ADD' ) {
+          this.columnDefs[index].hide = false ;
+        }
+
+      })
+
+      this.outsideColumnDefs.forEach((item,index,array)=>{
+        if(item.field === 'CAR_ID_ADD' || item.field === 'CAR_EPST_ADD' || item.field === 'CAR_LPST_ADD'  || item.field === 'CAR_WEIGHT_ADD' ) {
+          this.outsideColumnDefs[index].hide = false ;
+        }
+      })
+    
+    }
+    //this.gridOptionsModal.api.setColumnDefs(this.outsideColumnDefs)  ;
+    this.gridOptions.api.setColumnDefs(this.columnDefs)  ;
+    //this.gridOptionsRowDataModal.api.setColumnDefs(this.columnDefs) ;
+    console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
+    console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
     this.originalData = [] ;
     this.rowData = [] ;
     this.getTableData() ;

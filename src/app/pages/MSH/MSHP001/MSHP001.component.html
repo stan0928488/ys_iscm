@@ -51,7 +51,7 @@
           <nz-checkbox-wrapper style="width: 70%;"  (nzOnChange)="checkedChange($event)">
             <div nz-row>
               <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList">
-                <label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"  [nzDisabled]="item2.columValue === 'CAR_ID_ADD'"
+                <label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"  [nzDisabled]="item2.columValue === 'CAR_ID_ADD' && (selectEquipCode === 'BA1' || selectEquipCode === 'RF') "
                 >{{item2.columLabel}}</label>
               </div>
               
@@ -135,7 +135,7 @@
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="openSameOpCodeChangeCarModal()">同作業換車</button>
 
-      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode !== 'RF'"  (click)="handleChangeMachineModal()">更換機台</button>
+      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && (selectEquipCode !== 'RF' && selectEquipCode !== 'BA1')"  (click)="handleChangeMachineModal()">更換機台</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
