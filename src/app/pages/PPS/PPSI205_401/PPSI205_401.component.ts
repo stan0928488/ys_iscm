@@ -137,14 +137,14 @@ export class PPSI205_401Component implements AfterViewInit {
   }
   
   ngAfterViewInit() {
-    this.getTbppsm102List();
     this.getTbppsm119VerList();
+    this.getTbppsm119ListAll();
     // this.getRunFCPCount();
   }
 
   //I205_401 DataList
-  getTbppsm102List() {
-    this.getPPSService.getTbppsm102List(this.PLANT_CODE).subscribe(res => {
+  getTbppsm119ListAll() {
+    this.getPPSService.getTbppsm119ListAll(this.PLANT_CODE).subscribe(res => {
       console.log("getTbppsm119ListAll success");
       let result:any = res;
       if(result.length > 0) {       
@@ -205,7 +205,7 @@ export class PPSI205_401Component implements AfterViewInit {
     } else if(tab === 3){
       window.location.href = '#/singleData/I124';
     } else if(tab === 4) {
-      this.getTbppsm102List();
+      this.getTbppsm119ListAll();
     }else if(tab === 5) {
       window.location.href = "#/singleData/I124";
     }

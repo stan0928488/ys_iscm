@@ -261,7 +261,7 @@ export class PPSI205Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getTbppsm101List();
-    // this.getTbppsm102ListAll();
+    this.getTbppsm102ListAll();
     this.getRunFCPCount();
     // this.getTbppsm113List();
     this.getTbppsm100List();
@@ -398,6 +398,7 @@ export class PPSI205Component implements AfterViewInit {
       this.getTbppsm113List();
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
+      window.location.href = '#/singleData/I124?selectedTabIndex=3';
     } else if (tab === 5) {
       this.getTbppsm100List();
       window.location.href =
