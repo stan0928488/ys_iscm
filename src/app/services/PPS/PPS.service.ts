@@ -1072,16 +1072,23 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  //getTbppsm102ListAll 取得getTbppsm102ListAll
-  getTbppsm102ListAll(_plantCode) {
+  // MO I205_401 DataList
+  getTbppsm119ListAll(_plantCode) {
+    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+ //getTbppsm102ListAll 取得getTbppsm102ListAll
+ getTbppsm102ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
-  // MO I205_401 DataList
-  getTbppsm119ListAll(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
+  // exportTbppsm102ListExcel 匯出 Excel
+  exportTbppsm102ListExcel(_plantCode) {
+    let queryUrl = this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }

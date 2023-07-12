@@ -10,7 +10,6 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { CellClickedEvent, ColDef, ColGroupDef } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
-import { Router } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
@@ -56,20 +55,20 @@ export class PPSI205Component implements AfterViewInit {
   ];
   titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
   titleArray4 = [
+    '匯入時間',
+    '優先順序',
     '站別',
-    '投產機台',
-    '製程碼',
-    '投入型態',
-    '產出型態',
-    '投入尺寸',
-    '產出尺寸',
-    '產品種類',
-    '下站別',
-    '鋼種群組',
-    '自訂月份',
-    '自訂排序',
-    '創建時間',
-    '創建者',
+    '機台',
+    '下一站站別',
+    'max(EPST/ASAP)',
+    '天數',
+    '生產時間(起)',
+    'TC頻率升降冪',
+    '轉入COMPAIGN限制表時間',
+    '建立日期',
+    '建立者',
+    '異動日期',
+    '異動者',
   ];
   datetime = moment();
   arrayBuffer: any;
@@ -79,6 +78,7 @@ export class PPSI205Component implements AfterViewInit {
   isERROR = false;
   errorTXT = [];
 
+  index: string;
   EditMode = [];
   oldlist = {};
   newlist;
@@ -89,10 +89,12 @@ export class PPSI205Component implements AfterViewInit {
 
   // tab 1
   tbppsm101List;
-  // tab 2
+  // tab 4
   tbppsm102List;
-  // tab 2 All
+  // tab 4 All
   tbppsm102ListAll;
+  // tab 4 export excel
+  tbppsm102ExportExcel;
   // tab 3
   tbppsm113List;
 
@@ -178,8 +180,65 @@ export class PPSI205Component implements AfterViewInit {
     resizable: true,
   };
 
+  columnDefs_4: (ColDef | ColGroupDef)[] = [
+    {
+      headerName: '匯入時間',
+      field: 'IMPORTDATETIME',
+      filter: false,
+      width: 200,
+    },
+    {
+      headerName: '廠區別',
+      field: 'PLANT_CODE',
+      filter: false,
+      width: 100,
+    },
+    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
+    { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
+    { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
+    {
+      headerName: '下一站站別',
+      field: 'NEXT_SHOP_CODE',
+      filter: false,
+      width: 120,
+    },
+    {
+      headerName: 'max(EPST/ASAP)',
+      field: 'MAX_DATE',
+      filter: false,
+      width: 150,
+    },
+    { headerName: '天數', field: 'DAYS', filter: false, width: 100 },
+    {
+      headerName: '生產時間(起)',
+      field: 'STARTDATE',
+      filter: false,
+      width: 120,
+    },
+    {
+      headerName: 'TC頻率升降冪',
+      field: 'TC_FREQUENCE_LIFT',
+      filter: false,
+      width: 150,
+    },
+    {
+      headerName: '轉入COMPAIGN限制表時間',
+      field: 'EXPORTDATETIME',
+      filter: true,
+      width: 200,
+    },
+    {
+      headerName: '分類(A. 401 auto)',
+      field: 'CATEGORY',
+      filter: false,
+      width: 100,
+    },
+    { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
+    { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
+  ];
+
   constructor(
-    private router: Router,
+    private router: ActivatedRoute,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -214,7 +273,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
       console.log('getRunFCPCount success');
       console.log(res);
-      if (res > 0) this.isRunFCP = true;
+      if (res > 0) this.isRunFCP = false;
     });
   }
 
@@ -255,6 +314,21 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
       console.log(this.tbppsm102ListAll);
+    });
+  }
+
+  // tab4 export excel
+  exportTbppsm102ListExcel() {
+    this.getPPSService.exportTbppsm102ListExcel(this.PLANT_CODE).subscribe((res) => {
+      console.log('exportTbppsm102ListExcel success');
+      let result: any = res;
+      if (result.length > 0) {
+        console.log(result)
+        this.tbppsm102ExportExcel = JSON.parse(JSON.stringify(result));
+      } else {
+        this.message.error('無資料');
+        return;
+      }
     });
   }
 
@@ -365,9 +439,13 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
     } else if (_type === '4') {
-      if (this.tbppsm102ListAll.length > 0) {
-        // data = this.formatDataForExcel(_type. this.tbppsm102ListAll);
-        fileName = ``;
+
+      if (this.tbppsm102ExportExcel.length > 0) {
+        data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
+        fileName = `Auto Campaign 主表`;
+        titleArray = this.titleArray4;
+      }else {
+        this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
       }
     } else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
@@ -393,7 +471,7 @@ export class PPSI205Component implements AfterViewInit {
           USE_MONTH: _.get(item, 'USE_MONTH'),
           SCH_SHOP_CODE: _.get(item, 'SCH_SHOP_CODE'),
           EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
-          OUTPUT_SHAPE: _.get(item, 'OUTPUT_SHAPE'),
+          UTPUT_SHAPE: _.get(item, 'OUTPUT_SHAPE'),
           OUT_DIA: _.get(item, 'OUT_DIA'),
           SFC_DIA: _.get(item, 'SFC_DIA'),
           FINAL_PROCESS_CODE: _.get(item, 'FINAL_PROCESS_CODE'),
@@ -439,27 +517,27 @@ export class PPSI205Component implements AfterViewInit {
         });
         excelData.push(obj);
       }
-    } else if (_type === '4') {
+    } 
+    else if (_type === '4') {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // PLANT_CODE: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
-          // IMPORTDATETIME: _.get(item, "IMPORTDATETIME"),
+          IMPORTDATETIME: _.get(item, 'IMPORTDATETIME'),
+          PLANT_CODE: _.get(item, 'PLANT_CODE'),
+          ORDER_ID: _.get(item, 'ORDER_ID'),
+          SCH_SHOP_CODE: _.get(item, 'SCH_SHOP_CODE'),
+          EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
+          NEXT_SHOP_CODE: _.get(item, 'NEXT_SHOP_CODE'),
+          MAX_DATE: _.get(item, 'MAX_DATE'),
+          DAYS: _.get(item, "DAYS"),
+          STARTDATE: _.get(item, 'STARTDATE'),
+          TC_FREQUENCE_LIFT: _.get(item, 'TC_FREQUENCE_LIFT'),
+          EXPORTDATETIME: _.get(item, 'EXPORTDATETIME'),
+          CATEGORY: _.get(item, 'CATEGORY'),
+          USER_CREATE: _.get(item, 'USER_CREATE'),
+          USER_UPDATE: _.get(item, 'USER_UPDATE'),
         });
+        excelData.push(obj);
       }
     } else if (_type === '5') {
       for (let item of _displayData) {
@@ -1527,4 +1605,26 @@ export class PPSI205Component implements AfterViewInit {
     this.errorTXT = [];
     this.isErrorMsg = false;
   }
+
+  // I205 Auto Campaign 匯出 Excel
+  excelExport(){
+    let rowData = this.exportTbppsm102ListExcel();
+
+    this.isSpinning = true;
+    let headerArray = [] ;
+
+    this.columnDefs_4.forEach(function(obj){
+      headerArray.push(obj['headerName']);
+      console.log(obj);
+    });
+
+    let exportTableName = "Auto Campaign 主表"
+
+    let exportData = this.tbppsm102ExportExcel;
+    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
+    
+    this.isSpinning = false;
+
+ }
+
 }
