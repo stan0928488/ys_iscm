@@ -70,22 +70,6 @@ export class PPSI205Component implements AfterViewInit {
     '異動日期',
     '異動者',
   ];
-  titleArray5 = [
-    '站別',
-    '投產機台',
-    '製程碼',
-    '投入型態',
-    '產出型態',
-    '投入尺寸',
-    '產出尺寸',
-    '產品種類',
-    '下站別',
-    '鋼種群組',
-    '自訂月份',
-    '自訂排序',
-    '創建時間',
-    '創建者',
-  ];
   datetime = moment();
   arrayBuffer: any;
   file: File;
@@ -321,6 +305,7 @@ export class PPSI205Component implements AfterViewInit {
   // tab4 All
   getTbppsm102ListAll() {
     this.getPPSService.getTbppsm102ListAll(this.PLANT_CODE).subscribe((res) => {
+      this.isSpinning = true;
       console.log('getTbppsm102ListAll success');
       let result: any = res;
       if (result.length > 0) {
@@ -329,25 +314,24 @@ export class PPSI205Component implements AfterViewInit {
         this.message.error('無資料');
         return;
       }
+      this.isSpinning = false;
       console.log(this.tbppsm102ListAll);
     });
   }
 
   // tab4 export excel
   exportTbppsm102ListExcel() {
-    this.getPPSService
-      .exportTbppsm102ListExcel(this.PLANT_CODE)
-      .subscribe((res) => {
-        console.log('exportTbppsm102ListExcel success');
-        let result: any = res;
-        if (result.length > 0) {
-          console.log(result);
-          this.tbppsm102ExportExcel = JSON.parse(JSON.stringify(result));
-        } else {
-          this.message.error('無資料');
-          return;
-        }
-      });
+    this.getPPSService.exportTbppsm102ListExcel(this.PLANT_CODE).subscribe((res) => {
+      console.log('exportTbppsm102ListExcel success');
+      let result: any = res;
+      if (result.length > 0) {
+        console.log(result)
+        this.tbppsm102ExportExcel = JSON.parse(JSON.stringify(result));
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+    });
   }
 
   //tab3
@@ -458,18 +442,19 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
     } else if (_type === '4') {
+
       if (this.tbppsm102ExportExcel.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
         fileName = `Auto Campaign 主表`;
         titleArray = this.titleArray4;
-      } else {
+      }else {
         this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
       }
     } else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm100List);
         fileName = `公版排程維護`;
-        titleArray = this.titleArray5;
+        titleArray = this.titleArray4;
       } else {
         this.errorMSG('匯出失敗', '公版排程維護目前無資料');
         return;
@@ -535,7 +520,8 @@ export class PPSI205Component implements AfterViewInit {
         });
         excelData.push(obj);
       }
-    } else if (_type === '4') {
+    } 
+    else if (_type === '4') {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
@@ -546,7 +532,7 @@ export class PPSI205Component implements AfterViewInit {
           EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
           NEXT_SHOP_CODE: _.get(item, 'NEXT_SHOP_CODE'),
           MAX_DATE: _.get(item, 'MAX_DATE'),
-          DAYS: _.get(item, 'DAYS'),
+          DAYS: _.get(item, "DAYS"),
           STARTDATE: _.get(item, 'STARTDATE'),
           TC_FREQUENCE_LIFT: _.get(item, 'TC_FREQUENCE_LIFT'),
           EXPORTDATETIME: _.get(item, 'EXPORTDATETIME'),
@@ -740,7 +726,54 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
-    } else if (_type === '5') {
+    }else if (_type === '4') {
+      console.log('incomingfile e5 : ' + _type);
+      if (
+        worksheet.A1 === undefined ||
+        worksheet.B1 === undefined ||
+        worksheet.C1 === undefined ||
+        worksheet.D1 === undefined ||
+        worksheet.E1 === undefined ||
+        worksheet.F1 === undefined ||
+        worksheet.G1 === undefined ||
+        worksheet.H1 === undefined ||
+        worksheet.I1 === undefined ||
+        worksheet.J1 === undefined ||
+        worksheet.K1 === undefined ||
+        worksheet.L1 === undefined ||
+        worksheet.M1 === undefined ||
+        worksheet.N1 === undefined
+      ) {
+        this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
+        this.clearFile();
+        return;
+      } else if (
+        worksheet.A1.v !== '' ||
+        worksheet.B1.v !== '' ||
+        worksheet.C1.v !== '' ||
+        worksheet.D1.v !== '' ||
+        worksheet.E1.v !== '' ||
+        worksheet.F1.v !== '' ||
+        worksheet.G1.v !== '' ||
+        worksheet.H1.v !== '' ||
+        worksheet.I1.v !== '' ||
+        worksheet.J1.v !== '' ||
+        worksheet.K1.v !== '' ||
+        worksheet.L1.v !== '' ||
+        worksheet.M1.v !== '' ||
+        worksheet.N1.v !== ''
+      ) {
+        this.errorMSG(
+          '檔案樣板欄位表頭錯誤',
+          '請先下載資料後，再透過該檔案調整上傳。'
+        );
+        this.clearFile();
+        return;
+      } else {
+        this.importExcel4('4', importdata);
+      }
+    } 
+    else if (_type === '5') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -1124,6 +1157,137 @@ export class PPSI205Component implements AfterViewInit {
 
               this.sucessMSG('EXCCEL上傳成功', '');
               this.getTbppsm113List();
+              this.clearFile();
+            } else {
+              this.errorMSG('匯入錯誤', res[0].MSG);
+              this.clearFile();
+              this.LoadingPage = false;
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+            this.LoadingPage = false;
+          }
+        );
+        this.importdata = [];
+        this.importdata_new = [];
+        this.errorTXT = [];
+      });
+    }
+  }
+
+  // I205 Auto Campaign 匯入
+  importExcel4(_type, _data) {
+    console.log('incomingfile e6 : ' + _type);
+    for (let i = 0; i < _data.length; i++) {
+      let importdatetime = _data[i].this.dateFormat(
+        this.ExcelDateExchange(_data[i].匯入時間),
+        2
+      );
+      let plantCode = _data[i].廠區別;
+      let orderID = _data[i].優先順序;
+      let schShopCode = _data[i].站別;
+      let equipCode = _data[i].機台;
+      let nextShopCode = _data[i].下一站站別;
+      let maxDate =  this.dateFormat(
+        this.ExcelDateExchange(_data[i].最大值的EPST或ASAP),
+        2
+      );
+      let days = _data[i].天數;
+      let startDate = this.dateFormat(
+        this.ExcelDateExchange(_data[i].生產時間起),
+        2
+      );
+      let tcFrequenceLeft = _data[i].TC頻率升降冪;
+      let exportDateTime = this.dateFormat(
+        this.ExcelDateExchange(_data[i].轉入COMPAIGN限制表時間),
+        2
+      );
+      let category = _data[i].分類
+      let userCreate = _data[i].建立者;
+      let userUpdate = _data[i].異動者;
+
+      if (
+        importdatetime === undefined ||
+        plantCode === undefined ||
+        orderID === undefined ||
+        schShopCode === undefined ||
+        equipCode === undefined ||
+        nextShopCode === undefined ||
+        maxDate === undefined ||
+        days === undefined ||
+        startDate === undefined ||
+        tcFrequenceLeft === undefined ||
+        exportDateTime === undefined ||
+        category === undefined ||
+        userCreate === undefined ||
+        userUpdate === undefined
+      ) {
+        let col = i + 2;
+        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+        this.isERROR = true;
+      }
+    }
+
+    if (this.isERROR) {
+      // 匯入錯誤失敗訊息提醒
+      this.clearFile();
+      this.isErrorMsg = true;
+      this.importdata_new = [];
+      this.errorMSG('匯入錯誤', this.errorTXT);
+    } else {
+      for (let i = 0; i < _data.length; i++) {
+        let importdatetime = _data[i].匯入時間.toString();
+        let plantCode = _data[i].廠區別.toString();
+        let orderID = _data[i].優先順序.toString();
+        let equipCode = _data[i].站別.toString();
+        let nextShopCode = _data[i].機台.toString();
+        let maxDate = _data[i].下一站站別.toString();
+        let days = _data[i].最大值的EPST或ASAP.toString();
+        let startDate = _data[i].天數.toString();
+        let tcFrequenceLeft = _data[i].生產時間起.toString();
+        let exportDateTime = _data[i].轉入COMPAIGN限制表時間.toString();
+        let category = _data[i].分類.toString();
+        let userCreate = _data[i].建立者.toString();
+        let userUpdate = _data[i].異動者.toString();
+
+        this.importdata_new.push({
+          importdatetime: importdatetime,
+          plantCode: plantCode,
+          orderID: orderID,
+          equipCode: equipCode,
+          nextShopCode: nextShopCode,
+          maxDate: maxDate,
+          days: days,
+          startDate: startDate,
+          tcFrequenceLeft: tcFrequenceLeft,
+          exportDateTime: exportDateTime,
+          category: category,
+          userCreate: userCreate,
+          userUpdate: userUpdate,
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        this.LoadingPage = true;
+        let myObj = this;
+        let obj = {};
+        _.extend(obj, {
+          NOWTABS: _type,
+          EXCELDATA: this.importdata_new,
+          PLANT_CODE: this.PLANT_CODE,
+          USERCODE: this.USERNAME,
+          DATETIME: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
+        });
+        myObj.getPPSService.importI205Excel(obj).subscribe(
+          (res) => {
+            if (res[0].MSG === 'Y') {
+              this.loading = false;
+              this.LoadingPage = false;
+
+              this.sucessMSG('EXCCEL上傳成功', '');
+              this.getTbppsm102ListAll();
               this.clearFile();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);
@@ -1624,26 +1788,24 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   // I205 Auto Campaign 匯出 Excel
-  excelExport() {
+  excelExport(){
     let rowData = this.exportTbppsm102ListExcel();
 
     this.isSpinning = true;
-    let headerArray = [];
+    let headerArray = [] ;
 
-    this.columnDefs_4.forEach(function (obj) {
+    this.columnDefs_4.forEach(function(obj){
       headerArray.push(obj['headerName']);
       console.log(obj);
     });
 
-    let exportTableName = 'Auto Campaign 主表';
+    let exportTableName = "Auto Campaign 主表"
 
     let exportData = this.tbppsm102ExportExcel;
-    this.excelService.exportAsExcelFile(
-      exportData,
-      exportTableName,
-      headerArray
-    );
-
+    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
+    
     this.isSpinning = false;
-  }
+
+ }
+
 }
