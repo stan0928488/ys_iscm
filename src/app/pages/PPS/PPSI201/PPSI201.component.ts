@@ -8,6 +8,7 @@ import { NzMessageService } from "ng-zorro-antd/message";
 import { NzPaginationModule } from "ng-zorro-antd/pagination"
 import { NzGridModule } from "ng-zorro-antd/grid"
 import { ExcelService } from "src/app/services/common/excel.service";
+import { NzModalService} from "ng-zorro-antd/modal"
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 // import { EventEmitter } from "protractor";
@@ -100,6 +101,7 @@ export class PPSI201Component implements AfterViewInit {
     private message: NzMessageService,
     private page: NzPaginationModule,
     private nzGridModule: NzGridModule,
+    private Modal: NzModalService,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -172,18 +174,26 @@ export class PPSI201Component implements AfterViewInit {
     const data = { editId: "" };
     let myObj = this;
     data.editId = item.sorting_SEQ;
-    myObj.getPPSService.deleteSortData(data).subscribe(res => {
-      console.log("comitData :" + res)
-      let result: any = res;
-      if (result.code === 1) {
-        this.message.info(result.message);
-        this.getSetShopEQUIP();
-      } else {
-        this.message.error(result.message);
-      }
-    }, err => {
-      this.message.error('delete fail');
-    })
+
+    this.Modal.confirm({
+      nzTitle: '是否確定刪除',
+      nzOnOk: () => {
+        myObj.getPPSService.deleteSortData(data).subscribe(res => {
+          console.log("comitData :" + res)
+          let result: any = res;
+          if (result.code === 1) {
+            this.message.info(result.message);
+            this.getSetShopEQUIP();
+          } else {
+            this.message.error(result.message);
+          }
+        }, err => {
+          this.message.error('delete fail');
+        })
+      },
+      nzOnCancel: () => {
+      },
+    });
 
   }
 
