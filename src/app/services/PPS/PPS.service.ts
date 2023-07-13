@@ -1590,6 +1590,13 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  // 取得區域別，報表使用
+  getAreaGroup() {
+    let queryUrl = this.APIURL + '/FCP/R302/getAreaGroup';
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
   //获取当月设定
   getWeekData() {
     let queryUrl = this.APIURL + '/FCP/R302/getWeekData';
