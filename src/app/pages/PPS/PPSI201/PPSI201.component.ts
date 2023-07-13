@@ -25,6 +25,7 @@ export class PPSI201Component implements AfterViewInit {
 
   file:File;
   importdata = [];
+  postData = {};
   arrayBuffer:any;
 
   loading = false; //loaging data flag
@@ -780,6 +781,11 @@ export class PPSI201Component implements AfterViewInit {
 
   uploadExcel() {
 
+    if(this.file === null || this.file === undefined) {
+      this.message.error("請先上傳檔案")
+      return
+    }
+
     let lastname = this.file.name.split('.').pop();
     if (lastname !== 'xlsx') {
       this.message.error('檔案格式錯誤 僅限定上傳 Excel 格式。');
@@ -798,12 +804,15 @@ export class PPSI201Component implements AfterViewInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet: any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-
+        this.postData = {
+          excelData:this.importdata,
+          userName:this.userName
+        }
         return new Promise((resolve, reject) => {
 
           var myObj = this;
           console.log("匯入開始");
-          myObj.getPPSService.importppsfcptb13TablExcel(this.importdata).subscribe(res => {
+          myObj.getPPSService.importppsfcptb13TablExcel(this.postData).subscribe(res => {
             var ress:any = res;
             if(ress.code === "Y") { 
               this.message.info("EXCCEL上傳成功");
@@ -838,7 +847,7 @@ export class PPSI201Component implements AfterViewInit {
   }
 
   clearFile() {
-    document.getElementsByTagName('input')[0].value = '';
+    this.file = null;
   }
 
 }

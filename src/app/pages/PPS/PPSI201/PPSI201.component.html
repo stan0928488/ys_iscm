@@ -105,7 +105,7 @@
         </button>
       </td>
       <td  style="width: 100px ;">
-        <input type="file" id="fileupload" style="display: inline-block;" placeholder="Upload file" (change)="incomingfile($event)"  accept=".xlsx">
+        <input type="file" id="fileupload" style="display: inline-block;" placeholder="Upload file" [(ngModel)]="file" (change)="incomingfile($event)"  accept=".xlsx">
       </td>
       <!-- <td><button (click) = "getSHOP_CODEList()">测试获取站别</button></td>
       <td><button (click) = "getSetShopEQUIP()">获取已设定值</button></td> -->
