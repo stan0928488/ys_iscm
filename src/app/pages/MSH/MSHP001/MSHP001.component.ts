@@ -1119,6 +1119,23 @@ this.handleSelectCarModal() ;
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
+    if(this.selectEquipCode === 'BA1'){
+      //  let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
+      let isExsit = true ;
+      let groupColumListTemp = [] ;
+      let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true};
+      groupColumListTemp.push(itemTemp);
+      this.groupColumList = this.groupColumList.forEach((item)=>{
+        groupColumListTemp.push(item);
+        if(item.columValue === 'CAR_ID_ADD')  {
+          isExsit = false ;
+        }
+      })
+      if(isExsit){
+        this.groupColumList = groupColumListTemp;
+        this.groupArray.push("CAR_ID_ADD") ;
+      }
+    }
     if(this.selectEquipCode !== 'RF' && this.selectEquipCode !== 'BA1' ){
       //日期重置 
       this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
