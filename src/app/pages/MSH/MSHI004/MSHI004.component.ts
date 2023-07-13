@@ -66,8 +66,8 @@ export class MSHI004Component {
   year;
   month;
   day;
-  now;
-  end;
+  now: string;
+  end: string;
   normFcpEdition;
 
   normTime;
@@ -364,7 +364,10 @@ export class MSHI004Component {
         width: 160,
         filter: true,
         cellRenderer: function (params) {
-          if (!_.isNil(params.data.fcpEdition)) {
+          if (
+            params.data.fcpEditionLock == '1' &&
+            !_.isNil(params.data.fcpEdition)
+          ) {
             _this.normFcp = params.data.fcpEdition;
             const buttonElement = _this.renderer.createElement('button');
             const buttonText = _this.renderer.createText('轉入公版');
@@ -376,7 +379,9 @@ export class MSHI004Component {
               } else {
                 _this.shopCodeList = [];
                 _this.year = _this.currentDate.getFullYear() + '-';
-                _this.month = _this.currentDate.getMonth() + 1; // 月份从 0 开始，所以要加 1
+                _this.month = ('0' + (_this.currentDate.getMonth() + 1)).slice(
+                  -2
+                ); // 月份从 0 开始，所以要加 1
                 _this.day = '-' + _this.currentDate.getDate();
                 _this.now = `${_this.year}${_this.month}${_this.day}`;
 
@@ -388,8 +393,6 @@ export class MSHI004Component {
                   fcpEdition: _this.normFcpEdition,
                   mesPublishGroup: b,
                 };
-                console.log(_this.mgroup);
-                console.log(params);
                 _this.getShopCode();
                 // _this.buttonClicked(params.data);
                 // _this.aaa(params.data);
@@ -398,12 +401,18 @@ export class MSHI004Component {
             return buttonElement;
           } else {
             const buttonElement = _this.renderer.createElement('button');
-            const buttonText = _this.renderer.createText('未Publish');
+            const buttonText = _this.renderer.createText('未能轉入');
             _this.renderer.appendChild(buttonElement, buttonText);
             _this.renderer.addClass(buttonElement, 'button');
             return buttonElement;
           }
         },
+      },
+      {
+        headerName: '公版天數',
+        field: 'normPublishTime',
+        width: 120,
+        filter: true,
       },
       {
         headerName: '已發佈機台',
@@ -475,11 +484,8 @@ export class MSHI004Component {
       fcpEdition: a,
       mesPublishGroup: b,
     };
-    console.log(downloadMes);
     new Promise<boolean>((resolve, reject) => {
-      console.log(1);
       let lock_data = JSON.parse(JSON.stringify(downloadMes));
-      console.log(lock_data);
       this.isSpinning = true;
       let paramete = downloadMes.fcpEdition + '/' + downloadMes.mesPublishGroup;
       this.mshi004Service.downloadAutoData(paramete).subscribe((res) => {
@@ -517,14 +523,12 @@ export class MSHI004Component {
       fcpEdition: a,
       mesPublishGroup: b,
     };
-    console.log(this.preMes);
     new Promise<boolean>((resolve, reject) => {
       this.isSpinning = true;
       this.mshi004Service.getMesData(this.preMes).subscribe(
         (res) => {
           const { code, data } = res;
           const forMesData = JSON.parse(data);
-          console.log(code);
           forMesData.forEach((obj) => {
             obj.publishType = '1';
           });
@@ -917,21 +921,50 @@ export class MSHI004Component {
   }
 
   convertSubmit() {
-    console.log(this.PickShopCode);
-    console.log(this.end);
-    console.log(this.now);
-    console.log(this.normFcpEdition);
+    const a: Array<String> = [];
     this.normData = [];
     for (var i = 0; i < this.PickShopCode.length; i++) {
-      this.normData.fcpVer = this.normFcpEdition;
-      this.normData.shopCode = this.PickShopCode.toString();
-      this.normData.planStartTime = this.now;
-      this.normData.planEndTime = this.end;
-      this.normData.mesPublishGroup = this.mgroup;
-      this.normData.publishType = '1';
+      const data = {
+        fcpVer: this.normFcpEdition,
+        shopCode: this.PickShopCode[i],
+        planStartTime: this.now,
+        planEndTime: this.end,
+        mesPublishGroup: this.mgroup,
+        publishType: '1',
+      };
+      this.normData.push(data);
     }
-
+    let norm = {
+      mesPublishGroup: this.mgroup,
+      normPublishTime: this.normday,
+    };
     console.log(this.normData);
+    new Promise<boolean>((resolve, reject) => {
+      this.mshi004Service.normTime(norm).subscribe(
+        (res) => {
+          const { code, data } = res;
+          if (code === 200) {
+            resolve(true);
+          } else {
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.serachEPST(true);
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.isSpinning = false;
+      });
 
     this.mshi004Service
       .sendAutoCampaignBatch(this.normData)
@@ -941,12 +974,15 @@ export class MSHI004Component {
           this.message.success(result.message);
           this.normData = [];
           this.isSpinning = false;
+          this.isVisibleConvert = false;
         } else {
           this.message.error(result.message);
-
+          this.normData = [];
           this.isSpinning = false;
+          this.isVisibleConvert = false;
         }
       });
+    this.isVisibleConvert = false;
   }
   convertCancel(): void {
     this.isVisibleConvert = false;
@@ -965,9 +1001,6 @@ export class MSHI004Component {
               for (var i = 0; i < forMesData.length; i++) {
                 this.shopCodeList.push(forMesData[i].shopCode);
               }
-              console.log(this.shopCodeList);
-              console.log('=====');
-              console.log(this.preMes);
             } else {
               this.mesData = [];
             }
@@ -994,7 +1027,6 @@ export class MSHI004Component {
       });
   }
   clickShopCode(_value) {
-    console.log('clickShopCode ');
     this.PickShopCode = _value.toString().split(',');
 
     // this.getEQUIP_CODEList(this.PickShopCode);
@@ -1003,12 +1035,10 @@ export class MSHI004Component {
   inputDay() {
     this.futureDate.setDate(this.currentDate.getDate() + this.normday);
     this.year = this.futureDate.getFullYear() + '-';
-    this.month = this.futureDate.getMonth() + 1; // 月份从 0 开始，所以要加 1
+    this.month = ('0' + (this.futureDate.getMonth() + 1)).slice(-2); // 月份从 0 开始，所以要加 1
     this.day = '-' + this.futureDate.getDate();
     this.end = `${this.year}${this.month}${this.day}`;
 
-    console.log(this.futureDate);
     this.normTime = this.now + '-' + this.end;
-    console.log('后台数据变化：', this.normday);
   }
 }
