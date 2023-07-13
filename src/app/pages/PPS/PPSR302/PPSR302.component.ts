@@ -37,6 +37,7 @@ export class PPSR302Component implements OnInit {
   ngOnInit() {
     this.specialBarDisable = true;
     this.getVerList();
+    this.getAreaGroup();
     this.getWeekData();
   }
   //补充定义
@@ -48,6 +49,7 @@ export class PPSR302Component implements OnInit {
   tableHeaderLastList = [] ; //最后栏位 TOTAL
   tableSplitData = [] ;  //日期分割部分
   radioPointValue = 'A' ; //ASAP选择
+  areaGroup = [];
   selectedVer = {label:'',value:'',pointStatus:''}; //版本选择
   listOfOption = [] ; //版本号选择
   splitnumm = 0 ;
@@ -585,7 +587,23 @@ getVerList() {
   });
 }
 
-// 取得版本號
+// 取得區域別
+getAreaGroup() {
+  let myObj = this;
+  this.getPPSService.getAreaGroup().subscribe(res => {
+    let result:any = res ;
+    if(result.code === 1) {
+      let areaGroup:any = result.data;
+      areaGroup.forEach(e => {
+        this.areaGroup.push({label: e.saleAreaGroup, value: e.saleAreaGroup});
+      });
+    } else{
+      this.message.error(result.message);
+    }
+  });
+}
+
+// 取得星期設定
 getWeekData() {
   let myObj = this;
   this.getPPSService.getWeekData().subscribe(res => {

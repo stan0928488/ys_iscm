@@ -67,6 +67,7 @@
                 nzType="primary"
                 [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
                 [disabled]="isRunFCP"
+                (click)="convertTBPPSM102AutoCampaign()"
         ><span nz-icon nzType="import" nzTheme="outline"></span>
         轉入 401 Auto Campaign
         </button>
@@ -75,10 +76,10 @@
           <nz-input-number 
             style="height: 20%;"
             nz-input 
-            [(ngModel)]="inputDate_val"
-            [nzMin]="0" 
+            [nzMin]="1" 
             [nzMax]="50" 
-            [nzStep]="1" 
+            [nzStep]="1"
+            [(ngModel)]="inputDate_val" 
           >
           </nz-input-number>
 

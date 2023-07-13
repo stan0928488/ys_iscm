@@ -68,7 +68,7 @@ export class PPSI205_401Component implements AfterViewInit {
   arrayBuffer: any;
 
   selectedVer_default:string = null;
-  inputDate_val:number = 0;
+  inputDate_val:number = 1;
   selectedVer = [{label:'',value:''}]; //版本選擇
 
   PLANT_CODE;
@@ -108,8 +108,14 @@ export class PPSI205_401Component implements AfterViewInit {
   isSpinning = false;
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-      { headerName:'MO 版次',field: 'moEdition' , filter: true,width: 200 },
-      { headerName:'日期',field: 'exportDateTime' , filter: true,width: 150 },
+      { headerName:'MO 版次',
+        field: 'moEdition' , 
+        filter: true,
+        width: 200,
+        },
+      { headerName:'日期',field: 'exportDateTime' , filter: true,width: 150, cellRenderer: (data) => {
+        return moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss')
+    }},
       { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 150 },
       { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 150},
       { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 150 },
@@ -155,6 +161,26 @@ export class PPSI205_401Component implements AfterViewInit {
         return;
       }
     });
+  }
+
+  convertTBPPSM102AutoCampaign() {
+    let data = {"userName": ""};
+    
+    data.userName = this.USERNAME;
+
+      console.log("convertTBPPSM102AutoCampaign success");
+      this.getPPSService.convertTBPPSM102AutoCampaign(data).subscribe(res =>{
+        let result:any = res ;
+        if(result.code == 0) {
+          this.message.error('轉入發生異常，請連繫系統後端人員');
+        }else {
+        this.message.info('轉入成功');
+        this.getTbppsm119ListAll();
+        }
+      },err => {
+        this.message.error('轉入發生異常，請連繫系統後端人員');
+      });
+      console.log("Success");
   }
 
   converTBPPSM119Data() {

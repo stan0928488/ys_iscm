@@ -123,12 +123,6 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
       width: 200,
     },
-    {
-      headerName: '廠區別(鹽水廠YS)',
-      field: 'PLANT_CODE',
-      filter: true,
-      width: 150,
-    },
     { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
     { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
     { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
@@ -162,12 +156,9 @@ export class PPSI205Component implements AfterViewInit {
       field: 'EXPORTDATETIME',
       filter: true,
       width: 200,
-    },
-    {
-      headerName: '分類(A. 401 auto)',
-      field: 'CATEGORY',
-      filter: true,
-      width: 150,
+      cellRenderer: (data) => {
+          return moment(data.createdAt).format('YYYY-MM-DD')
+      }
     },
     { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 200 },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },

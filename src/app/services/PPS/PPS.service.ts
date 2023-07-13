@@ -1106,6 +1106,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  convertTBPPSM102AutoCampaign(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I205/convertTBPPSM102AutoCampaign`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //getTbppsm113List getTbppsm113List
   getTbppsm113List(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
@@ -1586,6 +1592,13 @@ export class PPSService {
   //获取版本号仅限当月，报表使用
   getCurrentMonVerList() {
     let queryUrl = this.APIURL + '/FCP/R302/VerList';
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  // 取得區域別，報表使用
+  getAreaGroup() {
+    let queryUrl = this.APIURL + '/FCP/R302/getAreaGroup';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
