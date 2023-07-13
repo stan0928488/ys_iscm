@@ -817,6 +817,7 @@ export class PPSI201Component implements AfterViewInit {
             if(ress.code === "Y") { 
               this.message.info("EXCCEL上傳成功");
               this.clearFile();
+              this.getSetShopEQUIP();
             } else {
               this.message.error("匯入錯誤<br>"+ress.MSG);
               this.clearFile();
