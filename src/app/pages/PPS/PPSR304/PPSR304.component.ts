@@ -225,12 +225,21 @@ public autoGroupColumnDef: ColDef = {
         if (planInStorage == undefined) {
           datePlanInStorage = null;
         } else {
-          datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+          if( datePlanInStorage === 'Invalid date') {
+            datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+          } else {
+            datePlanInStorage = planInStorage ;
+          }
+          
         }
         if (deliveryPp == undefined) {
           dateDeliveryPp = null;
         } else {
-          dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+          if( datePlanInStorage === 'Invalid date') {
+            dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
+          } else {
+            dateDeliveryPp = deliveryPp ;
+          }
         }
 
         upload_data.push({
@@ -238,9 +247,9 @@ public autoGroupColumnDef: ColDef = {
           custAbbreviations: _data[i]['客戶簡稱'].toString(),
           areaGroup : _data[i]['區別'] != undefined ?_data[i]['區別'].toString():null,
           sales : _data[i]['業務員'] != undefined ?_data[i]['業務員'].toString():null,
-          estimateWeight: parseInt(_data[i]['預估出貨量']),
-          profieldGoal : parseInt(_data[i]['異型棒目標']),
-          bigStickGoal :parseInt(_data[i]['大棒目標']),
+          estimateWeight: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['預估出貨量']),
+          profieldGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['異型棒目標']),
+          bigStickGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['大棒目標']),
           datePlanInStorage : datePlanInStorage,
           dateAcceptTable :dateDeliveryPp,
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -261,10 +270,7 @@ public autoGroupColumnDef: ColDef = {
 
       console.log("EXCELDATA:"+ upload_data);
       myObj.PPSService.batchSaveR304Data(upload_data).subscribe(res => {
-        console.log("importExcelPPSR304");
         if(res[0].MSG === "Y") { 
-          
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -278,11 +284,13 @@ public autoGroupColumnDef: ColDef = {
           this.loading = false;
           this.LoadingPage = false;
         }
+        this.importdata = [];
       },err => {
         reject('upload fail');
         this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
         this.loading = false;
         this.LoadingPage = false;
+        this.importdata = [];
       })
     });
     

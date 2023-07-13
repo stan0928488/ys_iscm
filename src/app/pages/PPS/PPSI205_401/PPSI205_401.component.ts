@@ -75,6 +75,7 @@ export class PPSI205_401Component implements AfterViewInit {
   USERNAME;
   DAY = this.inputDate_val;
 
+  isLoading = false;
   isRunFCP = false; // 如為true則不可異動
   file:File;
   importdata = [];
@@ -170,6 +171,7 @@ export class PPSI205_401Component implements AfterViewInit {
           this.message.error('結轉發生異常，請選擇版本號');
         }else {
         this.message.info('結轉成功');
+        this.getTbppsm119ListAll();
         }
       },err => {
         this.message.error('結轉發生異常，請選擇版本號');

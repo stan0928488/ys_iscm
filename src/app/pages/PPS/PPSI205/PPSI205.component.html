@@ -840,31 +840,25 @@
 
    <!-- 401 Auto Campaign -->
    <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
-    <button
+    <a
+      nzType="default"
       nz-button
-      nzType="primary"
-      [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
       [disabled]="isRunFCP"
+      [routerLink]="['/singleData/I124']"
+      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0 }"
       (click)="getTbppsm102ListAll()"
     >
-      <span nzTheme="outline"></span>
       Auto campaign 表
-    </button>
+   </a>
     &nbsp;
     <a
-      href="#/singleData/I205_401"
+      [routerLink]="['/singleData/I205_401']"
       nz-button
-      nzType="primary"
+      nzType="default"
       [disabled]="isRunFCP"
-      ><span nzTheme="outline"></span>
+      >
       彙 整 資 料
     </a>
-
-    <div style="text-align: right">
-      <b style="font-size: x-large; font-weight: bold;"
-        >更新時間 : 更新者 :
-      </b>
-    </div>
 
     <div>
       <tr>
@@ -880,18 +874,18 @@
           ※ 目前 FCP 執行中，不可異動資料！
         </label>
 
-        <td style="text-align: left">
+        <td style="width: 42%;">
           &nbsp;&nbsp;
           <button
-            nz-button
-            nzType="primary"
-            [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-            [disabled]="isRunFCP"
-            (click)="importCompaign()"
-          >
-            <span nzTheme="outline"></span>
-            轉入 CAMPAIGN 表
-          </button>
+          style="margin-left: 20px"
+          nz-button
+          nzType="primary"
+          (click)="importCompaign()"
+          [disabled]="isRunFCP"
+        >
+          <span nz-icon nzType="import" nzTheme="outline"></span>
+          轉入 Campaign 表
+        </button>
         </td>
 
         <td style="text-align: right;">
@@ -910,6 +904,7 @@
             nzType="primary"
             [disabled]="isRunFCP"
             (click)="Upload('4')"
+            style="display: inline-block"
           >
             <span nz-icon nzType="upload" nzTheme="outline"></span>
             E X C E L 匯入

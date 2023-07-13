@@ -37,31 +37,64 @@
 
     <!-- 401 Auto Campaign -->
     <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
-      <button nz-button nzType="primary"
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #e6a3c2;border:2px blue none;"
-        [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}" [disabled]="isRunFCP"
-        ><span nzTheme="outline"></span>
-        轉入 Campaign 表
-      </button>
+      <a 
+        [routerLink]="['/singleData/I124']"
+        [queryParams]="{ selectedTabIndex: 3 }"
+        nz-button
+        nzType="default"
+        >
+        Auto Campaign 表
+      </a>
       &nbsp;
 
       <a 
-      [routerLink]="['/singleData/I124']"
-      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0 }"
-      nz-button nzType="primary" 
-      [disabled]="isRunFCP">
+      [routerLink]="['/singleData/I205_401']"
+      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0}"
+      nz-button 
+      nzType="default"
+      [disabled]="isRunFCP"
+      (click)="getTbppsm119VerList()"
+      >
       <span nzTheme="outline"></span>
         彙 整 資 料
       </a>
       <nz-collapse>
-        <nz-collapse-panel nzHeader="資料結轉與EXCEL匯出" nzActive="false">
+        <nz-collapse-panel 
+        nzHeader="資料結轉與EXCEL匯出" 
+        nzActive="true">
+
+        <button nz-button 
+                nzType="primary"
+                [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
+                [disabled]="isRunFCP"
+        ><span nz-icon nzType="import" nzTheme="outline"></span>
+        轉入 401 Auto Campaign
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+          <nz-input-number 
+            style="height: 20%;"
+            nz-input 
+            [(ngModel)]="inputDate_val"
+            [nzMin]="0" 
+            [nzMax]="50" 
+            [nzStep]="1" 
+          >
+          </nz-input-number>
+
+          <nz-select nzShowSearch nzAllowClear [(ngModel)]="selectedVer_default" style="width: 220px; margin-left:25px;"
+            nzPlaceHolder="請選擇版本號" (ngModelChange)="getTbppsm119VerList()">
+            <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+          </nz-select>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+
           <button nz-button nzType="primary"
             style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold;"
             [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}" [disabled]="isRunFCP"
             (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
             資料結轉
           </button>
-          &nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;
           <button
               nz-button
               style="
@@ -74,15 +107,6 @@
               <span nz-icon nzType="download" nzTheme="outline"></span>
               E X C E L 匯出
             </button>
-          &nbsp;&nbsp;&nbsp;&nbsp;
-
-          <nz-input-number style="width: 50px; height: 25px;" nz-input [(ngModel)]="inputDate_val"
-            [nzMin]="0" [nzMax]="50" [nzStep]="1" nzSize="small"></nz-input-number>
-
-          <nz-select nzShowSearch nzAllowClear [(ngModel)]="selectedVer_default" style="width: 220px; margin-left:25px;"
-            nzPlaceHolder="請選擇版本號" (ngModelChange)="getTbppsm119VerList()">
-            <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-          </nz-select>
 
         </nz-collapse-panel>
       </nz-collapse>

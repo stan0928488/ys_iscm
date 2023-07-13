@@ -8,6 +8,7 @@ import { NzMessageService } from "ng-zorro-antd/message";
 import { NzPaginationModule } from "ng-zorro-antd/pagination"
 import { NzGridModule } from "ng-zorro-antd/grid"
 import { ExcelService } from "src/app/services/common/excel.service";
+import { NzModalService} from "ng-zorro-antd/modal"
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 // import { EventEmitter } from "protractor";
@@ -24,6 +25,7 @@ export class PPSI201Component implements AfterViewInit {
 
   file:File;
   importdata = [];
+  postData = {};
   arrayBuffer:any;
 
   loading = false; //loaging data flag
@@ -100,6 +102,7 @@ export class PPSI201Component implements AfterViewInit {
     private message: NzMessageService,
     private page: NzPaginationModule,
     private nzGridModule: NzGridModule,
+    private Modal: NzModalService,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -172,18 +175,26 @@ export class PPSI201Component implements AfterViewInit {
     const data = { editId: "" };
     let myObj = this;
     data.editId = item.sorting_SEQ;
-    myObj.getPPSService.deleteSortData(data).subscribe(res => {
-      console.log("comitData :" + res)
-      let result: any = res;
-      if (result.code === 1) {
-        this.message.info(result.message);
-        this.getSetShopEQUIP();
-      } else {
-        this.message.error(result.message);
-      }
-    }, err => {
-      this.message.error('delete fail');
-    })
+
+    this.Modal.confirm({
+      nzTitle: '是否確定刪除',
+      nzOnOk: () => {
+        myObj.getPPSService.deleteSortData(data).subscribe(res => {
+          console.log("comitData :" + res)
+          let result: any = res;
+          if (result.code === 1) {
+            this.message.info(result.message);
+            this.getSetShopEQUIP();
+          } else {
+            this.message.error(result.message);
+          }
+        }, err => {
+          this.message.error('delete fail');
+        })
+      },
+      nzOnCancel: () => {
+      },
+    });
 
   }
 
@@ -770,6 +781,11 @@ export class PPSI201Component implements AfterViewInit {
 
   uploadExcel() {
 
+    if(this.file === null || this.file === undefined) {
+      this.message.error("請先上傳檔案")
+      return
+    }
+
     let lastname = this.file.name.split('.').pop();
     if (lastname !== 'xlsx') {
       this.message.error('檔案格式錯誤 僅限定上傳 Excel 格式。');
@@ -788,16 +804,20 @@ export class PPSI201Component implements AfterViewInit {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet: any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-
+        this.postData = {
+          excelData:this.importdata,
+          userName:this.userName
+        }
         return new Promise((resolve, reject) => {
 
           var myObj = this;
           console.log("匯入開始");
-          myObj.getPPSService.importppsfcptb13TablExcel(this.importdata).subscribe(res => {
+          myObj.getPPSService.importppsfcptb13TablExcel(this.postData).subscribe(res => {
             var ress:any = res;
             if(ress.code === "Y") { 
               this.message.info("EXCCEL上傳成功");
               this.clearFile();
+              this.getSetShopEQUIP();
             } else {
               this.message.error("匯入錯誤<br>"+ress.MSG);
               this.clearFile();
@@ -828,7 +848,7 @@ export class PPSI201Component implements AfterViewInit {
   }
 
   clearFile() {
-    document.getElementsByTagName('input')[0].value = '';
+    this.file = null;
   }
 
 }
