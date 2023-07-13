@@ -137,4 +137,11 @@ export class MSHI004Service {
     console.log(`機台資料 : ${JSON.stringify(_parms)}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
+
+  sendAutoCampaignBatch(_param) {
+    // let queryUrl = '';
+    let queryUrl =
+      this.APIURL + '/msh/MSHP001/sendAutoCampaignBatch /' + _param;
+    return this.http.get(queryUrl, this.httpOptions);
+  }
 }

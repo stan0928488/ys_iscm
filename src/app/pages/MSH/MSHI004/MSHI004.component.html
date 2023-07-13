@@ -94,51 +94,58 @@
   [nzTitle]="convertTitle"
   [nzContent]="PlanSetContent"
   [nzFooter]="null"
-  [nzWidth]="1000"
+  [nzWidth]="400"
   (nzOnCancel)="convertCancel()"
 >
   <ng-container>
     <ng-template #convertTitle>轉入公版</ng-template>
     <ng-template #PlanSetContent>
       <table>
-        <tr>
+        <tr style="margin-bottom: 5px">
           <th>版本</th>
           <td>
-            &nbsp;&nbsp;&nbsp;&nbsp;
             <span style="width: 20%; color: darkblue">{{ normFcp }}</span>
           </td>
         </tr>
 
-        <!-- <tr>
-      <th>機台平衡策略</th>
-      <td>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <nz-radio-group
-          [(ngModel)]="machineValue"
-          (click)="changeValue('machineValue')"
-        >
-          <label nz-radio nzValue="1">機台平均</label>
-          <label nz-radio nzValue="2">派工狀況</label>
-        </nz-radio-group>
-      </td>
-    </tr>
+        <tr style="margin-bottom: 5px">
+          <th>站別</th>
+          <td>
+            <nz-checkbox-wrapper
+              style="width: 100%"
+              (nzOnChange)="clickShopCode($event)"
+            >
+              <tr *ngFor="let item of shopCodeList; let i = index">
+                <td style="width: 80px">
+                  <label nz-checkbox nzValue="{{ item }}">{{ item }}</label>
+                </td>
+              </tr>
+            </nz-checkbox-wrapper>
+          </td>
+        </tr>
 
-    <tr>
-      <th>FCP下站合併天數</th>
-      <!-- 解決前後違反問題 -->
-        <!-- <td>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <nz-input-number
-          nzPlaceHolder="天數"
-          [(ngModel)]="FROZAN_GROUP"
-          [nzMin]="0"
-          [nzMax]="10000"
-          [nzStep]="1"
-        ></nz-input-number>
-      </td>
-    </tr> -->
+        <tr style="margin-bottom: 5px">
+          <th>公版天數</th>
+          <td>
+            <nz-input-number
+              nzPlaceHolder="天數"
+              [(ngModel)]="normday"
+              [nzMin]="0"
+              [nzMax]="10000"
+              [nzStep]="1"
+              (ngModelChange)="inputDay()"
+            ></nz-input-number>
+          </td>
+        </tr>
 
-        <tr>
+        <tr style="margin-bottom: 5px">
+          <th>時間</th>
+          <td>
+            <span style="width: 20%; color: darkblue">{{ normTime }}</span>
+          </td>
+        </tr>
+
+        <tr style="float: center">
           <button
             nz-button
             nzType="primary"

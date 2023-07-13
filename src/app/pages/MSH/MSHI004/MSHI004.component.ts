@@ -59,6 +59,20 @@ export class MSHI004Component {
   shopCodeInputList: string;
   // 站別下拉是否正在載入選項
   shopCodeLoading = false;
+  normData;
+  shopCodeList: Array<String> = [];
+  PickShopCode = [];
+  currentDate = new Date();
+  year;
+  month;
+  day;
+  now;
+  end;
+  normFcpEdition;
+
+  normTime;
+  futureDate = new Date();
+  normday = 0;
 
   machineDataList: MSHI004MACHINE[] = [];
   machineDataListDeepClone: MSHI004MACHINE[] = [];
@@ -75,6 +89,7 @@ export class MSHI004Component {
   payloadcache: MSHI004Payload;
 
   normFcp;
+  preMes;
 
   buttonStyle: string = `color: #fff;
     background-color: #1677ff;
@@ -359,7 +374,23 @@ export class MSHI004Component {
               if (!_.isEmpty(_this.MSHI004PendingDataList)) {
                 _this.message.error('請先儲存資料');
               } else {
+                _this.shopCodeList = [];
+                _this.year = _this.currentDate.getFullYear() + '-';
+                _this.month = _this.currentDate.getMonth() + 1; // 月份从 0 开始，所以要加 1
+                _this.day = '-' + _this.currentDate.getDate();
+                _this.now = `${_this.year}${_this.month}${_this.day}`;
+
                 _this.isVisibleConvert = true;
+                _this.normFcpEdition = params.data.fcpEdition;
+                let b = params.data.mesPublishGroup;
+                _this.mgroup = b;
+                _this.preMes = {
+                  fcpEdition: _this.normFcpEdition,
+                  mesPublishGroup: b,
+                };
+                console.log(_this.mgroup);
+                console.log(params);
+                _this.getShopCode();
                 // _this.buttonClicked(params.data);
                 // _this.aaa(params.data);
               }
@@ -466,7 +497,6 @@ export class MSHI004Component {
       });
   }
 
-  nzOnOk: () => {};
   //點擊一下即可複製的功能
   onCellClicked(e: CellClickedEvent): void {
     console.log('=======>>>>cellClicked', e);
@@ -483,14 +513,14 @@ export class MSHI004Component {
     let a = this.lock.fcpEdition;
     let b = params.mesPublishGroup;
     this.mgroup = b;
-    let preMes = {
+    this.preMes = {
       fcpEdition: a,
       mesPublishGroup: b,
     };
-    console.log(preMes);
+    console.log(this.preMes);
     new Promise<boolean>((resolve, reject) => {
       this.isSpinning = true;
-      this.mshi004Service.getMesData(preMes).subscribe(
+      this.mshi004Service.getMesData(this.preMes).subscribe(
         (res) => {
           const { code, data } = res;
           const forMesData = JSON.parse(data);
@@ -886,14 +916,99 @@ export class MSHI004Component {
       });
   }
 
-  convertSubmit() {}
+  convertSubmit() {
+    console.log(this.PickShopCode);
+    console.log(this.end);
+    console.log(this.now);
+    console.log(this.normFcpEdition);
+    this.normData = [];
+    for (var i = 0; i < this.PickShopCode.length; i++) {
+      this.normData.fcpVer = this.normFcpEdition;
+      this.normData.shopCode = this.PickShopCode.toString();
+      this.normData.planStartTime = this.now;
+      this.normData.planEndTime = this.end;
+      this.normData.mesPublishGroup = this.mgroup;
+      this.normData.publishType = '1';
+    }
+
+    console.log(this.normData);
+
+    this.mshi004Service
+      .sendAutoCampaignBatch(this.normData)
+      .subscribe((res) => {
+        let result: any = res;
+        if (result.code === 200) {
+          this.message.success(result.message);
+          this.normData = [];
+          this.isSpinning = false;
+        } else {
+          this.message.error(result.message);
+
+          this.isSpinning = false;
+        }
+      });
+  }
   convertCancel(): void {
     this.isVisibleConvert = false;
   }
 
-  selectAllMachines: boolean = false;
+  getShopCode() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+      this.mshi004Service.getMesData(this.preMes).subscribe(
+        (res) => {
+          const { code, data } = res;
+          const forMesData = JSON.parse(data);
 
-  selectAllMachinesChanged(value: boolean): void {}
+          if (code === 200) {
+            if (_.size(forMesData) > 0) {
+              for (var i = 0; i < forMesData.length; i++) {
+                this.shopCodeList.push(forMesData[i].shopCode);
+              }
+              console.log(this.shopCodeList);
+              console.log('=====');
+              console.log(this.preMes);
+            } else {
+              this.mesData = [];
+            }
+            this.isSpinning = false;
+            resolve(true);
+          } else {
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.isSpinning = false;
+      });
+  }
+  clickShopCode(_value) {
+    console.log('clickShopCode ');
+    this.PickShopCode = _value.toString().split(',');
 
-  machineSelectedChanged(data: any): void {}
+    // this.getEQUIP_CODEList(this.PickShopCode);
+    // this.queryData();
+  }
+  inputDay() {
+    this.futureDate.setDate(this.currentDate.getDate() + this.normday);
+    this.year = this.futureDate.getFullYear() + '-';
+    this.month = this.futureDate.getMonth() + 1; // 月份从 0 开始，所以要加 1
+    this.day = '-' + this.futureDate.getDate();
+    this.end = `${this.year}${this.month}${this.day}`;
+
+    console.log(this.futureDate);
+    this.normTime = this.now + '-' + this.end;
+    console.log('后台数据变化：', this.normday);
+  }
 }
