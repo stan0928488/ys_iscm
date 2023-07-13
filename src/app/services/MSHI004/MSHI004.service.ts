@@ -75,8 +75,6 @@ export class MSHI004Service {
   getMesData(_parms) {
     // const body = JSON.stringify(_parms);
     let endpointUrl = `${this.APIURL}/mshi/tbppsm117/forMesData`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`取得mes引數 : ${JSON.stringify(_parms)}`);
     return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
   }
 
@@ -139,9 +137,16 @@ export class MSHI004Service {
   }
 
   sendAutoCampaignBatch(_param) {
-    // let queryUrl = '';
-    let queryUrl =
-      this.APIURL + '/msh/MSHP001/sendAutoCampaignBatch /' + _param;
-    return this.http.get(queryUrl, this.httpOptions);
+    // let endpointUrl = '';
+    let endpointUrl = this.APIURL + '/msh/MSHP001/sendAutoCampaignBatch/';
+    return this.http.post<any>(endpointUrl, _param, this.httpOptions);
+  }
+
+  normTime(_parms) {
+    const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/normTime`;
+    console.log(`API Url : ${endpointUrl}`);
+    console.log(`發佈者；發佈日期 : ${body}`);
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 }
