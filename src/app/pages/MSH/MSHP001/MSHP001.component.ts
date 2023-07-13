@@ -444,18 +444,16 @@ this.handleSelectCarModal() ;
     private modal: NzModalService,
     private clipboardService: ClipboardService
     ) {
+      // 最外層
     this.gridOptions = {
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
-        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
-        //   return { background: 'lightgray' };
-        // }
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
-          return { background: 'lightcoral' };
+          return { background: 'SandyBrown' };
         } else {
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
-        if( params.data["PST_MACHINE_ADD"] === 'RF' ) {
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
           if(params.data["CAR_WEIGHT_ADD"] < 3900) {
             return { background: 'lightcoral' };
           } else {
@@ -498,9 +496,34 @@ this.handleSelectCarModal() ;
       rowDragMultiRow: true,
       rowDragManaged: true, 
       getRowStyle(params) {
-        // if(this.rowData[params.node.rowIndex]["ORIGINAL_OP_CODE_ADD"].toString() !== ""){
-        //   return { background: 'lightgray' };
-        // }
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          return { background: 'SandyBrown' };
+        } else {
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
+          if(params.data["CAR_WEIGHT_ADD"] < 0) {
+            return { background: 'lightcoral' };
+          } else {
+            if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
+            &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
+              if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                return { background: 'white' };
+              } else {
+                return { background: 'powderblue' };
+              }
+            } else {
+              return { background: 'yellow' };
+            }
+          }
+        } else {
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
+        }
+      }
+        /*
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
           return { background: 'lightcoral' };
         } else {
@@ -517,13 +540,13 @@ this.handleSelectCarModal() ;
           // Apply a different background color to odd rows
           return { background: 'yellow' };
         }
-      }
+      } */
       },
       onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
       onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
         this.doubleClickConfigCar(event) ;
-      } 
+      }
     }
     // 微調確認拖拽表格
     this.gridOptionsRowDataModal = {
@@ -531,10 +554,38 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,
       getRowStyle(params) {
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          return { background: 'SandyBrown' };
+        } else {
+        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+            return { background: 'lightcoral' };
+          } else {
+            if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
+            &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
+              if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                return { background: 'white' };
+              } else {
+                return { background: 'powderblue' };
+              }
+            } else {
+              return { background: 'yellow' };
+            }
+          }
+        } else {
+          if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            return { background: 'white' };
+          } else {
+            return { background: 'powderblue' };
+          }
+        }
+      }
+        /*
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
           return { background: 'lightcoral' };
         } else {
           return { background: 'white' };
-        }
+        }*/
       },
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataModal(event);},
     }
@@ -1075,6 +1126,7 @@ this.handleSelectCarModal() ;
       this.groupColumList = this.groupColumList.filter((item)=>{
         return item.columValue !== 'CAR_ID_ADD'
       })
+      this.groupArray = this.groupArray.filter((val)=>{ return val !=="CAR_ID_ADD"}) ;
       this.columnDefs.forEach((item,index,array)=>{
         if(item.field === 'CAR_ID_ADD' || item.field === 'CAR_EPST_ADD' || item.field === 'CAR_LPST_ADD'  || item.field === 'CAR_WEIGHT_ADD' ) {
           this.columnDefs[index].hide = true ;
@@ -1212,7 +1264,7 @@ this.handleSelectCarModal() ;
           currentGroupString += "," + item[key] ;
         }
       }
-        // console.log("上個分組：" + JSON.stringify(preGroupString)) 
+         console.log("上個分組：" +index+ ":"+ JSON.stringify(this.groupArray)) 
         // console.log("當前分組：" + JSON.stringify(currentGroupString)) 
        
         //取出每一個key值進行拼接
@@ -1525,7 +1577,7 @@ this.handleSelectCarModal() ;
       this.nzMessageService.info("當前機台已送出");
       return ;
     }*/
-    let comitData = [{fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,mesPublishGroup:""}]
+    let comitData = [{fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,mesPublishGroup:"",publishType:"0"}]
     this.isConfirmLoading = true ;
     this.mshService.sendSortedDataToMESBatch(comitData).subscribe(res=>{
       this.isConfirmLoading = false ;
@@ -2079,7 +2131,15 @@ this.handleSelectCarModal() ;
           let result:any = res ;
           console.log("jieguo ：" + res)
         })
-      } else if(index === '2'){
+      } else if(index === '3') { //sendDataToAutoCompagin
+        let comitData = [
+          {fcpVer:"F20230712083899",shopCode:this.selectShopCode,mesPublishGroup:"" ,planStartTime:"2023-07-10 00:00:00" ,planEndTime:"2023-07-26 23:59:59",publishType:'0'}]
+          this.mshService.sendDataToAutoCompagin(comitData).subscribe(res=>{
+          let result:any = res ;
+          console.log("jieguo ：" + res)
+        })
+      }
+      else if(index === '2'){
         
         this.mshService.downloadAutoData(this.selectFcpVer).subscribe(res=>{
           this.isLoading = false ;
