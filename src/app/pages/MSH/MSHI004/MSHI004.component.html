@@ -100,83 +100,64 @@
   <ng-container>
     <ng-template #convertTitle>轉入公版</ng-template>
     <ng-template #PlanSetContent>
-      <div class="custom-table-wrapper">
-        <nz-table
-          #setSelectionTable
-          [nzShowPagination]="false"
-          [nzScroll]="{ y: '350px' }"
-          [nzData]="MSHI004DataList"
-        >
-          <tbody>
-            <thead>
-              <tr>
-                <th
-                  nzWidth="100px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  FCP版本
-                </th>
-                <th
-                  nzWidth="100px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  <label
-                    nz-checkbox
-                    [(ngModel)]="selectAllMachines"
-                    (ngModelChange)="selectAllMachinesChanged($event)"
-                  ></label>
-                </th>
-                <th
-                  nzWidth="20px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  發版天數
-                </th>
-                <th
-                  nzWidth="100px"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  時間
-                </th>
-              </tr>
-            </thead>
-          </tbody>
+      <table>
+        <tr>
+          <th>版本</th>
+          <td>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="width: 20%; color: darkblue">{{ normFcp }}</span>
+          </td>
+        </tr>
 
-          <tbody>
-            <tr *ngFor="let data of setSelectionTable.data; let i = index">
-              <td>{{ data.fcpEdition }}</td>
-              <label
-                nz-checkbox
-                [(ngModel)]="data.machineGroup"
-                (ngModelChange)="machineSelectedChanged(data)"
-              ></label>
-              <td>{{ data.machineGroup }}</td>
-              <td>{{ data.mesPublishTime }}</td>
-              <td>{{ data.timeRegion }}</td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </div>
+        <!-- <tr>
+      <th>機台平衡策略</th>
+      <td>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <nz-radio-group
+          [(ngModel)]="machineValue"
+          (click)="changeValue('machineValue')"
+        >
+          <label nz-radio nzValue="1">機台平均</label>
+          <label nz-radio nzValue="2">派工狀況</label>
+        </nz-radio-group>
+      </td>
+    </tr>
+
+    <tr>
+      <th>FCP下站合併天數</th>
+      <!-- 解決前後違反問題 -->
+        <!-- <td>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <nz-input-number
+          nzPlaceHolder="天數"
+          [(ngModel)]="FROZAN_GROUP"
+          [nzMin]="0"
+          [nzMax]="10000"
+          [nzStep]="1"
+        ></nz-input-number>
+      </td>
+    </tr> -->
+
+        <tr>
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="convertSubmit()"
+          >
+            送出
+          </button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            nz-button
+            nzType="primary"
+            class="opButton"
+            (click)="convertCancel()"
+          >
+            取消
+          </button>
+        </tr>
+      </table>
     </ng-template>
   </ng-container>
 </nz-modal>

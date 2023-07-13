@@ -74,6 +74,8 @@ export class MSHI004Component {
 
   payloadcache: MSHI004Payload;
 
+  normFcp;
+
   buttonStyle: string = `color: #fff;
     background-color: #1677ff;
     border-style: none;
@@ -348,6 +350,7 @@ export class MSHI004Component {
         filter: true,
         cellRenderer: function (params) {
           if (!_.isNil(params.data.fcpEdition)) {
+            _this.normFcp = params.data.fcpEdition;
             const buttonElement = _this.renderer.createElement('button');
             const buttonText = _this.renderer.createText('轉入公版');
             _this.renderer.appendChild(buttonElement, buttonText);
@@ -356,6 +359,7 @@ export class MSHI004Component {
               if (!_.isEmpty(_this.MSHI004PendingDataList)) {
                 _this.message.error('請先儲存資料');
               } else {
+                _this.isVisibleConvert = true;
                 // _this.buttonClicked(params.data);
                 // _this.aaa(params.data);
               }
@@ -489,7 +493,6 @@ export class MSHI004Component {
       this.mshi004Service.getMesData(preMes).subscribe(
         (res) => {
           const { code, data } = res;
-
           const forMesData = JSON.parse(data);
           console.log(code);
           forMesData.forEach((obj) => {
@@ -883,7 +886,10 @@ export class MSHI004Component {
       });
   }
 
-  convertCancel() {}
+  convertSubmit() {}
+  convertCancel(): void {
+    this.isVisibleConvert = false;
+  }
 
   selectAllMachines: boolean = false;
 
