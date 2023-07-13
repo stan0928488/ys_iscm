@@ -1106,6 +1106,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  convertTBPPSM102AutoCampaign(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I205/convertTBPPSM102AutoCampaign`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //getTbppsm113List getTbppsm113List
   getTbppsm113List(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
