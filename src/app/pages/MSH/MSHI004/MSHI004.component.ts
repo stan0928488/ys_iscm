@@ -64,6 +64,7 @@ export class MSHI004Component {
   machineDataListDeepClone: MSHI004MACHINE[] = [];
 
   MSHI004DataList: MSHI004[] = [];
+  selectedMachines: string[] = [];
   mesData: string[] = [];
 
   MSHI004DataListDeepClone: MSHI004[] = [];
@@ -91,7 +92,7 @@ export class MSHI004Component {
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap; `;
-
+  isVisibleConvert = false;
   gridOptions = {
     defaultColDef: {
       sortable: false,
@@ -311,7 +312,7 @@ export class MSHI004Component {
                   _this.message.error('請先儲存資料');
                 } else {
                   _this.buttonClicked(params.data);
-                  _this.aaa(params.data);
+                  // _this.aaa(params.data);
                 }
               });
               return buttonElement;
@@ -341,7 +342,34 @@ export class MSHI004Component {
           }
         },
       },
-
+      {
+        headerName: '轉入公版',
+        width: 160,
+        filter: true,
+        cellRenderer: function (params) {
+          if (!_.isNil(params.data.fcpEdition)) {
+            const buttonElement = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('轉入公版');
+            _this.renderer.appendChild(buttonElement, buttonText);
+            _this.renderer.addClass(buttonElement, 'button');
+            _this.renderer.listen(buttonElement, 'click', () => {
+              if (!_.isEmpty(_this.MSHI004PendingDataList)) {
+                _this.message.error('請先儲存資料');
+              } else {
+                // _this.buttonClicked(params.data);
+                // _this.aaa(params.data);
+              }
+            });
+            return buttonElement;
+          } else {
+            const buttonElement = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('未Publish');
+            _this.renderer.appendChild(buttonElement, buttonText);
+            _this.renderer.addClass(buttonElement, 'button');
+            return buttonElement;
+          }
+        },
+      },
       {
         headerName: '已發佈機台',
         field: 'publishMachineTotal',
@@ -461,8 +489,12 @@ export class MSHI004Component {
       this.mshi004Service.getMesData(preMes).subscribe(
         (res) => {
           const { code, data } = res;
-          console.log(code);
+
           const forMesData = JSON.parse(data);
+          console.log(code);
+          forMesData.forEach((obj) => {
+            obj.publishType = '1';
+          });
           console.log(forMesData);
           console.log('forMes');
           if (code === 200) {
@@ -510,45 +542,45 @@ export class MSHI004Component {
       });
   }
 
-  aaa(params) {
-    console.log('新增發佈者');
-    let c = params.id;
-    let d = this.USERNAME;
-    let f = this.lock.fcpEdition;
-    console.log(f);
-    let user = {
-      id: c,
-      userCreate: d,
-      fcpEdition: f,
-    };
-    console.log(user);
-    new Promise<boolean>((resolve, reject) => {
-      this.mshi004Service.publishData(user).subscribe(
-        (res) => {
-          const { code, data } = res;
-          if (code === 200) {
-            resolve(true);
-          } else {
-            reject(true);
-          }
-        },
-        (error) => {
-          this.errorMSG(
-            '獲取資料失敗',
-            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
-          );
-          reject(true);
-        }
-      );
-    })
-      .then((success) => {
-        this.serachEPST(true);
-        this.isSpinning = false;
-      })
-      .catch((error) => {
-        this.isSpinning = false;
-      });
-  }
+  // aaa(params) {
+  //   console.log('新增發佈者');
+  //   let c = params.id;
+  //   let d = this.USERNAME;
+  //   let f = this.lock.fcpEdition;
+  //   console.log(f);
+  //   let user = {
+  //     id: c,
+  //     userCreate: d,
+  //     fcpEdition: f,
+  //   };
+  //   console.log(user);
+  //   new Promise<boolean>((resolve, reject) => {
+  //     this.mshi004Service.publishData(user).subscribe(
+  //       (res) => {
+  //         const { code, data } = res;
+  //         if (code === 200) {
+  //           resolve(true);
+  //         } else {
+  //           reject(true);
+  //         }
+  //       },
+  //       (error) => {
+  //         this.errorMSG(
+  //           '獲取資料失敗',
+  //           `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+  //         );
+  //         reject(true);
+  //       }
+  //     );
+  //   })
+  //     .then((success) => {
+  //       this.serachEPST(true);
+  //       this.isSpinning = false;
+  //     })
+  //     .catch((error) => {
+  //       this.isSpinning = false;
+  //     });
+  // }
 
   confirm(isUserClick: boolean): void {
     if (_.isEmpty(this.MSHI004PendingDataList)) {
@@ -850,4 +882,12 @@ export class MSHI004Component {
         this.isSpinning = false;
       });
   }
+
+  convertCancel() {}
+
+  selectAllMachines: boolean = false;
+
+  selectAllMachinesChanged(value: boolean): void {}
+
+  machineSelectedChanged(data: any): void {}
 }

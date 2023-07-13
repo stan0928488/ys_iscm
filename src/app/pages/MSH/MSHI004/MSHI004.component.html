@@ -88,3 +88,95 @@
     </ag-grid-angular>
   </nz-spin>
 </nz-content>
+
+<nz-modal
+  [(nzVisible)]="isVisibleConvert"
+  [nzTitle]="convertTitle"
+  [nzContent]="PlanSetContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="convertCancel()"
+>
+  <ng-container>
+    <ng-template #convertTitle>轉入公版</ng-template>
+    <ng-template #PlanSetContent>
+      <div class="custom-table-wrapper">
+        <nz-table
+          #setSelectionTable
+          [nzShowPagination]="false"
+          [nzScroll]="{ y: '350px' }"
+          [nzData]="MSHI004DataList"
+        >
+          <tbody>
+            <thead>
+              <tr>
+                <th
+                  nzWidth="100px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  FCP版本
+                </th>
+                <th
+                  nzWidth="100px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  <label
+                    nz-checkbox
+                    [(ngModel)]="selectAllMachines"
+                    (ngModelChange)="selectAllMachinesChanged($event)"
+                  ></label>
+                </th>
+                <th
+                  nzWidth="20px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  發版天數
+                </th>
+                <th
+                  nzWidth="100px"
+                  style="
+                    text-align: center;
+                    background-color: #eee;
+                    padding: 0px;
+                    height: 55px;
+                  "
+                >
+                  時間
+                </th>
+              </tr>
+            </thead>
+          </tbody>
+
+          <tbody>
+            <tr *ngFor="let data of setSelectionTable.data; let i = index">
+              <td>{{ data.fcpEdition }}</td>
+              <label
+                nz-checkbox
+                [(ngModel)]="data.machineGroup"
+                (ngModelChange)="machineSelectedChanged(data)"
+              ></label>
+              <td>{{ data.machineGroup }}</td>
+              <td>{{ data.mesPublishTime }}</td>
+              <td>{{ data.timeRegion }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-template>
+  </ng-container>
+</nz-modal>

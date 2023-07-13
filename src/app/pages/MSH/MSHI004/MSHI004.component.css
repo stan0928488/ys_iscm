@@ -63,3 +63,21 @@
     flex-wrap: nowrap; 
     
 } 
+
+
+:host ::ng-deep .custom-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+  }
+  
+  :host ::ng-deep .custom-table-wrapper .ant-table {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  :host ::ng-deep .custom-table-wrapper .ant-table-body {
+    flex: 1;
+    overflow-y: hidden;
+  }
+  
