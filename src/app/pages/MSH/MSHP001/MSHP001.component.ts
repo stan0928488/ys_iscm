@@ -1119,6 +1119,7 @@ this.handleSelectCarModal() ;
 
   selectEquipCodeFunc(){
     console.log("選擇站別 :" + this.selectEquipCode)
+    console.log("columnDefs1:" + JSON.stringify(this.columnDefs))
     if(this.selectEquipCode === 'BA1'){
       //  let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
       let isExsit = true ;
@@ -1169,13 +1170,13 @@ this.handleSelectCarModal() ;
           this.outsideColumnDefs[index].hide = false ;
         }
       })
-    
     }
-    //this.gridOptionsModal.api.setColumnDefs(this.outsideColumnDefs)  ;
+    console.log("columnDefs2:" + JSON.stringify(this.columnDefs))
+   // this.gridOptionsModal.api.setColumnDefs(this.outsideColumnDefs)  ;
     this.gridOptions.api.setColumnDefs(this.columnDefs)  ;
     //this.gridOptionsRowDataModal.api.setColumnDefs(this.columnDefs) ;
-    console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
-    console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
+    //console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
+    //console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
     this.originalData = [] ;
     this.rowData = [] ;
     this.getTableData() ;
@@ -1666,11 +1667,12 @@ this.handleSelectCarModal() ;
         this.modalTableRowDataVisible = false ;
       }
       let result:any = res ;
-      this.groupColumList = result.data ;
+      //this.groupColumList = result.data ;
       if(result.code !== 200) {
         this.nzMessageService.error(result.message)
       } else {
-        this.getSetColumByUser() ;
+       // this.getSetColumByUser() ;
+        this.getTableData() 
       }
      
     })
