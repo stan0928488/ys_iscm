@@ -41,6 +41,7 @@
         <br>
         <nz-radio-group style="margin-top: 8px; margin-left: 10px;" 
         [(ngModel)]="searchData.saleAreaGroup" 
+        (ngModelChange)="getDataList()"
         [nzButtonStyle]="'solid'">
         <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">區域別:</label>
         <label nz-radio-button>ALL</label>
