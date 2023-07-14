@@ -1138,8 +1138,11 @@ this.handleSelectCarModal() ;
       }
     }
     if(this.selectEquipCode !== 'RF' && this.selectEquipCode !== 'BA1' ){
-      //日期重置 
-      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      if(this.selectShopCode === '401') {
+          //日期重置 
+          this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      }
+     
       // 移除carid
       this.groupColumList = this.groupColumList.filter((item)=>{
         return item.columValue !== 'CAR_ID_ADD'
