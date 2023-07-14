@@ -7,6 +7,8 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-PPSR308',
   templateUrl: './PPSR308.component.html',
@@ -18,6 +20,7 @@ export class PPSR308Component implements OnInit {
   USERNAME;
   PLANT_CODE;
   tooltipShowDelay = 500;
+  areaGroup = [];
 
   constructor(
     private PPSService: PPSService,
@@ -34,6 +37,7 @@ export class PPSR308Component implements OnInit {
   ngOnInit(): void {
     this.getDataList();
     this.getVerListData();
+    this.getAreaGroup();
   }
 
   searchData = {
@@ -427,6 +431,71 @@ export class PPSR308Component implements OnInit {
 
   }
 
+  excelExport() {
+
+    let exportData = [];
+    let postData = this.searchData;
+    postData['mo_EDITION'] = this.searchData.selectedVer_default;
+    this.PPSService.getR308Data(postData).subscribe(res =>{
+      
+      let result: any = res;
+
+
+      for (var i = 0; i <= result.length; i++) {
+        var element = result[i];
+        if (element) {
+          var obj =
+          {
+            "區別": (element['areaGroup'] ? element['areaGroup'] : null),
+            "客戶": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
+            "A.負責業務": (element['sales'] ? element['sales'] : null),
+            "B.訂單餘量": "",
+            "C.出貨目標": (element['shippingTarget'] ? Number(element['shippingTarget']) : null),
+            "D.出貨進度": (element['shippingProgress'] ? Number(element['shippingProgress']) : null),
+            "E.可供出貨量(無卡計畫量)": (element['availableToShipNoCard'] ? Number(element['availableToShipNoCard']) : null),
+            "E.可供出貨量(無卡計畫量) GAP": (element['gapNoCard'] ? Number(element['gapNoCard']) : null),
+            "F.可供出貨量(符合計畫量/缺項)": (element['availableToShipMeetThePlanned'] ? Number(element['availableToShipMeetThePlanned']) : null),
+            "F.可供出貨量(符合計畫量/缺項) GAP": (element['gapMeetThePlanned'] ? Number(element['gapMeetThePlanned']) : null),
+            "G.至月底可供出貨量(符合計畫量/缺項)": (element['endOfMonthAvailableToShipMeetThePlanned'] ? Number(element['endOfMonthAvailableToShipMeetThePlanned']) : null),
+            "G.至月底可供出貨量(符合計畫量/缺項) GAP": (element['endOfMonthgapMeetThePlanned'] ? Number(element['endOfMonthgapMeetThePlanned']) : null),
+            "H.已出貨": (element['shipped'] ? Number(element['shipped']) : null),
+            "I.成品_交期符合_足項": (element['finishedProductDateAcceptableEnough'] ? Number(element['finishedProductDateAcceptableEnough']) : null),
+            "I.成品_交期符合_缺項": (element['finishedProductDateAcceptableNotEnough'] ? Number(element['finishedProductDateAcceptableNotEnough']) : null),
+            "I.成品_交期不符_交期不符": (element['finishedProductDateNotMatch'] ? Number(element['finishedProductDateNotMatch']) : null),
+            "I.成品_交期不符_至月底足項": (element['finishedProductEnoughBeforeEndOfMonth'] ? Number(element['finishedProductEnoughBeforeEndOfMonth']) : null),
+            "J.生產計劃_交期符合_足項": (element['productPlanDateAcceptableEnough'] ? Number(element['productPlanDateAcceptableEnough']) : null),
+            "J.生產計劃_交期符合_缺項": (element['productPlanDateAcceptableNotEnough'] ? Number(element['productPlanDateAcceptableNotEnough']) : null),
+            "J.生產計劃_交期不符_交期不符": (element['productPlanDateNotMatch'] ? Number(element['productPlanDateNotMatch']) : null),
+            "J.生產計劃_交期不符_至月底足項": (element['productPlanEnoughBeforeEndOfMonth'] ? Number(element['productPlanEnoughBeforeEndOfMonth']) : null)
+          }
+          exportData.push(obj);
+        }
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, '出貨計畫主表')
+      XLSX.writeFile(wb, ExcelService.toExportFileName("出貨計畫主表"));
+
+    });
+
+  }
+
+  getAreaGroup() {
+    let myObj = this;
+    this.PPSService.getAreaGroup().subscribe(res => {
+      let result:any = res ;
+      if(result.code === 1) {
+        let areaGroup:any = result.data;
+        areaGroup.forEach(e => {
+          this.areaGroup.push({label: e.saleAreaGroup, value: e.saleAreaGroup});
+        });
+      } else{
+        this.message.error(result.message);
+      }
+    });
+  }
+  
 }
 
 interface data {
