@@ -119,9 +119,16 @@ export class PPSR308Component implements OnInit {
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
-                    return {backgroundColor: 'red'};
+                    return {color: 'red'};
                 }
-              }
+              },
+              cellRenderer: function (params) {
+                if (params.value < 0) {
+                  return "(" + params.value * -1 + ")";
+                }else {
+                  return params.value
+                }
+              },
             }],
           }],
         },
@@ -134,9 +141,16 @@ export class PPSR308Component implements OnInit {
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
-                    return {backgroundColor: 'red'};
+                    return {color: 'red'};
                 }
-              }
+              },
+              cellRenderer: function (params) {
+                if (params.value < 0) {
+                  return "(" + params.value * -1 + ")";
+                }else {
+                  return params.value
+                }
+              },
             }],
           }],
         },
@@ -150,9 +164,16 @@ export class PPSR308Component implements OnInit {
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
-                    return {backgroundColor: 'red'};
+                    return {color: 'red'};
                 }
-              }
+              },
+              cellRenderer: function (params) {
+                if (params.value < 0) {
+                  return "(" + params.value * -1 + ")";
+                }else {
+                  return params.value
+                }
+              },
             }],
           }],
         },
@@ -167,9 +188,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             },
             {
@@ -180,9 +208,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             }
           ],
@@ -198,9 +233,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             },
             {
@@ -211,9 +253,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             }
           ],
@@ -229,9 +278,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             },
             {
@@ -242,9 +298,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             }
           ],
@@ -257,9 +320,16 @@ export class PPSR308Component implements OnInit {
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
-                    return {backgroundColor: 'red'};
+                    return {color: 'red'};
                 }
-              }
+              },
+              cellRenderer: function (params) {
+                if (params.value < 0) {
+                  return "(" + params.value * -1 + ")";
+                }else {
+                  return params.value
+                }
+              },
             }],
           }],
         },
@@ -277,9 +347,16 @@ export class PPSR308Component implements OnInit {
                   field: "finishedProductDateAcceptableEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
-                        return {backgroundColor: 'red'};
+                        return {color: 'red'};
                     }
-                  }
+                  },
+                  cellRenderer: function (params) {
+                    if (params.value < 0) {
+                      return "(" + params.value * -1 + ")";
+                    }else {
+                      return params.value
+                    }
+                  },
                 },
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
@@ -289,9 +366,16 @@ export class PPSR308Component implements OnInit {
                   field: "finishedProductDateAcceptableNotEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
-                        return {backgroundColor: 'red'};
+                        return {color: 'red'};
                     }
-                  }
+                  },
+                  cellRenderer: function (params) {
+                    if (params.value < 0) {
+                      return "(" + params.value * -1 + ")";
+                    }else {
+                      return params.value
+                    }
+                  },
                 }
               ],
             },
@@ -303,9 +387,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             },
             {
@@ -316,9 +407,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             }
           ],
@@ -338,9 +436,16 @@ export class PPSR308Component implements OnInit {
                   field: "productPlanDateAcceptableEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
-                        return {backgroundColor: 'red'};
+                        return {color: 'red'};
                     }
-                  }
+                  },
+                  cellRenderer: function (params) {
+                    if (params.value < 0) {
+                      return "(" + params.value * -1 + ")";
+                    }else {
+                      return params.value
+                    }
+                  },
                 },
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
@@ -351,9 +456,16 @@ export class PPSR308Component implements OnInit {
                   field: "productPlanDateAcceptableNotEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
-                        return {backgroundColor: 'red'};
+                        return {color: 'red'};
                     }
-                  }
+                  },
+                  cellRenderer: function (params) {
+                    if (params.value < 0) {
+                      return "(" + params.value * -1 + ")";
+                    }else {
+                      return params.value
+                    }
+                  },
                 }
               ],
             },
@@ -366,9 +478,16 @@ export class PPSR308Component implements OnInit {
                 field: "productPlanDateNotMatch",
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             },
             {
@@ -379,9 +498,16 @@ export class PPSR308Component implements OnInit {
                 width:120,
                 cellStyle: params => {
                   if (params.value < 0) {
-                      return {backgroundColor: 'red'};
+                      return {color: 'red'};
                   }
-                }
+                },
+                cellRenderer: function (params) {
+                  if (params.value < 0) {
+                    return "(" + params.value * -1 + ")";
+                  }else {
+                    return params.value
+                  }
+                },
               }],
             }
           ],
