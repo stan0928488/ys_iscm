@@ -38,6 +38,21 @@ export class MSHI004Service {
     alert(e.error.error);
   }
 
+  /**
+   * 獲取版本號
+   * @returns
+   */
+  getFcpVerList() {
+    let queryUrl = this.APIURL + '/msh/getFcpVerList';
+    return this.http.get(queryUrl, this.httpOptions);
+  }
+
+  fcpStart(_parms) {
+    // const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/fcpStart`;
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  }
+
   // 批次新增EPST整個資料或批次更新調整日期(newEpst)、備註資料
   batchInsertOrUpdateLDM(MSHI004PendingDataList) {
     console.log('批次修改整個資料表');
@@ -138,7 +153,7 @@ export class MSHI004Service {
 
   sendAutoCampaignBatch(_param) {
     // let endpointUrl = '';
-    let endpointUrl = this.APIURL + '/msh/MSHP001/sendAutoCampaignBatch/';
+    let endpointUrl = `${this.APIURL}/msh/MSHP001/sendAutoCampaignBatch`;
     return this.http.post<any>(endpointUrl, _param, this.httpOptions);
   }
 

@@ -68,6 +68,9 @@ export class MSHI004Component {
   end;
   normFcpEdition;
 
+  publishStartTime;
+  publishEndTime;
+
   normTime;
 
   normday = 10;
@@ -187,6 +190,7 @@ export class MSHI004Component {
         this.serach(true);
       }
     }
+    this.fcpStart();
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
@@ -363,8 +367,17 @@ export class MSHI004Component {
         filter: true,
         cellRenderer: function (params) {
           if (
+            params.data.machineGroup.includes('RF') ||
+            params.data.machineGroup.includes('BA1')
+          ) {
+            const buttonElement = _this.renderer.createElement('button');
+            const buttonText = _this.renderer.createText('RF or BA1');
+            _this.renderer.appendChild(buttonElement, buttonText);
+            _this.renderer.addClass(buttonElement, 'button');
+            return buttonElement;
+          } else if (
             params.data.fcpEditionLock == '1' &&
-            !_.isNil(params.data.fcpEdition)
+            params.data.equipCode == params.data.publishMachine
           ) {
             _this.normFcp = params.data.fcpEdition;
             const buttonElement = _this.renderer.createElement('button');
@@ -376,14 +389,14 @@ export class MSHI004Component {
                 _this.message.error('請先儲存資料');
               } else {
                 _this.shopCodeList = [];
-                _this.now = moment().format('yyyy-MM-DD');
+                _this.now = moment(_this.publishStartTime).format('YYYY-MM-DD');
+                _this.publishEndTime = moment(
+                  moment(_this.publishStartTime).add(_this.normday, 'days')
+                ).format('yyyy-MM-DD');
 
-                _this.end = moment(moment().add(_this.normday, 'days')).format(
-                  'yyyy-MM-DD'
-                );
-                _this.normTime = _this.now + '~' + _this.end;
+                _this.normTime = _this.now + '~' + _this.publishEndTime;
                 _this.isVisibleConvert = true;
-                _this.normFcpEdition = params.data.fcpEdition;
+                _this.normFcpEdition = _this.lock.fcpEdition.split('(')[0];
                 let b = params.data.mesPublishGroup;
                 _this.mgroup = b;
                 _this.preMes = {
@@ -391,6 +404,7 @@ export class MSHI004Component {
                   mesPublishGroup: b,
                 };
                 _this.getShopCode();
+                _this.fcpStart();
                 // _this.buttonClicked(params.data);
                 // _this.aaa(params.data);
               }
@@ -793,6 +807,7 @@ export class MSHI004Component {
         this.shopCodeLoading = false;
       });
   }
+
   runFcp(): void {
     new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.runFcp().subscribe(
@@ -924,8 +939,8 @@ export class MSHI004Component {
       const data = {
         fcpVer: this.normFcpEdition,
         shopCode: this.PickShopCode[i],
-        planStartTime: this.nowfor,
-        planEndTime: this.endfor,
+        planStartTime: this.publishStartTime,
+        planEndTime: this.publishEndTime,
         mesPublishGroup: this.mgroup,
         publishType: '1',
       };
@@ -968,16 +983,15 @@ export class MSHI004Component {
       .subscribe((res) => {
         let result: any = res;
         if (result.code === 200) {
-          this.message.success(result.message);
           this.normData = [];
           this.isSpinning = false;
           this.isVisibleConvert = false;
         } else {
-          this.message.error(result.message);
           this.normData = [];
           this.isSpinning = false;
           this.isVisibleConvert = false;
         }
+        this.message.info(result.message);
       });
     this.isVisibleConvert = false;
   }
@@ -1024,6 +1038,53 @@ export class MSHI004Component {
         this.isSpinning = false;
       });
   }
+
+  async fcpStart() {
+    await new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+      console.log(this.lock);
+      let a = this.lock.fcpEdition.split('(')[0];
+      console.log(a);
+      let data = {
+        fcpEdition: a,
+      };
+      this.mshi004Service.fcpStart(data).subscribe(
+        (res) => {
+          const { code, data } = res;
+          const forMesData = JSON.parse(data);
+          console.log(forMesData);
+
+          if (code === 200) {
+            if (_.size(forMesData) > 0) {
+              for (var i = 0; i < forMesData.length; i++) {
+                this.publishStartTime = forMesData[i].startDatetime;
+              }
+
+              console.log(this.publishStartTime);
+            } else {
+            }
+            this.isSpinning = false;
+            resolve(true);
+          } else {
+            reject(true);
+          }
+        },
+        (error) => {
+          this.errorMSG(
+            '獲取資料失敗',
+            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+          );
+          reject(true);
+        }
+      );
+    })
+      .then((success) => {
+        this.isSpinning = false;
+      })
+      .catch((error) => {
+        this.isSpinning = false;
+      });
+  }
   clickShopCode(_value) {
     this.PickShopCode = _value.toString().split(',');
 
@@ -1031,13 +1092,15 @@ export class MSHI004Component {
     // this.queryData();
   }
   inputDay() {
-    this.end = moment(moment().add(this.normday, 'days')).format('yyyy-MM-DD');
+    this.now = moment(this.publishStartTime).format('YYYY-MM-DD');
+    this.end = moment(
+      moment(this.publishStartTime).add(this.normday, 'days')
+    ).format('yyyy-MM-DD');
     this.normTime = this.now + '~' + this.end;
-    this.nowfor = moment().format('yyyy-MM-DD HH:mm:ss');
 
-    this.endfor = moment(moment().add(this.normday, 'days')).format(
-      'yyyy-MM-DD HH:mm:ss'
-    );
+    this.publishEndTime = moment(
+      moment(this.publishStartTime).add(this.normday, 'days')
+    ).format('yyyy-MM-DD 23:59:59');
     console.log(this.endfor);
   }
 }
