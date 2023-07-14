@@ -81,3 +81,26 @@
     overflow-y: hidden;
   }
   
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+    width:100%; /* 设置容器高度为视窗高度，使表格垂直居中 */
+  }
+  
+  .centered {
+    text-align: center;
+    width:70%;
+  }
+  th.gap{
+    text-align:left;
+    margin-right:15px;
+  }
+  tr.underline {
+    text-align:right;
+    margin-bottom:15px;
+  }
+  tr td {
+    text-align: center;
+  }

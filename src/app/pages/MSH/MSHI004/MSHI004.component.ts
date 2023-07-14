@@ -72,7 +72,7 @@ export class MSHI004Component {
 
   normTime;
   futureDate = new Date();
-  normday = 0;
+  normday = 10;
 
   machineDataList: MSHI004MACHINE[] = [];
   machineDataListDeepClone: MSHI004MACHINE[] = [];
@@ -384,7 +384,16 @@ export class MSHI004Component {
                 ); // 月份从 0 开始，所以要加 1
                 _this.day = '-' + _this.currentDate.getDate();
                 _this.now = `${_this.year}${_this.month}${_this.day}`;
-
+                _this.futureDate.setDate(
+                  _this.currentDate.getDate() + _this.normday
+                );
+                _this.year = _this.futureDate.getFullYear() + '-';
+                _this.month = ('0' + (_this.futureDate.getMonth() + 1)).slice(
+                  -2
+                ); // 月份从 0 开始，所以要加 1
+                _this.day = '-' + _this.futureDate.getDate();
+                _this.end = `${_this.year}${_this.month}${_this.day}`;
+                _this.normTime = _this.now + '~' + _this.end;
                 _this.isVisibleConvert = true;
                 _this.normFcpEdition = params.data.fcpEdition;
                 let b = params.data.mesPublishGroup;
