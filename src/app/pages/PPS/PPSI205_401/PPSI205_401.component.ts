@@ -30,7 +30,7 @@ interface data {
 })
 export class PPSI205_401Component implements AfterViewInit {
 
-  
+
   titleArray1 = [
     '月份',
     '站別',
@@ -107,15 +107,26 @@ export class PPSI205_401Component implements AfterViewInit {
 
   isSpinning = false;
 
+  dateTimeFormatter(params) {
+    return moment(params.value).format('YYYY/MM/DD HH:mm:ss');
+  }
+
+  dateFormatter(params) {
+    return moment(params.value).format('YYYY/MM/DD');
+  }
+
   columnDefs: (ColDef | ColGroupDef)[] = [
       { headerName:'MO 版次',
         field: 'moEdition' , 
         filter: true,
         width: 200,
         },
-      { headerName:'日期',field: 'exportDateTime' , filter: true,width: 150, cellRenderer: (data) => {
-        return moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss')
-    }},
+      { headerName:'EPST',
+        field: 'epst' , 
+        filter: true,
+        width: 150, 
+        valueFormatter: this.dateFormatter,
+      },
       { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 150 },
       { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 150},
       { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 150 },
@@ -227,15 +238,19 @@ export class PPSI205_401Component implements AfterViewInit {
 
   changeTab(tab): void {
     if(tab === 1) {
-      window.location.href = '#/singleData/I124';
+      window.location.href = "#/singleData/I124";
+      // this.router.navigate(['/singleData/I124', 0]);
     } else if(tab === 2) {
-      window.location.href = '#/singleData/I124';
+      window.location.href = "#/singleData/I124";
+      // this.router.navigate(['/singleData/I124', 1]);
     } else if(tab === 3){
-      window.location.href = '#/singleData/I124';
+      window.location.href = "#/singleData/I124";
+      // this.router.navigate(['/singleData/I124', 2]);
     } else if(tab === 4) {
       this.getTbppsm119ListAll();
     }else if(tab === 5) {
       window.location.href = "#/singleData/I124";
+      // this.router.navigate(['/singleData/I124', 4]);
     }
   }
 

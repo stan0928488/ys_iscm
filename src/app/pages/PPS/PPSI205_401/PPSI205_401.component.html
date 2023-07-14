@@ -19,7 +19,7 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'" nzSelectedIndex="3">
+  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'"  [nzSelectedIndex]="3">
 
     <!-- 盤元冷抽尺寸優先順序表 -->
     <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
@@ -49,7 +49,7 @@
 
       <a 
       [routerLink]="['/singleData/I205_401']"
-      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0}"
+      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0 }"
       nz-button 
       nzType="default"
       [disabled]="isRunFCP"
@@ -123,7 +123,7 @@
       <ag-grid-angular [columnDefs]="columnDefs" [defaultColDef]="ColGroupDef" [headerHeight]="40" [rowHeight]="40"
         style="width: 100%; height:500px;" class="ag-theme-alpine" [rowData]="rowData"
         [suppressRowClickSelection]="true" [groupSelectsChildren]="true" [rowSelection]="'multiple'"
-        [animateRows]="true">
+        [animateRows]="true" [pagination]="true">
       </ag-grid-angular>
 
     </nz-tab>

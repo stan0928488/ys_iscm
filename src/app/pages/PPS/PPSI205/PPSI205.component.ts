@@ -24,6 +24,9 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
+  
+  index = 1;
+
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
@@ -64,11 +67,6 @@ export class PPSI205Component implements AfterViewInit {
     '天數',
     '生產時間(起)',
     'TC頻率升降冪',
-    '轉入COMPAIGN限制表時間',
-    '建立日期',
-    '建立者',
-    '異動日期',
-    '異動者',
   ];
   datetime = moment();
   arrayBuffer: any;
@@ -78,7 +76,7 @@ export class PPSI205Component implements AfterViewInit {
   isERROR = false;
   errorTXT = [];
 
-  index: string;
+
   EditMode = [];
   oldlist = {};
   newlist;
@@ -116,14 +114,23 @@ export class PPSI205Component implements AfterViewInit {
 
   isSpinning = false;
 
+  dateTimeFormatter(params) {
+    return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  dateFormatter(params) {
+    return moment(params.value).format('YYYY-MM-DD');
+  }
+
   columnDefs: (ColDef | ColGroupDef)[] = [
     {
       headerName: '匯入時間',
       field: 'IMPORTDATETIME',
       filter: true,
-      width: 200,
+      width: 170,
+      valueFormatter: this.dateTimeFormatter,
     },
-    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
+    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 120 },
     { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
     { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
     {
@@ -136,97 +143,44 @@ export class PPSI205Component implements AfterViewInit {
       headerName: 'max(EPST/ASAP)',
       field: 'MAX_DATE',
       filter: true,
-      width: 150,
+      width: 160,
+      valueFormatter: this.dateFormatter,
     },
     { headerName: '天數', field: 'DAYS', filter: true, width: 100 },
     {
       headerName: '生產時間(起)',
       field: 'STARTDATE',
       filter: true,
-      width: 120,
+      width: 130,
+      valueFormatter: this.dateFormatter,
     },
     {
       headerName: 'TC頻率升降冪',
       field: 'TC_FREQUENCE_LIFT',
       filter: true,
-      width: 150,
+      width: 140,
     },
     {
       headerName: '轉入COMPAIGN限制表時間',
       field: 'EXPORTDATETIME',
       filter: true,
-      width: 200,
-      cellRenderer: (data) => {
-          return moment(data.createdAt).format('YYYY-MM-DD')
-      }
+      width: 220,
+      valueFormatter: this.dateTimeFormatter,
     },
-    { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 200 },
+    { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 170, 
+      valueFormatter: this.dateTimeFormatter,
+    },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    { headerName: '異動日期', field: 'DATE_UPDATE', filter: true, width: 200 },
+    { headerName: '異動日期', field: 'DATE_UPDATE', filter: true, width: 170,
+      valueFormatter: this.dateTimeFormatter,
+    },
     { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
   ];
   public ColGroupDef: ColDef = {
     filter: true,
     sortable: true,
-    resizable: true,
+    resizable: false,
   };
-
-  columnDefs_4: (ColDef | ColGroupDef)[] = [
-    {
-      headerName: '匯入時間',
-      field: 'IMPORTDATETIME',
-      filter: false,
-      width: 200,
-    },
-    {
-      headerName: '廠區別',
-      field: 'PLANT_CODE',
-      filter: false,
-      width: 100,
-    },
-    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
-    { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
-    { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
-    {
-      headerName: '下一站站別',
-      field: 'NEXT_SHOP_CODE',
-      filter: false,
-      width: 120,
-    },
-    {
-      headerName: 'max(EPST/ASAP)',
-      field: 'MAX_DATE',
-      filter: false,
-      width: 150,
-    },
-    { headerName: '天數', field: 'DAYS', filter: false, width: 100 },
-    {
-      headerName: '生產時間(起)',
-      field: 'STARTDATE',
-      filter: false,
-      width: 120,
-    },
-    {
-      headerName: 'TC頻率升降冪',
-      field: 'TC_FREQUENCE_LIFT',
-      filter: false,
-      width: 150,
-    },
-    {
-      headerName: '轉入COMPAIGN限制表時間',
-      field: 'EXPORTDATETIME',
-      filter: true,
-      width: 200,
-    },
-    {
-      headerName: '分類(A. 401 auto)',
-      field: 'CATEGORY',
-      filter: false,
-      width: 100,
-    },
-    { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
-  ];
 
   constructor(
     private router: ActivatedRoute,
@@ -307,21 +261,6 @@ export class PPSI205Component implements AfterViewInit {
       }
       this.isSpinning = false;
       console.log(this.tbppsm102ListAll);
-    });
-  }
-
-  // tab4 export excel
-  exportTbppsm102ListExcel() {
-    this.getPPSService.exportTbppsm102ListExcel(this.PLANT_CODE).subscribe((res) => {
-      console.log('exportTbppsm102ListExcel success');
-      let result: any = res;
-      if (result.length > 0) {
-        console.log(result)
-        this.tbppsm102ExportExcel = JSON.parse(JSON.stringify(result));
-      } else {
-        this.message.error('無資料');
-        return;
-      }
     });
   }
 
@@ -432,16 +371,17 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG('匯出失敗', '205站公版尺寸目前無資料');
         return;
       }
-    } else if (_type === '4') {
+    // } else if (_type === '4') {
 
-      if (this.tbppsm102ExportExcel.length > 0) {
-        data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
-        fileName = `Auto Campaign 主表`;
-        titleArray = this.titleArray4;
-      }else {
-        this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
-      }
-    } else if (_type === '5') {
+    //   if (this.tbppsm102ExportExcel.length > 0) {
+    //     data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
+    //     fileName = `Auto Campaign 主表`;
+    //     titleArray = this.titleArray4;
+    //   }else {
+    //     this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
+    //   }
+    } 
+    else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm100List);
         fileName = `公版排程維護`;
@@ -512,28 +452,7 @@ export class PPSI205Component implements AfterViewInit {
         excelData.push(obj);
       }
     } 
-    else if (_type === '4') {
-      for (let item of _displayData) {
-        let obj = {};
-        _.extend(obj, {
-          IMPORTDATETIME: _.get(item, 'IMPORTDATETIME'),
-          PLANT_CODE: _.get(item, 'PLANT_CODE'),
-          ORDER_ID: _.get(item, 'ORDER_ID'),
-          SCH_SHOP_CODE: _.get(item, 'SCH_SHOP_CODE'),
-          EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
-          NEXT_SHOP_CODE: _.get(item, 'NEXT_SHOP_CODE'),
-          MAX_DATE: _.get(item, 'MAX_DATE'),
-          DAYS: _.get(item, "DAYS"),
-          STARTDATE: _.get(item, 'STARTDATE'),
-          TC_FREQUENCE_LIFT: _.get(item, 'TC_FREQUENCE_LIFT'),
-          EXPORTDATETIME: _.get(item, 'EXPORTDATETIME'),
-          CATEGORY: _.get(item, 'CATEGORY'),
-          USER_CREATE: _.get(item, 'USER_CREATE'),
-          USER_UPDATE: _.get(item, 'USER_UPDATE'),
-        });
-        excelData.push(obj);
-      }
-    } else if (_type === '5') {
+    else if (_type === '5') {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
@@ -726,33 +645,19 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.D1 === undefined ||
         worksheet.E1 === undefined ||
         worksheet.F1 === undefined ||
-        worksheet.G1 === undefined ||
-        worksheet.H1 === undefined ||
-        worksheet.I1 === undefined ||
-        worksheet.J1 === undefined ||
-        worksheet.K1 === undefined ||
-        worksheet.L1 === undefined ||
-        worksheet.M1 === undefined ||
-        worksheet.N1 === undefined
+        worksheet.G1 === undefined 
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
       } else if (
-        worksheet.A1.v !== '' ||
-        worksheet.B1.v !== '' ||
-        worksheet.C1.v !== '' ||
-        worksheet.D1.v !== '' ||
-        worksheet.E1.v !== '' ||
-        worksheet.F1.v !== '' ||
-        worksheet.G1.v !== '' ||
-        worksheet.H1.v !== '' ||
-        worksheet.I1.v !== '' ||
-        worksheet.J1.v !== '' ||
-        worksheet.K1.v !== '' ||
-        worksheet.L1.v !== '' ||
-        worksheet.M1.v !== '' ||
-        worksheet.N1.v !== ''
+        worksheet.A1.v !== '站別' ||
+        worksheet.B1.v !== '機台' ||
+        worksheet.C1.v !== '下一站站別' ||
+        worksheet.D1.v !== 'max(EPST/ASAP)' ||
+        worksheet.E1.v !== '天數' ||
+        worksheet.F1.v !== '生產時間(起)' ||
+        worksheet.G1.v !== 'TC頻率升降冪' 
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -1172,48 +1077,22 @@ export class PPSI205Component implements AfterViewInit {
   importExcel4(_type, _data) {
     console.log('incomingfile e6 : ' + _type);
     for (let i = 0; i < _data.length; i++) {
-      let importdatetime = _data[i].this.dateFormat(
-        this.ExcelDateExchange(_data[i].匯入時間),
-        2
-      );
-      let plantCode = _data[i].廠區別;
-      let orderID = _data[i].優先順序;
       let schShopCode = _data[i].站別;
       let equipCode = _data[i].機台;
       let nextShopCode = _data[i].下一站站別;
-      let maxDate =  this.dateFormat(
-        this.ExcelDateExchange(_data[i].最大值的EPST或ASAP),
-        2
-      );
+      let maxDate =  _data[i].最大值的EPST或ASAP;
       let days = _data[i].天數;
-      let startDate = this.dateFormat(
-        this.ExcelDateExchange(_data[i].生產時間起),
-        2
-      );
+      let startDate = _data[i].生產時間起;
       let tcFrequenceLeft = _data[i].TC頻率升降冪;
-      let exportDateTime = this.dateFormat(
-        this.ExcelDateExchange(_data[i].轉入COMPAIGN限制表時間),
-        2
-      );
-      let category = _data[i].分類
-      let userCreate = _data[i].建立者;
-      let userUpdate = _data[i].異動者;
 
       if (
-        importdatetime === undefined ||
-        plantCode === undefined ||
-        orderID === undefined ||
         schShopCode === undefined ||
         equipCode === undefined ||
         nextShopCode === undefined ||
         maxDate === undefined ||
         days === undefined ||
         startDate === undefined ||
-        tcFrequenceLeft === undefined ||
-        exportDateTime === undefined ||
-        category === undefined ||
-        userCreate === undefined ||
-        userUpdate === undefined
+        tcFrequenceLeft === undefined 
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1229,34 +1108,22 @@ export class PPSI205Component implements AfterViewInit {
       this.errorMSG('匯入錯誤', this.errorTXT);
     } else {
       for (let i = 0; i < _data.length; i++) {
-        let importdatetime = _data[i].匯入時間.toString();
-        let plantCode = _data[i].廠區別.toString();
-        let orderID = _data[i].優先順序.toString();
-        let equipCode = _data[i].站別.toString();
-        let nextShopCode = _data[i].機台.toString();
-        let maxDate = _data[i].下一站站別.toString();
-        let days = _data[i].最大值的EPST或ASAP.toString();
-        let startDate = _data[i].天數.toString();
-        let tcFrequenceLeft = _data[i].生產時間起.toString();
-        let exportDateTime = _data[i].轉入COMPAIGN限制表時間.toString();
-        let category = _data[i].分類.toString();
-        let userCreate = _data[i].建立者.toString();
-        let userUpdate = _data[i].異動者.toString();
+        let schShopCode = _data[i].站別.toString();
+        let equipCode = _data[i].機台.toString();
+        let nextShopCode = _data[i].下一站站別.toString();
+        let maxDate = _data[i].最大值的EPST或ASAP.toString();
+        let days = _data[i].天數.toString();
+        let startDate = _data[i].生產時間起.toString();
+        let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
 
         this.importdata_new.push({
-          importdatetime: importdatetime,
-          plantCode: plantCode,
-          orderID: orderID,
+          schShopCode: schShopCode,
           equipCode: equipCode,
           nextShopCode: nextShopCode,
           maxDate: maxDate,
           days: days,
           startDate: startDate,
           tcFrequenceLeft: tcFrequenceLeft,
-          exportDateTime: exportDateTime,
-          category: category,
-          userCreate: userCreate,
-          userUpdate: userUpdate,
         });
       }
 
@@ -1778,25 +1645,17 @@ export class PPSI205Component implements AfterViewInit {
     this.isErrorMsg = false;
   }
 
-  // I205 Auto Campaign 匯出 Excel
-  excelExport(){
-    let rowData = this.exportTbppsm102ListExcel();
-
-    this.isSpinning = true;
-    let headerArray = [] ;
-
-    this.columnDefs_4.forEach(function(obj){
-      headerArray.push(obj['headerName']);
-      console.log(obj);
-    });
-
+  // tab4 export excel
+  exportTbppsm102ListExcel() {
+    this.loading = true;
+    let myObj = this;
     let exportTableName = "Auto Campaign 主表"
-
-    let exportData = this.tbppsm102ExportExcel;
-    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
-    
-    this.isSpinning = false;
-
- }
-
+    this.getPPSService.exportTbppsm102ListExcel(this.PLANT_CODE).subscribe((res) => {
+      console.log('exportTbppsm102ListExcel success');
+      this.tbppsm102ExportExcel = res;
+      console.log(this.tbppsm102ExportExcel);
+      this.excelService.exportAsExcelFile(this.tbppsm102ExportExcel, exportTableName, this.titleArray4);
+      myObj.loading = false;
+    });
+  }
 }
