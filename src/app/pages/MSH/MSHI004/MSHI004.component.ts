@@ -62,16 +62,14 @@ export class MSHI004Component {
   normData;
   shopCodeList: Array<String> = [];
   PickShopCode = [];
-  currentDate = new Date();
-  year;
-  month;
-  day;
-  now: string;
-  end: string;
+  nowfor;
+  endfor;
+  now;
+  end;
   normFcpEdition;
 
   normTime;
-  futureDate = new Date();
+
   normday = 10;
 
   machineDataList: MSHI004MACHINE[] = [];
@@ -378,21 +376,11 @@ export class MSHI004Component {
                 _this.message.error('請先儲存資料');
               } else {
                 _this.shopCodeList = [];
-                _this.year = _this.currentDate.getFullYear() + '-';
-                _this.month = ('0' + (_this.currentDate.getMonth() + 1)).slice(
-                  -2
-                ); // 月份从 0 开始，所以要加 1
-                _this.day = '-' + _this.currentDate.getDate();
-                _this.now = `${_this.year}${_this.month}${_this.day}`;
-                _this.futureDate.setDate(
-                  _this.currentDate.getDate() + _this.normday
+                _this.now = moment().format('yyyy-MM-DD');
+
+                _this.end = moment(moment().add(_this.normday, 'days')).format(
+                  'yyyy-MM-DD'
                 );
-                _this.year = _this.futureDate.getFullYear() + '-';
-                _this.month = ('0' + (_this.futureDate.getMonth() + 1)).slice(
-                  -2
-                ); // 月份从 0 开始，所以要加 1
-                _this.day = '-' + _this.futureDate.getDate();
-                _this.end = `${_this.year}${_this.month}${_this.day}`;
                 _this.normTime = _this.now + '~' + _this.end;
                 _this.isVisibleConvert = true;
                 _this.normFcpEdition = params.data.fcpEdition;
@@ -936,8 +924,8 @@ export class MSHI004Component {
       const data = {
         fcpVer: this.normFcpEdition,
         shopCode: this.PickShopCode[i],
-        planStartTime: this.now,
-        planEndTime: this.end,
+        planStartTime: this.nowfor,
+        planEndTime: this.endfor,
         mesPublishGroup: this.mgroup,
         publishType: '1',
       };
@@ -995,6 +983,7 @@ export class MSHI004Component {
   }
   convertCancel(): void {
     this.isVisibleConvert = false;
+    this.normday = 10;
   }
 
   getShopCode() {
@@ -1042,12 +1031,13 @@ export class MSHI004Component {
     // this.queryData();
   }
   inputDay() {
-    this.futureDate.setDate(this.currentDate.getDate() + this.normday);
-    this.year = this.futureDate.getFullYear() + '-';
-    this.month = ('0' + (this.futureDate.getMonth() + 1)).slice(-2); // 月份从 0 开始，所以要加 1
-    this.day = '-' + this.futureDate.getDate();
-    this.end = `${this.year}${this.month}${this.day}`;
+    this.end = moment(moment().add(this.normday, 'days')).format('yyyy-MM-DD');
+    this.normTime = this.now + '~' + this.end;
+    this.nowfor = moment().format('yyyy-MM-DD HH:mm:ss');
 
-    this.normTime = this.now + '-' + this.end;
+    this.endfor = moment(moment().add(this.normday, 'days')).format(
+      'yyyy-MM-DD HH:mm:ss'
+    );
+    console.log(this.endfor);
   }
 }
