@@ -166,7 +166,6 @@ public autoGroupColumnDef: ColDef = {
       this.clearFile();
       return;
     } else {
-      console.log("上傳檔案格式沒有錯誤");
       let fileReader = new FileReader();
       fileReader.onload = (e) => {
         this.arrayBuffer = fileReader.result;
@@ -225,7 +224,7 @@ public autoGroupColumnDef: ColDef = {
         if (planInStorage == undefined) {
           datePlanInStorage = null;
         } else {
-          if( datePlanInStorage === 'Invalid date') {
+          if( planInStorage === 'Invalid date' || typeof planInStorage === 'number') {
             datePlanInStorage = planInStorage.toString().trim() === "" ? null : datePipe.transform(new Date((Number(planInStorage) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
           } else {
             datePlanInStorage = planInStorage ;
@@ -235,7 +234,7 @@ public autoGroupColumnDef: ColDef = {
         if (deliveryPp == undefined) {
           dateDeliveryPp = null;
         } else {
-          if( datePlanInStorage === 'Invalid date') {
+          if( deliveryPp === 'Invalid date' || typeof deliveryPp === 'number') {
             dateDeliveryPp = deliveryPp.toString().trim() === "" ? null : datePipe.transform(new Date((Number(deliveryPp) - 25569) * 86400 * 1000), 'yyyy-MM-dd');
           } else {
             dateDeliveryPp = deliveryPp ;
@@ -284,22 +283,20 @@ public autoGroupColumnDef: ColDef = {
           this.loading = false;
           this.LoadingPage = false;
         }
-        this.importdata = [];
       },err => {
         reject('upload fail');
         this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
         this.loading = false;
         this.LoadingPage = false;
-        this.importdata = [];
+        this.clearFile();
       })
     });
-    
     this.getR304DataList();
-
   }
   clearFile() {
     document.getElementsByTagName('input')[0].value = '';
     this.importdata_repeat = [];
+    this.importdata = [];
   }
 
   // excel檔名
