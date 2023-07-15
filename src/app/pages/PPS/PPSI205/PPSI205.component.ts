@@ -24,7 +24,6 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
-  
   index = 1;
 
   PLANT_CODE;
@@ -68,6 +67,22 @@ export class PPSI205Component implements AfterViewInit {
     '生產時間(起)',
     'TC頻率升降冪',
   ];
+  titleArray5 = [
+    '站別',
+    '投產機台',
+    '製程碼',
+    '投入型態',
+    '產出型態',
+    '投入尺寸',
+    '產出尺寸',
+    '產品種類',
+    '下站別',
+    '鋼種群組',
+    '自訂月份',
+    '自訂排序',
+    '創建時間',
+    '創建者',
+  ];
   datetime = moment();
   arrayBuffer: any;
   file: File;
@@ -75,7 +90,6 @@ export class PPSI205Component implements AfterViewInit {
   importdata_new = [];
   isERROR = false;
   errorTXT = [];
-
 
   EditMode = [];
   oldlist = {};
@@ -167,11 +181,19 @@ export class PPSI205Component implements AfterViewInit {
       width: 220,
       valueFormatter: this.dateTimeFormatter,
     },
-    { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 170, 
+    {
+      headerName: '建立日期',
+      field: 'DATE_CREATE',
+      filter: true,
+      width: 170,
       valueFormatter: this.dateTimeFormatter,
     },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    { headerName: '異動日期', field: 'DATE_UPDATE', filter: true, width: 170,
+    {
+      headerName: '異動日期',
+      field: 'DATE_UPDATE',
+      filter: true,
+      width: 170,
       valueFormatter: this.dateTimeFormatter,
     },
     { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
@@ -208,7 +230,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getTbppsm101List();
     this.getTbppsm102ListAll();
     this.getRunFCPCount();
-    // this.getTbppsm113List();
+    this.getTbppsm113List();
     this.getTbppsm100List();
   }
 
@@ -218,7 +240,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
       console.log('getRunFCPCount success');
       console.log(res);
-      if (res > 0) this.isRunFCP = false;
+      if (res > 0) this.isRunFCP = true;
     });
   }
 
@@ -371,21 +393,20 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG('匯出失敗', '205站公版尺寸目前無資料');
         return;
       }
-    // } else if (_type === '4') {
+      // } else if (_type === '4') {
 
-    //   if (this.tbppsm102ExportExcel.length > 0) {
-    //     data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
-    //     fileName = `Auto Campaign 主表`;
-    //     titleArray = this.titleArray4;
-    //   }else {
-    //     this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
-    //   }
-    } 
-    else if (_type === '5') {
+      //   if (this.tbppsm102ExportExcel.length > 0) {
+      //     data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
+      //     fileName = `Auto Campaign 主表`;
+      //     titleArray = this.titleArray4;
+      //   }else {
+      //     this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
+      //   }
+    } else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm100List);
         fileName = `公版排程維護`;
-        titleArray = this.titleArray4;
+        titleArray = this.titleArray5;
       } else {
         this.errorMSG('匯出失敗', '公版排程維護目前無資料');
         return;
@@ -451,8 +472,7 @@ export class PPSI205Component implements AfterViewInit {
         });
         excelData.push(obj);
       }
-    } 
-    else if (_type === '5') {
+    } else if (_type === '5') {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
@@ -636,7 +656,7 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
-    }else if (_type === '4') {
+    } else if (_type === '4') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -645,7 +665,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.D1 === undefined ||
         worksheet.E1 === undefined ||
         worksheet.F1 === undefined ||
-        worksheet.G1 === undefined 
+        worksheet.G1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
@@ -657,7 +677,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.D1.v !== 'max(EPST/ASAP)' ||
         worksheet.E1.v !== '天數' ||
         worksheet.F1.v !== '生產時間(起)' ||
-        worksheet.G1.v !== 'TC頻率升降冪' 
+        worksheet.G1.v !== 'TC頻率升降冪'
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -668,8 +688,7 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel4('4', importdata);
       }
-    } 
-    else if (_type === '5') {
+    } else if (_type === '5') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -1080,7 +1099,7 @@ export class PPSI205Component implements AfterViewInit {
       let schShopCode = _data[i].站別;
       let equipCode = _data[i].機台;
       let nextShopCode = _data[i].下一站站別;
-      let maxDate =  _data[i].最大值的EPST或ASAP;
+      let maxDate = _data[i].最大值的EPST或ASAP;
       let days = _data[i].天數;
       let startDate = _data[i].生產時間起;
       let tcFrequenceLeft = _data[i].TC頻率升降冪;
@@ -1092,7 +1111,7 @@ export class PPSI205Component implements AfterViewInit {
         maxDate === undefined ||
         days === undefined ||
         startDate === undefined ||
-        tcFrequenceLeft === undefined 
+        tcFrequenceLeft === undefined
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1649,13 +1668,19 @@ export class PPSI205Component implements AfterViewInit {
   exportTbppsm102ListExcel() {
     this.loading = true;
     let myObj = this;
-    let exportTableName = "Auto Campaign 主表"
-    this.getPPSService.exportTbppsm102ListExcel(this.PLANT_CODE).subscribe((res) => {
-      console.log('exportTbppsm102ListExcel success');
-      this.tbppsm102ExportExcel = res;
-      console.log(this.tbppsm102ExportExcel);
-      this.excelService.exportAsExcelFile(this.tbppsm102ExportExcel, exportTableName, this.titleArray4);
-      myObj.loading = false;
-    });
+    let exportTableName = 'Auto Campaign 主表';
+    this.getPPSService
+      .exportTbppsm102ListExcel(this.PLANT_CODE)
+      .subscribe((res) => {
+        console.log('exportTbppsm102ListExcel success');
+        this.tbppsm102ExportExcel = res;
+        console.log(this.tbppsm102ExportExcel);
+        this.excelService.exportAsExcelFile(
+          this.tbppsm102ExportExcel,
+          exportTableName,
+          this.titleArray4
+        );
+        myObj.loading = false;
+      });
   }
 }

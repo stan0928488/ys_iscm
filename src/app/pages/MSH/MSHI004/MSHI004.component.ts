@@ -390,11 +390,14 @@ export class MSHI004Component {
               } else {
                 _this.shopCodeList = [];
                 _this.now = moment(_this.publishStartTime).format('YYYY-MM-DD');
-                _this.publishEndTime = moment(
+                _this.end = moment(
                   moment(_this.publishStartTime).add(_this.normday, 'days')
                 ).format('yyyy-MM-DD');
+                _this.publishEndTime = moment(
+                  moment(_this.publishStartTime).add(_this.normday, 'days')
+                ).format('yyyy-MM-DD 23:59:59');
 
-                _this.normTime = _this.now + '~' + _this.publishEndTime;
+                _this.normTime = _this.now + '~' + _this.end;
                 _this.isVisibleConvert = true;
                 _this.normFcpEdition = _this.lock.fcpEdition.split('(')[0];
                 let b = params.data.mesPublishGroup;

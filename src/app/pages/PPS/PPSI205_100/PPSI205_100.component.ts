@@ -197,7 +197,7 @@ export class PPSI205_100Component implements AfterViewInit {
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
       console.log('getRunFCPCount success');
       console.log(res);
-      if (res > 0) this.isRunFCP = false;
+      if (res > 0) this.isRunFCP = true;
     });
   }
 
