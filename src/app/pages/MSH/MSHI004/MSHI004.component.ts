@@ -935,17 +935,23 @@ export class MSHI004Component {
   convertSubmit() {
     const a: Array<String> = [];
     this.normData = [];
-    for (var i = 0; i < this.PickShopCode.length; i++) {
-      const data = {
-        fcpVer: this.normFcpEdition,
-        shopCode: this.PickShopCode[i],
-        planStartTime: this.publishStartTime,
-        planEndTime: this.publishEndTime,
-        mesPublishGroup: this.mgroup,
-        publishType: '1',
-      };
-      this.normData.push(data);
+    console.log(this.PickShopCode);
+    if (!_.isNil(this.PickShopCode)) {
+      for (var i = 0; i < this.PickShopCode.length; i++) {
+        const data = {
+          fcpVer: this.normFcpEdition,
+          shopCode: this.PickShopCode[i],
+          planStartTime: this.publishStartTime,
+          planEndTime: this.publishEndTime,
+          mesPublishGroup: this.mgroup,
+          publishType: '1',
+        };
+        this.normData.push(data);
+      }
+    } else {
+      this.message.error('請選擇站別');
     }
+
     let norm = {
       mesPublishGroup: this.mgroup,
       normPublishTime: this.normday,
@@ -984,16 +990,21 @@ export class MSHI004Component {
         let result: any = res;
         if (result.code === 200) {
           this.normData = [];
+          this.PickShopCode = [];
+          this.normday = 10;
           this.isSpinning = false;
           this.isVisibleConvert = false;
         } else {
           this.normData = [];
+          this.PickShopCode = [];
+          this.normday = 10;
           this.isSpinning = false;
           this.isVisibleConvert = false;
         }
         this.message.info(result.message);
       });
     this.isVisibleConvert = false;
+    console.log('checkData' + this.normData);
   }
   convertCancel(): void {
     this.isVisibleConvert = false;
@@ -1087,6 +1098,7 @@ export class MSHI004Component {
   }
   clickShopCode(_value) {
     this.PickShopCode = _value.toString().split(',');
+    console.log(this.PickShopCode);
 
     // this.getEQUIP_CODEList(this.PickShopCode);
     // this.queryData();
@@ -1101,6 +1113,6 @@ export class MSHI004Component {
     this.publishEndTime = moment(
       moment(this.publishStartTime).add(this.normday, 'days')
     ).format('yyyy-MM-DD 23:59:59');
-    console.log(this.endfor);
+    console.log(this.publishEndTime);
   }
 }
