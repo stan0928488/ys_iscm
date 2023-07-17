@@ -29,164 +29,7 @@
       <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         直棒
       </a>
-      <div style="background: rgb(255, 255, 255); min-height: 1200px;">
-        <table>
-          <tr>
-            <td>
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-                nzType="primary"
-                (click)="openYieldInput()"
-              ><span nz-icon nzType="plus" nzTheme="outline"></span>
-                新增
-              </button>
-            </td>
-            <td style="text-align:right;width:35%">
-              <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-                nzType="primary"
-                (click)="Upload()"
-              ><span nz-icon nzType="upload" nzTheme="outline"></span>
-              E X C E L 匯入
-              </button>
-              &nbsp;&nbsp;
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-                nzType="primary"
-                (click)="convertToExcel()"
-              ><span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-              </button>
-            </td>
-          </tr>
-        </table>
-        <p></p><p></p>
-
-        <div nz-col [nzSpan]="25">
-          <nz-table #RowTable nzBordered [nzData]="displayTbppsm013List" [nzPageSize]="20" [nzScroll]="{y: '500px' }">
-            <thead>
-            <tr>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >站別
-              <nz-filter-trigger 
-              [nzActive]="searchSchShopCodeValue.length > 0" 
-              [nzDropdownMenu]="schShopCodeMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >機台
-              <nz-filter-trigger 
-              [nzActive]="searchEquipCodeValue.length > 0" 
-              [nzDropdownMenu]="equipCodeMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >機群
-              <nz-filter-trigger 
-              [nzActive]="searchEquipGroupValue.length > 0" 
-              [nzDropdownMenu]="equipGroupMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >機群設備數量
-              <nz-filter-trigger 
-              [nzActive]="searchGroupAmountValue.length > 0" 
-              [nzDropdownMenu]="groupAmountMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px"
-              >最大管數
-              <nz-filter-trigger 
-              [nzActive]="searchEquipQuanityValue.length > 0" 
-              [nzDropdownMenu]="equipQuanityMenu">
-              <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">開機管數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.bootControlFilter.value > 0" 
-                [nzDropdownMenu]="bootControlMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">累計天數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.accumulateDayFilter.value > 0" 
-                [nzDropdownMenu]="accumulateDayMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">略過天數
-                <nz-filter-trigger 
-                [nzActive]="filterObj.dateLimitFilter.value > 0" 
-                [nzDropdownMenu]="dateLimitMenu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-              <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let data of RowTable.data;let i = index" class="editable-row">
-              <ng-container *ngIf="!editCache[data.idx].edit; else editTemplate">
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.schShopCode }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.equipCode }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.equipGroup }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.groupAmount | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.equipQuanity | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.bootControl | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.accumulateDay | number }}</td>
-                <td style="text-align:center; padding: 5px; height: 60px;">{{ data.dateLimit | number }}</td>
-                <td style="text-align:center; padding: 0px; height: 60px;">
-                  <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.idx)">刪除</a>
-                </td>
-              </ng-container>
-              <ng-template #editTemplate>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache[data.idx].data.schShopCode" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache[data.idx].data.equipCode" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機群" [(ngModel)]="editCache[data.idx].data.equipGroup" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="輸入機群設備數量" [(ngModel)]="editCache[data.idx].data.groupAmount" />
-                </td>
-                <td>
-                  <input nz-width="20%" nz-input placeholder="輸入最大管數" [(ngModel)]="editCache[data.idx].data.equipQuanity" />
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="開機管數" [(ngModel)]="editCache[data.idx].data.bootControl" [nzMin]="0" [nzStep]="1"></nz-input-number>
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="累計天數" [(ngModel)]="editCache[data.idx].data.accumulateDay" [nzMin]="0" [nzStep]="1"></nz-input-number>
-                </td>
-                <td>
-                  <nz-input-number nz-width="20%" placeholder="略過天數" [(ngModel)]="editCache[data.idx].data.dateLimit" [nzMin]="0" [nzStep]="1"></nz-input-number>
-                </td>
-                <td>
-                  <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
-                  <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.idx)">取消</a>
-                </td>
-              </ng-template>
-            </tr>
-            </tbody>
-          </nz-table>
-        </div>
-      </div>
     </nz-tab>
-
     <nz-tab>
       <a *nzTabLink nz-tab-link [routerLink]="['../I110_NonBar']" style="color: gray">
         非直棒
@@ -194,10 +37,53 @@
     </nz-tab>
   </nz-tabset>
 
+  <nz-collapse>
+    <nz-collapse-panel
+    nzHeader="新增/匯出/匯入"
+    >
+    <div>
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+        nzType="primary"
+        (click)="openYieldInput()"
+      ><span nz-icon nzType="plus" nzTheme="outline"></span>
+        新增
+      </button>
+      <input type="file" id="fileupload" style="display: inline-block;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+        nzType="primary"
+        (click)="Upload()"
+      ><span nz-icon nzType="upload" nzTheme="outline"></span>
+      E X C E L 匯入
+      </button>
+      &nbsp;&nbsp;
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+        nzType="primary"
+        (click)="convertToExcel()"
+      ><span nz-icon nzType="download" nzTheme="outline"></span>
+      E X C E L 匯出
+      </button>
+    </div>
+    </nz-collapse-panel>
+  </nz-collapse>
 
+  <ag-grid-angular style="width: 100%; height: 550px; overflow: scroll;" class="ag-theme-alpine" 
+  [rowData]="displayTbppsm013List"
+  [columnDefs]="columnDefs"
+  [pagination]="true"
+  class="ag-theme-alpine"
+  [frameworkComponents]="frameworkComponents"
+  [gridOptions]="gridOptions"
+  editType="fullRow"
+  >
+  </ag-grid-angular>
+  
 </nz-content>
-
-
 
 <!-- 產能維護(管束設定)新增 -->
 <nz-modal

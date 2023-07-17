@@ -9,7 +9,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { number } from "echarts";
-
+import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
+import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
 
 interface ItemData {
   idx: number;
@@ -33,11 +34,15 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI110Component implements AfterViewInit {
+
+  frameworkComponents: any;
+
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
   userName;
   plantCode;
+  editable = false;
 
   // 產能維護
   schShopCode = '';
@@ -66,6 +71,7 @@ export class PPSI110Component implements AfterViewInit {
   importdata = [];
   importdata_new = [];
   errorTXT = [];
+  rowData: ItemData[] = [];  
 
   filterObj = {
 
@@ -126,7 +132,72 @@ export class PPSI110Component implements AfterViewInit {
 
   }
 
-  
+  gridOptions = {
+    defaultColDef: {
+        editable: true,
+        enableRowGroup: false,
+        enablePivot: false,
+        enableValue: false,
+        sortable: false,
+        resizable: true,
+        filter: true,
+    }
+  };
+
+  public columnDefs: (ColDef | ColGroupDef)[] = [
+    {
+      headerName: '站別',
+      field: "schShopCode"
+    },
+    {
+      headerName: '機台',
+      field: "equipCode"
+    },
+    {
+      headerName: '機群',
+      field: "equipGroup"
+    },
+    {
+      headerName: '機群設備數量',
+      field: "groupAmount"
+    },
+    {
+      headerName: '最大管數',
+      field: "equipQuanity"
+    },
+    {
+      headerName: '開機管數',
+      field: "bootControl"
+    },
+    {
+      headerName: '累計天數',
+      field: "accumulateDay"
+    },
+    {
+      headerName: '略過天數',
+      field: "dateLimit"
+    },
+    {
+      headerName: 'Action',
+      editable:false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this)
+        },
+        {
+          onClick: this.onBtnClick2.bind(this)
+        },
+        {
+          onClick: this.onBtnClick3.bind(this)
+        },
+        {
+          onClick: this.onBtnClick4.bind(this)
+        }
+      ]
+    }
+  ]
+
 
   constructor(
     private PPSService: PPSService,
@@ -139,6 +210,9 @@ export class PPSI110Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
     this.plantCode = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    }
   }
 
 
@@ -270,19 +344,19 @@ export class PPSI110Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: number): void {
+  saveEdit(rowData:any,id: number): void {
     let myObj = this;
-    if (this.editCache[id].data.schShopCode === undefined) {
+    if (rowData.schShopCode === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
+    } else if (rowData.equipCode === undefined && rowData.equipGroup === undefined) {
       myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData,id)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -339,22 +413,22 @@ export class PPSI110Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData,_id) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        id : this.editCache[_id].data.id,
-        plantCode : this.editCache[_id].data.plantCode,
-        schShopCode : this.editCache[_id].data.schShopCode,
-        equipCode : this.editCache[_id].data.equipCode,
-        equipGroup : this.editCache[_id].data.equipGroup,
-        groupAmount : this.editCache[_id].data.groupAmount,
-        equipQuanity : this.editCache[_id].data.equipQuanity,
-        bootControl : this.editCache[_id].data.bootControl,
-        accumulateDay : this.editCache[_id].data.accumulateDay,
-        dateLimit : this.editCache[_id].data.dateLimit,
+        id : rowData.id,
+        plantCode : rowData.plantCode,
+        schShopCode : rowData.schShopCode,
+        equipCode : rowData.equipCode,
+        equipGroup : rowData.equipGroup,
+        groupAmount : rowData.groupAmount,
+        equipQuanity : rowData.equipQuanity,
+        bootControl : rowData.bootControl,
+        accumulateDay : rowData.accumulateDay,
+        dateLimit : rowData.dateLimit,
         userName : this.userName
       })
       myObj.PPSService.updateI106Save('1', obj).subscribe(res => {
@@ -362,7 +436,7 @@ export class PPSI110Component implements AfterViewInit {
           this.onInit();
           this.sucessMSG("修改成功", ``);
           const index = this.tbppsm013List.findIndex(item => item.idx === _id);
-          Object.assign(this.tbppsm013List[index], this.editCache[_id].data);
+          Object.assign(this.tbppsm013List[index], rowData);
           this.editCache[_id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
@@ -670,8 +744,18 @@ export class PPSI110Component implements AfterViewInit {
 
   // excel檔名
  
-
+  onBtnClick1(e) {}
   
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData,e.rowData.idx);
+  }
 
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.idx);
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.idx);
+  }
 
 }
