@@ -118,6 +118,7 @@ import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-l
 import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
+import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
 
 registerLocaleData(zh);
 
@@ -213,6 +214,7 @@ registerLocaleData(zh);
     AdjLineupProcessSelectEditorComponent,
     PPSR308Component,
     PPSR309Component,
+    BtnCellRenderer,
   ],
   imports: [
     BrowserModule,
