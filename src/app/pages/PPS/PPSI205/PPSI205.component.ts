@@ -24,6 +24,7 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
+  
   index = 1;
 
   PLANT_CODE;
@@ -62,10 +63,13 @@ export class PPSI205Component implements AfterViewInit {
     '站別',
     '機台',
     '下一站站別',
-    'max(EPST/ASAP)',
+    '最大值的EPST或LPST',
     '天數',
-    '生產時間(起)',
+    '生產時間起',
     'TC頻率升降冪',
+    '建立日期',
+    '建立者',
+    '異動日期',
   ];
   titleArray5 = [
     '站別',
@@ -90,6 +94,7 @@ export class PPSI205Component implements AfterViewInit {
   importdata_new = [];
   isERROR = false;
   errorTXT = [];
+
 
   EditMode = [];
   oldlist = {};
@@ -154,7 +159,7 @@ export class PPSI205Component implements AfterViewInit {
       width: 120,
     },
     {
-      headerName: 'max(EPST/ASAP)',
+      headerName: '最大值的EPST或LPST',
       field: 'MAX_DATE',
       filter: true,
       width: 160,
@@ -162,7 +167,7 @@ export class PPSI205Component implements AfterViewInit {
     },
     { headerName: '天數', field: 'DAYS', filter: true, width: 100 },
     {
-      headerName: '生產時間(起)',
+      headerName: '生產時間起',
       field: 'STARTDATE',
       filter: true,
       width: 130,
@@ -181,18 +186,18 @@ export class PPSI205Component implements AfterViewInit {
       width: 220,
       valueFormatter: this.dateTimeFormatter,
     },
-    {
-      headerName: '建立日期',
-      field: 'DATE_CREATE',
-      filter: true,
-      width: 170,
+    { 
+      headerName: '建立日期', 
+      field: 'DATE_CREATE', 
+      filter: true, 
+      width: 170, 
       valueFormatter: this.dateTimeFormatter,
     },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    {
-      headerName: '異動日期',
-      field: 'DATE_UPDATE',
-      filter: true,
+    { 
+      headerName: '異動日期', 
+      field: 'DATE_UPDATE', 
+      filter: true, 
       width: 170,
       valueFormatter: this.dateTimeFormatter,
     },
@@ -393,15 +398,6 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG('匯出失敗', '205站公版尺寸目前無資料');
         return;
       }
-      // } else if (_type === '4') {
-
-      //   if (this.tbppsm102ExportExcel.length > 0) {
-      //     data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
-      //     fileName = `Auto Campaign 主表`;
-      //     titleArray = this.titleArray4;
-      //   }else {
-      //     this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
-      //   }
     } else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm100List);
@@ -656,7 +652,7 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
-    } else if (_type === '4') {
+    }else if (_type === '4') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -665,19 +661,29 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.D1 === undefined ||
         worksheet.E1 === undefined ||
         worksheet.F1 === undefined ||
-        worksheet.G1 === undefined
+        worksheet.G1 === undefined ||
+        worksheet.H1 === undefined ||
+        worksheet.I1 === undefined ||
+        worksheet.J1 === undefined ||
+        worksheet.K1 === undefined ||
+        worksheet.L1 === undefined 
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
       } else if (
-        worksheet.A1.v !== '站別' ||
-        worksheet.B1.v !== '機台' ||
-        worksheet.C1.v !== '下一站站別' ||
-        worksheet.D1.v !== 'max(EPST/ASAP)' ||
-        worksheet.E1.v !== '天數' ||
-        worksheet.F1.v !== '生產時間(起)' ||
-        worksheet.G1.v !== 'TC頻率升降冪'
+        worksheet.A1.v !== '匯入時間' ||
+        worksheet.B1.v !== '優先順序' ||
+        worksheet.C1.v !== '站別' ||
+        worksheet.D1.v !== '機台' ||
+        worksheet.E1.v !== '下一站站別' ||
+        worksheet.F1.v !== '最大值的EPST或LPST' ||
+        worksheet.G1.v !== '天數' ||
+        worksheet.H1.v !== '生產時間起' ||
+        worksheet.I1.v !== 'TC頻率升降冪' ||
+        worksheet.J1.v !== '建立日期' ||
+        worksheet.K1.v !== '建立者' ||
+        worksheet.L1.v !== '異動日期'
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -1099,11 +1105,13 @@ export class PPSI205Component implements AfterViewInit {
       let schShopCode = _data[i].站別;
       let equipCode = _data[i].機台;
       let nextShopCode = _data[i].下一站站別;
-      let maxDate = _data[i].最大值的EPST或ASAP;
+      let maxDate = this.dateFormat(
+        this.ExcelDateExchange(_data[i].最大值的EPST或LPST),
+        2
+      );
       let days = _data[i].天數;
-      let startDate = _data[i].生產時間起;
-      let tcFrequenceLeft = _data[i].TC頻率升降冪;
-
+      let startDate =  this.dateFormat(_data[i].生產時間起, 2);
+      let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
       if (
         schShopCode === undefined ||
         equipCode === undefined ||
@@ -1111,7 +1119,7 @@ export class PPSI205Component implements AfterViewInit {
         maxDate === undefined ||
         days === undefined ||
         startDate === undefined ||
-        tcFrequenceLeft === undefined
+        tcFrequenceLeft === undefined 
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1130,11 +1138,20 @@ export class PPSI205Component implements AfterViewInit {
         let schShopCode = _data[i].站別.toString();
         let equipCode = _data[i].機台.toString();
         let nextShopCode = _data[i].下一站站別.toString();
-        let maxDate = _data[i].最大值的EPST或ASAP.toString();
+        let maxDate = this.dateFormat((_data[i].最大值的EPST或LPST),
+          2
+        );
         let days = _data[i].天數.toString();
-        let startDate = _data[i].生產時間起.toString();
+        let startDate =  this.dateFormat(_data[i].生產時間起, 2);
         let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
 
+        if (maxDate === 'Invalid date') {
+          console.log("進來了");
+          maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
+        }
+        if (startDate === 'Invalid date') {
+          startDate = this.dateFormat(_data[i].生產時間起, 2);
+        }
         this.importdata_new.push({
           schShopCode: schShopCode,
           equipCode: equipCode,
@@ -1163,8 +1180,8 @@ export class PPSI205Component implements AfterViewInit {
               this.loading = false;
               this.LoadingPage = false;
 
-              this.sucessMSG('EXCCEL上傳成功', '');
-              this.getTbppsm102ListAll();
+              this.sucessMSG('EXCEL上傳成功', '');
+              this.tbppsm102ListAll();
               this.clearFile();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);
@@ -1174,6 +1191,7 @@ export class PPSI205Component implements AfterViewInit {
           },
           (err) => {
             reject('upload fail');
+            console.log(err);
             this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
             this.LoadingPage = false;
           }
@@ -1672,15 +1690,15 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService
       .exportTbppsm102ListExcel(this.PLANT_CODE)
       .subscribe((res) => {
-        console.log('exportTbppsm102ListExcel success');
-        this.tbppsm102ExportExcel = res;
-        console.log(this.tbppsm102ExportExcel);
-        this.excelService.exportAsExcelFile(
-          this.tbppsm102ExportExcel,
-          exportTableName,
-          this.titleArray4
+      console.log('exportTbppsm102ListExcel success');
+      this.tbppsm102ExportExcel = res;
+      console.log(this.tbppsm102ExportExcel);
+      this.excelService.exportAsExcelFile(
+        this.tbppsm102ExportExcel, 
+        exportTableName, 
+        this.titleArray4
         );
-        myObj.loading = false;
-      });
+      myObj.loading = false;
+    });
   }
 }
