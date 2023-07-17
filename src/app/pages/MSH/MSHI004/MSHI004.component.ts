@@ -955,43 +955,42 @@ export class MSHI004Component {
       this.message.error('請選擇站別');
     }
 
-    let norm = {
-      mesPublishGroup: this.mgroup,
-      normPublishTime: this.normday,
-    };
-    console.log(this.normData);
-    new Promise<boolean>((resolve, reject) => {
-      this.mshi004Service.normTime(norm).subscribe(
-        (res) => {
-          const { code, data } = res;
-          if (code === 200) {
-            resolve(true);
-          } else {
-            reject(true);
-          }
-        },
-        (error) => {
-          this.errorMSG(
-            '獲取資料失敗',
-            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
-          );
-          reject(true);
-        }
-      );
-    })
-      .then((success) => {
-        this.serachEPST(true);
-        this.isSpinning = false;
-      })
-      .catch((error) => {
-        this.isSpinning = false;
-      });
-
     this.mshi004Service
       .sendAutoCampaignBatch(this.normData)
       .subscribe((res) => {
         let result: any = res;
         if (result.code === 200) {
+          let norm = {
+            mesPublishGroup: this.mgroup,
+            normPublishTime: this.normday,
+          };
+          console.log(this.normData);
+          new Promise<boolean>((resolve, reject) => {
+            this.mshi004Service.normTime(norm).subscribe(
+              (res) => {
+                const { code, data } = res;
+                if (code === 200) {
+                  resolve(true);
+                } else {
+                  reject(true);
+                }
+              },
+              (error) => {
+                this.errorMSG(
+                  '獲取資料失敗',
+                  `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+                );
+                reject(true);
+              }
+            );
+          })
+            .then((success) => {
+              this.serachEPST(true);
+              this.isSpinning = false;
+            })
+            .catch((error) => {
+              this.isSpinning = false;
+            });
           this.normData = [];
           this.PickShopCode = [];
           this.normday = 10;
