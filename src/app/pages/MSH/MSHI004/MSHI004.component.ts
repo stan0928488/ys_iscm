@@ -121,8 +121,6 @@ export class MSHI004Component {
     },
   };
 
-  fieldStatus: string = '0';
-
   constructor(
     private mshi004Service: MSHI004Service,
     private Modal: NzModalService,
@@ -175,7 +173,6 @@ export class MSHI004Component {
       }
       this.isSpinning = false;
     });
-    this.isButtonDisabled = this.fieldStatus === '1';
 
     this.getCellData();
     this.getMachineData();
@@ -186,6 +183,7 @@ export class MSHI004Component {
     await this.getFcpList();
     for (let value of this.shopCodeOfOption) {
       if (value.indexOf('(鎖定)') >= 0) {
+        console.log(value.indexOf('(鎖定)'));
         this.shopCodeInputList = value;
         this.serach(true);
       }
@@ -194,8 +192,6 @@ export class MSHI004Component {
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
-
-  isButtonDisabled: boolean = false;
 
   columnDefs: ColDef[] = [];
 
@@ -465,7 +461,6 @@ export class MSHI004Component {
   machine: ColDef[] = [];
 
   getMachineData() {
-    let _this = this;
     this.machine = [
       {
         headerName: '站別',
