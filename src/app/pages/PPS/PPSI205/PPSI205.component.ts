@@ -24,14 +24,11 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
-  
-  index = 1;
-
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
   LoadingPage = false;
-  isRunFCP = false; // 如為true則不可異動
+  isRunFCP = true; // 如為true則不可異動
   isErrorMsg = false;
 
   titleArray1 = [
@@ -245,7 +242,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
       console.log('getRunFCPCount success');
       console.log(res);
-      if (res > 0) this.isRunFCP = true;
+      if (res > 0) this.isRunFCP = false;
     });
   }
 
