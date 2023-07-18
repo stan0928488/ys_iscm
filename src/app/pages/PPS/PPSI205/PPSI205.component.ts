@@ -24,9 +24,6 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
-  
-  index = 1;
-
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag

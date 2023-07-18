@@ -191,7 +191,7 @@ const routes: Routes = [
       { path: 'I122', component: PPSI122Component },
       { path: 'I123', component: PPSI123Component },
       { path: 'I124', component: PPSI205Component },
-      { path: 'I124/:index', component: PPSI205Component },
+      // { path: 'I124/:index', component: PPSI205Component },
       { path: 'I124_100', component: PPSI205_100Component },
       { path: 'I205_401', component: PPSI205_401Component },
       { path: 'I130', component: PPSI130Component },

@@ -76,7 +76,7 @@ export class PPSI205_401Component implements AfterViewInit {
   DAY = this.inputDate_val;
 
   isLoading = false;
-  isRunFCP = false; // 如為true則不可異動
+  isRunFCP = true; // 如為true則不可異動
   file:File;
   importdata = [];
   importdata_new = [];
@@ -237,20 +237,23 @@ export class PPSI205_401Component implements AfterViewInit {
   }
 
   changeTab(tab): void {
-    if(tab === 1) {
-      window.location.href = "#/singleData/I124";
-      // this.router.navigate(['/singleData/I124', 0]);
-    } else if(tab === 2) {
-      window.location.href = "#/singleData/I124";
-      // this.router.navigate(['/singleData/I124', 1]);
-    } else if(tab === 3){
-      window.location.href = "#/singleData/I124";
-      // this.router.navigate(['/singleData/I124', 2]);
-    } else if(tab === 4) {
-      this.getTbppsm119ListAll();
-    }else if(tab === 5) {
-      window.location.href = "#/singleData/I124";
-      // this.router.navigate(['/singleData/I124', 4]);
+    console.log(tab);
+    if (tab === 1) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=0';
+      // this.getTbppsm101List();
+    } else if (tab === 2) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=1';
+      // this.getTbppsm102List();
+    } else if (tab === 3) {
+      window.location.href = '#/singleData/I124?selectedTabIndex=2';
+      // this.getTbppsm113List();
+    } else if (tab === 4) {
+      // this.getTbppsm102ListAll();
+      window.location.href = '#/singleData/I124?selectedTabIndex=3';
+    } else if (tab === 5) {
+      // this.getTbppsm100List();
+      window.location.href =
+        '#/singleData/I124?selectedTabIndex=4&innerSelect=0';
     }
   }
 

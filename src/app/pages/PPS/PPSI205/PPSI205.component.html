@@ -843,7 +843,6 @@
     <a
       nzType="default"
       nz-button
-      [disabled]="isRunFCP"
       [routerLink]="['/singleData/I124']"
       [queryParams]="{ selectedTabIndex: 3, innerSelect: 0 }"
       (click)="getTbppsm102ListAll()"
@@ -855,7 +854,6 @@
       [routerLink]="['/singleData/I205_401']"
       nz-button
       nzType="default"
-      [disabled]="isRunFCP"
       >
       彙 整 資 料
     </a>
@@ -877,7 +875,6 @@
         <td style="width: 42%;">
           &nbsp;&nbsp;
           <button
-          style="margin-left: 20px"
           nz-button
           nzType="primary"
           (click)="importCompaign()"
