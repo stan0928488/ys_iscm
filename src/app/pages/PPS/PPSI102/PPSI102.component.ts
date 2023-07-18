@@ -612,18 +612,19 @@ export class PPSI102Component implements AfterViewInit {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「機台」不可為空');
         this.clearFile();
         return;
-        // } else if (
-        //   _data[i]['發佈MES群組'] === undefined ||
-        //   _data[i]['發佈MES群組'] === ''
-        // ) {
-        //   this.errorMSG(
-        //     '第' + (i + 1) + '筆檔案內容錯誤',
-        //     '「發佈MES群組」不可為空'
-        //   );
-        //   this.clearFile();
-        //   return;
-        //
-      } else if (_data[i]['有效碼'] === undefined) {
+      }
+      // else if (!_data[i]['發佈MES群組']
+      //   _data[i]['發佈MES群組'].trim().length <= 8
+      // ) {
+      //   console.log(_data[i]['發佈MES群組']);
+      //   this.errorMSG(
+      //     '第' + (i + 1) + '筆檔案內容錯誤',
+      //     '「發佈MES群組」不可為空'
+      //   );
+      //   this.clearFile();
+      //   return;
+      // }
+      else if (_data[i]['有效碼'] === undefined) {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「有效碼」不可為空');
         this.clearFile();
         return;
