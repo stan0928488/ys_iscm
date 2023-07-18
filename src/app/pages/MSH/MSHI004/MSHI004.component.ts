@@ -121,8 +121,6 @@ export class MSHI004Component {
     },
   };
 
-  fieldStatus: string = '0';
-
   constructor(
     private mshi004Service: MSHI004Service,
     private Modal: NzModalService,
@@ -175,7 +173,6 @@ export class MSHI004Component {
       }
       this.isSpinning = false;
     });
-    this.isButtonDisabled = this.fieldStatus === '1';
 
     this.getCellData();
     this.getMachineData();
@@ -186,6 +183,7 @@ export class MSHI004Component {
     await this.getFcpList();
     for (let value of this.shopCodeOfOption) {
       if (value.indexOf('(鎖定)') >= 0) {
+        console.log(value.indexOf('(鎖定)'));
         this.shopCodeInputList = value;
         this.serach(true);
       }
@@ -194,8 +192,6 @@ export class MSHI004Component {
   }
 
   public item: Array<any> = new Array<any>(); //因為會有多筆，先建一個any型別的陣列資料來接回傳值
-
-  isButtonDisabled: boolean = false;
 
   columnDefs: ColDef[] = [];
 
@@ -465,7 +461,6 @@ export class MSHI004Component {
   machine: ColDef[] = [];
 
   getMachineData() {
-    let _this = this;
     this.machine = [
       {
         headerName: '站別',
@@ -955,43 +950,42 @@ export class MSHI004Component {
       this.message.error('請選擇站別');
     }
 
-    let norm = {
-      mesPublishGroup: this.mgroup,
-      normPublishTime: this.normday,
-    };
-    console.log(this.normData);
-    new Promise<boolean>((resolve, reject) => {
-      this.mshi004Service.normTime(norm).subscribe(
-        (res) => {
-          const { code, data } = res;
-          if (code === 200) {
-            resolve(true);
-          } else {
-            reject(true);
-          }
-        },
-        (error) => {
-          this.errorMSG(
-            '獲取資料失敗',
-            `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
-          );
-          reject(true);
-        }
-      );
-    })
-      .then((success) => {
-        this.serachEPST(true);
-        this.isSpinning = false;
-      })
-      .catch((error) => {
-        this.isSpinning = false;
-      });
-
     this.mshi004Service
       .sendAutoCampaignBatch(this.normData)
       .subscribe((res) => {
         let result: any = res;
         if (result.code === 200) {
+          let norm = {
+            mesPublishGroup: this.mgroup,
+            normPublishTime: this.normday,
+          };
+          console.log(this.normData);
+          new Promise<boolean>((resolve, reject) => {
+            this.mshi004Service.normTime(norm).subscribe(
+              (res) => {
+                const { code, data } = res;
+                if (code === 200) {
+                  resolve(true);
+                } else {
+                  reject(true);
+                }
+              },
+              (error) => {
+                this.errorMSG(
+                  '獲取資料失敗',
+                  `請聯繫系統工程師。Error Msg : ${JSON.stringify(error.error)}`
+                );
+                reject(true);
+              }
+            );
+          })
+            .then((success) => {
+              this.serachEPST(true);
+              this.isSpinning = false;
+            })
+            .catch((error) => {
+              this.isSpinning = false;
+            });
           this.normData = [];
           this.PickShopCode = [];
           this.normday = 10;
