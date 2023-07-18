@@ -92,6 +92,7 @@ export class PPSR302Component implements OnInit {
   tbodyList ;
   tableTotalCell ;//计算各列小计
   tableOrderTotalCell ; //訂單總計
+  tableMesTotalCell ; //MES已入庫量
   /**Modal显示 */
   isModalVisible = false ; //第一层显示
   firstModal : NzModalRef ;
@@ -545,6 +546,7 @@ export class PPSR302Component implements OnInit {
       }
       this.tableTotalCell = result.data.tableTotalCell[0] ;
       this.tableOrderTotalCell = result.data.tableOrderTotalCell[0];
+      this.tableMesTotalCell = result.data.tableMesTotalCell[0];
       // console.log("填充数据0"+ JSON.stringify(this.tbodyList[0][0]));
       // for(let i= 0 ; i < this.tbodyList.length ; i ++){
       //   console.log("填充数据"+ JSON.stringify(this.tbodyList[i]));
