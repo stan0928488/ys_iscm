@@ -1001,7 +1001,7 @@ export class MSHI004Component {
         this.message.info(result.message);
       });
     this.isVisibleConvert = false;
-    console.log('checkData' + this.normData);
+    console.log(this.normData);
   }
   convertCancel(): void {
     this.isVisibleConvert = false;
