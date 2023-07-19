@@ -144,15 +144,10 @@ export class PPSI102Component implements AfterViewInit {
     } else if (this.EQUIP_CODE_1 === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    }
-    // else if (
-    //   this.MES_PUBLISH_GROUP === undefined ||
-    //   this.MES_PUBLISH_GROUP === ''
-    // ) {
-    //   myObj.message.create('error', '「發佈MES群組」不可為空');
-    //   return;
-    // }
-    else if (this.VALID === undefined) {
+    } else if (this.MES_PUBLISH_GROUP.length > 8) {
+      myObj.message.create('error', '「發佈MES群組」超過8碼');
+      return;
+    } else if (this.VALID === undefined) {
       myObj.message.create('error', '「有效碼」不可為空');
       return;
     } else {
@@ -213,13 +208,9 @@ export class PPSI102Component implements AfterViewInit {
     ) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-      // } else if (
-      //   this.editCache7[id].data.MES_PUBLISH_GROUP === undefined ||
-      //   this.MES_PUBLISH_GROUP === '' ||
-      //   '' === this.editCache7[id].data.MES_PUBLISH_GROUP
-      // ) {
-      //   myObj.message.create('error', '「發佈MES群組」不可為空');
-      //   return;
+    } else if (this.editCache7[id].data.MES_PUBLISH_GROUP.length > 8) {
+      myObj.message.create('error', '「發佈MES群組」超過8碼');
+      return;
     } else if (
       this.editCache7[id].data.VALID === undefined ||
       '' === this.editCache7[id].data.VALID
@@ -612,19 +603,15 @@ export class PPSI102Component implements AfterViewInit {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「機台」不可為空');
         this.clearFile();
         return;
-      }
-      // else if (!_data[i]['發佈MES群組']
-      //   _data[i]['發佈MES群組'].trim().length <= 8
-      // ) {
-      //   console.log(_data[i]['發佈MES群組']);
-      //   this.errorMSG(
-      //     '第' + (i + 1) + '筆檔案內容錯誤',
-      //     '「發佈MES群組」不可為空'
-      //   );
-      //   this.clearFile();
-      //   return;
-      // }
-      else if (_data[i]['有效碼'] === undefined) {
+      } else if (_data[i]['發佈MES群組'].length > 8) {
+        console.log(_data[i]['發佈MES群組']);
+        this.errorMSG(
+          '第' + (i + 1) + '筆檔案內容錯誤',
+          '「發佈MES群組」超過8碼'
+        );
+        this.clearFile();
+        return;
+      } else if (_data[i]['有效碼'] === undefined) {
         this.errorMSG('第' + (i + 1) + '筆檔案內容錯誤', '「有效碼」不可為空');
         this.clearFile();
         return;
