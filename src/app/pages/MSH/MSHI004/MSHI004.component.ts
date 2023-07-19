@@ -62,8 +62,6 @@ export class MSHI004Component {
   normData;
   shopCodeList: Array<String> = [];
   PickShopCode = [];
-  nowfor;
-  endfor;
   now;
   end;
   normFcpEdition;
@@ -89,7 +87,6 @@ export class MSHI004Component {
 
   payloadcache: MSHI004Payload;
 
-  normFcp;
   preMes;
 
   buttonStyle: string = `color: #fff;
@@ -375,7 +372,6 @@ export class MSHI004Component {
             params.data.fcpEditionLock == '1' &&
             params.data.equipCode == params.data.publishMachine
           ) {
-            _this.normFcp = params.data.fcpEdition;
             const buttonElement = _this.renderer.createElement('button');
             const buttonText = _this.renderer.createText('轉入公版');
             _this.renderer.appendChild(buttonElement, buttonText);
@@ -542,7 +538,6 @@ export class MSHI004Component {
             obj.publishType = '1';
           });
           console.log(forMesData);
-          console.log('forMes');
           if (code === 200) {
             if (_.size(forMesData) > 0) {
               this.mesData = forMesData;
@@ -717,8 +712,6 @@ export class MSHI004Component {
     if (isUserClick) {
       payloads = new MSHI004Payload(this.shopCodeInputList);
       this.lock = payloads;
-      // console.log(this.lock.fcpEdition);
-      // console.log('以上是fcp版本');
     } else {
       payloads = this.payloadcache;
     }
@@ -817,8 +810,6 @@ export class MSHI004Component {
             if (data == '0') {
               this.fcp(this.USERNAME);
               this.message.success('開始重啟fcp');
-              console.log(this.USERNAME);
-              console.log('成功');
             } else {
               this.message.error('FCP正在執行');
             }
@@ -884,7 +875,6 @@ export class MSHI004Component {
       fcpEdition: a,
       mesPublishGroup: b,
     };
-    console.log(preMachine);
     if (_.isNil(preMachine)) return;
     new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.machineData(preMachine).subscribe(
@@ -959,7 +949,6 @@ export class MSHI004Component {
             mesPublishGroup: this.mgroup,
             normPublishTime: this.normday,
           };
-          console.log(this.normData);
           new Promise<boolean>((resolve, reject) => {
             this.mshi004Service.normTime(norm).subscribe(
               (res) => {
@@ -1052,7 +1041,6 @@ export class MSHI004Component {
       this.isSpinning = true;
       console.log(this.lock);
       let a = this.lock.fcpEdition.split('(')[0];
-      console.log(a);
       let data = {
         fcpEdition: a,
       };
@@ -1060,14 +1048,11 @@ export class MSHI004Component {
         (res) => {
           const { code, data } = res;
           const forMesData = JSON.parse(data);
-          console.log(forMesData);
-
           if (code === 200) {
             if (_.size(forMesData) > 0) {
               for (var i = 0; i < forMesData.length; i++) {
                 this.publishStartTime = forMesData[i].startDatetime;
               }
-
               console.log(this.publishStartTime);
             } else {
             }
@@ -1096,9 +1081,6 @@ export class MSHI004Component {
   clickShopCode(_value) {
     this.PickShopCode = _value.toString().split(',');
     console.log(this.PickShopCode);
-
-    // this.getEQUIP_CODEList(this.PickShopCode);
-    // this.queryData();
   }
   inputDay() {
     this.now = moment(this.publishStartTime).format('YYYY-MM-DD');
