@@ -233,7 +233,11 @@ changeCarFlag = '1' ;
         if(item.NEW_OP_CODE.toString() === "") {
           this.changeOpCodeTable.tbData[index].selectedOpCodeList = [] ;
         } else{
-          this.changeOpCodeTable.tbData[index].selectedOpCodeList = item.NEW_OP_CODE.toString().split(',') ;
+          let arr = item.NEW_OP_CODE.toString().split(',') ;
+          
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); 
+          this.changeOpCodeTable.tbData[index].selectedOpCodeList = uniqueArr ;
+          this.changeOpCodeTable.tbData[index].NEW_OP_CODE = uniqueArr.join(',') ;
         }
         // 選擇配車
         this.changeOpCodeTable.tbData[index].selectedCarId = ""
