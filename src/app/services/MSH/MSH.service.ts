@@ -79,6 +79,12 @@ getTableData(_param) {
   return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
+//獲取User配置並下載數據
+getExportDataByShopCode(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getExportDataByShopCode";
+  return this.http.post(queryUrl,_param,this.httpOptions);
+}
+
 //管理員保存 msh/MSHI001/saveShopColum
 saveSortData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/saveSortData";
