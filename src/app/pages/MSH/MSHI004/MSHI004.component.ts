@@ -382,7 +382,7 @@ export class MSHI004Component {
             _this.renderer.listen(buttonElement, 'click', () => {
               if (!_.isEmpty(_this.MSHI004PendingDataList)) {
                 _this.message.error('請先儲存資料');
-              } else if ((_this.isRunFCP = false)) {
+              } else if (_this.isRunFCP == false) {
                 _this.shopCodeList = [];
                 _this.now = moment(_this.publishStartTime).format('YYYY-MM-DD');
                 _this.end = moment(
