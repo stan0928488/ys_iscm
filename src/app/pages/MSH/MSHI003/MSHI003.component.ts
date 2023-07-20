@@ -380,32 +380,6 @@ export class MSHI003Component implements AfterViewInit {
     }
   }
 
-  async getShopCodeListByIdNo(idNo: string): Promise<void> {
-    this.shopCodeByIdNoLoading = true;
-
-    try {
-      const res = await this.mshService.getShopCodeListByIdNo(idNo).toPromise();
-      if (res.code === 200) {
-        if (res.data.length > 0) {
-          this.shopCodeByIdNoOfOption = res.data;
-          this.existsInPpsfcptb16 = true;
-        } else {
-          // 點擊選擇調整站別，使用者選擇的那一行資料的idNo(MO)不存在於於MySQL(ppsfcptb16)
-          this.existsInPpsfcptb16 = false;
-        }
-      } else {
-        this.message.error('後台錯誤，獲取不到站別清單');
-      }
-    } catch (error) {
-      this.errorMSG(
-        '獲取站別清單失敗',
-        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
-      );
-    } finally {
-      this.shopCodeByIdNoLoading = false;
-    }
-  }
-
   shopCodeChange(): void {
     if (!_.isEmpty(this.shopCodeInputList)) {
       this.equipCodeInputList = [];
@@ -727,7 +701,7 @@ export class MSHI003Component implements AfterViewInit {
 
     // 檢查欄位名稱是否都正確
     if (!this.checkExcelHeader(this.jsonExcelData[0])) {
-      this.errorMSG('檔案欄位表頭錯誤', '需有「MO」與「調整日期」這兩個表頭。');
+      this.errorMSG('檔案欄位表頭錯誤', '請參考匯出的Excel修改後再做匯入');
       this.renderer.setProperty(this.inputExcelFile, 'value', '');
       this.isSpinning = false;
       return;

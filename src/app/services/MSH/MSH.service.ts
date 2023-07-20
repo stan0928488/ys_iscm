@@ -79,6 +79,12 @@ getTableData(_param) {
   return this.http.post(queryUrl,_param,this.httpOptions);
 }
 
+//獲取User配置並下載數據
+getExportDataByShopCode(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/getExportDataByShopCode";
+  return this.http.post(queryUrl,_param,this.httpOptions);
+}
+
 //管理員保存 msh/MSHI001/saveShopColum
 saveSortData(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/saveSortData";
@@ -136,16 +142,6 @@ saveChangeOpCode(_param) {
     console.log(`API Url : ${endpointUrl}`);
     console.log(`Body參數 : 無`);
     return this.http.get<any>(endpointUrl);
-  }
-
-  // 獲取機台清單 by idNo
-  getShopCodeListByIdNo(idNo : string){
-    const httpParams = new HttpParams()
-      .set('idNo', idNo);
-    let endpointUrl = `${this.APIURL}/msh/MSHC003/getShopCodeListByIdNo`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`Params參數 : idNo=${idNo}`);
-    return this.http.get<any>(endpointUrl, { params: httpParams });
   }
 
   // 檢查 idNo(MO) 是否存在於MySql(表:PPSFCPTB16)
