@@ -726,6 +726,47 @@ this.handleSelectCarModal() ;
     // console.log("checked:"+JSON.stringify(this.selectShopCode) );
     // this.getSetColumGroupData();
   }
+  getExportDataByShopCode(){
+    this.isLoading = true ;
+    this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
+    this.mshService.getExportDataByShopCode(this.searchV0).subscribe(res=>{
+      this.isLoading = false ;
+      let result:any = res ;
+      if(result.code === 200) {
+        let exportHeader = result.data.tableHeader ;
+        let exportData = result.data.TableContent ;
+        let rowDataTemp = [] ;
+        let header = [] ;
+        exportData.forEach((item1,index1,array1)=>{
+          let rowDataObjectTemp = {} ;
+          exportHeader.forEach((item2,index2,array2)=>{
+            if(index1 === 0 ) {
+              header.push(item2.columLabel)
+            }
+            rowDataObjectTemp[item2.columValue] = item1[item2.columValue] ;
+          })
+          rowDataTemp.push(rowDataObjectTemp) ;
+        })
+        this.exportDataByShopCode(rowDataTemp,header) ;
+
+      }else{
+        this.nzMessageService.error(result.message)
+      }
+     
+    })
+  }
+
+  exportDataByShopCode(exportData,exportHeader){
+    let tableName = this.export.title + "_" + this.selectShopCode  ;
+    if(this.export.data.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.excelService.exportAsExcelFile(exportData, tableName,exportHeader);
+    this.isLoading = false
+  }
+
   getTableData() {
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
