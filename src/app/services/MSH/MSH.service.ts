@@ -138,16 +138,6 @@ saveChangeOpCode(_param) {
     return this.http.get<any>(endpointUrl);
   }
 
-  // 獲取機台清單 by idNo
-  getShopCodeListByIdNo(idNo : string){
-    const httpParams = new HttpParams()
-      .set('idNo', idNo);
-    let endpointUrl = `${this.APIURL}/msh/MSHC003/getShopCodeListByIdNo`;
-    console.log(`API Url : ${endpointUrl}`);
-    console.log(`Params參數 : idNo=${idNo}`);
-    return this.http.get<any>(endpointUrl, { params: httpParams });
-  }
-
   // 檢查 idNo(MO) 是否存在於MySql(表:PPSFCPTB16)
   checkIdNoExists(idNo : string){
     const httpParams = new HttpParams()
