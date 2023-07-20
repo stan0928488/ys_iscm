@@ -119,6 +119,7 @@ import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
+import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 
 registerLocaleData(zh);
 
@@ -215,6 +216,7 @@ registerLocaleData(zh);
     PPSR308Component,
     PPSR309Component,
     BtnCellRenderer,
+    PPSI112Component,
   ],
   imports: [
     BrowserModule,

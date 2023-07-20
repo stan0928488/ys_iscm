@@ -85,6 +85,7 @@ import { MSHI003CanDeactivateGuard } from './pages/MSH/MSHI003/MSHI003.can.deact
 import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
+import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 
 const routes: Routes = [
   {
@@ -177,6 +178,7 @@ const routes: Routes = [
       { path: 'I110', component: PPSI110Component },
       { path: 'I110_NonBar', component: PPSI110_NonBarComponent },
       { path: 'I111', component: PPSI111Component },
+      { path: 'I112', component: PPSI112Component },
       { path: 'I111_NonBar', component: PPSI111_NonBarComponent },
       { path: 'I200', component: PPSI200Component },
     ],

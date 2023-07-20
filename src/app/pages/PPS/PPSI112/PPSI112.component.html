@@ -15,36 +15,18 @@
           <li><a href="#/commonData/I107">線速工時</a></li>
           <li><a href="#/commonData/I108">非線速工時</a></li>
           <li><a href="#/commonData/I109">產率設定</a></li>
+          <li><a href="#/commonData/I110">產率設定</a></li>
           <li class="active">
-            <a href="#/commonData/I110"
-              ><label style="color: blue">產能維護</label></a
+            <a href="#/commonData/I112"
+              ><label style="color: blue">累計生產</label></a
             >
           </li>
-          <li><a href="#/commonData/I112">累計生產</a></li>
           <li><a href="#/commonData/I111">combine資料設定</a></li>
           <li><a href="#/commonData/I200">系統設定</a></li>
         </ul>
       </tr>
     </nz-breadcrumb-item>
   </nz-breadcrumb>
-
-  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
-        直棒
-      </a>
-    </nz-tab>
-    <nz-tab>
-      <a
-        *nzTabLink
-        nz-tab-link
-        [routerLink]="['../I110_NonBar']"
-        style="color: gray"
-      >
-        非直棒
-      </a>
-    </nz-tab>
-  </nz-tabset>
 
   <nz-collapse>
     <nz-collapse-panel nzHeader="新增/匯出/匯入">
@@ -100,7 +82,7 @@
   <ag-grid-angular
     style="width: 100%; height: 550px; overflow: scroll"
     class="ag-theme-alpine"
-    [rowData]="displayTbppsm013List"
+    [rowData]="tbppsm107"
     [columnDefs]="columnDefs"
     [pagination]="true"
     class="ag-theme-alpine"
@@ -120,7 +102,7 @@
   [nzFooter]="yieldInputFooter"
   (nzOnCancel)="cancelYieldInput()"
 >
-  <ng-template #yieldTitle>新增產能維護</ng-template>
+  <ng-template #yieldTitle>新增累計生產</ng-template>
   <ng-template #yieldInputContent>
     <div>
       <table style="border-collapse: separate">
@@ -141,7 +123,7 @@
               style="width: 80%; color: darkblue"
               nz-input
               placeholder="輸入站別"
-              [(ngModel)]="schShopCode"
+              [(ngModel)]="tbppsm107.schShopCode"
             />
           </td>
           <td
@@ -160,7 +142,7 @@
               style="width: 80%; color: darkblue"
               nz-input
               placeholder="輸入機台"
-              [(ngModel)]="equipCode"
+              [(ngModel)]="tbppsm107.equipCode"
             />
           </td>
           <td
@@ -178,8 +160,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入機群"
-              [(ngModel)]="equipGroup"
+              placeholder="輸入累積單位"
+              [(ngModel)]="tbppsm107.cumsumType"
             />
           </td>
         </tr>
@@ -200,8 +182,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入機群設備數量"
-              [(ngModel)]="groupAmount"
+              placeholder="輸入累積值"
+              [(ngModel)]="tbppsm107.accumulation"
             />
           </td>
           <td
@@ -219,8 +201,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入最大管數"
-              [(ngModel)]="equipQuanity"
+              placeholder="強制投產"
+              [(ngModel)]="tbppsm107.dateLimit"
             />
           </td>
         </tr>
@@ -241,8 +223,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入開機管數"
-              [(ngModel)]="insertData.bootControl"
+              placeholder="是否使用"
+              [(ngModel)]="tbppsm107.useFlag"
             />
           </td>
           <td
@@ -260,8 +242,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入累計天數"
-              [(ngModel)]="insertData.accumulateDay"
+              placeholder="更新時間"
+              [(ngModel)]="tbppsm107.dateUpdate"
             />
           </td>
           <td
@@ -279,8 +261,8 @@
             <input
               style="width: 80%; color: darkblue"
               nz-input
-              placeholder="輸入略過天數"
-              [(ngModel)]="insertData.dateLimit"
+              placeholder="更新者"
+              [(ngModel)]="tbppsm107.userUpdate"
             />
           </td>
         </tr>

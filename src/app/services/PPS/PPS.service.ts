@@ -1079,8 +1079,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
- //getTbppsm102ListAll 取得getTbppsm102ListAll
- getTbppsm102ListAll(_plantCode) {
+  //getTbppsm102ListAll 取得getTbppsm102ListAll
+  getTbppsm102ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
@@ -1088,7 +1088,8 @@ export class PPSService {
 
   // exportTbppsm102ListExcel 匯出 Excel
   exportTbppsm102ListExcel(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
+    let queryUrl =
+      this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1889,4 +1890,9 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getTBPPSM107() {
+    let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
 }
