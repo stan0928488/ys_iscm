@@ -92,7 +92,6 @@ export class PPSI205Component implements AfterViewInit {
   isERROR = false;
   errorTXT = [];
 
-
   EditMode = [];
   oldlist = {};
   newlist;
@@ -127,6 +126,10 @@ export class PPSI205Component implements AfterViewInit {
       disabled: false,
     },
   ];
+
+  currentDate = new Date();
+
+  forTbppsm100Date;
 
   isSpinning = false;
 
@@ -183,18 +186,18 @@ export class PPSI205Component implements AfterViewInit {
       width: 220,
       valueFormatter: this.dateTimeFormatter,
     },
-    { 
-      headerName: '建立日期', 
-      field: 'DATE_CREATE', 
-      filter: true, 
-      width: 170, 
+    {
+      headerName: '建立日期',
+      field: 'DATE_CREATE',
+      filter: true,
+      width: 170,
       valueFormatter: this.dateTimeFormatter,
     },
     { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    { 
-      headerName: '異動日期', 
-      field: 'DATE_UPDATE', 
-      filter: true, 
+    {
+      headerName: '異動日期',
+      field: 'DATE_UPDATE',
+      filter: true,
       width: 170,
       valueFormatter: this.dateTimeFormatter,
     },
@@ -234,6 +237,9 @@ export class PPSI205Component implements AfterViewInit {
     this.getRunFCPCount();
     this.getTbppsm113List();
     this.getTbppsm100List();
+    this.forTbppsm100Date = moment(this.currentDate).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
   }
 
   // 取得是否有正在執行的FCP
@@ -649,7 +655,7 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
-    }else if (_type === '4') {
+    } else if (_type === '4') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -663,7 +669,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1 === undefined ||
         worksheet.J1 === undefined ||
         worksheet.K1 === undefined ||
-        worksheet.L1 === undefined 
+        worksheet.L1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
@@ -1107,7 +1113,7 @@ export class PPSI205Component implements AfterViewInit {
         2
       );
       let days = _data[i].天數;
-      let startDate =  this.dateFormat(_data[i].生產時間起, 2);
+      let startDate = this.dateFormat(_data[i].生產時間起, 2);
       let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
       if (
         schShopCode === undefined ||
@@ -1116,7 +1122,7 @@ export class PPSI205Component implements AfterViewInit {
         maxDate === undefined ||
         days === undefined ||
         startDate === undefined ||
-        tcFrequenceLeft === undefined 
+        tcFrequenceLeft === undefined
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1135,15 +1141,13 @@ export class PPSI205Component implements AfterViewInit {
         let schShopCode = _data[i].站別.toString();
         let equipCode = _data[i].機台.toString();
         let nextShopCode = _data[i].下一站站別.toString();
-        let maxDate = this.dateFormat((_data[i].最大值的EPST或LPST),
-          2
-        );
+        let maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
         let days = _data[i].天數.toString();
-        let startDate =  this.dateFormat(_data[i].生產時間起, 2);
+        let startDate = this.dateFormat(_data[i].生產時間起, 2);
         let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
 
         if (maxDate === 'Invalid date') {
-          console.log("進來了");
+          console.log('進來了');
           maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
         }
         if (startDate === 'Invalid date') {
@@ -1215,9 +1219,8 @@ export class PPSI205Component implements AfterViewInit {
       let gradeGroup = _data[i].鋼種群組;
       let newEpstYymm = _data[i].自訂月份;
       let campaignSort = _data[i].自訂排序;
-      let dateCreate = _data[i].創建時間;
+      let dateCreate = this.forTbppsm100Date;
       let userCreate = _data[i].創建者;
-
       if (
         schShopCode === undefined ||
         pstMachine === undefined ||
@@ -1231,7 +1234,6 @@ export class PPSI205Component implements AfterViewInit {
         gradeGroup === undefined ||
         newEpstYymm === undefined ||
         campaignSort === undefined ||
-        dateCreate === undefined ||
         userCreate === undefined
       ) {
         let col = i + 2;
@@ -1260,7 +1262,7 @@ export class PPSI205Component implements AfterViewInit {
         let gradeGroup = _data[i].鋼種群組.toString();
         let newEpstYymm = _data[i].自訂月份.toString();
         let campaignSort = _data[i].自訂排序.toString();
-        let dateCreate = _data[i].創建時間.toString();
+        let dateCreate = this.forTbppsm100Date;
         let userCreate = _data[i].創建者.toString();
 
         this.importdata_new.push({
@@ -1687,15 +1689,15 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService
       .exportTbppsm102ListExcel(this.PLANT_CODE)
       .subscribe((res) => {
-      console.log('exportTbppsm102ListExcel success');
-      this.tbppsm102ExportExcel = res;
-      console.log(this.tbppsm102ExportExcel);
-      this.excelService.exportAsExcelFile(
-        this.tbppsm102ExportExcel, 
-        exportTableName, 
-        this.titleArray4
+        console.log('exportTbppsm102ListExcel success');
+        this.tbppsm102ExportExcel = res;
+        console.log(this.tbppsm102ExportExcel);
+        this.excelService.exportAsExcelFile(
+          this.tbppsm102ExportExcel,
+          exportTableName,
+          this.titleArray4
         );
-      myObj.loading = false;
-    });
+        myObj.loading = false;
+      });
   }
 }
