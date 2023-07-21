@@ -28,7 +28,7 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-collapse>
+  <!-- <nz-collapse>
     <nz-collapse-panel nzHeader="新增/匯出/匯入">
       <div>
         <button
@@ -77,16 +77,14 @@
         </button>
       </div>
     </nz-collapse-panel>
-  </nz-collapse>
+  </nz-collapse> -->
 
   <ag-grid-angular
     style="width: 100%; height: 550px; overflow: scroll"
     class="ag-theme-alpine"
-    [rowData]="tbppsm107"
+    [rowData]="displayDataList"
     [columnDefs]="columnDefs"
     [pagination]="true"
-    class="ag-theme-alpine"
-    [frameworkComponents]="frameworkComponents"
     [gridOptions]="gridOptions"
     editType="fullRow"
   >
@@ -94,7 +92,7 @@
 </nz-content>
 
 <!-- 產能維護(管束設定)新增 -->
-<nz-modal
+<!-- <nz-modal
   [(nzVisible)]="isVisibleYield"
   [nzWidth]="850"
   [nzTitle]="yieldTitle"
@@ -123,7 +121,7 @@
               style="width: 80%; color: darkblue"
               nz-input
               placeholder="輸入站別"
-              [(ngModel)]="tbppsm107.schShopCode"
+              [(ngModel)]="schShopCode"
             />
           </td>
           <td
@@ -142,7 +140,7 @@
               style="width: 80%; color: darkblue"
               nz-input
               placeholder="輸入機台"
-              [(ngModel)]="tbppsm107.equipCode"
+              [(ngModel)]="equipCode"
             />
           </td>
           <td
@@ -161,7 +159,7 @@
               style="width: 80%; color: darkblue"
               nz-input
               placeholder="輸入累積單位"
-              [(ngModel)]="tbppsm107.cumsumType"
+              [(ngModel)]="cumsumType"
             />
           </td>
         </tr>
@@ -275,187 +273,4 @@
     </button>
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
-</nz-modal>
-
-<nz-dropdown-menu #schShopCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchSchShopCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchSchShopCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetBySchShopCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-<nz-dropdown-menu #equipCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #equipGroupMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipGroup()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipGroup()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #groupAmountMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchGroupAmountValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchGroupAmount()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByGroupAmount()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #equipQuanityMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipQuanityValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByEquipQuanity()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipQuanity()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #bootControlMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.bootControlFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.bootControlFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.bootControlFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #accumulateDayMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.accumulateDayFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.accumulateDayFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.accumulateDayFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #dateLimitMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.dateLimitFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.dateLimitFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.dateLimitFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
+</nz-modal> -->

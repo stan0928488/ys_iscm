@@ -488,8 +488,6 @@ export class PPSI205Component implements AfterViewInit {
           GRADE_GROUP: _.get(item, 'gradeGroup'),
           NEW_EPST_YYMM: _.get(item, 'newEpstYymm'),
           CAMPAIGN_SORT: _.get(item, 'campaignSort'),
-          DATE_CREATE: _.get(item, 'dateCreate'),
-          USER_CREATE: _.get(item, 'userCreate'),
         });
         excelData.push(obj);
       }
@@ -711,9 +709,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1 === undefined ||
         worksheet.J1 === undefined ||
         worksheet.K1 === undefined ||
-        worksheet.L1 === undefined ||
-        worksheet.M1 === undefined ||
-        worksheet.N1 === undefined
+        worksheet.L1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
@@ -730,9 +726,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1.v !== '下站別' ||
         worksheet.J1.v !== '鋼種群組' ||
         worksheet.K1.v !== '自訂月份' ||
-        worksheet.L1.v !== '自訂排序' ||
-        worksheet.M1.v !== '創建時間' ||
-        worksheet.N1.v !== '創建者'
+        worksheet.L1.v !== '自訂排序'
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -1220,7 +1214,7 @@ export class PPSI205Component implements AfterViewInit {
       let newEpstYymm = _data[i].自訂月份;
       let campaignSort = _data[i].自訂排序;
       let dateCreate = this.forTbppsm100Date;
-      let userCreate = _data[i].創建者;
+      let userCreate = this.USERNAME;
       if (
         schShopCode === undefined ||
         pstMachine === undefined ||
@@ -1233,8 +1227,7 @@ export class PPSI205Component implements AfterViewInit {
         nextSchShopCode === undefined ||
         gradeGroup === undefined ||
         newEpstYymm === undefined ||
-        campaignSort === undefined ||
-        userCreate === undefined
+        campaignSort === undefined
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1263,7 +1256,7 @@ export class PPSI205Component implements AfterViewInit {
         let newEpstYymm = _data[i].自訂月份.toString();
         let campaignSort = _data[i].自訂排序.toString();
         let dateCreate = this.forTbppsm100Date;
-        let userCreate = _data[i].創建者.toString();
+        let userCreate = this.USERNAME;
 
         this.importdata_new.push({
           schShopCode: schShopCode,
