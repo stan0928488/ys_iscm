@@ -1,13 +1,10 @@
 import { Component, OnInit, TemplateRef  } from '@angular/core';
 import { registerLocaleData, DatePipe } from '@angular/common';
-//import { zh_TW, NzI18nService,NzInputModule,NzTimePickerModule,NzDatePickerModule,NzSelectModule , NzMessageService ,NzSpinModule , NzModalRef, NzModalService } from "ng-zorro-antd";
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
+import * as XLSX from 'xlsx';
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService,NzModalRef} from "ng-zorro-antd/modal"
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import zh from '@angular/common/locales/zh';
 registerLocaleData(zh);
@@ -15,12 +12,19 @@ import * as moment from 'moment';
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import * as _ from "lodash";
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+
+  interface data {
+
+  }
+
 @Component({
   selector: 'app-PPSR302',
   templateUrl: './PPSR302.component.html',
   styleUrls: ['./PPSR302.component.scss'],
   providers:[NzMessageService,NzModalService,DatePipe]
 })
+
 export class PPSR302Component implements OnInit {
 // 测试提交
   constructor(
@@ -40,10 +44,16 @@ export class PPSR302Component implements OnInit {
     this.getAreaGroup();
     this.getWeekData();
   }
+
+  gridApi: GridApi;
+  params: GridReadyEvent;
+
+
   //补充定义
   tplModalButtonLoading = false
   now :Date = new Date() ;
   isVisibleBiWeekWip = false;
+  isVisibleMesWip = false;
   headerFirst = [] ; //第一栏位  延迟订单
   tableHeaderList = [] ;  //头部内容
   tableHeaderLastList = [] ; //最后栏位 TOTAL
@@ -69,14 +79,14 @@ export class PPSR302Component implements OnInit {
     {label:'MO'},
     {label:'總重(噸)'},
     {label:'執行'}
-   ];
+  ];
 
-   secondModalTableHeaderExport = [
+  secondModalTableHeaderExport = [
     {label:'MO'},
     {label:'總重(噸)'}
-   ];
+  ];
 
-   secondModalTableHeaderLast = [] ;
+  secondModalTableHeaderLast = [] ;
   optionList = [
     { label: '星期日', value: 6},
     { label: '星期一', value: 0},
@@ -120,6 +130,10 @@ export class PPSR302Component implements OnInit {
   testLength = [1,2,3,4,5,6,7,8,9,10]
   firstModalData = [] ;
 
+  isMesSpin = false;
+  mesDtlData = [];
+  mesDtlDataExportList = [] ;
+
   searchData = {
     kindType:"",
     specialBar:"",
@@ -138,6 +152,33 @@ export class PPSR302Component implements OnInit {
   specialBarDisable:boolean;
 
 
+  columnDefsTab: ColDef<data>[] = [
+    { headerName: '訂單編號',field: 'orderNo' , filter: true,width: 120 },
+    { headerName: 'MO',field: 'idNo' , filter: true,width: 120 },
+    { headerName: '區別' ,field: 'saleAreaGroup' , filter: true,width: 120 },
+    { headerName: '客戶',field: 'custAbbreviations' , filter: true,width: 120 },
+    { headerName: 'MIC_NO',field: 'saleMicNo' , filter: true,width: 120 },
+    { headerName: '生計交期',field: 'dateDeliveryPP' , filter: true,width: 120 },
+    { headerName: '產出重',field: 'outWeight' , filter: true,width: 110 },
+    { headerName: '產出型態' ,field: 'outputShape' , filter: true,width: 110 },
+    { headerName: '產出尺寸' ,field: 'outDia' , filter: true,width: 120 },
+    { headerName: '現況流程',field: 'lineupProcess' , filter: true,width: 120},
+    { headerName: '產品分類',field: 'kindType' , filter: true,width: 120 },
+    { headerName: '結束時間',field: 'endDateTime' , filter: true,width: 120, cellStyle: { textAlign: "center" } },
+  ];
+
+  public defaultColDefTab: ColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+  };
+
+  public gridOptions = {
+    defaultColDef: {
+      sortable: false,
+      resizable: true,
+    }
+  };
 
   // tslint:disable-next-line:no-any
   compareFn1 = (o1: any, o2: any) => (o1 && o2 ? o1.value === o2.value : o1 === o2);
@@ -149,6 +190,7 @@ export class PPSR302Component implements OnInit {
     //this.splitSevenDate(7);
     //this.initTable();
   }
+  
   //ASAP选择
   onChangePoint(value){
     console.log("ASAP选择:" + this.radioPointValue) ;
@@ -220,11 +262,11 @@ export class PPSR302Component implements OnInit {
   handleSecondModalExport(){
     let headerArray = [] ;
     for(let item of this.secondModalTableHeaderExport){
-     headerArray.push(item.label);
+    headerArray.push(item.label);
     }
     for(let item of this.secondModalTableHeaderLast){
       headerArray.push(item.label);
-     }
+    }
 
     let exportTableName = "訂單執行情況";
     let exportData = this.secondModalExportList ;
@@ -237,6 +279,64 @@ export class PPSR302Component implements OnInit {
 
   firstSearchClickFun(){
     this.getFirstModalData(this.firstSearchParamete.tableHeader,this.firstSearchParamete.tableLeft);
+  }
+
+  // MES已入庫量
+  MEStdClickFun(idx) {
+    this.isVisibleMesWip = true;
+    let startDate = this.tableHeaderList[idx].startDate ;
+    let endDate = this.tableHeaderList[idx].endDate ;
+    this.mesDtlData = [];
+    this.mesDtlDataExportList = [];
+
+    let myObj = this ;
+    let paramete = {
+      startDate: startDate,
+      endDate: endDate,
+      searchData: this.searchData
+    }
+    this.isMesSpin = true;
+    myObj.getPPSService.getR302MesDtlList(paramete).subscribe(res => {              
+      let result:any = res ;
+      let tw = 0 ; //总重
+      if(result.code === 1) {
+        this.mesDtlData = result.data.mesDtlList ;
+        for(let i=0 ; i < this.mesDtlData.length ; i ++ ){
+          let item = this.mesDtlData[i];
+          tw = tw + Number(item.outWeight/1000) ;
+          let rowData = {} ;
+          rowData["index"]=""+(i+1) ;
+          rowData["orderNo"]= item.saleOrder+"-"+item.saleItem;
+          rowData["idNo"]= item.idNo;
+          rowData["saleAreaGroup"]= item.saleAreaGroup;
+          rowData["custAbbreviations"]= item.custAbbreviations;
+          rowData["saleMicNo"]= item.saleMicNo;
+          rowData["dateDeliveryPP"]= item.dateDeliveryPP;
+          rowData["outWeight"]= Number(item.outWeight/1000);
+          rowData["outputShape"]= item.outputShape;;
+          rowData["outDia"]= item.outDia;
+          rowData["lineupProcess"]= item.lineupProcess;
+          rowData["kindType"]= item.kindType;
+          rowData["endDateTime"]= item.endDateTime;
+          this.mesDtlDataExportList.push(rowData) ;
+        }
+        this.gridApi.setRowData(this.mesDtlDataExportList);
+        console.log("合計重量" + tw) ;
+        this.totalWeight = Number(tw.toFixed(2)) ;
+        // console.log(this.mesDtlDataExportList)
+      } else {
+        this.mesDtlDataExportList = [] ;
+      }
+
+      this.isMesSpin = false;
+    },err => {
+      this.message.error('網絡請求失敗');
+      this.isMesSpin = false;
+    })
+  }
+
+  MesWipCancel() {
+    this.isVisibleMesWip = false;
   }
 
   tdClickFun(k,j,i,tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>){
@@ -314,25 +414,25 @@ export class PPSR302Component implements OnInit {
   }
   //导出数据第一層Modal
   handleModalExport(){
-     let headerArray = [] ;
-     //let exportTableTitle = _.merge(this.firstModalTableHeaderList,this.firstModalTableAppendList) ;
-     let exportTableTitle = [] ;
+    let headerArray = [] ;
+    //let exportTableTitle = _.merge(this.firstModalTableHeaderList,this.firstModalTableAppendList) ;
+    let exportTableTitle = [] ;
 
-     for(let item of this.firstModalTableHeaderList){
+    for(let item of this.firstModalTableHeaderList){
       headerArray.push(item.label);
-     }
-     for(let item of this.firstModalTableAppendList){
+    }
+    for(let item of this.firstModalTableAppendList){
       headerArray.push(item.label);
-     }
-     let exportTableName = "訂單明細"
-     let exportData = this.modalDataExportList ;
-     //console.log("exportTableTitle:"+exportTableTitle);
-     exportData.forEach(function(item)
+    }
+    let exportTableName = "訂單明細"
+    let exportData = this.modalDataExportList ;
+    //console.log("exportTableTitle:"+exportTableTitle);
+    exportData.forEach(function(item)
     {
       item['planWeight'] = Number(item['planWeight']);
     });
-     console.log("exportData:"+JSON.stringify(exportData));
-     this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
+    console.log("exportData:"+JSON.stringify(exportData));
+    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
   }
   delayDataBtn(delayModalTitle: TemplateRef<{}>, delayModalContent: TemplateRef<{}>, delayModalFooter: TemplateRef<{}>){
     this.firstModalData = [] ;
@@ -354,13 +454,13 @@ export class PPSR302Component implements OnInit {
   handleDelayModalExport(){
     let headerArray = [] ;
     for(let item of this.firstModalTableHeaderList){
-     headerArray.push(item.label);
+    headerArray.push(item.label);
     }
     let exportTableName = "延期訂單詳情"
     let exportData = this.modalDelayDataExportList ;
     console.log("延期訂單詳情:"+JSON.stringify(exportData));
     this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
- }
+  }
 
   getDelayDataList(){
     this.delayModalLoading = true;
@@ -547,6 +647,7 @@ export class PPSR302Component implements OnInit {
       this.tableTotalCell = result.data.tableTotalCell[0] ;
       this.tableOrderTotalCell = result.data.tableOrderTotalCell[0];
       this.tableMesTotalCell = result.data.tableMesTotalCell[0];
+
       // console.log("填充数据0"+ JSON.stringify(this.tbodyList[0][0]));
       // for(let i= 0 ; i < this.tbodyList.length ; i ++){
       //   console.log("填充数据"+ JSON.stringify(this.tbodyList[i]));
@@ -823,6 +924,56 @@ this.firstModalTableAppendList = [] ;
     }
   }
 
+  
+
+exportToExcel(){
+  let header = [];
+    var head = [];
+    for(var i in this.columnDefsTab){
+      
+      head.push(this.columnDefsTab[i]['headerName']);
+    }
+    header.push(head);
+    var dataReSort = {
+      data : []
+    };
+
+    for(var i in this.mesDtlDataExportList) {
+      var temp = {}
+      for(var j in this.columnDefsTab){
+        var field = this.columnDefsTab[j]['field'];
+          temp[field] = this.mesDtlDataExportList[i][this.columnDefsTab[j]['field']];
+      }
+      dataReSort.data.push(temp);
+    }
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+    XLSX.utils.sheet_add_aoa(worksheet,header);
+    XLSX.utils.sheet_add_json(worksheet,dataReSort.data,{ origin: 'A2', skipHeader: true });//origin => started row
+
+    const book: XLSX.WorkBook = XLSX.utils.book_new();
+    const timestemp = moment().format('YYYYMMDDHHmmss') ;
+
+    XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
+    XLSX.writeFile(book, timestemp + '_MES已入庫量明細.xlsx');//filename => Date_
+    
+    this.modalService.info({
+      nzTitle: '提示訊息',
+      nzContent: 'excel 匯出完成' ,
+      nzOkText:'確定'
+    })
+}
+
+
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
+    this.params = params;
+    // this.setShopCodeCellEditorSelectValues();
+    //gridApi.sizeColumnsToFit();
+    this.gridApi.getColumnDef;
+  }
+
+
   // 展開週計畫入庫表
   openBiWeekWip() {
     this.isVisibleBiWeekWip = true;
@@ -832,3 +983,4 @@ this.firstModalTableAppendList = [] ;
   }
 
 }
+

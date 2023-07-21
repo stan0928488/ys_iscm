@@ -1634,6 +1634,12 @@ export class PPSService {
     let queryUrl = this.APIURL + '/FCP/R302/getSecondModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // 取得mes以入庫量明細
+  getR302MesDtlList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + '/FCP/R302/getR302MesDtlList';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 
   /////////////////////////////////////////////////////////////
   // PPSI130 批次爐鋼種捲數製程碼對應表
