@@ -993,6 +993,13 @@ this.handleSelectCarModal() ;
        //数据类型
        this.columKeyType["MACHINE3_ADD"] = 0 ;
 
+       let indexMachine4 = {headerName:'最佳機台',field:'BEST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("最佳機台")
+       this.columnDefs.push(indexMachine4);
+       this.outsideColumnDefs.push(indexMachine4);
+       //数据类型
+       this.columKeyType["BEST_MACHINE_ADD"] = 0 ;
+
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
@@ -1936,6 +1943,7 @@ this.handleSelectCarModal() ;
       let childChangeMachineListTotal = [] ;
       // 子層數據源
       this.rowSelectData.forEach((item,index,array)=>{
+
         let childChangeMachineList = [] ;
         if(item.MACHINE1_ADD !== null && item.MACHINE1_ADD !== '' && item.MACHINE1_ADD !== undefined ){
           childChangeMachineList.push({"label":item.MACHINE1_ADD,"value":item.MACHINE1_ADD}) ;
@@ -1949,8 +1957,21 @@ this.handleSelectCarModal() ;
           childChangeMachineList.push({"label":item.MACHINE3_ADD,"value":item.MACHINE3_ADD})
           childChangeMachineListTotal.push(item.MACHINE3_ADD)
         }
+        if(item.BEST_MACHINE_ADD !== null && item.BEST_MACHINE_ADD !== '' && item.BEST_MACHINE_ADD !== undefined){
+          childChangeMachineList.push({"label":item.BEST_MACHINE_ADD,"value":item.BEST_MACHINE_ADD})
+          childChangeMachineListTotal.push(item.BEST_MACHINE_ADD)
+        }
+       //  childChangeMachineList = childChangeMachineList.filter((item, index, self) => self.indexOf(item.value) === index);
        //  console.log("子層數據源：" + JSON.stringify(item))
-       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false ,"childChangeMachine":childChangeMachineList}
+        const uniqueNameSet = new Set<string>();
+        const uniqueItems = childChangeMachineList.filter(item => {
+          if (!uniqueNameSet.has(item.value)) {
+            uniqueNameSet.add(item.value);
+            return true;
+          }
+          return false;
+        });
+       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false ,"childChangeMachine":uniqueItems}
         changeMachineTB.push(changeMachineTBTemp) ;
       })
        childChangeMachineListTotal = childChangeMachineListTotal.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
@@ -1991,8 +2012,15 @@ this.handleSelectCarModal() ;
       }
 
        this.changeMachineModal.table.tbData.forEach((item,index,arr)=>{
-        this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
-        this.changeMachineModal.table.tbData[index].checked = true ;
+        // 看每組子機台包含當前機台
+        let ckeckMachine = false ;
+        let ckeckMachineTemp = this.changeMachineModal.table.tbData[index].childChangeMachine.filter((item)=>{
+          return item.value === this.selectChangeEquipCode ;
+        })
+        if(ckeckMachineTemp.length > 0 ){
+          this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
+          this.changeMachineModal.table.tbData[index].checked = true ;
+        }
       })
       
      }
