@@ -97,16 +97,15 @@
     </nz-collapse-panel>
   </nz-collapse>
 
-  <ag-grid-angular
-    style="width: 100%; height: 550px; overflow: scroll"
-    class="ag-theme-alpine"
-    [rowData]="displayTbppsm013List"
-    [columnDefs]="columnDefs"
-    [pagination]="true"
-    class="ag-theme-alpine"
-    [frameworkComponents]="frameworkComponents"
-    [gridOptions]="gridOptions"
-    editType="fullRow"
+  <ag-grid-angular style="width: 100%; height: 550px; overflow: scroll;" class="ag-theme-alpine" 
+  [rowData]="displayTbppsm013List"
+  [columnDefs]="columnDefs"
+  [pagination]="true"
+  class="ag-theme-alpine"
+  [frameworkComponents]="frameworkComponents"
+  [gridOptions]="gridOptions"
+  editType="fullRow"
+  [suppressClickEdit]="true"
   >
   </ag-grid-angular>
 </nz-content>
