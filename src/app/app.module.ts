@@ -110,6 +110,7 @@ import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
+import { DatePickerCellRendererComponent } from './pages/RENDERER/datepicker-cell-renderer.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { AdjShopCodeCellRendererComponent } from './pages/MSH/MSHI003/AdjShopCodeCellRenderer.componet';
@@ -119,7 +120,11 @@ import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
+import { OpenSortRendererComponent } from './pages/PPS/PPSI210/open-sort-renderer-component';
+import { SendChoiceRendererComponent } from './pages/PPS/PPSI210/send-choice-renderer-component';
 import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
+
+import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 
 registerLocaleData(zh);
 
@@ -208,6 +213,7 @@ registerLocaleData(zh);
     MSHI004Component,
     PrimeDatePickerCellEditorComponent,
     PrimeDatePickerCellEditor,
+    DatePickerCellRendererComponent,
     LABI002Component,
     LABI003Component,
     AdjShopCodeCellRendererComponent,
@@ -216,7 +222,10 @@ registerLocaleData(zh);
     PPSR308Component,
     PPSR309Component,
     BtnCellRenderer,
+    OpenSortRendererComponent,
+    SendChoiceRendererComponent,
     PPSI112Component,
+    BtnCellRendererUpdate,
   ],
   imports: [
     BrowserModule,

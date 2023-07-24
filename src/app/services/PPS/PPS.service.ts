@@ -1079,8 +1079,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  //getTbppsm102ListAll 取得getTbppsm102ListAll
-  getTbppsm102ListAll(_plantCode) {
+ //getTbppsm102ListAll 取得getTbppsm102ListAll
+ getTbppsm102ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
@@ -1088,8 +1088,7 @@ export class PPSService {
 
   // exportTbppsm102ListExcel 匯出 Excel
   exportTbppsm102ListExcel(_plantCode) {
-    let queryUrl =
-      this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
+    let queryUrl = this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1157,6 +1156,13 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  upd401AutoCampaignData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + '/FCP/I205/upd401AutoCampaignData';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //upd113ListData 修改102List
   upd113ListData(obj) {
     const body = JSON.stringify(obj);
@@ -1212,6 +1218,18 @@ export class PPSService {
       this.APIURL + `/FCP/I210/getShopMachineSortingList/${_type}/${_value}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
+  }
+
+  // 刪除某筆規劃策略
+  deletePlanSetData(planSetEdition:string) {
+    const httpParams = new HttpParams()
+    .set('planSetEdition', planSetEdition);
+
+    console.log('api service deletePlanSetData');
+    let queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
+    console.log(`刪除策略API --> ${queryUrl}`);
+    console.log(`刪除策略API參數 --> ${planSetEdition}`);
+    return this.http.delete(queryUrl, { params: httpParams });
   }
 
   //Get getPlanSetInitstData 取得規劃策略基礎表
