@@ -153,6 +153,7 @@ export class PPSR302Component implements OnInit {
 
 
   columnDefsTab: ColDef<data>[] = [
+    { headerName: 'MO版本',field: 'moEdition' , filter: true,width: 150 },
     { headerName: '訂單編號',field: 'orderNo' , filter: true,width: 120 },
     { headerName: 'MO',field: 'idNo' , filter: true,width: 120 },
     { headerName: '區別' ,field: 'saleAreaGroup' , filter: true,width: 120 },
@@ -164,7 +165,7 @@ export class PPSR302Component implements OnInit {
     { headerName: '產出尺寸' ,field: 'outDia' , filter: true,width: 120 },
     { headerName: '現況流程',field: 'lineupProcess' , filter: true,width: 120},
     { headerName: '產品分類',field: 'kindType' , filter: true,width: 120 },
-    { headerName: '結束時間',field: 'endDateTime' , filter: true,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName: '結束時間',field: 'endDateTime' , filter: true,width: 180, cellStyle: { textAlign: "center" } },
   ];
 
   public defaultColDefTab: ColDef = {
@@ -291,6 +292,7 @@ export class PPSR302Component implements OnInit {
 
     let myObj = this ;
     let paramete = {
+      fcpVer: this.selectedVer.value,
       startDate: startDate,
       endDate: endDate,
       searchData: this.searchData
@@ -306,6 +308,7 @@ export class PPSR302Component implements OnInit {
           tw = tw + Number(item.outWeight/1000) ;
           let rowData = {} ;
           rowData["index"]=""+(i+1) ;
+          rowData["moEdition"]= item.moEdition;
           rowData["orderNo"]= item.saleOrder+"-"+item.saleItem;
           rowData["idNo"]= item.idNo;
           rowData["saleAreaGroup"]= item.saleAreaGroup;
@@ -317,7 +320,7 @@ export class PPSR302Component implements OnInit {
           rowData["outDia"]= item.outDia;
           rowData["lineupProcess"]= item.lineupProcess;
           rowData["kindType"]= item.kindType;
-          rowData["endDateTime"]= item.endDateTime;
+          rowData["endDateTime"]= moment(item.endDateTime).format('YYYY-MM-DD HH:mm:ss');
           this.mesDtlDataExportList.push(rowData) ;
         }
         this.gridApi.setRowData(this.mesDtlDataExportList);
