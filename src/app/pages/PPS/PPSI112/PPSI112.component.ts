@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { ExcelService } from 'src/app/services/common/excel.service';
@@ -20,17 +20,14 @@ import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { TBPPSM107 } from './TBPPSM107.model';
 
 interface ItemData {
-  idx: number;
-  id: number;
-  plantCode: string;
   schShopCode: string;
   equipCode: string;
-  equipGroup: string;
-  groupAmount: number;
-  equipQuanity: number;
-  bootControl: number;
-  accumulateDay: number;
+  cumsumType: string;
+  accumulation: number;
   dateLimit: number;
+  useFlag: string;
+  dateUpdate: string;
+  userUpdate: string;
 }
 
 @Component({
@@ -39,17 +36,26 @@ interface ItemData {
   styleUrls: ['./PPSI112.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI112Component implements OnInit {
+export class PPSI112Component implements AfterViewInit {
   userName: string;
   plantCode: string;
   //存放資料的陣列
-  tbppsm107: TBPPSM107[] = [];
+  tbppsm107: ItemData[] = [];
   // 如為true則不可異動
   isRunFCP: boolean;
   // 等待資料變動
   loading: boolean;
   //新增視窗開關
   isVisibleYield: boolean;
+
+  schShopCode: string;
+  equipCode: string;
+  cumsumType: string;
+  accumulation: number;
+  dateLimit: number;
+  useFlag: string;
+  dateUpdate: string;
+  userUpdate: string;
 
   isErrorMsg = false;
   isERROR = false;
@@ -60,9 +66,11 @@ export class PPSI112Component implements OnInit {
   errorTXT = [];
   rowData: ItemData[] = [];
 
+  frameworkComponents;
+
   gridOptions = {
     defaultColDef: {
-      editable: true,
+      editable: false,
       sortable: false,
       resizable: true,
     },
@@ -79,6 +87,9 @@ export class PPSI112Component implements OnInit {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
     this.plantCode = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -96,7 +107,16 @@ export class PPSI112Component implements OnInit {
     });
   }
 
-  ngOnInit() {
+  onInit() {
+    this.schShopCode = '';
+    this.equipCode = '';
+    this.cumsumType = '';
+    this.accumulation = 0;
+    this.dateLimit = 0;
+    this.useFlag = '';
+    this.dateUpdate = '';
+    this.userUpdate = '';
+
     this.isVisibleYield = false;
     this.isRunFCP = false;
     this.loading = false;
@@ -157,15 +177,18 @@ export class PPSI112Component implements OnInit {
     {
       headerName: 'Action',
       editable: false,
+      cellRenderer: (params) => {
+        return '<button (click)="update()">按鈕</button>';
+      },
     },
   ];
 
   myDataList;
-  displayDataList: TBPPSM107[] = [];
-  getTBPPSM107() {
-    this.loading = true;
+  displayDataList: ItemData[] = [];
+  async getTBPPSM107() {
     this.PPSService.getTBPPSM107().subscribe((res) => {
       this.myDataList = res;
+      this.loading = true;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
           schShopCode: this.myDataList[i].schShopCode,
@@ -179,30 +202,68 @@ export class PPSI112Component implements OnInit {
         });
       }
       this.displayDataList = this.tbppsm107;
-      console.log(this.tbppsm107);
+      this.tbppsm107 = [];
+      this.myDataList = {};
       console.log(this.displayDataList);
       this.loading = false;
     });
   }
 
   // // insert
-  // insertTab() {
-  //   if (this.schShopCode === '') {
-  //     this.message.create('error', '「站別」不可為空');
-  //     return;
-  //   } else if (this.equipCode === '') {
-  //     this.message.create('error', '「機台」不可為空');
-  //     return;
-  //   } else {
-  //     this.Modal.confirm({
-  //       nzTitle: '是否確定新增',
-  //       nzOnOk: () => {
-  //         this.insertSave();
-  //       },
-  //       nzOnCancel: () => console.log('cancel'),
-  //     });
-  //   }
-  // }
+  insertTab() {
+    if (this.schShopCode === '') {
+      this.message.create('error', '「站別」不可為空');
+      return;
+    } else if (this.equipCode === '') {
+      this.message.create('error', '「機台」不可為空');
+      return;
+    } else {
+      this.Modal.confirm({
+        nzTitle: '是否確定新增',
+        nzOnOk: () => {
+          this.insertSave();
+        },
+        nzOnCancel: () => console.log('cancel'),
+      });
+    }
+  }
+
+  // 新增資料
+  insertSave() {
+    this.loading = true;
+    return new Promise((resolve, reject) => {
+      let obj = {};
+      _.extend(obj, {
+        schShopCode: this.schShopCode,
+        equipCode: this.equipCode,
+        cumsumType: this.cumsumType,
+        accumulation: this.accumulation,
+        dateLimit: this.dateLimit,
+        useFlag: this.useFlag,
+        userUpdate: this.userName,
+      });
+
+      this.PPSService.insertTBPPSM107('1', obj).subscribe(
+        (res) => {
+          if (res[0].MSG === 'Y') {
+            this.onInit();
+            this.getTBPPSM107();
+            this.sucessMSG('新增成功', ``);
+          } else {
+            this.errorMSG('新增失敗', res[0].MSG);
+          }
+        },
+        (err) => {
+          reject('upload fail');
+          this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
+          this.loading = false;
+        }
+      );
+    });
+  }
+  update() {
+    this.gridOptions.defaultColDef.editable = true;
+  }
 
   // // update
   // editRow(id: number): void {
@@ -259,42 +320,6 @@ export class PPSI112Component implements OnInit {
   //       edit: false,
   //       data: { ...item },
   //     };
-  //   });
-  // }
-
-  // // 新增資料
-  // insertSave() {
-  //   let myObj = this;
-  //   this.LoadingPage = true;
-  //   return new Promise((resolve, reject) => {
-  //     let obj = {};
-  //     _.extend(obj, {
-  //       schShopCode: this.schShopCode,
-  //       equipCode: this.equipCode,
-  //       cumsumType: this.cumsumType,
-  //       accumulation: this.accumulation,
-  //       dateLimit: this.dateLimit,
-  //       useFlag: this.useFlag,
-  //       dateUpdate: this.dateUpdate,
-  //       userUpdate: this.insertData.userUpdate,
-  //     });
-
-  //     myObj.PPSService.insertI106Save('1', obj).subscribe(
-  //       (res) => {
-  //         if (res[0].MSG === 'Y') {
-  //           this.onInit();
-  //           this.getTbppsm013List();
-  //           this.sucessMSG('新增成功', ``);
-  //         } else {
-  //           this.errorMSG('新增失敗', res[0].MSG);
-  //         }
-  //       },
-  //       (err) => {
-  //         reject('upload fail');
-  //         this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
-  //         this.LoadingPage = false;
-  //       }
-  //     );
   //   });
   // }
 
@@ -362,241 +387,218 @@ export class PPSI112Component implements OnInit {
   //   });
   // }
 
-  //convert to Excel and Download
-  // convertToExcel() {
-  //   let data;
-  //   let fileName;
-  //   let titleArray = [];
-  //   if (this.tbppsm013List.length > 0) {
-  //     data = this.formatDataForExcel(this.tbppsm013List);
-  //     fileName = `直棒產能維護`;
-  //     titleArray = [
-  //       '廠區別',
-  //       '站別',
-  //       '機台',
-  //       '機群',
-  //       '機群設備數量',
-  //       '最大管數',
-  //       '開機管數',
-  //       '累計天數',
-  //       '略過天數',
-  //     ];
-  //   } else {
-  //     this.errorMSG('匯出失敗', '直棒產能維護目前無資料');
-  //     return;
-  //   }
-  //   this.excelService.exportAsExcelFile(data, fileName, titleArray);
-  // }
+  // convert to Excel and Download
+  convertToExcel() {
+    let data;
+    let fileName;
+    let titleArray = [];
+    if (this.displayDataList.length > 0) {
+      data = this.formatDataForExcel(this.displayDataList);
+      fileName = `直棒累計生產`;
+      titleArray = [
+        '站別',
+        '機台',
+        '累積單位',
+        '累積值',
+        '強制投產',
+        '是否使用',
+      ];
+    } else {
+      this.errorMSG('匯出失敗', '直棒產能維護目前無資料');
+      return;
+    }
+    this.excelService.exportAsExcelFile(data, fileName, titleArray);
+  }
 
-  // formatDataForExcel(_displayData) {
-  //   console.log('_displayData');
-  //   let excelData = [];
-  //   for (let item of _displayData) {
-  //     let obj = {};
-  //     _.extend(obj, {
-  //       plantCode: _.get(item, 'plantCode'),
-  //       schShopCode: _.get(item, 'schShopCode'),
-  //       equipCode: _.get(item, 'equipCode'),
-  //       equipGroup: _.get(item, 'equipGroup'),
-  //       groupAmount: _.get(item, 'groupAmount'),
-  //       equipQuanity: _.get(item, 'equipQuanity'),
-  //       bootControl: _.get(item, 'bootControl'),
-  //       accumulateDay: _.get(item, 'accumulateDay'),
-  //       dateLimit: _.get(item, 'dateLimit'),
-  //     });
-  //     excelData.push(obj);
-  //   }
-  //   console.log(excelData);
-  //   return excelData;
-  // }
+  formatDataForExcel(_displayData) {
+    console.log('_displayData');
+    let excelData = [];
+    for (let item of _displayData) {
+      let obj = {};
+      _.extend(obj, {
+        schShopCode: _.get(item, 'schShopCode'),
+        equipCode: _.get(item, 'equipCode'),
+        cumsumType: _.get(item, 'cumsumType'),
+        accumulation: _.get(item, 'accumulation'),
+        dateLimit: _.get(item, 'dateLimit'),
+        useFlag: _.get(item, 'useFlag'),
+        userUpdate: _.get(item, 'userUpdate'),
+      });
+      excelData.push(obj);
+    }
+    console.log(excelData);
+    return excelData;
+  }
 
-  // // excel檔名
-  // incomingfile(event) {
-  //   this.file = event.target.files[0];
-  //   console.log('incomingfile e1 : ' + this.file);
-  //   let lastname = this.file.name.split('.').pop();
-  //   if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
-  //     this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-  //     this.clearFile();
-  //     return;
-  //   }
-  // }
+  // excel檔名
+  incomingfile(event) {
+    this.file = event.target.files[0];
+    console.log('incomingfile e1 : ' + this.file);
+    let lastname = this.file.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    }
+  }
 
-  // // EXCEL 匯入
-  // Upload() {
-  //   let value = document.getElementsByTagName('input')[0].value;
-  //   let lastname = this.file.name.split('.').pop();
-  //   console.log('incomingfile e2 : ' + this.file);
-  //   if (value === '') {
-  //     this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
-  //     this.clearFile();
-  //   } else if (
-  //     lastname !== 'xlsx' &&
-  //     lastname !== 'xls' &&
-  //     lastname !== 'csv'
-  //   ) {
-  //     this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-  //     this.clearFile();
-  //     return;
-  //   } else {
-  //     this.Excelimport();
-  //   }
-  // }
-  // // EXCEL 樣板內資料取得及檢誤
-  // Excelimport() {
-  //   let fileReader = new FileReader();
-  //   this.importdata = [];
-  //   fileReader.onload = (e) => {
-  //     this.arrayBuffer = fileReader.result;
-  //     var data = new Uint8Array(this.arrayBuffer);
-  //     var arr = new Array();
-  //     for (var i = 0; i != data.length; ++i)
-  //       arr[i] = String.fromCharCode(data[i]);
-  //     var bstr = arr.join('');
-  //     var workbook = XLSX.read(bstr, { type: 'binary' });
-  //     var first_sheet_name = workbook.SheetNames[0];
-  //     var worksheet: any = workbook.Sheets[first_sheet_name];
-  //     this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+  // EXCEL 匯入
+  Upload() {
+    let value = document.getElementsByTagName('input')[0].value;
+    let lastname = this.file.name.split('.').pop();
+    console.log('incomingfile e2 : ' + this.file);
+    if (value === '') {
+      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+      this.clearFile();
+    } else if (
+      lastname !== 'xlsx' &&
+      lastname !== 'xls' &&
+      lastname !== 'csv'
+    ) {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    } else {
+      this.Excelimport();
+    }
+  }
+  // EXCEL 樣板內資料取得及檢誤
+  Excelimport() {
+    let fileReader = new FileReader();
+    this.importdata = [];
+    fileReader.onload = (e) => {
+      this.arrayBuffer = fileReader.result;
+      var data = new Uint8Array(this.arrayBuffer);
+      var arr = new Array();
+      for (var i = 0; i != data.length; ++i)
+        arr[i] = String.fromCharCode(data[i]);
+      var bstr = arr.join('');
+      var workbook = XLSX.read(bstr, { type: 'binary' });
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet: any = workbook.Sheets[first_sheet_name];
+      this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
 
-  //     this.checkTemplate(worksheet, this.importdata);
-  //   };
-  //   fileReader.readAsArrayBuffer(this.file);
-  // }
+      this.checkTemplate(worksheet, this.importdata);
+    };
+    fileReader.readAsArrayBuffer(this.file);
+  }
 
-  // // EXCEL 匯入樣版檢查
-  // checkTemplate(worksheet, importdata) {
-  //   if (
-  //     worksheet.A1 === undefined ||
-  //     worksheet.B1 === undefined ||
-  //     worksheet.C1 === undefined ||
-  //     worksheet.D1 === undefined ||
-  //     worksheet.E1 === undefined ||
-  //     worksheet.F1 === undefined
-  //   ) {
-  //     this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
-  //     this.clearFile();
-  //     return;
-  //   } else if (
-  //     worksheet.A1.v !== '廠區別' ||
-  //     worksheet.B1.v !== '站別' ||
-  //     worksheet.C1.v !== '機台' ||
-  //     worksheet.D1.v !== '機群' ||
-  //     worksheet.E1.v !== '機群設備數量' ||
-  //     worksheet.F1.v !== '最大管數'
-  //   ) {
-  //     this.errorMSG(
-  //       '檔案樣板欄位表頭錯誤',
-  //       '請先下載資料後，再透過該檔案調整上傳。'
-  //     );
-  //     this.clearFile();
-  //     return;
-  //   } else {
-  //     this.importExcel(importdata);
-  //   }
-  // }
+  // EXCEL 匯入樣版檢查
+  checkTemplate(worksheet, importdata) {
+    if (
+      worksheet.A1 === undefined ||
+      worksheet.B1 === undefined ||
+      worksheet.C1 === undefined ||
+      worksheet.D1 === undefined ||
+      worksheet.E1 === undefined ||
+      worksheet.F1 === undefined
+    ) {
+      this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+      this.clearFile();
+      return;
+    } else if (
+      worksheet.A1.v !== '站別' ||
+      worksheet.B1.v !== '機台' ||
+      worksheet.C1.v !== '累積單位' ||
+      worksheet.D1.v !== '累積值' ||
+      worksheet.E1.v !== '強制投產' ||
+      worksheet.F1.v !== '是否使用'
+    ) {
+      this.errorMSG(
+        '檔案樣板欄位表頭錯誤',
+        '請先下載資料後，再透過該檔案調整上傳。'
+      );
+      this.clearFile();
+      return;
+    } else {
+      this.importExcel(importdata);
+    }
+  }
 
-  // // EXCEL 資料上傳 (ppsinptb02_nonbar)
-  // importExcel(_data) {
-  //   for (let i = 0; i < _data.length; i++) {
-  //     let plantCode = _data[i].廠區別;
-  //     let schShopCode = _data[i].站別;
-  //     let equipCode = _data[i].機台;
-  //     let equipGroup = _data[i].機群;
-  //     if (
-  //       plantCode === undefined ||
-  //       schShopCode === undefined ||
-  //       (equipCode === undefined && equipGroup === undefined)
-  //     ) {
-  //       let col = i + 2;
-  //       this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
-  //       this.isERROR = true;
-  //     }
-  //   }
+  // EXCEL 資料上傳 (ppsinptb02_nonbar)
+  importExcel(_data) {
+    for (let i = 0; i < _data.length; i++) {
+      let schShopCode = _data[i].站別;
+      let equipCode = _data[i].機台;
+      let cumsumType = _data[i].累積單位;
+      let accumulation = _data[i].累積值;
+      let dateLimit = _data[i].強制投產;
+      let useFlag = _data[i].是否使用;
+      if (schShopCode === undefined || equipCode === undefined) {
+        let col = i + 2;
+        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+        this.isERROR = true;
+      }
+    }
 
-  //   if (this.isERROR) {
-  //     // 匯入錯誤失敗訊息提醒
-  //     this.clearFile();
-  //     this.isErrorMsg = true;
-  //     this.importdata_new = [];
-  //     this.errorMSG('匯入錯誤', this.errorTXT);
-  //   } else {
-  //     for (let i = 0; i < _data.length; i++) {
-  //       let plantCode = _data[i].廠區別.toString();
-  //       let schShopCode = _data[i].站別.toString();
-  //       let equipCode =
-  //         _data[i].機台 !== undefined ? _data[i].機台.toString() : '';
-  //       let equipGroup =
-  //         _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
-  //       let groupAmount =
-  //         _data[i].機群設備數量 !== undefined
-  //           ? _data[i].機群設備數量.toString()
-  //           : '0';
-  //       let equipQuanity =
-  //         _data[i].最大管數 !== undefined ? _data[i].最大管數.toString() : '0';
-  //       let bootControl =
-  //         _data[i].開機管數 !== undefined ? _data[i].開機管數.toString() : '0';
-  //       let dateLimit =
-  //         _data[i].略過天數 !== undefined ? _data[i].略過天數.toString() : '0';
-  //       let accumulateDay =
-  //         _data[i].累計天數 !== undefined ? _data[i].累計天數.toString() : '0';
+    if (this.isERROR) {
+      // 匯入錯誤失敗訊息提醒
+      this.clearFile();
+      this.isErrorMsg = true;
+      this.importdata_new = [];
+      this.errorMSG('匯入錯誤', this.errorTXT);
+    } else {
+      for (let i = 0; i < _data.length; i++) {
+        let schShopCode = _data[i].站別.toString();
+        let equipCode = _data[i].機台.toString();
+        let cumsumType = _data[i].累積單位.toString();
+        let accumulation = _data[i].累積值.toString();
+        let dateLimit = _data[i].強制投產.toString();
+        let useFlag = _data[i].是否使用.toString();
+        let userUpdate = this.userName.toString();
 
-  //       this.importdata_new.push({
-  //         plantCode: plantCode,
-  //         schShopCode: schShopCode,
-  //         equipCode: equipCode,
-  //         equipGroup: equipGroup,
-  //         groupAmount: groupAmount,
-  //         equipQuanity: equipQuanity,
-  //         bootControl: bootControl,
-  //         dateLimit: dateLimit,
-  //         accumulateDay: accumulateDay,
-  //       });
-  //     }
+        this.importdata_new.push({
+          schShopCode: schShopCode,
+          equipCode: equipCode,
+          cumsumType: cumsumType,
+          accumulation: accumulation,
+          dateLimit: dateLimit,
+          useFlag: useFlag,
+          userUpdate: userUpdate,
+        });
+      }
 
-  //     return new Promise((resolve, reject) => {
-  //       this.LoadingPage = true;
-  //       let myObj = this;
-  //       let obj = {};
-  //       _.extend(obj, {
-  //         excelData: this.importdata_new,
-  //         userName: this.userName,
-  //       });
-  //       myObj.PPSService.importI106Excel('1', obj).subscribe(
-  //         (res) => {
-  //           if (res[0].MSG === 'Y') {
-  //             this.loading = false;
-  //             this.LoadingPage = false;
+      return new Promise((resolve, reject) => {
+        this.loading = true;
+        let myObj = this;
+        let obj = {};
+        obj = {
+          EXCELDATA: this.importdata_new,
+        };
+        myObj.PPSService.importTBPPSM107Excel('1', obj).subscribe(
+          async (res) => {
+            if (res[0].MSG === 'Y') {
+              this.loading = false;
+              await this.getTBPPSM107();
+              this.sucessMSG('EXCCEL上傳成功', '');
+              this.clearFile();
+              this.onInit();
+            } else {
+              this.errorMSG('匯入錯誤', res[0].MSG);
+              this.clearFile();
+              this.importdata_new = [];
+              this.loading = false;
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+            this.importdata_new = [];
+            this.loading = false;
+          }
+        );
+      });
+    }
+  }
 
-  //             this.sucessMSG('EXCCEL上傳成功', '');
-  //             this.getTbppsm013List();
-  //             this.clearFile();
-  //             this.onInit();
-  //           } else {
-  //             this.errorMSG('匯入錯誤', res[0].MSG);
-  //             this.clearFile();
-  //             this.importdata_new = [];
-  //             this.LoadingPage = false;
-  //           }
-  //         },
-  //         (err) => {
-  //           reject('upload fail');
-  //           this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
-  //           this.importdata_new = [];
-  //           this.LoadingPage = false;
-  //         }
-  //       );
-  //     });
-  //   }
-  // }
-
-  // // 清空資料
-  // clearFile() {
-  //   var objFile = document.getElementsByTagName('input')[0];
-  //   console.log(objFile.value + '已清除');
-  //   objFile.value = '';
-  //   console.log(this.file);
-  //   console.log(JSON.stringify(this.file));
-  // }
+  // 清空資料
+  clearFile() {
+    var objFile = document.getElementsByTagName('input')[0];
+    console.log(objFile.value + '已清除');
+    objFile.value = '';
+    console.log(this.file);
+    console.log(JSON.stringify(this.file));
+  }
 
   sucessMSG(_title, _plan): void {
     this.Modal.success({
@@ -619,6 +621,7 @@ export class PPSI112Component implements OnInit {
   }
   //取消產能維護彈出視窗
   cancelYieldInput(): void {
+    this.onInit();
     this.isVisibleYield = false;
   }
 }

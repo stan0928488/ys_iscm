@@ -1901,4 +1901,23 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
+
+  insertTBPPSM107(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/insertTBPPSM107`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  importTBPPSM107Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl =
+      this.APIURL + `/FCP/I112` + nonbarUrl + `/importExcelPPSI112`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 }

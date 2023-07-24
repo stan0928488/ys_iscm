@@ -28,7 +28,7 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <!-- <nz-collapse>
+  <nz-collapse>
     <nz-collapse-panel nzHeader="新增/匯出/匯入">
       <div>
         <button
@@ -77,7 +77,7 @@
         </button>
       </div>
     </nz-collapse-panel>
-  </nz-collapse> -->
+  </nz-collapse>
 
   <ag-grid-angular
     style="width: 100%; height: 550px; overflow: scroll"
@@ -92,7 +92,7 @@
 </nz-content>
 
 <!-- 產能維護(管束設定)新增 -->
-<!-- <nz-modal
+<nz-modal
   [(nzVisible)]="isVisibleYield"
   [nzWidth]="850"
   [nzTitle]="yieldTitle"
@@ -111,14 +111,14 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;站別
+            站別
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 90%; color: darkblue"
               nz-input
               placeholder="輸入站別"
               [(ngModel)]="schShopCode"
@@ -130,14 +130,14 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機台
+            機台
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 90%; color: darkblue"
               nz-input
               placeholder="輸入機台"
               [(ngModel)]="equipCode"
@@ -149,18 +149,20 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機群
+            累積單位
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="輸入累積單位"
+          <td style="width: 300px">
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzPlaceHolder="輸入累積單位"
               [(ngModel)]="cumsumType"
-            />
+            >
+              <nz-option [nzLabel]="'day'" [nzValue]="'day'"></nz-option>
+              <nz-option [nzLabel]="'hour'" [nzValue]="'hour'"></nz-option>
+            </nz-select>
           </td>
         </tr>
 
@@ -171,17 +173,17 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機群設備數量
+            累積值
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 90%; color: darkblue"
               nz-input
               placeholder="輸入累積值"
-              [(ngModel)]="tbppsm107.accumulation"
+              [(ngModel)]="accumulation"
             />
           </td>
           <td
@@ -190,39 +192,17 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;最大管數
+            強制投產
           </td>
-          <td style="width: 600px; background-color: #eee" colspan="3">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 90%; color: darkblue"
               nz-input
-              placeholder="強制投產"
-              [(ngModel)]="tbppsm107.dateLimit"
-            />
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            style="
-              width: 330px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;開機管數
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="是否使用"
-              [(ngModel)]="tbppsm107.useFlag"
+              placeholder="輸入強制投產"
+              [(ngModel)]="dateLimit"
             />
           </td>
           <td
@@ -231,37 +211,20 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;累計天數
+            是否使用
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="更新時間"
-              [(ngModel)]="tbppsm107.dateUpdate"
-            />
-          </td>
-          <td
-            style="
-              width: 330px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;略過天數
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="更新者"
-              [(ngModel)]="tbppsm107.userUpdate"
-            />
+          <td style="width: 300px">
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzPlaceHolder="輸入是否使用"
+              [(ngModel)]="useFlag"
+            >
+              <nz-option [nzLabel]="'Y'" [nzValue]="'Y'"></nz-option>
+              <nz-option [nzLabel]="'N'" [nzValue]="'N'"></nz-option>
+            </nz-select>
           </td>
         </tr>
       </table>
@@ -273,4 +236,4 @@
     </button>
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
-</nz-modal> -->
+</nz-modal>

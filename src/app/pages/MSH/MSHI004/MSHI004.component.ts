@@ -202,7 +202,6 @@ export class MSHI004Component {
         headerName: 'MES群組',
         field: 'mesPublishGroup',
         width: 100,
-        filter: true,
         onCellClicked: function (params): void {
           _this.mgroup = params.data.mesPublishGroup;
           _this.searchMachine(true);
@@ -229,8 +228,8 @@ export class MSHI004Component {
           this.dataTransferService.setData(event.node);
         },
       },
-      { headerName: '工作站數', field: 'shopCode', width: 90, filter: true },
-      { headerName: '機台數', field: 'equipCode', width: 90, filter: true },
+      { headerName: '工作站數', field: 'shopCode', width: 90 },
+      { headerName: '機台數', field: 'equipCode', width: 90 },
       {
         headerName: '依PPS配置',
         field: 'ppsControl',
@@ -287,25 +286,7 @@ export class MSHI004Component {
               }
             });
             _this.renderer.appendChild(containerElement, buttonElement1);
-          } else {
-            const labelElement2 = _this.renderer.createElement('label');
-            labelElement2.textContent = '　';
-            _this.renderer.appendChild(containerElement, labelElement2);
-
-            const buttonElement1 = _this.renderer.createElement('button');
-            const buttonText = _this.renderer.createText('排程計算');
-            _this.renderer.appendChild(buttonElement1, buttonText);
-            _this.renderer.addClass(buttonElement1, 'buttonCheck');
-            _this.renderer.listen(buttonElement1, 'click', () => {
-              if (!_.isEmpty(_this.MSHI004PendingDataList)) {
-                _this.message.error('請先儲存資料');
-              } else {
-                _this.downloadMachine(params.data);
-              }
-            });
-            _this.renderer.appendChild(containerElement, buttonElement1);
           }
-
           return containerElement;
         },
       },
@@ -313,20 +294,11 @@ export class MSHI004Component {
         headerName: '已配置機台數',
         field: 'publishMachine',
         width: 110,
-        filter: true,
-      },
-      {
-        headerName: '手動發佈',
-        field: 'publishSelf',
-        width: 200,
-        filter: true,
-        hide: true,
       },
       {
         headerName: '確認發佈',
         field: 'zxcvb',
         width: 110,
-        filter: true,
         cellRenderer: function (params) {
           if (params.data.fcpEditionLock == '1') {
             if (
@@ -377,7 +349,6 @@ export class MSHI004Component {
       {
         headerName: '轉入公版',
         width: 110,
-        filter: true,
         cellRenderer: function (params) {
           if (
             params.data.machineGroup.includes('RF') ||
@@ -444,38 +415,32 @@ export class MSHI004Component {
         headerName: '公版天數',
         field: 'normPublishTime',
         width: 90,
-        filter: true,
       },
       {
         headerName: '已發佈機台',
         field: 'publishMachineTotal',
         width: 110,
-        filter: true,
       },
       {
         headerName: '已發佈FCP版本',
         field: 'fcpEdition',
         width: 160,
-        filter: true,
         onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
       },
       {
         headerName: '發佈時間區間',
         field: 'timeRegion',
         width: 300,
-        filter: true,
       },
       {
         headerName: '發佈者',
         field: 'userCreate',
         width: 90,
-        filter: true,
       },
       {
         headerName: '發佈日期',
         field: 'mesPublishDay',
         width: 160,
-        filter: true,
       },
     ];
   }
@@ -488,13 +453,11 @@ export class MSHI004Component {
         headerName: '站別',
         field: 'schShopCode',
         width: 150,
-        filter: true,
       },
       {
         headerName: '所有機台',
         field: 'pstMachine',
         width: 650,
-        filter: true,
         cellStyle: {
           'min-width': '120px',
         },
@@ -503,7 +466,6 @@ export class MSHI004Component {
         headerName: '未配置機台',
         field: 'publishMachine',
         width: 650,
-        filter: true,
       },
     ];
   }
