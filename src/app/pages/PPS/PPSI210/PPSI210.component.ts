@@ -8,6 +8,10 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 import * as _ from 'lodash';
+import { ColDef } from 'ag-grid-community';
+import { OpenSortRendererComponent } from './open-sort-renderer-component';
+import { SendChoiceRendererComponent } from './send-choice-renderer-component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-PPSI210',
@@ -83,6 +87,69 @@ export class PPSI210Component implements AfterViewInit {
 
   nzPagination: any;
 
+  agGridContext : any;
+  planSetColumnDefs: ColDef[] = [
+    { 
+      headerName:'點選', 
+      field:'choice',
+      pinned: 'left', 
+      width: 80,
+      filter: true,
+      cellRenderer: SendChoiceRendererComponent
+    },
+    { 
+      headerName:'策略版本', 
+      field:'PLANSET_EDITION',
+      pinned: 'left',  
+      filter: true 
+    },
+    { 
+      headerName:'策略名稱', 
+      field:'SETNAME',
+      pinned: 'left', 
+      filter: true 
+    },
+    { 
+      headerName:'Initial PST', 
+      field:'INITIALFLAG', 
+      filter: true 
+    },
+    { 
+      headerName:'MO\n平衡搬移順序', 
+      field:'MOSORTNA',
+      filter: true 
+    },
+    { 
+      headerName:'Cell 處理順序', 
+      field:'CELLSORTNA', 
+      filter: true 
+    },
+    { 
+      headerName:'相臨站別平衡策略', 
+      field:'NEXTSHOPSORTNA', 
+      filter: true 
+    },
+    { 
+      headerName:'機台平衡策略', 
+      field:'MACHINESORTNA', 
+      filter: true 
+    },
+    { 
+      headerName:'站別策略設定', 
+      cellRenderer: OpenSortRendererComponent,
+      filter: true 
+    }
+  ];
+
+  gridOptions = {
+    defaultColDef: {
+      sortable: false,
+      resizable: true,
+      wrapText: true,
+      autoHeight: true
+    }
+  };
+
   constructor(
     private getPPSService: PPSService,
     private i18n: NzI18nService,
@@ -93,6 +160,9 @@ export class PPSI210Component implements AfterViewInit {
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
+    this.agGridContext = {
+      componentParent: this,
+    };
   }
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
@@ -794,10 +864,16 @@ export class PPSI210Component implements AfterViewInit {
     this.isVisibleSelPlanSet = true;
     this.loading = true;
     let myObj = this;
+    const prePlanSetDataList = _.cloneDeep(this.planSetDataList);
     this.getPPSService.getPlanSetData().subscribe((res) => {
       // 取規劃策略
       console.log('getPlanSetData success');
       this.planSetDataList = res;
+      
+     for (let index = 0; index < this.planSetDataList.length; index++) {
+      this.planSetDataList[index].selectedRadioValue = prePlanSetDataList[index].selectedRadioValue;
+     }
+
       myObj.loading = false;
     });
   }
@@ -1371,6 +1447,47 @@ export class PPSI210Component implements AfterViewInit {
         }
       );
     });
+  }
+
+  async deletePlot(rowData : any, rowIndex : number){
+
+    try{
+      const resObservable$  = this.getPPSService.deletePlanSetData(rowData.PLANSET_EDITION);
+      const response = await firstValueFrom<any>(resObservable$);
+      
+      if(response.code === 1){
+
+        if(response.data.updatedRows > 0){
+   
+          // 刪除該筆
+          this.planSetDataList.splice(rowIndex, 1);
+      
+          // 深拷貝一個新的陣列，好重新賦值給planSetDataList觸發畫面重新渲染
+          this.planSetDataList = _.cloneDeep(this.planSetDataList);
+        
+          // 如果刪除的是最後一筆
+          if(_.isEmpty(this.planSetDataList)){
+            this.sucessMSG('刪除成功', `已無策略版本`);
+            return;
+          }
+          else{
+            this.message.success('刪除成功');
+          }
+        }
+        else {
+          this.errorMSG('無法刪除', '該規劃策略正在被使用中');
+        }
+      }
+      else{
+        this.errorMSG('刪除規劃策略失敗','');
+      }
+
+    }
+    catch (error) {
+      this.errorMSG('刪除規劃策略失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
+    }
+    finally{
+    }
   }
 
   sucessMSG(_title, _plan): void {

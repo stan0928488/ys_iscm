@@ -18,6 +18,7 @@ export class PPSService {
   constructor(private http: HttpClient, private configService: ConfigService) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
+    this
   }
 
   getPPS;
@@ -1211,6 +1212,18 @@ export class PPSService {
       this.APIURL + `/FCP/I210/getShopMachineSortingList/${_type}/${_value}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
+  }
+
+  // 刪除某筆規劃策略
+  deletePlanSetData(planSetEdition:string) {
+    const httpParams = new HttpParams()
+    .set('planSetEdition', planSetEdition);
+
+    console.log('api service deletePlanSetData');
+    let queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
+    console.log(`刪除策略API --> ${queryUrl}`);
+    console.log(`刪除策略API參數 --> ${planSetEdition}`);
+    return this.http.delete(queryUrl, { params: httpParams });
   }
 
   //Get getPlanSetInitstData 取得規劃策略基礎表

@@ -119,6 +119,8 @@ import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
+import { OpenSortRendererComponent } from './pages/PPS/PPSI210/open-sort-renderer-component';
+import { SendChoiceRendererComponent } from './pages/PPS/PPSI210/send-choice-renderer-component';
 
 registerLocaleData(zh);
 
@@ -215,6 +217,8 @@ registerLocaleData(zh);
     PPSR308Component,
     PPSR309Component,
     BtnCellRenderer,
+    OpenSortRendererComponent,
+    SendChoiceRendererComponent
   ],
   imports: [
     BrowserModule,

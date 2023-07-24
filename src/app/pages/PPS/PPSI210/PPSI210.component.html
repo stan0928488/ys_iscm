@@ -372,63 +372,30 @@
 </ng-container>
 </nz-modal>
 
-
-
-
-
-
-
-
-
+<!-- 現有規劃策略明細表 -->
 <nz-modal
   [(nzVisible)]="isVisibleSelPlanSet"
   [nzTitle]="PlanSetTitle"
   [nzContent]="PlanSetContent"
   [nzFooter]="null"
   [nzWidth]="1000"
-  (nzOnCancel)="plansethandleCancel()"
->
+  (nzOnCancel)="plansethandleCancel()">
 
-<ng-container>
   <ng-template #PlanSetTitle>現有規劃策略明細表</ng-template>
   <ng-template #PlanSetContent>
-    <nz-table #setSelectionTable [nzShowPagination]="false" [nzScroll]="{ x: '1300px', y: '350px' }" [nzData]="planSetDataList">
-      <tbody>
-      <thead>
-        <tr>
-          <th nzWidth="1%" nzLeft="0px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">點選</th>
-          <th nzWidth="3%" nzLeft="50px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">策略版本</th>
-          <th nzWidth="5%" nzLeft="195px" style="text-align:center;background-color: #eee; padding: 0px; height: 55px;">策略名稱</th>
-          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Initial PST</th>
-          <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">MO<br>平衡搬移順序</th>
-          <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Cell 處理順序</th>
-          <th nzWidth="4%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">相臨站別<br>平衡策略</th>
-          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台<br>平衡策略</th>
-          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別<br>策略設定</th>
-        </tr>
-      </thead>
+    <ag-grid-angular
+      style="width:100%; height:500px; margin-bottom: 200px; margin-top: 50px;"
+      class="ag-theme-alpine"
+      [context]="agGridContext"
+      [rowData]="planSetDataList"
+      [columnDefs]="planSetColumnDefs"
+      [gridOptions]="gridOptions"
+      [pagination]="true"
+      [paginationPageSize]="20">
+    </ag-grid-angular>
 
-      <tbody>
-        <tr *ngFor="let data of setSelectionTable.data; let i = index">
-          <td nzLeft="0px"><label nz-radio (click) = "sendchoice(data)"></label></td>
-          <td nzLeft="50px">{{data.PLANSET_EDITION}}</td>
-          <td nzLeft="195px">{{data.SETNAME}}</td>
-          <td>{{data.INITIALFLAG}}</td>
-          <td>{{data.MOSORTNA}}</td>
-          <td>{{data.CELLSORTNA}}</td>
-          <td>{{data.NEXTSHOPSORTNA}}</td>
-          <td>{{data.MACHINESORTNA}}</td>
-          <td style="text-align:center;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
-        </tr>
-      </tbody>
-    </nz-table>
   </ng-template>
-
-</ng-container>
 </nz-modal>
-
-
-
 
 
 <nz-modal
