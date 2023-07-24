@@ -141,6 +141,10 @@ export class PPSI110Component implements AfterViewInit {
         sortable: false,
         resizable: true,
         filter: true,
+    },
+    api:null,
+    onCellClicked: (event: CellClickedEvent) => {
+      this.gridOptions.api.stopEditing();
     }
   };
 
@@ -744,7 +748,13 @@ export class PPSI110Component implements AfterViewInit {
 
   // excel檔名
  
-  onBtnClick1(e) {}
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "dateLimit");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "dateLimit"
+    });
+  }
   
   onBtnClick2(e) {
     this.saveEdit(e.rowData,e.rowData.idx);
