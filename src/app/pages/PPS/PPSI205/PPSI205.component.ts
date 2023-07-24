@@ -7,12 +7,22 @@ import * as XLSX from 'xlsx';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { CellClickedEvent, ColDef, ColGroupDef } from 'ag-grid-community';
+import {
+  ColDef,
+  ColGroupDef,
+  ICellEditorComp,
+  RowValueChangedEvent,
+  GridApi,
+  GridReadyEvent,
+  CellValueChangedEvent,
+} from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
+import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
+import { DatePickerCellRendererComponent } from '../../RENDERER/datepicker-cell-renderer.component';
 registerLocaleData(zh);
 
 interface data {}
@@ -24,6 +34,11 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
+  private gridApi!: GridApi;
+  public editType: 'fullRow' = 'fullRow';
+  tcFrequenceLeft = ['升冪', '降冪'];
+
+  frameworkComponents: any;
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
@@ -55,18 +70,15 @@ export class PPSI205Component implements AfterViewInit {
   ];
   titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
   titleArray4 = [
-    '匯入時間',
-    '優先順序',
     '站別',
     '機台',
     '下一站站別',
-    '最大值的EPST或LPST',
     '天數',
-    '生產時間起',
+    '最大值的EPST或LPST',
+    '生產開始日',
+    '生產結束日',
     'TC頻率升降冪',
-    '建立日期',
-    '建立者',
-    '異動日期',
+    'COMPAIGN_ID',
   ];
   titleArray5 = [
     '站別',
@@ -81,8 +93,6 @@ export class PPSI205Component implements AfterViewInit {
     '鋼種群組',
     '自訂月份',
     '自訂排序',
-    '創建時間',
-    '創建者',
   ];
   datetime = moment();
   arrayBuffer: any;
@@ -127,87 +137,158 @@ export class PPSI205Component implements AfterViewInit {
     },
   ];
 
-  currentDate = new Date();
+  isSpinning = false;
 
   forTbppsm100Date;
+  currentDate = new Date();
 
-  isSpinning = false;
+  public ColGroupDef: ColDef = {
+    filter: true,
+    editable: false,
+    enableRowGroup: false,
+    enablePivot: false,
+    enableValue: false,
+    sortable: false,
+    resizable: true,
+  };
 
   dateTimeFormatter(params) {
     return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
   }
 
-  dateFormatter(params) {
+  dayDateFormatter(params) {
     return moment(params.value).format('YYYY-MM-DD');
+  }
+
+  yearMonthFormatter(params) {
+    return moment(params.value).format('YYYY-MM');
+  }
+
+  stringFormatter(params) {
+    params.tcFrequenceLeft === '升冪' ? 'ASC' : 'ASC';
+    params.tcFrequenceLeft === '降冪' ? 'DESC' : 'DESC';
+    return params.TC_FREQUENCE_LIFT;
   }
 
   columnDefs: (ColDef | ColGroupDef)[] = [
     {
-      headerName: '匯入時間',
-      field: 'IMPORTDATETIME',
+      headerName: '優先順序',
+      field: 'ORDER_ID',
       filter: true,
-      width: 170,
-      valueFormatter: this.dateTimeFormatter,
+      width: 120,
+      editable: false,
     },
-    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 120 },
-    { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
-    { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
+    {
+      headerName: '站別',
+      field: 'SCH_SHOP_CODE',
+      filter: true,
+      width: 100,
+      editable: false,
+    },
+    {
+      headerName: '機台',
+      field: 'EQUIP_CODE',
+      filter: true,
+      width: 100,
+      editable: false,
+    },
     {
       headerName: '下一站站別',
       field: 'NEXT_SHOP_CODE',
       filter: true,
+      editable: true,
       width: 120,
     },
     {
-      headerName: '最大值的EPST或LPST',
+      headerName: '天數',
+      field: 'DAYS',
+      filter: true,
+      editable: true,
+      width: 100,
+    },
+    {
+      headerName: 'max(EPST/ASAP)',
       field: 'MAX_DATE',
       filter: true,
       width: 160,
-      valueFormatter: this.dateFormatter,
+      valueFormatter: this.yearMonthFormatter,
+      cellRenderer: DatePickerCellRendererComponent,
+      cellRendererParams: [
+        {
+          onClick: this.onDatePickerBtnClick1.bind(this),
+        },
+      ],
+      editable: false,
+      maxWidth: 150,
     },
-    { headerName: '天數', field: 'DAYS', filter: true, width: 100 },
     {
-      headerName: '生產時間起',
+      headerName: '生產開始日',
       field: 'STARTDATE',
       filter: true,
+      cellEditor: 'primeDatePickerCellEditorComponent',
       width: 130,
-      valueFormatter: this.dateFormatter,
+      valueFormatter: this.dayDateFormatter,
+      cellRenderer: DatePickerCellRendererComponent,
+      cellRendererParams: [
+        {
+          onClick: this.onDatePickerBtnClick2.bind(this),
+        },
+      ],
+      editable: false,
+      maxWidth: 150,
+    },
+    {
+      headerName: '生產結束日',
+      field: 'ENDDATE',
+      filter: true,
+      editable: false,
+      width: 130,
     },
     {
       headerName: 'TC頻率升降冪',
       field: 'TC_FREQUENCE_LIFT',
+      valueFormatter: this.stringFormatter,
       filter: true,
       width: 140,
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: this.tcFrequenceLeft,
+      },
     },
     {
-      headerName: '轉入COMPAIGN限制表時間',
+      headerName: 'COMPAIGN_ID',
+      field: 'COMPAIGN_ID',
+      filter: true,
+      editable: false,
+      width: 120,
+    },
+    {
+      headerName: '轉入COMPAIGN表時間',
       field: 'EXPORTDATETIME',
       filter: true,
+      editable: false,
       width: 220,
       valueFormatter: this.dateTimeFormatter,
     },
     {
-      headerName: '建立日期',
-      field: 'DATE_CREATE',
-      filter: true,
+      headerName: 'Action',
+      editable: false,
       width: 170,
-      valueFormatter: this.dateTimeFormatter,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onclick: this.editOnClick.bind(this),
+        },
+        {
+          onClick: this.updateOnClick.bind(this),
+        },
+        {
+          onClick: this.calcelOnClick.bind(this),
+        },
+      ],
     },
-    { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    {
-      headerName: '異動日期',
-      field: 'DATE_UPDATE',
-      filter: true,
-      width: 170,
-      valueFormatter: this.dateTimeFormatter,
-    },
-    { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
   ];
-  public ColGroupDef: ColDef = {
-    filter: true,
-    sortable: true,
-    resizable: false,
-  };
 
   constructor(
     private router: ActivatedRoute,
@@ -222,6 +303,9 @@ export class PPSI205Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRendererUpdate,
+    };
   }
 
   ngOnInit() {
@@ -232,14 +316,14 @@ export class PPSI205Component implements AfterViewInit {
   }
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
-    this.getTbppsm101List();
-    this.getTbppsm102ListAll();
     this.getRunFCPCount();
-    this.getTbppsm113List();
-    this.getTbppsm100List();
+    this.getTbppsm101List();
     this.forTbppsm100Date = moment(this.currentDate).format(
       'YYYY-MM-DD HH:mm:ss'
     );
+    this.getTbppsm102ListAll();
+    // this.getTbppsm113List();
+    this.getTbppsm100List();
   }
 
   // 取得是否有正在執行的FCP
@@ -401,6 +485,15 @@ export class PPSI205Component implements AfterViewInit {
         this.errorMSG('匯出失敗', '205站公版尺寸目前無資料');
         return;
       }
+    } else if (_type === '4') {
+      if (this.tbppsm102ExportExcel.length > 0) {
+        data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
+        fileName = `Auto Campaign 主表`;
+        titleArray = this.titleArray4;
+      } else {
+        this.errorMSG('匯出失敗', '401 Auto Campaign 目前無資料');
+        return;
+      }
     } else if (_type === '5') {
       if (this.tbppsm100List.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm100List);
@@ -468,6 +561,27 @@ export class PPSI205Component implements AfterViewInit {
           cycleNo: _.get(item, 'cycleNo'),
           startDate: _.get(item, 'startDate'),
           endDate: _.get(item, 'endDate'),
+        });
+        excelData.push(obj);
+      }
+    } else if (_type === '4') {
+      for (let item of _displayData) {
+        let obj = {};
+        _.extend(obj, {
+          SCH_SHOP_CODE: _.get(item, 'SCH_SHOP_CODE'),
+          EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
+          NEXT_SHOP_CODE: _.get(item, 'NEXT_SHOP_CODE').toString(),
+          DAYS: _.get(item, 'DAYS'),
+          MAX_DATE: _.get(item, 'MAX_DATE'),
+          STARTDATE: _.get(item, 'STARTDATE'),
+          ENDDATE: _.get(item, 'ENDDATE'),
+          TC_FREQUENCE_LIFT:
+            _.get(item, 'TC_FREQUENCE_LIFT') === 'ASC'
+              ? '升冪'
+              : _.get(item, 'TC_FREQUENCE_LIFT') === 'DESC'
+              ? '降冪'
+              : '',
+          COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'),
         });
         excelData.push(obj);
       }
@@ -664,27 +778,21 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.F1 === undefined ||
         worksheet.G1 === undefined ||
         worksheet.H1 === undefined ||
-        worksheet.I1 === undefined ||
-        worksheet.J1 === undefined ||
-        worksheet.K1 === undefined ||
-        worksheet.L1 === undefined
+        worksheet.I1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
       } else if (
-        worksheet.A1.v !== '匯入時間' ||
-        worksheet.B1.v !== '優先順序' ||
-        worksheet.C1.v !== '站別' ||
-        worksheet.D1.v !== '機台' ||
-        worksheet.E1.v !== '下一站站別' ||
-        worksheet.F1.v !== '最大值的EPST或LPST' ||
-        worksheet.G1.v !== '天數' ||
-        worksheet.H1.v !== '生產時間起' ||
-        worksheet.I1.v !== 'TC頻率升降冪' ||
-        worksheet.J1.v !== '建立日期' ||
-        worksheet.K1.v !== '建立者' ||
-        worksheet.L1.v !== '異動日期'
+        worksheet.A1.v !== '站別' ||
+        worksheet.B1.v !== '機台' ||
+        worksheet.C1.v !== '下一站站別' ||
+        worksheet.D1.v !== '天數' ||
+        worksheet.E1.v !== '最大值的EPST或LPST' ||
+        worksheet.F1.v !== '生產開始日' ||
+        worksheet.G1.v !== '生產結束日' ||
+        worksheet.H1.v !== 'TC頻率升降冪' ||
+        worksheet.I1.v !== 'COMPAIGN_ID'
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -709,7 +817,9 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1 === undefined ||
         worksheet.J1 === undefined ||
         worksheet.K1 === undefined ||
-        worksheet.L1 === undefined
+        worksheet.L1 === undefined ||
+        worksheet.M1 === undefined ||
+        worksheet.N1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
@@ -1099,22 +1209,33 @@ export class PPSI205Component implements AfterViewInit {
   importExcel4(_type, _data) {
     console.log('incomingfile e6 : ' + _type);
     for (let i = 0; i < _data.length; i++) {
-      let schShopCode = _data[i].站別;
+      let shopCode = _data[i].站別;
       let equipCode = _data[i].機台;
       let nextShopCode = _data[i].下一站站別;
+      let days = _data[i].天數;
       let maxDate = this.dateFormat(
         this.ExcelDateExchange(_data[i].最大值的EPST或LPST),
         2
       );
-      let days = _data[i].天數;
-      let startDate = this.dateFormat(_data[i].生產時間起, 2);
-      let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
+      let startDate = this.dateFormat(
+        this.ExcelDateExchange(_data[i].生產開始日),
+        2
+      );
+      let tcFrequenceLeft = _data[i].TC頻率升降冪;
+
+      if (maxDate === 'Invalid date') {
+        maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
+      }
+      if (startDate === 'Invalid date') {
+        startDate = this.dateFormat(_data[i].生產開始日, 2);
+      }
+
       if (
-        schShopCode === undefined ||
+        shopCode === undefined ||
         equipCode === undefined ||
         nextShopCode === undefined ||
-        maxDate === undefined ||
         days === undefined ||
+        maxDate === undefined ||
         startDate === undefined ||
         tcFrequenceLeft === undefined
       ) {
@@ -1132,27 +1253,37 @@ export class PPSI205Component implements AfterViewInit {
       this.errorMSG('匯入錯誤', this.errorTXT);
     } else {
       for (let i = 0; i < _data.length; i++) {
-        let schShopCode = _data[i].站別.toString();
+        let shopCode = _data[i].站別.toString();
         let equipCode = _data[i].機台.toString();
         let nextShopCode = _data[i].下一站站別.toString();
-        let maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
         let days = _data[i].天數.toString();
-        let startDate = this.dateFormat(_data[i].生產時間起, 2);
-        let tcFrequenceLeft = _data[i].TC頻率升降冪.toString();
+        let maxDate = this.dateFormat(
+          this.ExcelDateExchange(_data[i].最大值的EPST或LPST),
+          2
+        );
+        let startDate = this.dateFormat(
+          this.ExcelDateExchange(_data[i].生產開始日),
+          2
+        );
+        let tcFrequenceLeft =
+          _data[i].TC頻率升降冪.toString() === '升冪'
+            ? 'ASC'
+            : _data[i].TC頻率升降冪.toString() === '降冪'
+            ? 'DESC'
+            : null;
 
         if (maxDate === 'Invalid date') {
-          console.log('進來了');
           maxDate = this.dateFormat(_data[i].最大值的EPST或LPST, 2);
         }
         if (startDate === 'Invalid date') {
-          startDate = this.dateFormat(_data[i].生產時間起, 2);
+          startDate = this.dateFormat(_data[i].生產開始日, 2);
         }
         this.importdata_new.push({
-          schShopCode: schShopCode,
+          shopCode: shopCode,
           equipCode: equipCode,
           nextShopCode: nextShopCode,
-          maxDate: maxDate,
           days: days,
+          maxDate: maxDate,
           startDate: startDate,
           tcFrequenceLeft: tcFrequenceLeft,
         });
@@ -1171,12 +1302,13 @@ export class PPSI205Component implements AfterViewInit {
         });
         myObj.getPPSService.importI205Excel(obj).subscribe(
           (res) => {
+            console.log(res);
             if (res[0].MSG === 'Y') {
               this.loading = false;
               this.LoadingPage = false;
 
               this.sucessMSG('EXCEL上傳成功', '');
-              this.tbppsm102ListAll();
+              this.getTbppsm102ListAll();
               this.clearFile();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);
@@ -1186,7 +1318,6 @@ export class PPSI205Component implements AfterViewInit {
           },
           (err) => {
             reject('upload fail');
-            console.log(err);
             this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
             this.LoadingPage = false;
           }
@@ -1213,8 +1344,7 @@ export class PPSI205Component implements AfterViewInit {
       let gradeGroup = _data[i].鋼種群組;
       let newEpstYymm = _data[i].自訂月份;
       let campaignSort = _data[i].自訂排序;
-      let dateCreate = this.forTbppsm100Date;
-      let userCreate = this.USERNAME;
+
       if (
         schShopCode === undefined ||
         pstMachine === undefined ||
@@ -1486,6 +1616,89 @@ export class PPSI205Component implements AfterViewInit {
     }
   }
 
+  // 修改401存檔
+  save401_dtlRow(i, data) {
+    console.log('-------save_dtlRow------');
+    this.newlist = data;
+
+    let importdatetime = this.newlist.IMPORTDATETIME;
+    let plantCode = this.newlist.PLANT_CODE;
+    let orderID = this.newlist.ORDER_ID;
+
+    let nextShopCode = this.newlist.NEXT_SHOP_CODE;
+    let maxDate = this.newlist.MAX_DATE;
+    let days = this.newlist.DAYS;
+    let startDate = this.newlist.STARTDATE;
+    let tcFrequenceLeft = this.newlist.TC_FREQUENCE_LIFT;
+
+    if (
+      importdatetime === '' ||
+      plantCode === '' ||
+      orderID === '' ||
+      nextShopCode === '' ||
+      maxDate === '' ||
+      days === '' ||
+      startDate === '' ||
+      tcFrequenceLeft === ''
+    ) {
+      this.errorMSG('錯誤', '有欄位尚未填寫完畢，請檢查');
+      return;
+    } else {
+      this.Modal.confirm({
+        nzTitle: '是否確定存檔',
+        nzOnOk: () => {
+          this.Save401OK(i), (this.EditMode[i] = true);
+        },
+        nzOnCancel: () => (this.EditMode[i] = true),
+      });
+    }
+  }
+
+  // 確定修改 Auto Campaign 存檔
+  Save401OK(col) {
+    console.log('oldlist :');
+    console.log(this.oldlist);
+
+    console.log('newlist :');
+    console.log(this.newlist);
+
+    this.LoadingPage = true;
+    let myObj = this;
+    return new Promise((resolve, reject) => {
+      let obj = {};
+
+      _.extend(obj, {
+        OLDLIST: this.oldlist,
+        NEWList: this.newlist,
+        USERCODE: this.USERNAME,
+        DATETIME: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
+      });
+      myObj.getPPSService.upd401AutoCampaignData(obj).subscribe(
+        (res) => {
+          console.log(res);
+          if (res[0].MSG === 'Y') {
+            this.LoadingPage = true;
+            this.EditMode[col] = false;
+            this.oldlist = [];
+            this.newlist = [];
+            this.getTbppsm102List();
+            this.sucessMSG('修改存檔成功', '');
+          } else {
+            this.errorMSG('修改存檔失敗', res[0].MSG);
+            this.LoadingPage = false;
+            this.EditMode[col] = true;
+          }
+        },
+        (err) => {
+          reject('upload fail');
+          this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+          this.oldlist = [];
+          this.LoadingPage = false;
+        }
+      );
+    });
+  }
+
   // 確定修改存檔
   SaveOK(col) {
     console.log('oldlist :');
@@ -1508,7 +1721,7 @@ export class PPSI205Component implements AfterViewInit {
       myObj.getPPSService.upd102ListData(obj).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
-            this.LoadingPage = false;
+            this.LoadingPage = true;
             this.EditMode[col] = false;
             this.oldlist = [];
             this.newlist = [];
@@ -1546,6 +1759,26 @@ export class PPSI205Component implements AfterViewInit {
       2
     );
     this.tbppsm102List[i].TC_FREQUENCE_LIFT = this.oldlist['TC_FREQUENCE_LIFT'];
+  }
+
+  cancel401_dtlRow(i, data) {
+    console.log();
+    this.EditMode[i] = false;
+
+    this.tbppsm102ListAll[i].NEXT_SHOP_CODE = this.oldlist['NEXT_SHOP_CODE'];
+    this.tbppsm102ListAll[i].DAYS = this.oldlist['DAYS'];
+    this.tbppsm102ListAll[i].MAX_DATE = this.dateFormat(
+      this.oldlist['MAX_DATE'],
+      6
+    );
+    this.tbppsm102ListAll[i].STARTDATE = this.dateFormat(
+      this.oldlist['STARTDATE'],
+      2
+    );
+    this.tbppsm102ListAll[i].TC_FREQUENCE_LIFT =
+      this.oldlist['TC_FREQUENCE_LIFT'];
+
+    // this.data.api.stopEditing(true);
   }
 
   // 修改存檔
@@ -1692,5 +1925,27 @@ export class PPSI205Component implements AfterViewInit {
         );
         myObj.loading = false;
       });
+  }
+
+  editOnClick(e) {}
+
+  updateOnClick(e) {
+    this.upd_dtlRow(e.index, e.rowData);
+    this.save401_dtlRow(e.index, e.rowData);
+  }
+
+  calcelOnClick(e) {
+    this.cancel401_dtlRow(e.index, e.rowData);
+  }
+
+  onDatePickerBtnClick1(e) {
+    this.dateFormat('YYYY-MM', 6);
+    this.upd_dtlRow(e, e.rowData);
+    e.rowData.save401_dtlRow;
+  }
+
+  onDatePickerBtnClick2(e) {
+    this.dateFormat('YYYY-MM-DD', 2);
+    e.rowData.save401_dtlRow;
   }
 }

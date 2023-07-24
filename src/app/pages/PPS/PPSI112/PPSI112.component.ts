@@ -177,9 +177,7 @@ export class PPSI112Component implements AfterViewInit {
     {
       headerName: 'Action',
       editable: false,
-      cellRenderer: (params) => {
-        return '<button (click)="update()">按鈕</button>';
-      },
+      cellRenderer: 'buttonRenderer',
     },
   ];
 
