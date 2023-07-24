@@ -817,9 +817,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1 === undefined ||
         worksheet.J1 === undefined ||
         worksheet.K1 === undefined ||
-        worksheet.L1 === undefined ||
-        worksheet.M1 === undefined ||
-        worksheet.N1 === undefined
+        worksheet.L1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
