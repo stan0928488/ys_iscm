@@ -71,10 +71,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         resizable: true,
         filter: true,
     },
-    api:null,
-    onCellClicked: (event: CellClickedEvent) => {
-      this.gridOptions.api.stopEditing();
-    }
+    api:null
   };
 
   public columnDefs: (ColDef | ColGroupDef)[] = [
