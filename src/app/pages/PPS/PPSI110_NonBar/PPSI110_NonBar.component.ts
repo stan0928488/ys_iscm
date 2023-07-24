@@ -70,6 +70,10 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
         sortable: false,
         resizable: true,
         filter: true,
+    },
+    api:null,
+    onCellClicked: (event: CellClickedEvent) => {
+      this.gridOptions.api.stopEditing();
     }
   };
 
@@ -710,7 +714,13 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     this.tbppsm013ListFilter("equipQuanity", this.searchEquipQuanityValue);
   }
 
-  onBtnClick1(e) {}
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "equipQuanity");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "equipQuanity"
+    });
+  }
   
   onBtnClick2(e) {
     this.saveEdit(e.rowData,e.rowData.idx);

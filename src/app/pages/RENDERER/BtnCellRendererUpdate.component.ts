@@ -6,14 +6,13 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 @Component({
   selector: 'app-button-renderer',
   template: `
-    <button *ngIf="isNew == false"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
-    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
-    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
-    <button *ngIf="isNew == false"  nz-button nzType="default" (click)="deleteOnClick($event)">刪除</button>
+  <button *ngIf="isNew == false"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
+  <button *ngIf="isNew == true"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
+  <button *ngIf="isNew == true"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
     `
 })
 
-export class BtnCellRenderer implements ICellRendererAngularComp {
+export class BtnCellRendererUpdate implements ICellRendererAngularComp {
 
   params;
   isNew = false;
@@ -25,7 +24,7 @@ export class BtnCellRenderer implements ICellRendererAngularComp {
   refresh(params?: any): boolean {
     return true;
   }
-
+  
   editOnClick($event) {
 
     var actionParam = this.params[0];
@@ -35,7 +34,7 @@ export class BtnCellRenderer implements ICellRendererAngularComp {
       const params = {
         event: $event,
         rowData: this.params.node.data,
-        params:this.params
+        index:this.params.node.id
       }
       actionParam.onClick(params);
 
@@ -51,8 +50,10 @@ export class BtnCellRenderer implements ICellRendererAngularComp {
     if (actionParam.onClick instanceof Function) {
       const params = {
         event: $event,
-        rowData: this.params.node.data
+        rowData: this.params.node.data,
+        index:this.params.node.id
       }
+      console.log(params);
       actionParam.onClick(params);
 
     }
@@ -68,23 +69,8 @@ export class BtnCellRenderer implements ICellRendererAngularComp {
     if (actionParam.onClick instanceof Function) {
       const params = {
         event: $event,
-        rowData: this.params.node.data
-      }
-      actionParam.onClick(params);
-
-    }
-
-  }
-
-  deleteOnClick($event) {
-    
-    var actionParam = this.params[3];
-
-    this.isNew = true;
-    if (actionParam.onClick instanceof Function) {
-      const params = {
-        event: $event,
-        rowData: this.params.node.data
+        rowData: this.params.node.data,
+        index:this.params.node.id
       }
       actionParam.onClick(params);
 

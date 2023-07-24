@@ -76,7 +76,7 @@ export class PPSI205_401Component implements AfterViewInit {
   DAY = this.inputDate_val;
 
   isLoading = false;
-  isRunFCP = true; // 如為true則不可異動
+  isRunFCP = false; // 如為true則不可異動
   file:File;
   importdata = [];
   importdata_new = [];
