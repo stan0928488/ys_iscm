@@ -726,6 +726,47 @@ this.handleSelectCarModal() ;
     // console.log("checked:"+JSON.stringify(this.selectShopCode) );
     // this.getSetColumGroupData();
   }
+  getExportDataByShopCode(){
+    this.isLoading = true ;
+    this.searchV0.shopCode = this.selectShopCode ;
+    this.searchV0.equipCode = this.selectEquipCode ;
+    this.mshService.getExportDataByShopCode(this.searchV0).subscribe(res=>{
+      this.isLoading = false ;
+      let result:any = res ;
+      if(result.code === 200) {
+        let exportHeader = result.data.tableHeader ;
+        let exportData = result.data.TableContent ;
+        let rowDataTemp = [] ;
+        let header = [] ;
+        exportData.forEach((item1,index1,array1)=>{
+          let rowDataObjectTemp = {} ;
+          exportHeader.forEach((item2,index2,array2)=>{
+            if(index1 === 0 ) {
+              header.push(item2.columLabel)
+            }
+            rowDataObjectTemp[item2.columValue] = item1[item2.columValue] ;
+          })
+          rowDataTemp.push(rowDataObjectTemp) ;
+        })
+        this.exportDataByShopCode(rowDataTemp,header) ;
+
+      }else{
+        this.nzMessageService.error(result.message)
+      }
+     
+    })
+  }
+
+  exportDataByShopCode(exportData,exportHeader){
+    let tableName = this.export.title + "_" + this.selectShopCode  ;
+    if(this.export.data.length < 1) {
+      this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
+      return 
+    }
+    this.excelService.exportAsExcelFile(exportData, tableName,exportHeader);
+    this.isLoading = false
+  }
+
   getTableData() {
     this.isLoading = true ;
     this.searchV0.shopCode = this.selectShopCode ;
@@ -951,6 +992,13 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine3);
        //数据类型
        this.columKeyType["MACHINE3_ADD"] = 0 ;
+
+       let indexMachine4 = {headerName:'最佳機台',field:'BEST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("最佳機台")
+       this.columnDefs.push(indexMachine4);
+       this.outsideColumnDefs.push(indexMachine4);
+       //数据类型
+       this.columKeyType["BEST_MACHINE_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
@@ -1895,6 +1943,7 @@ this.handleSelectCarModal() ;
       let childChangeMachineListTotal = [] ;
       // 子層數據源
       this.rowSelectData.forEach((item,index,array)=>{
+
         let childChangeMachineList = [] ;
         if(item.MACHINE1_ADD !== null && item.MACHINE1_ADD !== '' && item.MACHINE1_ADD !== undefined ){
           childChangeMachineList.push({"label":item.MACHINE1_ADD,"value":item.MACHINE1_ADD}) ;
@@ -1908,8 +1957,21 @@ this.handleSelectCarModal() ;
           childChangeMachineList.push({"label":item.MACHINE3_ADD,"value":item.MACHINE3_ADD})
           childChangeMachineListTotal.push(item.MACHINE3_ADD)
         }
+        if(item.BEST_MACHINE_ADD !== null && item.BEST_MACHINE_ADD !== '' && item.BEST_MACHINE_ADD !== undefined){
+          childChangeMachineList.push({"label":item.BEST_MACHINE_ADD,"value":item.BEST_MACHINE_ADD})
+          childChangeMachineListTotal.push(item.BEST_MACHINE_ADD)
+        }
+       //  childChangeMachineList = childChangeMachineList.filter((item, index, self) => self.indexOf(item.value) === index);
        //  console.log("子層數據源：" + JSON.stringify(item))
-       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false ,"childChangeMachine":childChangeMachineList}
+        const uniqueNameSet = new Set<string>();
+        const uniqueItems = childChangeMachineList.filter(item => {
+          if (!uniqueNameSet.has(item.value)) {
+            uniqueNameSet.add(item.value);
+            return true;
+          }
+          return false;
+        });
+       let changeMachineTBTemp = {"ID":item.ID,"ID_NO":item.ID_NO,"PST_MACHINE":item.PST_MACHINE,"PST_MACHINE_NEW":"", "isEdit":false ,checked:false ,"childChangeMachine":uniqueItems}
         changeMachineTB.push(changeMachineTBTemp) ;
       })
        childChangeMachineListTotal = childChangeMachineListTotal.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
@@ -1950,8 +2012,15 @@ this.handleSelectCarModal() ;
       }
 
        this.changeMachineModal.table.tbData.forEach((item,index,arr)=>{
-        this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
-        this.changeMachineModal.table.tbData[index].checked = true ;
+        // 看每組子機台包含當前機台
+        let ckeckMachine = false ;
+        let ckeckMachineTemp = this.changeMachineModal.table.tbData[index].childChangeMachine.filter((item)=>{
+          return item.value === this.selectChangeEquipCode ;
+        })
+        if(ckeckMachineTemp.length > 0 ){
+          this.changeMachineModal.table.tbData[index].PST_MACHINE_NEW = this.selectChangeEquipCode;
+          this.changeMachineModal.table.tbData[index].checked = true ;
+        }
       })
       
      }

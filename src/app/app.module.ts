@@ -121,6 +121,8 @@ import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
 import { OpenSortRendererComponent } from './pages/PPS/PPSI210/open-sort-renderer-component';
 import { SendChoiceRendererComponent } from './pages/PPS/PPSI210/send-choice-renderer-component';
+import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
+
 
 registerLocaleData(zh);
 
@@ -196,7 +198,6 @@ registerLocaleData(zh);
     PPSR306Component,
     PPSR307Component,
     OIPP029component,
-
     SPAP100component,
     SPAP101component,
     InactivityTimerComponent,
@@ -218,7 +219,8 @@ registerLocaleData(zh);
     PPSR309Component,
     BtnCellRenderer,
     OpenSortRendererComponent,
-    SendChoiceRendererComponent
+    SendChoiceRendererComponent,
+    PPSI112Component,
   ],
   imports: [
     BrowserModule,

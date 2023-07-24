@@ -1080,8 +1080,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
- //getTbppsm102ListAll 取得getTbppsm102ListAll
- getTbppsm102ListAll(_plantCode) {
+  //getTbppsm102ListAll 取得getTbppsm102ListAll
+  getTbppsm102ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
@@ -1089,7 +1089,8 @@ export class PPSService {
 
   // exportTbppsm102ListExcel 匯出 Excel
   exportTbppsm102ListExcel(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
+    let queryUrl =
+      this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1647,6 +1648,12 @@ export class PPSService {
     let queryUrl = this.APIURL + '/FCP/R302/getSecondModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  // 取得mes以入庫量明細
+  getR302MesDtlList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + '/FCP/R302/getR302MesDtlList';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 
   /////////////////////////////////////////////////////////////
   // PPSI130 批次爐鋼種捲數製程碼對應表
@@ -1902,4 +1909,9 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getTBPPSM107() {
+    let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
 }

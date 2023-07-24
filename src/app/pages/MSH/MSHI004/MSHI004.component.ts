@@ -9,6 +9,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { MSHI004 } from './MSHI004.model';
 import { MSHI004MACHINE } from './machine.model';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
@@ -51,6 +52,7 @@ export class MSHI004Component {
   USERNAME; //
   lock;
   mgroup;
+  isRunFCP = false;
 
   isSpinning = false;
 
@@ -119,6 +121,7 @@ export class MSHI004Component {
   };
 
   constructor(
+    private getPPSService: PPSService,
     private mshi004Service: MSHI004Service,
     private Modal: NzModalService,
     private message: NzMessageService,
@@ -379,7 +382,7 @@ export class MSHI004Component {
             _this.renderer.listen(buttonElement, 'click', () => {
               if (!_.isEmpty(_this.MSHI004PendingDataList)) {
                 _this.message.error('請先儲存資料');
-              } else {
+              } else if (_this.isRunFCP == false) {
                 _this.shopCodeList = [];
                 _this.now = moment(_this.publishStartTime).format('YYYY-MM-DD');
                 _this.end = moment(
@@ -402,6 +405,12 @@ export class MSHI004Component {
                 _this.fcpStart();
                 // _this.buttonClicked(params.data);
                 // _this.aaa(params.data);
+              } else {
+                const buttonElement = _this.renderer.createElement('button');
+                const buttonText = _this.renderer.createText('FCP執行中');
+                _this.renderer.appendChild(buttonElement, buttonText);
+                _this.renderer.addClass(buttonElement, 'button');
+                return buttonElement;
               }
             });
             return buttonElement;
@@ -583,6 +592,14 @@ export class MSHI004Component {
       });
   }
 
+  getRunFCPCount() {
+    let myObj = this;
+    this.getPPSService.getRunFCPCount().subscribe((res: number) => {
+      console.log('getRunFCPCount success');
+      console.log(res);
+      if (res > 0) this.isRunFCP = true;
+    });
+  }
   // aaa(params) {
   //   console.log('新增發佈者');
   //   let c = params.id;
