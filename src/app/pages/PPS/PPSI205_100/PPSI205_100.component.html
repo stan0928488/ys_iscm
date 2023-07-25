@@ -1,35 +1,13 @@
 <nz-content style="margin: 0 16px">
   <nz-breadcrumb style="margin: 16px 0">
     <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>非通用</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
-        <ul>
-          <li><a href="#/singleData/I120">直棒退火爐工時</a></li>
-          <li><a href="#/singleData/I121">直棒研磨道次</a></li>
-          <li><a href="#/singleData/I122">直棒桶槽式工時</a></li>
-          <li><a href="#/singleData/I123">直棒清洗站設備能力</a></li>
-          <li class="active">
-            <a href="#/singleData/I124"
-              ><label style="color: blue"
-                ><font size="4">公版設定維護(PPSI205)</font></label
-              ></a
-            >
-          </li>
-          <li>
-            <a href="#/singleData/I130">精整批次爐鋼種捲數製程碼對應表</a>
-          </li>
-          <li>
-            <a href="#/singleData/I131">直棒BA1批次爐工時維護</a>
-          </li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
+    <nz-breadcrumb-item>策略基礎設定</nz-breadcrumb-item>
+    <nz-breadcrumb-item><font size="4">公版設定維護(PPSI205)</font></nz-breadcrumb-item>
   </nz-breadcrumb>
   <h2 id="number" style="text-align: right; margin: 0"></h2>
 
-  <nz-tabset [nzTabPosition]="'left'" [nzType]="'card'" [nzSelectedIndex]="4">
+  <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'" [nzSelectedIndex]="4">
     <!-- 盤元冷抽尺寸優先順序表 -->
     <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
       <div>
@@ -964,7 +942,7 @@
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/singleData/I124']"
+            [routerLink]="['/PlanSet/I205']"
             [queryParams]="{ selectedTabIndex: 4, innerSelect: 0 }"
             style="color: black"
           >
@@ -975,7 +953,7 @@
           class="Tab5-a"
           style="background-color: #ffffff; color: dodgerblue"
         >
-          <a *nzTabLink nz-tab-link [routerLink]="['/singleData/I124_100']">
+          <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_100']">
             工廠排程公版匯入</a
           >
           <nz-collapse>
