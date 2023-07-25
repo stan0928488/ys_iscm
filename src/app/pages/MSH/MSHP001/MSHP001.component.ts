@@ -1343,7 +1343,7 @@ this.handleSelectCarModal() ;
           currentGroupString += "," + item[key] ;
         }
       }
-         console.log("上個分組：" +index+ ":"+ JSON.stringify(this.groupArray)) 
+         // console.log("上個分組：" +index+ ":"+ JSON.stringify(this.groupArray)) 
         // console.log("當前分組：" + JSON.stringify(currentGroupString)) 
        
         //取出每一個key值進行拼接
@@ -1488,12 +1488,12 @@ this.handleSelectCarModal() ;
         }else if( key === 'INPUT_DIA') {  // 若果是投入尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r =  arr.length === 1 ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr[0] === arr[arr.length - 1] ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         } else if( key === 'OUT_DIA') {  // 若果是產出尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r =  arr.length === 1 ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr[0] === arr[arr.length - 1] ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         }  
         else if( key === 'OP_CODE') {  // 若果是作業代碼 從低到高

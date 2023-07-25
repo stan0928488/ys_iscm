@@ -51,15 +51,16 @@
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
         <p *ngIf="selectFcpVerObj">
-          <nz-checkbox-wrapper style="width: 60%;"  (nzOnChange)="checkedChange($event)">
+          <nz-checkbox-wrapper style="width: 40%;"  (nzOnChange)="checkedChange($event)">
             <div nz-row>
-              <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList">
+              <div nz-col  nzSpan="4" *ngFor="let item2 of groupColumList">
                 <label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"  [nzDisabled]="item2.columValue === 'CAR_ID_ADD' && (selectEquipCode === 'BA1' || selectEquipCode === 'RF') "
                 >{{item2.columLabel}}</label>
               </div>
               
             </div>
           </nz-checkbox-wrapper>
+          <span style="float: right;">
           <nz-input-number 
           [(ngModel)]="fcpNumber" 
           [nzMin]="0"
@@ -67,7 +68,7 @@
           [nzStep]="1"
           [nzDisabled]="fcpNumberIsDisabled"
         ></nz-input-number>
-        <span style="margin-left:15px" >
+        <span style="margin-left:5px" >
           <button nz-button  (click)="toggleDisabled()">
             <span>{{fcpNumberIsDisabled ? '修改' :'保存'}}</span>
           </button>
@@ -75,11 +76,11 @@
 
 
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
-          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
-          <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
+          <button  nz-button style="margin-left:15px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
+          <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
+          <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
           <button  nz-button style="margin-left:15px;background-color: #e24d42; border-color: #e24d42;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
-
+        </span>
 
         </p>
       </nz-collapse-panel>
