@@ -1452,7 +1452,13 @@ this.handleSelectCarModal() ;
           let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
           preGroupObject[key] = sum ;
 
-        }else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
+        }else if( key === 'SFC_SHOP_CODE') {  // 若果是現況站別 逗號
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          preGroupObject[key] = uniqueArr.join(','); 
+
+        }
+        else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let numArr = arr.map(Number); // 将字符数组转换为数字数组
           let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
@@ -1482,12 +1488,12 @@ this.handleSelectCarModal() ;
         }else if( key === 'INPUT_DIA') {  // 若果是投入尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr.length === 1 ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         } else if( key === 'OUT_DIA') {  // 若果是產出尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr.length === 1 ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         }  
         else if( key === 'OP_CODE') {  // 若果是作業代碼 從低到高
