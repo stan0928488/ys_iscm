@@ -217,7 +217,10 @@ changeCarFlag = '1' ;
   }
  }
  /**同作業換車結束 */
-
+ /***FCP使用開始 */
+ fcpNumber = 0 ;
+ fcpNumberIsDisabled = true ;
+/***FCP使用結束 */
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
   this.mshService.getEquipOpCode(ids).subscribe(res=>{
@@ -1150,6 +1153,9 @@ this.handleSelectCarModal() ;
 
    //挑選站別
    selectShopCodeFunc(){
+    //站別切換 數據重置
+    this.fcpNumber = 0 ;
+    this.fcpNumberIsDisabled = true ;
     //console.log("checked:"+JSON.stringify(this.selectShopCode) );
     this.searchV0.shopCode = this.selectShopCode ;
     //console.log("所有站別：" + JSON.stringify(this.shopCodeList))
@@ -1170,8 +1176,7 @@ this.handleSelectCarModal() ;
   }
 
   selectEquipCodeFunc(){
-    console.log("選擇站別 :" + this.selectEquipCode)
-    console.log("columnDefs1:" + JSON.stringify(this.columnDefs))
+    if(this.selectShopCode === '401' || this.selectShopCode === '411') {
     if(this.selectEquipCode === 'BA1'){
       //  let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
       let isExsit = true ;
@@ -1232,6 +1237,7 @@ this.handleSelectCarModal() ;
     //this.gridOptionsRowDataModal.api.setColumnDefs(this.columnDefs) ;
     //console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
     //console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
+  }
     this.originalData = [] ;
     this.rowData = [] ;
     this.getTableData() ;
@@ -1709,7 +1715,8 @@ this.handleSelectCarModal() ;
     // this.originalData = JSON.parse(localStorage.getItem("originalData")) ;
     // console.log("使用："+this.finalChangeDataIds)
    // let _param = {ids:this.finalChangeDataIds.toString()}
-    this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+   let saveSortData = {saveByIDSList:finalChangeDataTemp,fcpNumber:this.fcpNumber}
+    this.mshService.saveSortData(saveSortData).subscribe(res=>{
       this.saveLoading = false ;
       this.isLoading = false ;
       if(flag === '1') {
@@ -1807,7 +1814,8 @@ this.handleSelectCarModal() ;
         finalChangeDataTemp.push({id:item.ID,sort:index + 1})
       }) 
       this.handlecomitExcelModelConfirmLoading = true
-      this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+      let saveSortData = {saveByIDSList:finalChangeDataTemp,fcpNumber:this.fcpNumber}
+      this.mshService.saveSortData(saveSortData).subscribe(res=>{
         this.handlecomitExcelModelConfirmLoading  = false ;
         let result:any = res ;
         if(result.code == 200) {
@@ -2213,6 +2221,11 @@ this.handleSelectCarModal() ;
         }
       })
 
+    }
+    /**FCP 使用 */
+    // 開啟關閉可使用
+    toggleDisabled(){
+      this.fcpNumberIsDisabled = !this.fcpNumberIsDisabled;
     }
     
 
