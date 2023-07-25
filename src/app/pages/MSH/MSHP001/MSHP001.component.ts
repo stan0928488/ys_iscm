@@ -1444,7 +1444,9 @@ this.handleSelectCarModal() ;
         } else if( key === 'NEXT_SCH_SHOP_CODE') {  // 若果是下站別 逗號隔開 去重復
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
-          preGroupObject[key] = uniqueArr.join(','); 
+          const filteredArray: string[] = uniqueArr.filter(str => str !== null && str !== 'null');
+         
+          preGroupObject[key] = filteredArray.join(','); 
 
         }else if( key === 'PLAN_WEIGHT_I') {  // 若果是計劃重量 加總 
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
@@ -1455,7 +1457,8 @@ this.handleSelectCarModal() ;
         }else if( key === 'SFC_SHOP_CODE') {  // 若果是現況站別 逗號
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
-          preGroupObject[key] = uniqueArr.join(','); 
+          const filteredArray: string[] = uniqueArr.filter(str => str !== null && str !== 'null');
+          preGroupObject[key] = filteredArray.join(','); 
 
         }
         else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
