@@ -85,8 +85,11 @@
     [rowData]="displayDataList"
     [columnDefs]="columnDefs"
     [pagination]="true"
+    [frameworkComponents]="frameworkComponents"
     [gridOptions]="gridOptions"
     editType="fullRow"
+    [suppressClickEdit]="true"
+    (rowClicked)="onRowClicked($event)"
   >
   </ag-grid-angular>
 </nz-content>
