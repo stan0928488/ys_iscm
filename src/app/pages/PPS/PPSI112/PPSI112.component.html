@@ -28,70 +28,72 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-collapse>
-    <nz-collapse-panel nzHeader="新增/匯出/匯入">
-      <div>
-        <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-          nzType="primary"
-          (click)="openYieldInput()"
-        >
-          <span nz-icon nzType="plus" nzTheme="outline"></span>
-          新增
-        </button>
-        <input
-          type="file"
-          id="fileupload"
-          style="display: inline-block"
-          (change)="incomingfile($event)"
-          placeholder="Upload file"
-          accept=".xlsx, .xls, .csv"
-        />
-        <button
-          nz-button
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-          "
-          nzType="primary"
-          (click)="Upload()"
-        >
-          <span nz-icon nzType="upload" nzTheme="outline"></span>
-          E X C E L 匯入
-        </button>
-        &nbsp;&nbsp;
-        <button
-          nz-button
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-          "
-          nzType="primary"
-          (click)="convertToExcel()"
-        >
-          <span nz-icon nzType="download" nzTheme="outline"></span>
-          E X C E L 匯出
-        </button>
-      </div>
-    </nz-collapse-panel>
-  </nz-collapse>
+  <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
+    <nz-collapse>
+      <nz-collapse-panel nzHeader="新增/匯出/匯入">
+        <div>
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+            nzType="primary"
+            (click)="openYieldInput()"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+          </button>
+          <input
+            type="file"
+            id="fileupload"
+            style="display: inline-block"
+            (change)="incomingfile($event)"
+            placeholder="Upload file"
+            accept=".xlsx, .xls, .csv"
+          />
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+            "
+            nzType="primary"
+            (click)="Upload()"
+          >
+            <span nz-icon nzType="upload" nzTheme="outline"></span>
+            E X C E L 匯入
+          </button>
+          &nbsp;&nbsp;
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+            "
+            nzType="primary"
+            (click)="convertToExcel()"
+          >
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+          </button>
+        </div>
+      </nz-collapse-panel>
+    </nz-collapse>
 
-  <ag-grid-angular
-    style="width: 100%; height: 550px; overflow: scroll"
-    class="ag-theme-alpine"
-    [rowData]="displayDataList"
-    [columnDefs]="columnDefs"
-    [pagination]="true"
-    [frameworkComponents]="frameworkComponents"
-    [gridOptions]="gridOptions"
-    editType="fullRow"
-    [suppressClickEdit]="true"
-    (rowClicked)="onRowClicked($event)"
-  >
-  </ag-grid-angular>
+    <ag-grid-angular
+      style="width: 100%; height: 550px; overflow: scroll"
+      class="ag-theme-alpine"
+      [rowData]="displayDataList"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [frameworkComponents]="frameworkComponents"
+      [gridOptions]="gridOptions"
+      editType="fullRow"
+      [suppressClickEdit]="true"
+      (rowClicked)="onRowClicked($event)"
+    >
+    </ag-grid-angular>
+  </nz-spin>
 </nz-content>
 
 <!-- 產能維護(管束設定)新增 -->
@@ -120,12 +122,19 @@
             站別
           </td>
           <td style="width: 600px">
-            <input
-              style="width: 90%; color: darkblue"
-              nz-input
-              placeholder="輸入站別"
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder="輸入站別"
               [(ngModel)]="schShopCode"
-            />
+            >
+              <nz-option
+                *ngFor="let option of shopCode"
+                [nzValue]="option"
+                [nzLabel]="option"
+              ></nz-option>
+            </nz-select>
           </td>
           <td
             style="
@@ -140,7 +149,7 @@
           </td>
           <td style="width: 600px">
             <input
-              style="width: 90%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
               placeholder="輸入機台"
               [(ngModel)]="equipCode"
@@ -183,7 +192,7 @@
           </td>
           <td style="width: 600px">
             <input
-              style="width: 90%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
               placeholder="輸入累積值"
               [(ngModel)]="accumulation"
@@ -202,7 +211,7 @@
           </td>
           <td style="width: 600px">
             <input
-              style="width: 90%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
               placeholder="輸入強制投產"
               [(ngModel)]="dateLimit"
