@@ -1946,6 +1946,12 @@ export class PPSService {
     return this.http.post(queryUrl, '', this.httpOptions);
   }
 
+  getShopCode() {
+    let queryUrl = this.APIURL + `/FCP/I112/getShopCode`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
   importTBPPSM107Excel(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';

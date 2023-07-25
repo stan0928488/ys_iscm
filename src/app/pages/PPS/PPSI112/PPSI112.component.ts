@@ -43,11 +43,13 @@ export class PPSI112Component implements AfterViewInit {
   //存放資料的陣列
   tbppsm107: ItemData[] = [];
   // 如為true則不可異動
-  isRunFCP: boolean;
+  isRunFCP = false;
   // 等待資料變動
-  loading: boolean;
+  loading = true;
   //新增視窗開關
   isVisibleYield: boolean;
+
+  preShopEquip;
 
   schShopCode: string;
   equipCode: string;
@@ -104,7 +106,7 @@ export class PPSI112Component implements AfterViewInit {
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
     let myObj = this;
-    this.PPSService.getRunFCPCount().subscribe((res) => {
+    this.PPSService.getRunFCPCount().subscribe((res: number) => {
       console.log('getRunFCPCount success');
       if (res > 0) this.isRunFCP = true;
     });
@@ -121,7 +123,6 @@ export class PPSI112Component implements AfterViewInit {
     this.userUpdate = '';
 
     this.isVisibleYield = false;
-    this.isRunFCP = false;
     this.loading = false;
     this.isErrorMsg = false;
     this.importdata = [];
@@ -164,6 +165,10 @@ export class PPSI112Component implements AfterViewInit {
       headerName: '是否使用',
       field: 'useFlag',
       width: 90,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['Y', 'N'],
+      },
     },
     {
       headerName: '更新時間',
@@ -204,7 +209,6 @@ export class PPSI112Component implements AfterViewInit {
   async getTBPPSM107() {
     this.PPSService.getTBPPSM107().subscribe((res) => {
       this.myDataList = res;
-      this.loading = true;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
           schShopCode: this.myDataList[i].schShopCode,
@@ -223,6 +227,13 @@ export class PPSI112Component implements AfterViewInit {
       console.log(this.displayDataList);
       this.loading = false;
       this.updateEditCache();
+    });
+  }
+  shopCode;
+  getShopCode() {
+    this.PPSService.getShopCode().subscribe((res) => {
+      this.shopCode = Object.values(res);
+      console.log(this.shopCode);
     });
   }
 
@@ -323,6 +334,7 @@ export class PPSI112Component implements AfterViewInit {
         nzTitle: '是否確定修改',
         nzOnOk: () => {
           this.updateSave(rowData, equipCode);
+          this.loading = true;
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -362,8 +374,9 @@ export class PPSI112Component implements AfterViewInit {
             const index = this.displayDataList.findIndex(
               (item) => item.equipCode === _equipCode
             );
-            Object.assign(this.displayDataList[index], rowData);
-            this.editCache[_equipCode].edit = false;
+            this.getTBPPSM107();
+            // Object.assign(this.displayDataList[index], rowData);
+            // this.editCache[_equipCode].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -380,9 +393,8 @@ export class PPSI112Component implements AfterViewInit {
   // 刪除資料
   delByEquipCode(_equipCode) {
     let myObj = this;
+    this.loading = true;
     return new Promise((resolve, reject) => {
-      console.log(this.editCache);
-      console.log('fuckkkkkkkkk');
       myObj.PPSService.delTBPPSM107('1', _equipCode).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
@@ -631,6 +643,7 @@ export class PPSI112Component implements AfterViewInit {
   // 新增產能維護之彈出視窗
   openYieldInput(): void {
     this.isVisibleYield = true;
+    this.getShopCode();
   }
   //取消產能維護彈出視窗
   cancelYieldInput(): void {
@@ -639,10 +652,10 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   onBtnClick1(e) {
-    e.params.api.setFocusedCell(e.params.node.rowIndex, 'dateLimit');
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'accumulation');
     e.params.api.startEditingCell({
       rowIndex: e.params.node.rowIndex,
-      colKey: 'dateLimit',
+      colKey: 'accumulation',
     });
   }
 
@@ -661,7 +674,6 @@ export class PPSI112Component implements AfterViewInit {
   onRowClicked(event: any) {
     console.log('Row clicked:', event.data);
     this.whichRow = event.data.equipCode;
-    console.log(this.whichRow);
     // 在这里处理您点击行后的逻辑
   }
 }
