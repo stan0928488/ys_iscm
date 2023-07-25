@@ -18,6 +18,7 @@ import {
 } from 'ag-grid-community';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { TBPPSM107 } from './TBPPSM107.model';
+import { GridOptions } from 'ag-grid-community';
 
 interface ItemData {
   schShopCode: string;
@@ -65,15 +66,17 @@ export class PPSI112Component implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
   rowData: ItemData[] = [];
+  whichRow;
 
   frameworkComponents;
 
   gridOptions = {
     defaultColDef: {
-      editable: false,
+      editable: true,
       sortable: false,
       resizable: true,
     },
+    api: null,
   };
 
   constructor(
@@ -171,18 +174,33 @@ export class PPSI112Component implements AfterViewInit {
     {
       headerName: '更新者',
       field: 'userUpdate',
-      width: 75,
+      width: 100,
       editable: false,
     },
     {
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
     },
   ];
 
   myDataList;
   displayDataList: ItemData[] = [];
+  editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   async getTBPPSM107() {
     this.PPSService.getTBPPSM107().subscribe((res) => {
       this.myDataList = res;
@@ -204,10 +222,11 @@ export class PPSI112Component implements AfterViewInit {
       this.myDataList = {};
       console.log(this.displayDataList);
       this.loading = false;
+      this.updateEditCache();
     });
   }
 
-  // // insert
+  // insert
   insertTab() {
     if (this.schShopCode === '') {
       this.message.create('error', '「站別」不可為空');
@@ -263,127 +282,123 @@ export class PPSI112Component implements AfterViewInit {
     this.gridOptions.defaultColDef.editable = true;
   }
 
-  // // update
-  // editRow(id: number): void {
-  //   this.editCache[id].edit = true;
-  // }
+  // update
+  editRow(equipCode: string): void {
+    this.editCache[equipCode].edit = true;
+  }
 
-  // // delete
-  // deleteRow(id: number): void {
-  //   this.Modal.confirm({
-  //     nzTitle: '是否確定刪除',
-  //     nzOnOk: () => {
-  //       this.delID(id);
-  //     },
-  //     nzOnCancel: () => console.log('cancel'),
-  //   });
-  // }
+  // delete
+  deleteRow(equipCode: string): void {
+    this.Modal.confirm({
+      nzTitle: '是否確定刪除',
+      nzOnOk: () => {
+        this.delByEquipCode(equipCode);
+      },
+      nzOnCancel: () => console.log('cancel'),
+    });
+  }
 
-  // // cancel
-  // cancelEdit(id: number): void {
-  //   const index = this.tbppsm013List.findIndex((item) => item.idx === id);
-  //   this.editCache[id] = {
-  //     data: { ...this.tbppsm013List[index] },
-  //     edit: false,
-  //   };
-  // }
+  // cancel
+  cancelEdit(equipCode: string): void {
+    const index = this.displayDataList.findIndex(
+      (item) => item.equipCode === equipCode
+    );
+    this.editCache[equipCode] = {
+      data: { ...this.displayDataList[index] },
+      edit: false,
+    };
+  }
 
-  // // update Save
-  // saveEdit(tbppsm107: any, id: number): void {
-  //   let myObj = this;
-  //   if (tbppsm107.schShopCode === undefined) {
-  //     myObj.message.create('error', '「站別」不可為空');
-  //     return;
-  //   } else if (
-  //     tbppsm107.equipCode === undefined &&
-  //     tbppsm107.equipGroup === undefined
-  //   ) {
-  //     myObj.message.create('error', '「機台」和「機群」至少填一項');
-  //     return;
-  //   } else {
-  //     this.Modal.confirm({
-  //       nzTitle: '是否確定修改',
-  //       nzOnOk: () => {
-  //         this.updateSave(tbppsm107, id);
-  //       },
-  //       nzOnCancel: () => console.log('cancel'),
-  //     });
-  //   }
-  // }
+  // update Save
+  saveEdit(rowData: any, equipCode: string): void {
+    let myObj = this;
+    if (rowData.schShopCode === undefined) {
+      myObj.message.create('error', '「站別」不可為空');
+      return;
+    } else if (rowData.equipCode === undefined) {
+      myObj.message.create('error', '「機台」不可為空');
+      return;
+    } else {
+      this.Modal.confirm({
+        nzTitle: '是否確定修改',
+        nzOnOk: () => {
+          this.updateSave(rowData, equipCode);
+        },
+        nzOnCancel: () => console.log('cancel'),
+      });
+    }
+  }
 
-  // // update
-  // updateEditCache(): void {
-  //   this.tbppsm013List.forEach((item) => {
-  //     this.editCache[item.idx] = {
-  //       edit: false,
-  //       data: { ...item },
-  //     };
-  //   });
-  // }
+  // update
+  updateEditCache(): void {
+    this.displayDataList.forEach((item) => {
+      this.editCache[item.equipCode] = {
+        edit: false,
+        data: { ...item },
+      };
+    });
+  }
 
-  // // 修改資料
-  // updateSave(tbppsm107, _id) {
-  //   let myObj = this;
-  //   this.LoadingPage = true;
-  //   return new Promise((resolve, reject) => {
-  //     let obj = {};
-  //     _.extend(obj, {
-  //       id: tbppsm107.id,
-  //       plantCode: tbppsm107.plantCode,
-  //       schShopCode: tbppsm107.schShopCode,
-  //       equipCode: tbppsm107.equipCode,
-  //       equipGroup: tbppsm107.equipGroup,
-  //       groupAmount: tbppsm107.groupAmount,
-  //       equipQuanity: tbppsm107.equipQuanity,
-  //       bootControl: tbppsm107.bootControl,
-  //       accumulateDay: tbppsm107.accumulateDay,
-  //       dateLimit: tbppsm107.dateLimit,
-  //       userName: this.userName,
-  //     });
-  //     myObj.PPSService.updateI106Save('1', obj).subscribe(
-  //       (res) => {
-  //         if (res[0].MSG === 'Y') {
-  //           this.onInit();
-  //           this.sucessMSG('修改成功', ``);
-  //           const index = this.tbppsm013List.findIndex(
-  //             (item) => item.idx === _id
-  //           );
-  //           Object.assign(this.tbppsm013List[index], rowData);
-  //           this.editCache[_id].edit = false;
-  //         } else {
-  //           this.errorMSG('修改失敗', res[0].MSG);
-  //         }
-  //       },
-  //       (err) => {
-  //         reject('upload fail');
-  //         this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
-  //         this.LoadingPage = false;
-  //       }
-  //     );
-  //   });
-  // }
+  // 修改資料
+  updateSave(rowData, _equipCode) {
+    let myObj = this;
+    this.loading = true;
+    return new Promise((resolve, reject) => {
+      let obj = {};
+      _.extend(obj, {
+        schShopCode: rowData.schShopCode,
+        equipCode: rowData.equipCode,
+        cumsumType: rowData.cumsumType,
+        accumulation: rowData.accumulation,
+        dateLimit: rowData.dateLimit,
+        useFlag: rowData.useFlag,
+        userUpdate: this.userName,
+      });
+      myObj.PPSService.updateTBPPSM107('1', obj).subscribe(
+        (res) => {
+          if (res[0].MSG === 'Y') {
+            this.onInit();
+            this.sucessMSG('修改成功', ``);
+            const index = this.displayDataList.findIndex(
+              (item) => item.equipCode === _equipCode
+            );
+            Object.assign(this.displayDataList[index], rowData);
+            this.editCache[_equipCode].edit = false;
+          } else {
+            this.errorMSG('修改失敗', res[0].MSG);
+          }
+        },
+        (err) => {
+          reject('upload fail');
+          this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
+          this.loading = false;
+        }
+      );
+    });
+  }
 
-  // // 刪除資料
-  // delID(_id) {
-  //   let myObj = this;
-  //   return new Promise((resolve, reject) => {
-  //     let id = this.editCache[_id].data.id;
-  //     myObj.PPSService.delI106Data('1', id).subscribe(
-  //       (res) => {
-  //         if (res[0].MSG === 'Y') {
-  //           this.onInit();
-  //           this.sucessMSG('刪除成功', ``);
-  //           this.getTbppsm013List();
-  //         }
-  //       },
-  //       (err) => {
-  //         reject('upload fail');
-  //         this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
-  //         this.LoadingPage = false;
-  //       }
-  //     );
-  //   });
-  // }
+  // 刪除資料
+  delByEquipCode(_equipCode) {
+    let myObj = this;
+    return new Promise((resolve, reject) => {
+      console.log(this.editCache);
+      console.log('fuckkkkkkkkk');
+      myObj.PPSService.delTBPPSM107('1', _equipCode).subscribe(
+        (res) => {
+          if (res[0].MSG === 'Y') {
+            this.onInit();
+            this.sucessMSG('刪除成功', ``);
+            this.getTBPPSM107();
+          }
+        },
+        (err) => {
+          reject('upload fail');
+          this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
+          this.loading = false;
+        }
+      );
+    });
+  }
 
   // convert to Excel and Download
   convertToExcel() {
@@ -621,5 +636,32 @@ export class PPSI112Component implements AfterViewInit {
   cancelYieldInput(): void {
     this.onInit();
     this.isVisibleYield = false;
+  }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'dateLimit');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'dateLimit',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData, e.rowData.idx);
+  }
+
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.idx);
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.equipCode);
+  }
+
+  onRowClicked(event: any) {
+    console.log('Row clicked:', event.data);
+    this.whichRow = event.data.equipCode;
+    console.log(this.whichRow);
+    // 在这里处理您点击行后的逻辑
   }
 }
