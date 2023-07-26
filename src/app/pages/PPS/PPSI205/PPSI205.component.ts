@@ -302,10 +302,10 @@ export class PPSI205Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTbppsm101List();
-    // this.forTbppsm100Date = moment(this.currentDate).format('YYYY-MM-DD HH:mm:ss');
+    this.forTbppsm100Date = moment(this.currentDate).format('YYYY-MM-DD HH:mm:ss');
     this.getTbppsm102ListAll();
-    // this.getTbppsm113List();
-    // this.getTbppsm100List();
+    this.getTbppsm113List();
+    this.getTbppsm100List();
   }
 
   // 取得是否有正在執行的FCP
@@ -428,6 +428,7 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
+  
   changeTab(tab): void {
     console.log(tab);
     if (tab === 1) {

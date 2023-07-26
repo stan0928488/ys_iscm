@@ -23,96 +23,84 @@
     </nz-tab>
 
     <!-- 401 Auto Campaign -->
-    <nz-tab nzTitle="401 Auto Campaign">
-      <a 
-        [routerLink]="['/PlanSet/I205']"
-        [queryParams]="{ selectedTabIndex: 3 }"
-        nz-button
-        nzType="default"
-        >
-        Auto Campaign 表
-      </a>
-      &nbsp;
-
-      <a 
-      [routerLink]="['/PlanSet/I205_401']"
-      [queryParams]="{ selectedTabIndex: 3, innerSelect: 0 }"
-      nz-button 
-      nzType="default"
-      [disabled]="isRunFCP"
-      (click)="getTbppsm119VerList()"
+    <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
+      <label
+        style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
+        *ngIf="isRunFCP"
       >
-      <span nzTheme="outline"></span>
-        彙 整 資 料
-      </a>
-      <nz-collapse>
-        <nz-collapse-panel 
-        nzHeader="資料結轉與EXCEL匯出" 
-        nzActive="true">
-
-        <button nz-button 
-                nzType="primary"
-                [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
-                [disabled]="isRunFCP"
-                (click)="convertTBPPSM102AutoCampaign()"
-        ><span nz-icon nzType="import" nzTheme="outline"></span>
-        轉入 401 Auto Campaign
-        </button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-
-          <nz-input-number 
-            style="height: 20%;"
-            nz-input 
-            [nzMin]="1" 
-            [nzMax]="50" 
-            [nzStep]="1"
-            [(ngModel)]="inputDate_val" 
+        ※ 目前 FCP 執行中，不可異動資料！
+      </label>
+      
+      <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+        <nz-tab class="Tab5-a" style="background-color: #ffffff">
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['/PlanSet/I205']"
+            [queryParams]="{ selectedTabIndex: 3 }"
+            style="color: black"
+            (nzClick)="changeTab(4)"
           >
-          </nz-input-number>
+          Auto campaign表
+          </a>
+        </nz-tab>
 
-          <nz-select nzShowSearch nzAllowClear [(ngModel)]="selectedVer_default" style="width: 220px; margin-left:25px;"
-            nzPlaceHolder="請選擇版本號" (ngModelChange)="getTbppsm119VerList()">
-            <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-          </nz-select>
-          &nbsp;&nbsp;&nbsp;&nbsp;
+      <nz-tab
+        class="Tab5-a"
+        style="background-color: #ffffff; color: dodgerblue"
+      >
+      <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_401']">
+        彙整資料</a
+      >
+        <nz-collapse>
+          <nz-collapse-panel 
+          nzHeader="資料結轉與EXCEL匯出" 
+          nzActive="true">
 
-          <button nz-button nzType="primary"
-            style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold;"
-            [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}" [disabled]="isRunFCP"
-            (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
-            資料結轉
+          <button nz-button 
+                  nzType="primary"
+                  [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}"
+                  [disabled]="isRunFCP"
+                  (click)="convertTBPPSM102AutoCampaign()"
+          ><span nz-icon nzType="import" nzTheme="outline"></span>
+          轉入 401 Auto Campaign
           </button>
-          &nbsp;&nbsp;&nbsp;&nbsp;
-          <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #4caf50;
-                border: 2px blue none;
-              "
-              nzType="primary"
-              (click)="excelExport()">
-              <span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
+            <button nz-button nzType="primary" 
+              style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
+              [ngClass]="{FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP}" [disabled]="isRunFCP"
+              (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
+              資料結轉
             </button>
+            <button
+                nz-button
+                style="
+                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                  background-color: #4caf50;
+                  border: 2px blue none;
+                  margin-left:25px; 
+                "
+                nzType="primary"
+                (click)="excelExport()">
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                E X C E L 匯出
+              </button>
 
-        </nz-collapse-panel>
-      </nz-collapse>
+          </nz-collapse-panel>
+        </nz-collapse>
 
-      <div>
-        <tr>
-          <label style="text-align: right; font-weight:bold; font-size: large; color: rgb(214, 63, 63);"
-            *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+        <label style="text-align: right; font-weight:bold; font-size: large; color: rgb(214, 63, 63);"
+        *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
 
-        </tr>
-      </div>
-      <br>
-      <ag-grid-angular [columnDefs]="columnDefs" [defaultColDef]="ColGroupDef" [headerHeight]="40" [rowHeight]="40"
-        style="width: 100%; height:500px;" class="ag-theme-alpine" [rowData]="rowData"
-        [suppressRowClickSelection]="true" [groupSelectsChildren]="true" [rowSelection]="'multiple'"
-        [animateRows]="true" [pagination]="true">
-      </ag-grid-angular>
+        <br>
+        <ag-grid-angular [columnDefs]="columnDefs" [defaultColDef]="ColGroupDef" [headerHeight]="40" [rowHeight]="40"
+          style="width: 100%; height:500px;" class="ag-theme-alpine" [rowData]="rowData"
+          [suppressRowClickSelection]="true" [groupSelectsChildren]="true" [rowSelection]="'multiple'"
+          [animateRows]="true" [pagination]="true">
+        </ag-grid-angular>
 
+      </nz-tab>
+      </nz-tabset>
+      
     </nz-tab>
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)">
@@ -120,3 +108,66 @@
 
   </nz-tabset>
 </nz-content>
+
+
+
+<nz-modal
+  [(nzVisible)]="isConvert"
+  [nzTitle]="convertTitle"
+  [nzContent]="convertContent"
+  [nzFooter]="convertFooter"
+  [nzWidth]="800"
+>
+  <ng-template #convertTitle>資料結轉</ng-template>
+  <ng-template #convertContent>
+    <div>
+      <table>
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設定到料天數</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-input-number 
+              style="height: 20%;"
+              nz-input 
+              [nzMin]="0" 
+              [nzMax]="50" 
+              [nzStep]="1"
+              [(ngModel)]="forceDay" 
+            >
+            </nz-input-number>
+          </td>
+        </tr>
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設定剩餘天數</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-input-number 
+              style="height: 20%;"
+              nz-input 
+              [nzMin]="1" 
+              [nzMax]="50" 
+              [nzStep]="1"
+              [(ngModel)]="inputDate_val" 
+            >
+            </nz-input-number>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;選擇版本號</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-select nzShowSearch nzAllowClear [(ngModel)]="selectedVer_default" style="width: 220px;"
+              nzPlaceHolder="請選擇版本號" (ngModelChange)="getTbppsm119VerList()">
+              <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+            </nz-select>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </ng-template>
+  <ng-template #convertFooter>
+    <button nz-button nzType="default" (click)="cancelConvert()">取消結轉</button>
+    <button nz-button nzType="primary" (click)="convertOK()">確定</button>
+  </ng-template>
+</nz-modal>
+
+

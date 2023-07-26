@@ -29,7 +29,7 @@ interface data {
   providers:[NzMessageService,DatePipe]
 })
 export class PPSI205_401Component implements AfterViewInit {
-
+  isConvert = false ; 
 
   titleArray1 = [
     '月份',
@@ -69,6 +69,7 @@ export class PPSI205_401Component implements AfterViewInit {
 
   selectedVer_default:string = null;
   inputDate_val:number = 1;
+  forceDay:number = 3;
   selectedVer = [{label:'',value:''}]; //版本選擇
 
   PLANT_CODE;
@@ -119,18 +120,18 @@ export class PPSI205_401Component implements AfterViewInit {
       { headerName:'MO 版次',
         field: 'moEdition' , 
         filter: true,
-        width: 200,
+        width: 150,
         },
       { headerName:'EPST',
         field: 'epst' , 
         filter: true,
-        width: 150, 
+        width: 120, 
         valueFormatter: this.dateFormatter,
       },
-      { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 150 },
-      { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 150},
-      { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 150 },
-      { headerName:'405 剩餘工時(天)',field: 'leastTime2' , filter: true,width: 150 },
+      { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 160 },
+      { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 160},
+      { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 160 },
+      { headerName:'405 剩餘工時(天)',field: 'leastTime2' , filter: true,width: 160 },
       { headerName:'401 投產日_起', field:'startDate', filter:true, width: 150},
       { headerName: '401 投產日_迄' ,field: 'endDate' , filter: true,width: 150 },
     ];
@@ -195,20 +196,29 @@ export class PPSI205_401Component implements AfterViewInit {
   }
 
   converTBPPSM119Data() {
-    let data = {"userName": "","day":this.inputDate_val, "moEdition": ""};
-    
+    this.isConvert = true;
+  }
+
+  cancelConvert() {
+    this.isConvert = false;
+    this.forceDay = undefined;
+    this.inputDate_val = undefined;
+    this.selectedVer_default = undefined;
+  }
+
+  convertOK(){
+    let data = {"userName": "","day":this.inputDate_val, "moEdition": "", "forceDay": this.forceDay};
     data.moEdition = this.selectedVer_default;
     data.userName = this.USERNAME;
     data.day = this.inputDate_val;
-
-      console.log("converTBPPSM119Data success");
       this.getPPSService.converTBPPSM119Data(data).subscribe(res =>{
         let result:any = res ;
         if(result.code == 0) {
           this.message.error('結轉發生異常，請選擇版本號');
-        }else {
-        this.message.info('結轉成功');
-        this.getTbppsm119ListAll();
+        } else {
+          this.message.info('結轉成功');
+          this.getTbppsm119ListAll();
+          this.cancelConvert();
         }
       },err => {
         this.message.error('結轉發生異常，請選擇版本號');
