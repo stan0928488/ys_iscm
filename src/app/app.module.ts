@@ -125,6 +125,7 @@ import { SendChoiceRendererComponent } from './pages/PPS/PPSI210/send-choice-ren
 import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
+import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
 
 registerLocaleData(zh);
 
@@ -226,6 +227,7 @@ registerLocaleData(zh);
     SendChoiceRendererComponent,
     PPSI112Component,
     BtnCellRendererUpdate,
+    SummaryDatePickerCellEditorComponent,
   ],
   imports: [
     BrowserModule,

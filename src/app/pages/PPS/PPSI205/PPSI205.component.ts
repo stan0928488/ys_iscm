@@ -7,7 +7,7 @@ import * as XLSX from 'xlsx';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import {  ColDef, ColGroupDef, ICellEditorComp, RowValueChangedEvent, GridApi, GridReadyEvent, CellValueChangedEvent, CellDoubleClickedEvent, ValueFormatterParams, CellEditingStoppedEvent} from 'ag-grid-community';
+import {  ColDef, ColGroupDef, ICellEditorComp, RowValueChangedEvent, GridApi, GridReadyEvent, CellValueChangedEvent, CellDoubleClickedEvent, ValueFormatterParams, CellEditingStoppedEvent, ValueParserParams} from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
 import * as moment from 'moment';
@@ -15,6 +15,7 @@ import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { DatePickerCellRendererComponent } from '../../RENDERER/datepicker-cell-renderer.component';
+import { SummaryDatePickerCellEditorComponent } from './SummaryDatePickerCellEditor.Component';
 registerLocaleData(zh);
 
 interface data {}
@@ -38,6 +39,7 @@ export class PPSI205Component implements AfterViewInit {
   isEditing = false;
   myContext : any;
   gridApi : GridApi;
+  tbppsm102EditCacheList : { [id: string]: { data: any } } = {};
 
   titleArray1 = [
     '月份',
@@ -135,14 +137,16 @@ export class PPSI205Component implements AfterViewInit {
   forTbppsm100Date;
   currentDate = new Date();
 
-  public ColGroupDef: ColDef = {
-    filter: true,
-    editable: true,
-    enableRowGroup: false,
-    enablePivot: false,
-    enableValue: false,
-    sortable: false,
-    resizable: true,
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      editable: true,
+      sortable: false,
+      resizable: true,
+    },
+    components: {
+      summaryDatePickerCellEditorComponent : SummaryDatePickerCellEditorComponent
+    }
   };
 
   dateTimeFormatter(params) {
@@ -191,6 +195,9 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
       editable: true,
       width: 100,
+      valueParser : (params: ValueParserParams): number =>{
+        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+      }
     },
     {
       headerName: 'max(EPST/ASAP)',
@@ -198,27 +205,15 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
       width: 160,
       valueFormatter: this.yearMonthFormatter,
-      cellRenderer: DatePickerCellRendererComponent,
-      cellRendererParams: [
-        {
-          onClick: this.onDatePickerBtnClick1.bind(this),
-        },
-      ],
-      maxWidth: 150,
+      cellEditor: 'summaryDatePickerCellEditorComponent',
     },
     {
       headerName: '生產開始日',
       field: 'STARTDATE',
       filter: true,
-      cellEditor: 'primeDatePickerCellEditorComponent',
+      cellEditor: 'summaryDatePickerCellEditorComponent',
       width: 130,
-      valueFormatter: this.dayDateFormatter,
-      cellRenderer: DatePickerCellRendererComponent,
-      cellRendererParams: [
-        {
-          onClick: this.onDatePickerBtnClick2.bind(this),
-        },
-      ],
+      //valueFormatter: this.dayDateFormatter,
       maxWidth: 150,
     },
     {
@@ -365,12 +360,22 @@ export class PPSI205Component implements AfterViewInit {
         this.rowData.forEach(item => {
           item['isEditing'] = false;
         })
+        this.setupUpdateEditCache();
       } else {
         this.message.error('無資料');
         return;
       }
       this.isSpinning = false;
-      console.log(this.tbppsm102ListAll);
+      console.log('Auto Campaign data --> ', this.rowData);
+    });
+  }
+
+  // 複製一份資料到Tbppsm102編輯專用的資料list
+ setupUpdateEditCache(): void {
+    this.rowData.forEach((item,index) => {
+      this.tbppsm102EditCacheList[index] ={
+        data: _.cloneDeep(item)
+      }
     });
   }
 
@@ -1927,15 +1932,21 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   cellEditingStoppedHandler(event : CellEditingStoppedEvent<any, any>){
-    const {oldValue, newValue } = event;
-    console.log('oldValue==>' , oldValue);
-    console.log('newValue==>' , newValue);
-    if(oldValue === newValue){
+    // 排除 "isEditing" 屬性，不列入後續的資料比較
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.tbppsm102EditCacheList[event.rowIndex].data, ['isEditing']);
+
+    console.log('newValue --> ' , newValue);
+    console.log('oldValue --> ' , oldValue);
+    console.log('equal -->', _.isEqual(oldValue, newValue));
+    
+
+
+    if(_.isEqual(oldValue, newValue)){
       event.data.isEditing = false;
     }
     else{
       event.data.isEditing = true;
-      return;
     }
   }
 
@@ -1949,17 +1960,6 @@ export class PPSI205Component implements AfterViewInit {
 
   calcelOnClick(e) {
     this.cancel401_dtlRow(e.index, e.rowData);
-  }
-
-  onDatePickerBtnClick1(e) {
-    this.dateFormat('YYYY-MM', 6);
-    this.upd_dtlRow(e, e.rowData);
-    e.rowData.save401_dtlRow;
-  }
-
-  onDatePickerBtnClick2(e) {
-    this.dateFormat('YYYY-MM-DD', 2);
-    e.rowData.save401_dtlRow;
   }
 
   onGridReady(params: GridReadyEvent) {
