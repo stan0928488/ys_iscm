@@ -1946,6 +1946,13 @@ export class PPSService {
     return this.http.post(queryUrl, '', this.httpOptions);
   }
 
+  getEquipCode(_parms) {
+    const body = JSON.stringify(_parms);
+    console.log(body);
+    let endpointUrl = this.APIURL + `/FCP/I112/getEquipCode`;
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
   getShopCode() {
     let queryUrl = this.APIURL + `/FCP/I112/getShopCode`;
     console.log(queryUrl);

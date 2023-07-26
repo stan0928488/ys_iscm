@@ -49,7 +49,7 @@ export class PPSI112Component implements AfterViewInit {
   //新增視窗開關
   isVisibleYield: boolean;
 
-  preShopEquip;
+  preEquip;
 
   schShopCode: string;
   equipCode: string;
@@ -116,8 +116,8 @@ export class PPSI112Component implements AfterViewInit {
     this.schShopCode = '';
     this.equipCode = '';
     this.cumsumType = '';
-    this.accumulation = 0;
-    this.dateLimit = 0;
+    this.accumulation = undefined;
+    this.dateLimit = undefined;
     this.useFlag = '';
     this.dateUpdate = '';
     this.userUpdate = '';
@@ -136,11 +136,13 @@ export class PPSI112Component implements AfterViewInit {
       headerName: '站別',
       field: 'schShopCode',
       width: 65,
+      editable: false,
     },
     {
       headerName: '機台',
       field: 'equipCode',
       width: 65,
+      editable: false,
     },
     {
       headerName: '累積單位',
@@ -229,11 +231,27 @@ export class PPSI112Component implements AfterViewInit {
       this.updateEditCache();
     });
   }
-  shopCode;
+
+  shopCodeOptions;
   getShopCode() {
     this.PPSService.getShopCode().subscribe((res) => {
-      this.shopCode = Object.values(res);
-      console.log(this.shopCode);
+      const data = Object.values(res);
+      this.shopCodeOptions = data.map((item) => item.schShopCode);
+    });
+  }
+
+  onSelect(event: boolean): void {
+    console.log('Select list opened:', event);
+    this.getEquipCode();
+    // 在这里执行你想要的操作
+  }
+
+  equipCodeOptions;
+  getEquipCode() {
+    this.preEquip = { schShopCode: this.schShopCode };
+    this.PPSService.getEquipCode(this.preEquip).subscribe((res) => {
+      const data = Object.values(res);
+      this.equipCodeOptions = res.map((item) => item.EQUIP_CODE);
     });
   }
 
@@ -379,6 +397,7 @@ export class PPSI112Component implements AfterViewInit {
             // this.editCache[_equipCode].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
+            this.loading = false;
           }
         },
         (err) => {
@@ -447,7 +466,6 @@ export class PPSI112Component implements AfterViewInit {
         accumulation: _.get(item, 'accumulation'),
         dateLimit: _.get(item, 'dateLimit'),
         useFlag: _.get(item, 'useFlag'),
-        userUpdate: _.get(item, 'userUpdate'),
       });
       excelData.push(obj);
     }
