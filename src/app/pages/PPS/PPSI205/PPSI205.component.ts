@@ -203,7 +203,7 @@ export class PPSI205Component implements AfterViewInit {
       headerName: 'max(EPST/ASAP)',
       field: 'MAX_DATE',
       filter: true,
-      width: 160,
+      width: 170,
       valueFormatter: this.yearMonthFormatter,
       cellEditor: 'summaryDatePickerCellEditorComponent',
     },
@@ -214,7 +214,6 @@ export class PPSI205Component implements AfterViewInit {
       cellEditor: 'summaryDatePickerCellEditorComponent',
       width: 130,
       //valueFormatter: this.dayDateFormatter,
-      maxWidth: 150,
     },
     {
       headerName: '生產結束日',
@@ -241,15 +240,14 @@ export class PPSI205Component implements AfterViewInit {
       field: 'COMPAIGN_ID',
       filter: true,
       editable: false,
-      width: 120,
+      width: 150,
     },
     {
       headerName: '轉入COMPAIGN表時間',
       field: 'EXPORTDATETIME',
       filter: true,
       editable: false,
-      width: 220,
-      valueFormatter: this.dateTimeFormatter,
+      width: 220
     },
     {
       headerName: 'Action',
@@ -306,12 +304,10 @@ export class PPSI205Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTbppsm101List();
-    this.forTbppsm100Date = moment(this.currentDate).format(
-      'YYYY-MM-DD HH:mm:ss'
-    );
+    // this.forTbppsm100Date = moment(this.currentDate).format('YYYY-MM-DD HH:mm:ss');
     this.getTbppsm102ListAll();
     // this.getTbppsm113List();
-    this.getTbppsm100List();
+    // this.getTbppsm100List();
   }
 
   // 取得是否有正在執行的FCP
@@ -353,7 +349,7 @@ export class PPSI205Component implements AfterViewInit {
   getTbppsm102ListAll() {
     this.getPPSService.getTbppsm102ListAll(this.PLANT_CODE).subscribe((res) => {
       this.isSpinning = true;
-      console.log('getTbppsm102ListAll success');
+      // console.log('getTbppsm102ListAll success');
       let result: any = res;
       if (result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
@@ -366,7 +362,9 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
       this.isSpinning = false;
-      console.log('Auto Campaign data --> ', this.rowData);
+      console.log('getTbppsm102ListAll success');
+      this.tbppsm102ListAll = this.rowData;
+      console.log('Auto Campaign data --> ', this.tbppsm102ListAll);
     });
   }
 
@@ -375,7 +373,7 @@ export class PPSI205Component implements AfterViewInit {
     this.rowData.forEach((item,index) => {
       this.tbppsm102EditCacheList[index] ={
         data: _.cloneDeep(item)
-      }
+        }
     });
   }
 
@@ -583,6 +581,7 @@ export class PPSI205Component implements AfterViewInit {
               ? '降冪'
               : '',
           COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'),
+          EXPORTDATETIME: _.get(item, "EXPORTDATETIME")
         });
         excelData.push(obj);
       }
@@ -1453,13 +1452,18 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   // 上傳到compaign 資料到 ppsinptb16
-  importCompaign() {
+  importCompaign(flag) {
+    console.log(this.tbppsm102ListAll )
     return new Promise((resolve, reject) => {
       this.LoadingPage = true;
       let myObj = this;
       let obj = {};
+      let list = [];
+      if(flag === 1) list = this.tbppsm102List ; 
+      else if(flag === 2) list = this.rowData ;
       _.extend(obj, {
-        dataList: this.tbppsm102List,
+        dataList: list,
+        flag: flag,
         PLANT_CODE: this.PLANT_CODE,
         USERCODE: this.USERNAME,
         DATETIME: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
@@ -1911,7 +1915,7 @@ export class PPSI205Component implements AfterViewInit {
   exportTbppsm102ListExcel() {
     this.loading = true;
     let myObj = this;
-    let exportTableName = 'Auto Campaign 主表';
+    let exportTableName = 'Auto Campaign主表';
     this.getPPSService
       .exportTbppsm102ListExcel(this.PLANT_CODE)
       .subscribe((res) => {

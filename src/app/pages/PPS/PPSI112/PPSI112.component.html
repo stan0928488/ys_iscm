@@ -29,12 +29,15 @@
   </nz-breadcrumb>
 
   <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
-    <nz-collapse>
+    <nz-collapse style="margin-bottom: 15px">
       <nz-collapse-panel nzHeader="新增/匯出/匯入">
-        <div>
+        <div style="display: flex">
           <button
             nz-button
-            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              margin-right: 500px;
+            "
             nzType="primary"
             (click)="openYieldInput()"
           >
@@ -44,7 +47,7 @@
           <input
             type="file"
             id="fileupload"
-            style="display: inline-block"
+            style="width: 190px; margin-right: 10px"
             (change)="incomingfile($event)"
             placeholder="Upload file"
             accept=".xlsx, .xls, .csv"
@@ -55,6 +58,7 @@
               box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
               background-color: #4caf50;
               border: 2px blue none;
+              margin-right: 20px;
             "
             nzType="primary"
             (click)="Upload()"
@@ -62,7 +66,6 @@
             <span nz-icon nzType="upload" nzTheme="outline"></span>
             E X C E L 匯入
           </button>
-          &nbsp;&nbsp;
           <button
             nz-button
             style="
@@ -112,25 +115,25 @@
         <tr>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 10px;
+              padding-left: 7px;
             "
           >
             站別
           </td>
-          <td style="width: 600px">
+          <td>
             <nz-select
-              style="width: 180px; color: darkblue"
+              style="width: 190px; color: darkblue"
               nzShowSearch
               nzAllowClear
               nzPlaceHolder="輸入站別"
               [(ngModel)]="schShopCode"
             >
               <nz-option
-                *ngFor="let option of shopCode"
+                *ngFor="let option of shopCodeOptions"
                 [nzValue]="option"
                 [nzLabel]="option"
               ></nz-option>
@@ -138,37 +141,45 @@
           </td>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 10px;
+              padding-left: 7px;
             "
           >
             機台
           </td>
-          <td style="width: 600px">
-            <input
-              style="width: 180px; color: darkblue"
-              nz-input
-              placeholder="輸入機台"
+          <td>
+            <nz-select
+              (nzOpenChange)="onSelect($event)"
+              style="width: 190px; color: darkblue"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder="請先選擇站別"
               [(ngModel)]="equipCode"
-            />
+            >
+              <nz-option
+                *ngFor="let option of equipCodeOptions"
+                [nzValue]="option"
+                [nzLabel]="option"
+              ></nz-option>
+            </nz-select>
           </td>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 10px;
+              padding-left: 7px;
             "
           >
             累積單位
           </td>
-          <td style="width: 300px">
+          <td>
             <nz-select
-              style="width: 180px; color: darkblue"
+              style="width: 190px; color: darkblue"
               nzPlaceHolder="輸入累積單位"
               [(ngModel)]="cumsumType"
             >
@@ -181,7 +192,7 @@
         <tr>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
@@ -190,9 +201,9 @@
           >
             累積值
           </td>
-          <td style="width: 600px">
+          <td>
             <input
-              style="width: 180px; color: darkblue"
+              style="width: 190px; color: darkblue"
               nz-input
               placeholder="輸入累積值"
               [(ngModel)]="accumulation"
@@ -200,7 +211,7 @@
           </td>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
@@ -209,9 +220,9 @@
           >
             強制投產
           </td>
-          <td style="width: 600px">
+          <td>
             <input
-              style="width: 180px; color: darkblue"
+              style="width: 190px; color: darkblue"
               nz-input
               placeholder="輸入強制投產"
               [(ngModel)]="dateLimit"
@@ -219,7 +230,7 @@
           </td>
           <td
             style="
-              width: 330px;
+              width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
@@ -228,9 +239,9 @@
           >
             是否使用
           </td>
-          <td style="width: 300px">
+          <td>
             <nz-select
-              style="width: 180px; color: darkblue"
+              style="width: 190px; color: darkblue"
               nzPlaceHolder="輸入是否使用"
               [(ngModel)]="useFlag"
             >
