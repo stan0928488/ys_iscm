@@ -1939,13 +1939,6 @@ export class PPSI205Component implements AfterViewInit {
     // 排除 "isEditing" 屬性，不列入後續的資料比較
     const newValue = _.omit(event.data, ['isEditing']);
     const oldValue = _.omit(this.tbppsm102EditCacheList[event.rowIndex].data, ['isEditing']);
-
-    console.log('newValue --> ' , newValue);
-    console.log('oldValue --> ' , oldValue);
-    console.log('equal -->', _.isEqual(oldValue, newValue));
-    
-
-
     if(_.isEqual(oldValue, newValue)){
       event.data.isEditing = false;
     }
@@ -1963,7 +1956,9 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   calcelOnClick(e) {
-    this.cancel401_dtlRow(e.index, e.rowData);
+    //this.cancel401_dtlRow(e.index, e.rowData);
+    this.rowData[e.index] = _.cloneDeep(this.tbppsm102EditCacheList[e.index].data);
+    this.gridApi.setRowData(this.rowData);
   }
 
   onGridReady(params: GridReadyEvent) {

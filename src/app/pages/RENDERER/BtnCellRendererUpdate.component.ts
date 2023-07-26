@@ -9,7 +9,7 @@ import { ICellRendererParams } from 'ag-grid-community';
   template: `
   <button *ngIf="!this.params.data.isEditing"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
   <button *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
-  <button *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
+  <button style="margin-left:10px" *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
     `
 })
 
@@ -34,7 +34,7 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
   }
   
   // 編輯
-  editOnClick($event) {
+  editOnClick(event) {
 
     this.params.data.isEditing = true;
     
@@ -48,13 +48,14 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
   }
 
   // 更新保存
-  updateOnClick($event) {
+  updateOnClick(event) {
+
     var actionParam = this.params[1];
     this.params.api.stopEditing();
 
     if (actionParam.onClick instanceof Function) {
       const params = {
-        event: $event,
+        event: event,
         rowData: this.params.node.data,
         index:this.params.node.id
       }
@@ -66,8 +67,7 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
   }
 
   // 取消
-  calcelOnClick($event) {
-    
+  calcelOnClick(event) {
     this.params.data.isEditing = false;
 
     var actionParam = this.params[2];
@@ -75,7 +75,7 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
 
     if (actionParam.onClick instanceof Function) {
       const params = {
-        event: $event,
+        event: event,
         rowData: this.params.node.data,
         index:this.params.node.id
       }
