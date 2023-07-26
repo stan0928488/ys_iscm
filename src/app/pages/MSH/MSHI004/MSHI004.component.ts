@@ -94,14 +94,13 @@ export class MSHI004Component {
   buttonStyle: string = `color: #fff;
     background-color: #1677ff;
     border-style: none;
-    width: 60%;
+    width: 80%;
     height: 100%;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
     line-height: 0 !important;
-    width: 60%;
     background-color: #1677ff;
     height: 100%;
     border-radius: 3px;
@@ -114,6 +113,7 @@ export class MSHI004Component {
     defaultColDef: {
       sortable: false,
       resizable: true,
+      headerClass: 'ag-header-cell',
     },
     components: {
       primeDatePickerCellEditorComponent: PrimeDatePickerCellEditor,
@@ -201,8 +201,7 @@ export class MSHI004Component {
       {
         headerName: 'MES群組',
         field: 'mesPublishGroup',
-        width: 150,
-        filter: true,
+        width: 100,
         onCellClicked: function (params): void {
           _this.mgroup = params.data.mesPublishGroup;
           _this.searchMachine(true);
@@ -211,7 +210,7 @@ export class MSHI004Component {
       {
         headerName: '發佈MES天數',
         field: 'mesPublishTime',
-        width: 150,
+        width: 100,
         editable: true,
         cellEditor: 'agLargeTextCellEditor',
         headerClass: 'header-editable-color',
@@ -229,12 +228,12 @@ export class MSHI004Component {
           this.dataTransferService.setData(event.node);
         },
       },
-      { headerName: '工作站數', field: 'shopCode', width: 120, filter: true },
-      { headerName: '機台數', field: 'equipCode', width: 120, filter: true },
+      { headerName: '工作站數', field: 'shopCode', width: 90 },
+      { headerName: '機台數', field: 'equipCode', width: 90 },
       {
         headerName: '依PPS配置',
         field: 'ppsControl',
-        width: 200,
+        width: 150,
         editable: true,
         cellEditor: 'agSelectCellEditor',
         headerClass: 'header-editable-color',
@@ -288,28 +287,18 @@ export class MSHI004Component {
             });
             _this.renderer.appendChild(containerElement, buttonElement1);
           }
-
           return containerElement;
         },
       },
       {
         headerName: '已配置機台數',
         field: 'publishMachine',
-        width: 150,
-        filter: true,
-      },
-      {
-        headerName: '手動發佈',
-        field: 'publishSelf',
-        width: 200,
-        filter: true,
-        hide: true,
+        width: 110,
       },
       {
         headerName: '確認發佈',
         field: 'zxcvb',
-        width: 160,
-        filter: true,
+        width: 110,
         cellRenderer: function (params) {
           if (params.data.fcpEditionLock == '1') {
             if (
@@ -359,8 +348,7 @@ export class MSHI004Component {
       },
       {
         headerName: '轉入公版',
-        width: 160,
-        filter: true,
+        width: 110,
         cellRenderer: function (params) {
           if (
             params.data.machineGroup.includes('RF') ||
@@ -426,39 +414,33 @@ export class MSHI004Component {
       {
         headerName: '公版天數',
         field: 'normPublishTime',
-        width: 120,
-        filter: true,
+        width: 90,
       },
       {
         headerName: '已發佈機台',
         field: 'publishMachineTotal',
-        width: 120,
-        filter: true,
+        width: 110,
       },
       {
         headerName: '已發佈FCP版本',
         field: 'fcpEdition',
-        width: 180,
-        filter: true,
+        width: 160,
         onCellClicked: (e: CellClickedEvent) => this.onCellClicked(e),
       },
       {
         headerName: '發佈時間區間',
         field: 'timeRegion',
-        width: 350,
-        filter: true,
+        width: 300,
       },
       {
         headerName: '發佈者',
         field: 'userCreate',
-        width: 120,
-        filter: true,
+        width: 90,
       },
       {
         headerName: '發佈日期',
         field: 'mesPublishDay',
-        width: 200,
-        filter: true,
+        width: 160,
       },
     ];
   }
@@ -471,13 +453,11 @@ export class MSHI004Component {
         headerName: '站別',
         field: 'schShopCode',
         width: 150,
-        filter: true,
       },
       {
         headerName: '所有機台',
         field: 'pstMachine',
         width: 650,
-        filter: true,
         cellStyle: {
           'min-width': '120px',
         },
@@ -486,7 +466,6 @@ export class MSHI004Component {
         headerName: '未配置機台',
         field: 'publishMachine',
         width: 650,
-        filter: true,
       },
     ];
   }

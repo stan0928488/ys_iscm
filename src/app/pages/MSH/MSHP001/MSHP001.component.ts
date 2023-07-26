@@ -217,7 +217,10 @@ changeCarFlag = '1' ;
   }
  }
  /**同作業換車結束 */
-
+ /***FCP使用開始 */
+ fcpNumber = 0 ;
+ fcpNumberIsDisabled = true ;
+/***FCP使用結束 */
  //获取可替换作業代碼数据
  getEquipOpCode(ids){
   this.mshService.getEquipOpCode(ids).subscribe(res=>{
@@ -1150,6 +1153,9 @@ this.handleSelectCarModal() ;
 
    //挑選站別
    selectShopCodeFunc(){
+    //站別切換 數據重置
+    this.fcpNumber = 0 ;
+    this.fcpNumberIsDisabled = true ;
     //console.log("checked:"+JSON.stringify(this.selectShopCode) );
     this.searchV0.shopCode = this.selectShopCode ;
     //console.log("所有站別：" + JSON.stringify(this.shopCodeList))
@@ -1170,8 +1176,7 @@ this.handleSelectCarModal() ;
   }
 
   selectEquipCodeFunc(){
-    console.log("選擇站別 :" + this.selectEquipCode)
-    console.log("columnDefs1:" + JSON.stringify(this.columnDefs))
+    if(this.selectShopCode === '401' || this.selectShopCode === '411') {
     if(this.selectEquipCode === 'BA1'){
       //  let itemTemp = {"columValue":"CAR_ID_ADD","columLabel":"CARID","checked":true}
       let isExsit = true ;
@@ -1232,6 +1237,7 @@ this.handleSelectCarModal() ;
     //this.gridOptionsRowDataModal.api.setColumnDefs(this.columnDefs) ;
     //console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
     //console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
+  }
     this.originalData = [] ;
     this.rowData = [] ;
     this.getTableData() ;
@@ -1337,7 +1343,7 @@ this.handleSelectCarModal() ;
           currentGroupString += "," + item[key] ;
         }
       }
-         console.log("上個分組：" +index+ ":"+ JSON.stringify(this.groupArray)) 
+         // console.log("上個分組：" +index+ ":"+ JSON.stringify(this.groupArray)) 
         // console.log("當前分組：" + JSON.stringify(currentGroupString)) 
        
         //取出每一個key值進行拼接
@@ -1438,7 +1444,9 @@ this.handleSelectCarModal() ;
         } else if( key === 'NEXT_SCH_SHOP_CODE') {  // 若果是下站別 逗號隔開 去重復
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
-          preGroupObject[key] = uniqueArr.join(','); 
+          const filteredArray: string[] = uniqueArr.filter(str => str !== null && str !== 'null');
+         
+          preGroupObject[key] = filteredArray.join(','); 
 
         }else if( key === 'PLAN_WEIGHT_I') {  // 若果是計劃重量 加總 
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
@@ -1446,7 +1454,14 @@ this.handleSelectCarModal() ;
           let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
           preGroupObject[key] = sum ;
 
-        }else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
+        }else if( key === 'SFC_SHOP_CODE') {  // 若果是現況站別 逗號
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let uniqueArr = arr.filter((value, index, self) => self.indexOf(value) === index); // 过滤掉重复项
+          const filteredArray: string[] = uniqueArr.filter(str => str !== null && str !== 'null');
+          preGroupObject[key] = filteredArray.join(','); 
+
+        }
+        else if( key === 'WEIGHT') {  // 若果是現況重量 加總 
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           let numArr = arr.map(Number); // 将字符数组转换为数字数组
           let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
@@ -1476,12 +1491,12 @@ this.handleSelectCarModal() ;
         }else if( key === 'INPUT_DIA') {  // 若果是投入尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr[0] === arr[arr.length - 1] ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         } else if( key === 'OUT_DIA') {  // 若果是產出尺寸 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
-          let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
+          let r =  arr[0] === arr[arr.length - 1] ?  arr[0] :  arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = r 
         }  
         else if( key === 'OP_CODE') {  // 若果是作業代碼 從低到高
@@ -1709,7 +1724,8 @@ this.handleSelectCarModal() ;
     // this.originalData = JSON.parse(localStorage.getItem("originalData")) ;
     // console.log("使用："+this.finalChangeDataIds)
    // let _param = {ids:this.finalChangeDataIds.toString()}
-    this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+   let saveSortData = {saveByIDSList:finalChangeDataTemp,fcpNumber:this.fcpNumber}
+    this.mshService.saveSortData(saveSortData).subscribe(res=>{
       this.saveLoading = false ;
       this.isLoading = false ;
       if(flag === '1') {
@@ -1807,7 +1823,8 @@ this.handleSelectCarModal() ;
         finalChangeDataTemp.push({id:item.ID,sort:index + 1})
       }) 
       this.handlecomitExcelModelConfirmLoading = true
-      this.mshService.saveSortData(finalChangeDataTemp).subscribe(res=>{
+      let saveSortData = {saveByIDSList:finalChangeDataTemp,fcpNumber:this.fcpNumber}
+      this.mshService.saveSortData(saveSortData).subscribe(res=>{
         this.handlecomitExcelModelConfirmLoading  = false ;
         let result:any = res ;
         if(result.code == 200) {
@@ -2213,6 +2230,11 @@ this.handleSelectCarModal() ;
         }
       })
 
+    }
+    /**FCP 使用 */
+    // 開啟關閉可使用
+    toggleDisabled(){
+      this.fcpNumberIsDisabled = !this.fcpNumberIsDisabled;
     }
     
 

@@ -28,69 +28,72 @@
     </nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-collapse>
-    <nz-collapse-panel nzHeader="新增/匯出/匯入">
-      <div>
-        <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-          nzType="primary"
-          (click)="openYieldInput()"
-        >
-          <span nz-icon nzType="plus" nzTheme="outline"></span>
-          新增
-        </button>
-        <input
-          type="file"
-          id="fileupload"
-          style="display: inline-block"
-          (change)="incomingfile($event)"
-          placeholder="Upload file"
-          accept=".xlsx, .xls, .csv"
-        />
-        <button
-          nz-button
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-          "
-          nzType="primary"
-          (click)="Upload()"
-        >
-          <span nz-icon nzType="upload" nzTheme="outline"></span>
-          E X C E L 匯入
-        </button>
-        &nbsp;&nbsp;
-        <button
-          nz-button
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-          "
-          nzType="primary"
-          (click)="convertToExcel()"
-        >
-          <span nz-icon nzType="download" nzTheme="outline"></span>
-          E X C E L 匯出
-        </button>
-      </div>
-    </nz-collapse-panel>
-  </nz-collapse>
+  <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
+    <nz-collapse>
+      <nz-collapse-panel nzHeader="新增/匯出/匯入">
+        <div>
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+            nzType="primary"
+            (click)="openYieldInput()"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增
+          </button>
+          <input
+            type="file"
+            id="fileupload"
+            style="display: inline-block"
+            (change)="incomingfile($event)"
+            placeholder="Upload file"
+            accept=".xlsx, .xls, .csv"
+          />
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+            "
+            nzType="primary"
+            (click)="Upload()"
+          >
+            <span nz-icon nzType="upload" nzTheme="outline"></span>
+            E X C E L 匯入
+          </button>
+          &nbsp;&nbsp;
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+            "
+            nzType="primary"
+            (click)="convertToExcel()"
+          >
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+          </button>
+        </div>
+      </nz-collapse-panel>
+    </nz-collapse>
 
-  <ag-grid-angular
-    style="width: 100%; height: 550px; overflow: scroll"
-    class="ag-theme-alpine"
-    [rowData]="tbppsm107"
-    [columnDefs]="columnDefs"
-    [pagination]="true"
-    class="ag-theme-alpine"
-    [frameworkComponents]="frameworkComponents"
-    [gridOptions]="gridOptions"
-    editType="fullRow"
-  >
-  </ag-grid-angular>
+    <ag-grid-angular
+      style="width: 100%; height: 550px; overflow: scroll"
+      class="ag-theme-alpine"
+      [rowData]="displayDataList"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [frameworkComponents]="frameworkComponents"
+      [gridOptions]="gridOptions"
+      editType="fullRow"
+      [suppressClickEdit]="true"
+      (rowClicked)="onRowClicked($event)"
+    >
+    </ag-grid-angular>
+  </nz-spin>
 </nz-content>
 
 <!-- 產能維護(管束設定)新增 -->
@@ -113,18 +116,25 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;站別
+            站別
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="輸入站別"
-              [(ngModel)]="tbppsm107.schShopCode"
-            />
+          <td style="width: 600px">
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder="輸入站別"
+              [(ngModel)]="schShopCode"
+            >
+              <nz-option
+                *ngFor="let option of shopCode"
+                [nzValue]="option"
+                [nzLabel]="option"
+              ></nz-option>
+            </nz-select>
           </td>
           <td
             style="
@@ -132,17 +142,17 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機台
+            機台
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
               placeholder="輸入機台"
-              [(ngModel)]="tbppsm107.equipCode"
+              [(ngModel)]="equipCode"
             />
           </td>
           <td
@@ -151,18 +161,20 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機群
+            累積單位
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="輸入累積單位"
-              [(ngModel)]="tbppsm107.cumsumType"
-            />
+          <td style="width: 300px">
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzPlaceHolder="輸入累積單位"
+              [(ngModel)]="cumsumType"
+            >
+              <nz-option [nzLabel]="'day'" [nzValue]="'day'"></nz-option>
+              <nz-option [nzLabel]="'hour'" [nzValue]="'hour'"></nz-option>
+            </nz-select>
           </td>
         </tr>
 
@@ -173,17 +185,17 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;機群設備數量
+            累積值
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
               placeholder="輸入累積值"
-              [(ngModel)]="tbppsm107.accumulation"
+              [(ngModel)]="accumulation"
             />
           </td>
           <td
@@ -192,39 +204,17 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;最大管數
+            強制投產
           </td>
-          <td style="width: 600px; background-color: #eee" colspan="3">
-            &nbsp;
+          <td style="width: 600px">
             <input
-              style="width: 80%; color: darkblue"
+              style="width: 180px; color: darkblue"
               nz-input
-              placeholder="強制投產"
-              [(ngModel)]="tbppsm107.dateLimit"
-            />
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            style="
-              width: 330px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;開機管數
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="是否使用"
-              [(ngModel)]="tbppsm107.useFlag"
+              placeholder="輸入強制投產"
+              [(ngModel)]="dateLimit"
             />
           </td>
           <td
@@ -233,37 +223,20 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
+              padding-left: 10px;
             "
           >
-            &nbsp;&nbsp;累計天數
+            是否使用
           </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="更新時間"
-              [(ngModel)]="tbppsm107.dateUpdate"
-            />
-          </td>
-          <td
-            style="
-              width: 330px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;略過天數
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 80%; color: darkblue"
-              nz-input
-              placeholder="更新者"
-              [(ngModel)]="tbppsm107.userUpdate"
-            />
+          <td style="width: 300px">
+            <nz-select
+              style="width: 180px; color: darkblue"
+              nzPlaceHolder="輸入是否使用"
+              [(ngModel)]="useFlag"
+            >
+              <nz-option [nzLabel]="'Y'" [nzValue]="'Y'"></nz-option>
+              <nz-option [nzLabel]="'N'" [nzValue]="'N'"></nz-option>
+            </nz-select>
           </td>
         </tr>
       </table>
@@ -276,186 +249,3 @@
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
 </nz-modal>
-
-<nz-dropdown-menu #schShopCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchSchShopCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchSchShopCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetBySchShopCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-<nz-dropdown-menu #equipCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #equipGroupMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipGroup()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipGroup()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #groupAmountMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchGroupAmountValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchGroupAmount()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByGroupAmount()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #equipQuanityMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipQuanityValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByEquipQuanity()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipQuanity()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #bootControlMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.bootControlFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.bootControlFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.bootControlFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #accumulateDayMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.accumulateDayFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.accumulateDayFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.accumulateDayFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #dateLimitMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        [(ngModel)]="filterObj.dateLimitFilter.value"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="filterObj.dateLimitFilter.search()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button
-        nz-button
-        nzSize="small"
-        (click)="filterObj.dateLimitFilter.reset()"
-      >
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>

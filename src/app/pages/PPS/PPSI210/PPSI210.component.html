@@ -378,13 +378,14 @@
   [nzTitle]="PlanSetTitle"
   [nzContent]="PlanSetContent"
   [nzFooter]="null"
-  [nzWidth]="1000"
+  [nzBodyStyle]="{ height: '600px'}"
+  [nzWidth]="1200"
   (nzOnCancel)="plansethandleCancel()">
 
   <ng-template #PlanSetTitle>現有規劃策略明細表</ng-template>
   <ng-template #PlanSetContent>
     <ag-grid-angular
-      style="width:100%; height:500px; margin-bottom: 200px; margin-top: 50px;"
+      style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
       class="ag-theme-alpine"
       [context]="agGridContext"
       [rowData]="planSetDataList"
@@ -404,6 +405,7 @@
   [nzContent]="shopSortContent"
   [nzFooter]="null"
   [nzWidth]="1000"
+  [nzBodyStyle]="{ height: '650px'}"
   (nzOnCancel)="handleCancel()"
 >
 
@@ -415,7 +417,7 @@
         [nzData]="ShopSortingList"
         [nzFrontPagination]="nzPagination"
         [nzShowPagination]="nzPagination"
-        [nzScroll]="{ y: '400px' }"
+        [nzScroll]="{ y: '550px' }"
         >
         <thead>
           <tr>
@@ -457,6 +459,7 @@
   [nzContent]="MachineSortContent"
   [nzFooter]="null"
   (nzOnCancel)="handleCancel_M()"
+  [nzBodyStyle]="{ height: '650px'}"
   [nzWidth]="1000"
 >
   <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
@@ -467,7 +470,7 @@
         [nzData]="MachineSortingList"
         [nzFrontPagination]="nzPagination"
         [nzShowPagination]="nzPagination"
-        [nzScroll]="{ y: '350px' }"
+        [nzScroll]="{ y: '550px' }"
         >
         <thead>
           <tr>

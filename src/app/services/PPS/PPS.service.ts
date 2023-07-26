@@ -1079,8 +1079,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
- //getTbppsm102ListAll 取得getTbppsm102ListAll
- getTbppsm102ListAll(_plantCode) {
+  //getTbppsm102ListAll 取得getTbppsm102ListAll
+  getTbppsm102ListAll(_plantCode) {
     let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
@@ -1088,7 +1088,8 @@ export class PPSService {
 
   // exportTbppsm102ListExcel 匯出 Excel
   exportTbppsm102ListExcel(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
+    let queryUrl =
+      this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1221,9 +1222,8 @@ export class PPSService {
   }
 
   // 刪除某筆規劃策略
-  deletePlanSetData(planSetEdition:string) {
-    const httpParams = new HttpParams()
-    .set('planSetEdition', planSetEdition);
+  deletePlanSetData(planSetEdition: string) {
+    const httpParams = new HttpParams().set('planSetEdition', planSetEdition);
 
     console.log('api service deletePlanSetData');
     let queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
@@ -1918,5 +1918,47 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
+  }
+
+  insertTBPPSM107(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/insertTBPPSM107`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  updateTBPPSM107(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/updateTBPPSM107`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  delTBPPSM107(_type, _equipCode) {
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl =
+      this.APIURL + `/FCP/I112` + nonbarUrl + `/delTBPPSM107/${_equipCode}`;
+    return this.http.post(queryUrl, '', this.httpOptions);
+  }
+
+  getShopCode() {
+    let queryUrl = this.APIURL + `/FCP/I112/getShopCode`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  importTBPPSM107Excel(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl =
+      this.APIURL + `/FCP/I112` + nonbarUrl + `/importExcelPPSI112`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 }

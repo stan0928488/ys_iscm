@@ -10,7 +10,7 @@
           <button *ngIf="showLockBtn" style=" background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
 
           <button *ngIf="!showLockBtn && selectFcpVer !=='' " style=" background-color: #FF9900; border-color: #FF9900;  color: #fff;" nz-button nzType="primary" (click)="queryFcpVerStatusBtn()">查看狀態</button>
-          <nz-select style="width:300px;"  nzPlaceHolder="請選擇版本號" [(ngModel)]="selectFcpVer"  (ngModelChange)="changeFcpVer()">
+          <nz-select style="width:200px;"  nzPlaceHolder="請選擇版本號" [(ngModel)]="selectFcpVer"  (ngModelChange)="changeFcpVer()">
             <ng-container  *ngFor="let item3 of fcpVerList" >
             <nz-option *ngIf="item3.fcpLockStatus === '1'; else unlockTemplate"  [nzLabel]="item3.fcpVer + '(' +item3.fcpLockStatusLabel + ')'" [nzValue]="item3.fcpVer"></nz-option>
             <ng-template #unlockTemplate>
@@ -51,21 +51,36 @@
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
         <p *ngIf="selectFcpVerObj">
-          <nz-checkbox-wrapper style="width: 70%;"  (nzOnChange)="checkedChange($event)">
+          <nz-checkbox-wrapper style="width: 40%;"  (nzOnChange)="checkedChange($event)">
             <div nz-row>
-              <div nz-col  nzSpan="3" *ngFor="let item2 of groupColumList">
+              <div nz-col  nzSpan="4" *ngFor="let item2 of groupColumList">
                 <label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"  [nzDisabled]="item2.columValue === 'CAR_ID_ADD' && (selectEquipCode === 'BA1' || selectEquipCode === 'RF') "
                 >{{item2.columLabel}}</label>
               </div>
               
             </div>
           </nz-checkbox-wrapper>
-          <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:5px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
-          <button  nz-button style="margin-left:5px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
-          <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
-          <button  nz-button style="margin-left:15px;background-color: #e24d42; border-color: #e24d42;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
+          <span style="float: right;">
+          <nz-input-number 
+          [(ngModel)]="fcpNumber" 
+          [nzMin]="0"
+          [nzMax]="1000"
+          [nzStep]="1"
+          [nzDisabled]="fcpNumberIsDisabled"
+        ></nz-input-number>
+        <span style="margin-left:5px" >
+          <button nz-button  (click)="toggleDisabled()">
+            <span>{{fcpNumberIsDisabled ? '修改' :'保存'}}</span>
+          </button>
+        </span>
 
+
+          <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
+          <button  nz-button style="margin-left:15px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
+          <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
+          <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
+          <button  nz-button style="margin-left:15px;background-color: #e24d42; border-color: #e24d42;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>
+        </span>
 
         </p>
       </nz-collapse-panel>

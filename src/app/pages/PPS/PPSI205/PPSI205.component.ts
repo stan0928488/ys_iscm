@@ -14,7 +14,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
-import { DatePickerCellRendererComponent } from '../../RENDERER/datepicker-cell-renderer.component'
+import { DatePickerCellRendererComponent } from '../../RENDERER/datepicker-cell-renderer.component';
 registerLocaleData(zh);
 
 interface data {}
@@ -23,10 +23,9 @@ interface data {}
   selector: 'app-PPSI205',
   templateUrl: './PPSI205.component.html',
   styleUrls: ['./PPSI205.component.scss'],
-  providers: [NzMessageService, DatePipe],  
+  providers: [NzMessageService, DatePipe],
 })
 export class PPSI205Component implements AfterViewInit {
-
   public editType: 'fullRow' = 'fullRow';
 
   frameworkComponents: any;
@@ -87,8 +86,6 @@ export class PPSI205Component implements AfterViewInit {
     '鋼種群組',
     '自訂月份',
     '自訂排序',
-    '創建時間',
-    '創建者',
   ];
   datetime = moment();
   arrayBuffer: any;
@@ -97,7 +94,6 @@ export class PPSI205Component implements AfterViewInit {
   importdata_new = [];
   isERROR = false;
   errorTXT = [];
-
 
   EditMode = [];
   oldlist = {};
@@ -136,6 +132,9 @@ export class PPSI205Component implements AfterViewInit {
 
   isSpinning = false;
 
+  forTbppsm100Date;
+  currentDate = new Date();
+
   public ColGroupDef: ColDef = {
     filter: true,
     editable: true,
@@ -159,16 +158,40 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 120,  editable: false, },
-    { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100,  editable: false, },
-    { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100,  editable: false, },
+    {
+      headerName: '優先順序',
+      field: 'ORDER_ID',
+      filter: true,
+      width: 120,
+      editable: false,
+    },
+    {
+      headerName: '站別',
+      field: 'SCH_SHOP_CODE',
+      filter: true,
+      width: 100,
+      editable: false,
+    },
+    {
+      headerName: '機台',
+      field: 'EQUIP_CODE',
+      filter: true,
+      width: 100,
+      editable: false,
+    },
     {
       headerName: '下一站站別',
       field: 'NEXT_SHOP_CODE',
       filter: true,
       width: 120,
     },
-    { headerName: '天數', field: 'DAYS', filter: true, editable: true, width: 100, },
+    {
+      headerName: '天數',
+      field: 'DAYS',
+      filter: true,
+      editable: true,
+      width: 100,
+    },
     {
       headerName: 'max(EPST/ASAP)',
       field: 'MAX_DATE',
@@ -178,8 +201,8 @@ export class PPSI205Component implements AfterViewInit {
       cellRenderer: DatePickerCellRendererComponent,
       cellRendererParams: [
         {
-          onClick: this.onDatePickerBtnClick1.bind(this)
-        }
+          onClick: this.onDatePickerBtnClick1.bind(this),
+        },
       ],
       maxWidth: 150,
     },
@@ -193,8 +216,8 @@ export class PPSI205Component implements AfterViewInit {
       cellRenderer: DatePickerCellRendererComponent,
       cellRendererParams: [
         {
-          onClick: this.onDatePickerBtnClick2.bind(this)
-        }
+          onClick: this.onDatePickerBtnClick2.bind(this),
+        },
       ],
       maxWidth: 150,
     },
@@ -219,7 +242,7 @@ export class PPSI205Component implements AfterViewInit {
       }
     },
     {
-      headerName: "COMPAIGN_ID",
+      headerName: 'COMPAIGN_ID',
       field: 'COMPAIGN_ID',
       filter: true,
       editable: false,
@@ -235,21 +258,21 @@ export class PPSI205Component implements AfterViewInit {
     },
     {
       headerName: 'Action',
-      editable:false,
+      editable: false,
       width: 170,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
-          onclick: this.editOnClick.bind(this)
+          onclick: this.editOnClick.bind(this),
         },
         {
-          onClick: this.updateOnClick.bind(this)
+          onClick: this.updateOnClick.bind(this),
         },
         {
-          onClick: this.calcelOnClick.bind(this)
+          onClick: this.calcelOnClick.bind(this),
         },
-      ]
-    }
+      ],
+    },
   ];
 
   constructor(
@@ -260,15 +283,15 @@ export class PPSI205Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private route: ActivatedRoute, 
-  ) 
-  {
+    private route: ActivatedRoute
+  ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
     this.frameworkComponents = {
       buttonRenderer: BtnCellRendererUpdate,
     };
+
     this.myContext = {
       componentParent: this
     };
@@ -288,9 +311,12 @@ export class PPSI205Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTbppsm101List();
+    this.forTbppsm100Date = moment(this.currentDate).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
     this.getTbppsm102ListAll();
     // this.getTbppsm113List();
-    // this.getTbppsm100List();
+    this.getTbppsm100List();
   }
 
   // 取得是否有正在執行的FCP
@@ -404,21 +430,21 @@ export class PPSI205Component implements AfterViewInit {
   changeTab(tab): void {
     console.log(tab);
     if (tab === 1) {
-      window.location.href = '#/singleData/I124?selectedTabIndex=0';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm101List();
     } else if (tab === 2) {
-      window.location.href = '#/singleData/I124?selectedTabIndex=1';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
       this.getTbppsm102List();
     } else if (tab === 3) {
-      window.location.href = '#/singleData/I124?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
       this.getTbppsm113List();
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
-      window.location.href = '#/singleData/I124?selectedTabIndex=3';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=3';
     } else if (tab === 5) {
       this.getTbppsm100List();
       window.location.href =
-        '#/singleData/I124?selectedTabIndex=4&innerSelect=0';
+        '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
     }
   }
 
@@ -456,7 +482,7 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
     } else if (_type === '4') {
-      if(this.tbppsm102ExportExcel.length > 0) {
+      if (this.tbppsm102ExportExcel.length > 0) {
         data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
         fileName = `Auto Campaign 主表`;
         titleArray = this.titleArray4;
@@ -534,7 +560,7 @@ export class PPSI205Component implements AfterViewInit {
         });
         excelData.push(obj);
       }
-    }else if(_type === '4') {
+    } else if (_type === '4') {
       for (let item of _displayData) {
         let obj = {};
         _.extend(obj, {
@@ -551,7 +577,7 @@ export class PPSI205Component implements AfterViewInit {
               : _.get(item, 'TC_FREQUENCE_LIFT') === 'DESC'
               ? '降冪'
               : '',
-          COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'), 
+          COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'),
         });
         excelData.push(obj);
       }
@@ -572,8 +598,6 @@ export class PPSI205Component implements AfterViewInit {
           GRADE_GROUP: _.get(item, 'gradeGroup'),
           NEW_EPST_YYMM: _.get(item, 'newEpstYymm'),
           CAMPAIGN_SORT: _.get(item, 'campaignSort'),
-          DATE_CREATE: _.get(item, 'dateCreate'),
-          USER_CREATE: _.get(item, 'userCreate'),
         });
         excelData.push(obj);
       }
@@ -739,7 +763,7 @@ export class PPSI205Component implements AfterViewInit {
       } else {
         this.importExcel3('3', importdata);
       }
-    }else if (_type === '4') {
+    } else if (_type === '4') {
       console.log('incomingfile e5 : ' + _type);
       if (
         worksheet.A1 === undefined ||
@@ -750,12 +774,12 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.F1 === undefined ||
         worksheet.G1 === undefined ||
         worksheet.H1 === undefined ||
-        worksheet.I1 === undefined 
+        worksheet.I1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
         return;
-      } else if (                               
+      } else if (
         worksheet.A1.v !== '站別' ||
         worksheet.B1.v !== '機台' ||
         worksheet.C1.v !== '下一站站別' ||
@@ -789,9 +813,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1 === undefined ||
         worksheet.J1 === undefined ||
         worksheet.K1 === undefined ||
-        worksheet.L1 === undefined ||
-        worksheet.M1 === undefined ||
-        worksheet.N1 === undefined
+        worksheet.L1 === undefined
       ) {
         this.errorMSG('檔案樣板錯誤', '請先資料後，再透過該檔案調整上傳。');
         this.clearFile();
@@ -808,9 +830,7 @@ export class PPSI205Component implements AfterViewInit {
         worksheet.I1.v !== '下站別' ||
         worksheet.J1.v !== '鋼種群組' ||
         worksheet.K1.v !== '自訂月份' ||
-        worksheet.L1.v !== '自訂排序' ||
-        worksheet.M1.v !== '創建時間' ||
-        worksheet.N1.v !== '創建者'
+        worksheet.L1.v !== '自訂排序'
       ) {
         this.errorMSG(
           '檔案樣板欄位表頭錯誤',
@@ -1188,9 +1208,13 @@ export class PPSI205Component implements AfterViewInit {
       let nextShopCode = _data[i].下一站站別;
       let days = _data[i].天數;
       let maxDate = this.dateFormat(
-        this.ExcelDateExchange(_data[i].最大值的EPST或LPST), 2);
+        this.ExcelDateExchange(_data[i].最大值的EPST或LPST),
+        2
+      );
       let startDate = this.dateFormat(
-        this.ExcelDateExchange(_data[i].生產開始日), 2);
+        this.ExcelDateExchange(_data[i].生產開始日),
+        2
+      );
       let tcFrequenceLeft = _data[i].TC頻率升降冪;
 
       if (maxDate === 'Invalid date') {
@@ -1314,8 +1338,6 @@ export class PPSI205Component implements AfterViewInit {
       let gradeGroup = _data[i].鋼種群組;
       let newEpstYymm = _data[i].自訂月份;
       let campaignSort = _data[i].自訂排序;
-      let dateCreate = _data[i].創建時間;
-      let userCreate = _data[i].創建者;
 
       if (
         schShopCode === undefined ||
@@ -1329,9 +1351,7 @@ export class PPSI205Component implements AfterViewInit {
         nextSchShopCode === undefined ||
         gradeGroup === undefined ||
         newEpstYymm === undefined ||
-        campaignSort === undefined ||
-        dateCreate === undefined ||
-        userCreate === undefined
+        campaignSort === undefined
       ) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
@@ -1359,8 +1379,8 @@ export class PPSI205Component implements AfterViewInit {
         let gradeGroup = _data[i].鋼種群組.toString();
         let newEpstYymm = _data[i].自訂月份.toString();
         let campaignSort = _data[i].自訂排序.toString();
-        let dateCreate = _data[i].創建時間.toString();
-        let userCreate = _data[i].創建者.toString();
+        let dateCreate = this.forTbppsm100Date;
+        let userCreate = this.USERNAME;
 
         this.importdata_new.push({
           schShopCode: schShopCode,
@@ -1518,7 +1538,7 @@ export class PPSI205Component implements AfterViewInit {
       this.tbppsm102List[idx].MAX_DATE = this.dateFormat(result, 6);
     } else if (_type === '2') {
       this.tbppsm102List[idx].STARTDATE = this.dateFormat(result, 2);
-    }else if (_type === '3-0') {
+    } else if (_type === '3-0') {
       this.tbppsm113List[idx].publicMonth = this.dateFormat(result, 2);
       console.log(this.tbppsm113List[idx]);
     } else if (_type === '3-1') {
@@ -1596,7 +1616,7 @@ export class PPSI205Component implements AfterViewInit {
     // oldlist存放更新根據的條件(複合主鍵:IMPORTDATETIME+PLANT_CODE+ORDER_ID)
     this.oldlist = data;
     this.newlist = data;
-    
+
     let importdatetime = this.newlist.IMPORTDATETIME;
     let plantCode = this.newlist.PLANT_CODE;
     let orderID = this.newlist.ORDER_ID;
@@ -1750,7 +1770,8 @@ export class PPSI205Component implements AfterViewInit {
       this.oldlist['STARTDATE'],
       2
     );
-    this.tbppsm102ListAll[i].TC_FREQUENCE_LIFT = this.oldlist['TC_FREQUENCE_LIFT'];
+    this.tbppsm102ListAll[i].TC_FREQUENCE_LIFT =
+      this.oldlist['TC_FREQUENCE_LIFT'];
 
     // this.data.api.stopEditing(true);
   }
@@ -1889,16 +1910,16 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService
       .exportTbppsm102ListExcel(this.PLANT_CODE)
       .subscribe((res) => {
-      console.log('exportTbppsm102ListExcel success');
-      this.tbppsm102ExportExcel = res;
-      console.log(this.tbppsm102ExportExcel);
-      this.excelService.exportAsExcelFile(
-        this.tbppsm102ExportExcel, 
-        exportTableName, 
-        this.titleArray4
+        console.log('exportTbppsm102ListExcel success');
+        this.tbppsm102ExportExcel = res;
+        console.log(this.tbppsm102ExportExcel);
+        this.excelService.exportAsExcelFile(
+          this.tbppsm102ExportExcel,
+          exportTableName,
+          this.titleArray4
         );
-      myObj.loading = false;
-    });
+        myObj.loading = false;
+      });
   }
 
   cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>){

@@ -18,19 +18,17 @@ import {
 } from 'ag-grid-community';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { TBPPSM107 } from './TBPPSM107.model';
+import { GridOptions } from 'ag-grid-community';
 
 interface ItemData {
-  idx: number;
-  id: number;
-  plantCode: string;
   schShopCode: string;
   equipCode: string;
-  equipGroup: string;
-  groupAmount: number;
-  equipQuanity: number;
-  bootControl: number;
-  accumulateDay: number;
+  cumsumType: string;
+  accumulation: number;
   dateLimit: number;
+  useFlag: string;
+  dateUpdate: string;
+  userUpdate: string;
 }
 
 @Component({
@@ -40,36 +38,27 @@ interface ItemData {
   providers: [NzMessageService],
 })
 export class PPSI112Component implements AfterViewInit {
-  tbppsm107;
+  userName: string;
+  plantCode: string;
+  //存放資料的陣列
+  tbppsm107: ItemData[] = [];
+  // 如為true則不可異動
+  isRunFCP = false;
+  // 等待資料變動
+  loading = true;
+  //新增視窗開關
+  isVisibleYield: boolean;
 
-  frameworkComponents: any;
+  preShopEquip;
 
-  LoadingPage = false;
-  isRunFCP = false; // 如為true則不可異動
-  loading = false; //loaging data flag
-  userName;
-  plantCode;
-  editable = false;
-
-  // 產能維護
-  schShopCode = '';
-  equipCode = '';
-  equipGroup = '';
-  groupAmount = 0;
-  equipQuanity = 0;
-  insertData = {
-    bootControl: 0,
-    accumulateDay: 0,
-    dateLimit: 0,
-  };
-
-  isVisibleYield = false;
-  searchSchShopCodeValue = '';
-  searchEquipCodeValue = '';
-  searchEquipGroupValue = '';
-  searchGroupAmountValue = '';
-  searchTransferTimeValue = '';
-  searchEquipQuanityValue = '';
+  schShopCode: string;
+  equipCode: string;
+  cumsumType: string;
+  accumulation: number;
+  dateLimit: number;
+  useFlag: string;
+  dateUpdate: string;
+  userUpdate: string;
 
   isErrorMsg = false;
   isERROR = false;
@@ -79,82 +68,84 @@ export class PPSI112Component implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
   rowData: ItemData[] = [];
+  whichRow;
 
-  filterObj = {
-    bootControlFilter: {
-      value: 0,
-      search: () => {
-        const data = this.tbppsm013List.filter((obj) => {
-          if (this.filterObj.bootControlFilter.value == 0) {
-            return true;
-          }
-          return obj.bootControl == this.filterObj.bootControlFilter.value;
-        });
-        this.displayTbppsm013List = data;
-      },
-      reset: () => {
-        this.filterObj.bootControlFilter.value = 0;
-        this.filterObj.bootControlFilter.search();
-      },
-    },
-    accumulateDayFilter: {
-      value: 0,
-      search: () => {
-        const data = this.tbppsm013List.filter((obj) => {
-          if (this.filterObj.accumulateDayFilter.value == 0) {
-            return true;
-          }
-          return obj.accumulateDay == this.filterObj.accumulateDayFilter.value;
-        });
-        this.displayTbppsm013List = data;
-      },
-      reset: () => {
-        this.filterObj.accumulateDayFilter.value = 0;
-        this.filterObj.accumulateDayFilter.search();
-      },
-    },
-    dateLimitFilter: {
-      value: 0,
-      search: () => {
-        const data = this.tbppsm013List.filter((obj) => {
-          if (this.filterObj.dateLimitFilter.value == 0) {
-            return true;
-          }
-          return obj.dateLimit == this.filterObj.dateLimitFilter.value;
-        });
-        this.displayTbppsm013List = data;
-      },
-      reset: () => {
-        this.filterObj.dateLimitFilter.value = 0;
-        this.filterObj.dateLimitFilter.search();
-      },
-    },
-  };
+  frameworkComponents;
 
   gridOptions = {
     defaultColDef: {
       editable: true,
-      enableRowGroup: false,
-      enablePivot: false,
-      enableValue: false,
       sortable: false,
       resizable: true,
-      filter: true,
     },
+    api: null,
   };
 
-  public columnDefs: (ColDef | ColGroupDef)[] = [
+  constructor(
+    private PPSService: PPSService,
+    private excelService: ExcelService,
+    private i18n: NzI18nService,
+    private cookieService: CookieService,
+    private message: NzMessageService,
+    private Modal: NzModalService
+  ) {
+    this.i18n.setLocale(zh_TW);
+    this.userName = this.cookieService.getCookie('USERNAME');
+    this.plantCode = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewChecked');
+    this.getRunFCPCount();
+    this.getTBPPSM107();
+  }
+
+  // 取得是否有正在執行的FCP
+  getRunFCPCount() {
+    let myObj = this;
+    this.PPSService.getRunFCPCount().subscribe((res: number) => {
+      console.log('getRunFCPCount success');
+      if (res > 0) this.isRunFCP = true;
+    });
+  }
+
+  onInit() {
+    this.schShopCode = '';
+    this.equipCode = '';
+    this.cumsumType = '';
+    this.accumulation = 0;
+    this.dateLimit = 0;
+    this.useFlag = '';
+    this.dateUpdate = '';
+    this.userUpdate = '';
+
+    this.isVisibleYield = false;
+    this.loading = false;
+    this.isErrorMsg = false;
+    this.importdata = [];
+    this.importdata_new = [];
+    this.isERROR = false;
+    this.errorTXT = [];
+  }
+
+  public columnDefs = [
     {
       headerName: '站別',
       field: 'schShopCode',
+      width: 65,
     },
     {
       headerName: '機台',
       field: 'equipCode',
+      width: 65,
     },
     {
       headerName: '累積單位',
       field: 'cumsumType',
+      width: 90,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: {
         values: ['day', 'hour'],
@@ -163,22 +154,33 @@ export class PPSI112Component implements AfterViewInit {
     {
       headerName: '累積值',
       field: 'accumulation',
+      width: 75,
     },
     {
       headerName: '強制投產',
       field: 'dateLimit',
+      width: 90,
     },
     {
       headerName: '是否使用',
       field: 'useFlag',
+      width: 90,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['Y', 'N'],
+      },
     },
     {
       headerName: '更新時間',
       field: 'dateUpdate',
+      width: 180,
+      editable: false,
     },
     {
       headerName: '更新者',
       field: 'userUpdate',
+      width: 100,
+      editable: false,
     },
     {
       headerName: 'Action',
@@ -201,110 +203,47 @@ export class PPSI112Component implements AfterViewInit {
     },
   ];
 
-  constructor(
-    private PPSService: PPSService,
-    private excelService: ExcelService,
-    private i18n: NzI18nService,
-    private cookieService: CookieService,
-    private message: NzMessageService,
-    private Modal: NzModalService
-  ) {
-    this.i18n.setLocale(zh_TW);
-    this.userName = this.cookieService.getCookie('USERNAME');
-    this.plantCode = this.cookieService.getCookie('plantCode');
-    this.frameworkComponents = {
-      buttonRenderer: BtnCellRenderer,
-    };
-  }
-
-  ngAfterViewInit() {
-    console.log('ngAfterViewChecked');
-    this.getRunFCPCount();
-    this.getTbppsm013List();
-    this.getTBPPSM107();
-  }
-
-  // 取得是否有正在執行的FCP
-  getRunFCPCount() {
-    let myObj = this;
-    this.PPSService.getRunFCPCount().subscribe((res) => {
-      console.log('getRunFCPCount success');
-      if (res > 0) this.isRunFCP = true;
-    });
-  }
-
-  onInit() {
-    this.schShopCode = '';
-    this.equipCode = '';
-    this.equipGroup = '';
-    this.groupAmount = 0;
-    this.equipQuanity = 0;
-
-    this.LoadingPage = false;
-    this.isVisibleYield = false;
-    this.searchSchShopCodeValue = '';
-    this.searchEquipCodeValue = '';
-    this.searchEquipGroupValue = '';
-    this.searchGroupAmountValue = '';
-    this.searchTransferTimeValue = '';
-    this.searchEquipQuanityValue = '';
-
-    this.isErrorMsg = false;
-    this.importdata = [];
-    this.importdata_new = [];
-    this.isERROR = false;
-    this.errorTXT = [];
-  }
-
-  tbppsm013Tmp;
-  tbppsm013List: ItemData[] = [];
+  myDataList;
+  displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
-  displayTbppsm013List: ItemData[] = [];
-  getTbppsm013List() {
-    this.loading = true;
-    let myObj = this;
-    this.PPSService.getTbppsm013List('1').subscribe((res) => {
-      this.tbppsm013Tmp = res;
-      const data = [];
-      for (let i = 0; i < this.tbppsm013Tmp.length; i++) {
-        data.push({
-          idx: `${i}`,
-          id: this.tbppsm013Tmp[i].id,
-          plantCode: this.tbppsm013Tmp[i].plantCode,
-          schShopCode: this.tbppsm013Tmp[i].schShopCode,
-          equipCode: this.tbppsm013Tmp[i].equipCode,
-          equipGroup: this.tbppsm013Tmp[i].equipGroup,
-          groupAmount: this.tbppsm013Tmp[i].groupAmount,
-          equipQuanity: this.tbppsm013Tmp[i].equipQuanity,
-          bootControl: this.tbppsm013Tmp[i].bootControl,
-          accumulateDay: this.tbppsm013Tmp[i].accumulateDay,
-          dateLimit: this.tbppsm013Tmp[i].dateLimit,
+  async getTBPPSM107() {
+    this.PPSService.getTBPPSM107().subscribe((res) => {
+      this.myDataList = res;
+      for (let i = 0; i < this.myDataList.length; i++) {
+        this.tbppsm107.push({
+          schShopCode: this.myDataList[i].schShopCode,
+          equipCode: this.myDataList[i].equipCode,
+          cumsumType: this.myDataList[i].cumsumType,
+          accumulation: this.myDataList[i].accumulation,
+          dateLimit: this.myDataList[i].dateLimit,
+          useFlag: this.myDataList[i].useFlag,
+          dateUpdate: this.myDataList[i].dateUpdate,
+          userUpdate: this.myDataList[i].userUpdate,
         });
       }
-      this.tbppsm013List = data;
-      this.displayTbppsm013List = this.tbppsm013List;
+      this.displayDataList = this.tbppsm107;
+      this.tbppsm107 = [];
+      this.myDataList = {};
+      console.log(this.displayDataList);
+      this.loading = false;
       this.updateEditCache();
-      console.log(this.tbppsm013List);
-      myObj.loading = false;
     });
   }
-  getTBPPSM107() {
-    this.loading = true;
-    this.PPSService.getTBPPSM107().subscribe((res) => {
-      this.tbppsm107 = res;
-      console.log(this.tbppsm107);
-      this.loading = false;
+  shopCode;
+  getShopCode() {
+    this.PPSService.getShopCode().subscribe((res) => {
+      this.shopCode = Object.values(res);
+      console.log(this.shopCode);
     });
   }
 
   // insert
   insertTab() {
-    let myObj = this;
     if (this.schShopCode === '') {
-      myObj.message.create('error', '「站別」不可為空');
+      this.message.create('error', '「站別」不可為空');
       return;
-    } else if (this.equipCode === '' && this.equipGroup === '') {
-      myObj.message.create('error', '「機台」和「機群」至少填一項');
+    } else if (this.equipCode === '') {
+      this.message.create('error', '「機台」不可為空');
       return;
     } else {
       this.Modal.confirm({
@@ -317,88 +256,26 @@ export class PPSI112Component implements AfterViewInit {
     }
   }
 
-  // update
-  editRow(id: number): void {
-    this.editCache[id].edit = true;
-  }
-
-  // delete
-  deleteRow(id: number): void {
-    this.Modal.confirm({
-      nzTitle: '是否確定刪除',
-      nzOnOk: () => {
-        this.delID(id);
-      },
-      nzOnCancel: () => console.log('cancel'),
-    });
-  }
-
-  // cancel
-  cancelEdit(id: number): void {
-    const index = this.tbppsm013List.findIndex((item) => item.idx === id);
-    this.editCache[id] = {
-      data: { ...this.tbppsm013List[index] },
-      edit: false,
-    };
-  }
-
-  // update Save
-  saveEdit(rowData: any, id: number): void {
-    let myObj = this;
-    if (rowData.schShopCode === undefined) {
-      myObj.message.create('error', '「站別」不可為空');
-      return;
-    } else if (
-      rowData.equipCode === undefined &&
-      rowData.equipGroup === undefined
-    ) {
-      myObj.message.create('error', '「機台」和「機群」至少填一項');
-      return;
-    } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(rowData, id);
-        },
-        nzOnCancel: () => console.log('cancel'),
-      });
-    }
-  }
-
-  // update
-  updateEditCache(): void {
-    this.tbppsm013List.forEach((item) => {
-      this.editCache[item.idx] = {
-        edit: false,
-        data: { ...item },
-      };
-    });
-  }
-
   // 新增資料
   insertSave() {
-    let myObj = this;
-    this.LoadingPage = true;
+    this.loading = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        plantCode: this.plantCode,
         schShopCode: this.schShopCode,
         equipCode: this.equipCode,
-        equipGroup: this.equipGroup,
-        groupAmount: this.groupAmount,
-        equipQuanity: this.equipQuanity,
-        userName: this.userName,
-        bootControl: this.insertData.bootControl,
-        accumulateDay: this.insertData.accumulateDay,
-        dateLimit: this.insertData.dateLimit,
+        cumsumType: this.cumsumType,
+        accumulation: this.accumulation,
+        dateLimit: this.dateLimit,
+        useFlag: this.useFlag,
+        userUpdate: this.userName,
       });
 
-      myObj.PPSService.insertI106Save('1', obj).subscribe(
+      this.PPSService.insertTBPPSM107('1', obj).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
             this.onInit();
-            this.getTbppsm013List();
+            this.getTBPPSM107();
             this.sucessMSG('新增成功', ``);
           } else {
             this.errorMSG('新增失敗', res[0].MSG);
@@ -407,41 +284,99 @@ export class PPSI112Component implements AfterViewInit {
         (err) => {
           reject('upload fail');
           this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
-          this.LoadingPage = false;
+          this.loading = false;
         }
       );
     });
   }
+  update() {
+    this.gridOptions.defaultColDef.editable = true;
+  }
+
+  // update
+  editRow(equipCode: string): void {
+    this.editCache[equipCode].edit = true;
+  }
+
+  // delete
+  deleteRow(equipCode: string): void {
+    this.Modal.confirm({
+      nzTitle: '是否確定刪除',
+      nzOnOk: () => {
+        this.delByEquipCode(equipCode);
+      },
+      nzOnCancel: () => console.log('cancel'),
+    });
+  }
+
+  // cancel
+  cancelEdit(equipCode: string): void {
+    const index = this.displayDataList.findIndex(
+      (item) => item.equipCode === equipCode
+    );
+    this.editCache[equipCode] = {
+      data: { ...this.displayDataList[index] },
+      edit: false,
+    };
+  }
+
+  // update Save
+  saveEdit(rowData: any, equipCode: string): void {
+    let myObj = this;
+    if (rowData.schShopCode === undefined) {
+      myObj.message.create('error', '「站別」不可為空');
+      return;
+    } else if (rowData.equipCode === undefined) {
+      myObj.message.create('error', '「機台」不可為空');
+      return;
+    } else {
+      this.Modal.confirm({
+        nzTitle: '是否確定修改',
+        nzOnOk: () => {
+          this.updateSave(rowData, equipCode);
+          this.loading = true;
+        },
+        nzOnCancel: () => console.log('cancel'),
+      });
+    }
+  }
+
+  // update
+  updateEditCache(): void {
+    this.displayDataList.forEach((item) => {
+      this.editCache[item.equipCode] = {
+        edit: false,
+        data: { ...item },
+      };
+    });
+  }
 
   // 修改資料
-  updateSave(rowData, _id) {
+  updateSave(rowData, _equipCode) {
     let myObj = this;
-    this.LoadingPage = true;
+    this.loading = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        id: rowData.id,
-        plantCode: rowData.plantCode,
         schShopCode: rowData.schShopCode,
         equipCode: rowData.equipCode,
-        equipGroup: rowData.equipGroup,
-        groupAmount: rowData.groupAmount,
-        equipQuanity: rowData.equipQuanity,
-        bootControl: rowData.bootControl,
-        accumulateDay: rowData.accumulateDay,
+        cumsumType: rowData.cumsumType,
+        accumulation: rowData.accumulation,
         dateLimit: rowData.dateLimit,
-        userName: this.userName,
+        useFlag: rowData.useFlag,
+        userUpdate: this.userName,
       });
-      myObj.PPSService.updateI106Save('1', obj).subscribe(
+      myObj.PPSService.updateTBPPSM107('1', obj).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
             this.onInit();
             this.sucessMSG('修改成功', ``);
-            const index = this.tbppsm013List.findIndex(
-              (item) => item.idx === _id
+            const index = this.displayDataList.findIndex(
+              (item) => item.equipCode === _equipCode
             );
-            Object.assign(this.tbppsm013List[index], rowData);
-            this.editCache[_id].edit = false;
+            this.getTBPPSM107();
+            // Object.assign(this.displayDataList[index], rowData);
+            // this.editCache[_equipCode].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -449,52 +384,49 @@ export class PPSI112Component implements AfterViewInit {
         (err) => {
           reject('upload fail');
           this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
-          this.LoadingPage = false;
+          this.loading = false;
         }
       );
     });
   }
 
   // 刪除資料
-  delID(_id) {
+  delByEquipCode(_equipCode) {
     let myObj = this;
+    this.loading = true;
     return new Promise((resolve, reject) => {
-      let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI106Data('1', id).subscribe(
+      myObj.PPSService.delTBPPSM107('1', _equipCode).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
             this.onInit();
             this.sucessMSG('刪除成功', ``);
-            this.getTbppsm013List();
+            this.getTBPPSM107();
           }
         },
         (err) => {
           reject('upload fail');
           this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
-          this.LoadingPage = false;
+          this.loading = false;
         }
       );
     });
   }
 
-  //convert to Excel and Download
+  // convert to Excel and Download
   convertToExcel() {
     let data;
     let fileName;
     let titleArray = [];
-    if (this.tbppsm013List.length > 0) {
-      data = this.formatDataForExcel(this.tbppsm013List);
-      fileName = `直棒產能維護`;
+    if (this.displayDataList.length > 0) {
+      data = this.formatDataForExcel(this.displayDataList);
+      fileName = `直棒累計生產`;
       titleArray = [
-        '廠區別',
         '站別',
         '機台',
-        '機群',
-        '機群設備數量',
-        '最大管數',
-        '開機管數',
-        '累計天數',
-        '略過天數',
+        '累積單位',
+        '累積值',
+        '強制投產',
+        '是否使用',
       ];
     } else {
       this.errorMSG('匯出失敗', '直棒產能維護目前無資料');
@@ -509,15 +441,13 @@ export class PPSI112Component implements AfterViewInit {
     for (let item of _displayData) {
       let obj = {};
       _.extend(obj, {
-        plantCode: _.get(item, 'plantCode'),
         schShopCode: _.get(item, 'schShopCode'),
         equipCode: _.get(item, 'equipCode'),
-        equipGroup: _.get(item, 'equipGroup'),
-        groupAmount: _.get(item, 'groupAmount'),
-        equipQuanity: _.get(item, 'equipQuanity'),
-        bootControl: _.get(item, 'bootControl'),
-        accumulateDay: _.get(item, 'accumulateDay'),
+        cumsumType: _.get(item, 'cumsumType'),
+        accumulation: _.get(item, 'accumulation'),
         dateLimit: _.get(item, 'dateLimit'),
+        useFlag: _.get(item, 'useFlag'),
+        userUpdate: _.get(item, 'userUpdate'),
       });
       excelData.push(obj);
     }
@@ -592,12 +522,12 @@ export class PPSI112Component implements AfterViewInit {
       this.clearFile();
       return;
     } else if (
-      worksheet.A1.v !== '廠區別' ||
-      worksheet.B1.v !== '站別' ||
-      worksheet.C1.v !== '機台' ||
-      worksheet.D1.v !== '機群' ||
-      worksheet.E1.v !== '機群設備數量' ||
-      worksheet.F1.v !== '最大管數'
+      worksheet.A1.v !== '站別' ||
+      worksheet.B1.v !== '機台' ||
+      worksheet.C1.v !== '累積單位' ||
+      worksheet.D1.v !== '累積值' ||
+      worksheet.E1.v !== '強制投產' ||
+      worksheet.F1.v !== '是否使用'
     ) {
       this.errorMSG(
         '檔案樣板欄位表頭錯誤',
@@ -613,15 +543,13 @@ export class PPSI112Component implements AfterViewInit {
   // EXCEL 資料上傳 (ppsinptb02_nonbar)
   importExcel(_data) {
     for (let i = 0; i < _data.length; i++) {
-      let plantCode = _data[i].廠區別;
       let schShopCode = _data[i].站別;
       let equipCode = _data[i].機台;
-      let equipGroup = _data[i].機群;
-      if (
-        plantCode === undefined ||
-        schShopCode === undefined ||
-        (equipCode === undefined && equipGroup === undefined)
-      ) {
+      let cumsumType = _data[i].累積單位;
+      let accumulation = _data[i].累積值;
+      let dateLimit = _data[i].強制投產;
+      let useFlag = _data[i].是否使用;
+      if (schShopCode === undefined || equipCode === undefined) {
         let col = i + 2;
         this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
         this.isERROR = true;
@@ -636,68 +564,52 @@ export class PPSI112Component implements AfterViewInit {
       this.errorMSG('匯入錯誤', this.errorTXT);
     } else {
       for (let i = 0; i < _data.length; i++) {
-        let plantCode = _data[i].廠區別.toString();
         let schShopCode = _data[i].站別.toString();
-        let equipCode =
-          _data[i].機台 !== undefined ? _data[i].機台.toString() : '';
-        let equipGroup =
-          _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
-        let groupAmount =
-          _data[i].機群設備數量 !== undefined
-            ? _data[i].機群設備數量.toString()
-            : '0';
-        let equipQuanity =
-          _data[i].最大管數 !== undefined ? _data[i].最大管數.toString() : '0';
-        let bootControl =
-          _data[i].開機管數 !== undefined ? _data[i].開機管數.toString() : '0';
-        let dateLimit =
-          _data[i].略過天數 !== undefined ? _data[i].略過天數.toString() : '0';
-        let accumulateDay =
-          _data[i].累計天數 !== undefined ? _data[i].累計天數.toString() : '0';
+        let equipCode = _data[i].機台.toString();
+        let cumsumType = _data[i].累積單位.toString();
+        let accumulation = _data[i].累積值.toString();
+        let dateLimit = _data[i].強制投產.toString();
+        let useFlag = _data[i].是否使用.toString();
+        let userUpdate = this.userName.toString();
 
         this.importdata_new.push({
-          plantCode: plantCode,
           schShopCode: schShopCode,
           equipCode: equipCode,
-          equipGroup: equipGroup,
-          groupAmount: groupAmount,
-          equipQuanity: equipQuanity,
-          bootControl: bootControl,
+          cumsumType: cumsumType,
+          accumulation: accumulation,
           dateLimit: dateLimit,
-          accumulateDay: accumulateDay,
+          useFlag: useFlag,
+          userUpdate: userUpdate,
         });
       }
 
       return new Promise((resolve, reject) => {
-        this.LoadingPage = true;
+        this.loading = true;
         let myObj = this;
         let obj = {};
-        _.extend(obj, {
-          excelData: this.importdata_new,
-          userName: this.userName,
-        });
-        myObj.PPSService.importI106Excel('1', obj).subscribe(
-          (res) => {
+        obj = {
+          EXCELDATA: this.importdata_new,
+        };
+        myObj.PPSService.importTBPPSM107Excel('1', obj).subscribe(
+          async (res) => {
             if (res[0].MSG === 'Y') {
               this.loading = false;
-              this.LoadingPage = false;
-
+              await this.getTBPPSM107();
               this.sucessMSG('EXCCEL上傳成功', '');
-              this.getTbppsm013List();
               this.clearFile();
               this.onInit();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);
               this.clearFile();
               this.importdata_new = [];
-              this.LoadingPage = false;
+              this.loading = false;
             }
           },
           (err) => {
             reject('upload fail');
             this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
             this.importdata_new = [];
-            this.LoadingPage = false;
+            this.loading = false;
           }
         );
       });
@@ -731,75 +643,21 @@ export class PPSI112Component implements AfterViewInit {
   // 新增產能維護之彈出視窗
   openYieldInput(): void {
     this.isVisibleYield = true;
+    this.getShopCode();
   }
   //取消產能維護彈出視窗
   cancelYieldInput(): void {
+    this.onInit();
     this.isVisibleYield = false;
   }
 
-  // ============= 過濾資料之menu ========================
-  // 4.(資料過濾)產能維護
-  tbppsm013ListFilter(property: string, keyWord: string) {
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      if (keyWord == '') {
-        return true;
-      } else {
-        return _.startsWith(propertyValue, keyWord);
-      }
-    };
-
-    const data = this.tbppsm013List.filter((item) => filterFunc(item));
-    this.displayTbppsm013List = data;
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'accumulation');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'accumulation',
+    });
   }
-
-  // 資料過濾---產能維護 --> 站別
-  searchSchShopCode(): void {
-    this.tbppsm013ListFilter('schShopCode', this.searchSchShopCodeValue);
-  }
-  resetBySchShopCode(): void {
-    this.searchSchShopCodeValue = '';
-    this.tbppsm013ListFilter('schShopCode', this.searchSchShopCodeValue);
-  }
-
-  // 資料過濾---產能維護 --> 機台
-  searchEquipCode(): void {
-    this.tbppsm013ListFilter('equipCode', this.searchEquipCodeValue);
-  }
-  resetByEquipCode(): void {
-    this.searchEquipCodeValue = '';
-    this.tbppsm013ListFilter('equipCode', this.searchEquipCodeValue);
-  }
-  // 資料過濾---產能維護 --> 機群
-  searchEquipGroup(): void {
-    this.tbppsm013ListFilter('equipGroup', this.searchEquipGroupValue);
-  }
-  resetByEquipGroup(): void {
-    this.searchEquipGroupValue = '';
-    this.tbppsm013ListFilter('equipGroup', this.searchEquipGroupValue);
-  }
-
-  // 資料過濾---產能維護 --> 機群設備數量
-  searchGroupAmount(): void {
-    this.tbppsm013ListFilter('groupAmount', this.searchGroupAmountValue);
-  }
-  resetByGroupAmount(): void {
-    this.searchGroupAmountValue = '';
-    this.tbppsm013ListFilter('groupAmount', this.searchGroupAmountValue);
-  }
-
-  // 資料過濾---產能維護 --> 最大管數
-  searchByEquipQuanity(): void {
-    this.tbppsm013ListFilter('equipQuanity', this.searchEquipQuanityValue);
-  }
-  resetByEquipQuanity(): void {
-    this.searchEquipQuanityValue = '';
-    this.tbppsm013ListFilter('equipQuanity', this.searchEquipQuanityValue);
-  }
-
-  // excel檔名
-
-  onBtnClick1(e) {}
 
   onBtnClick2(e) {
     this.saveEdit(e.rowData, e.rowData.idx);
@@ -810,6 +668,12 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   onBtnClick4(e) {
-    this.deleteRow(e.rowData.idx);
+    this.deleteRow(e.rowData.equipCode);
+  }
+
+  onRowClicked(event: any) {
+    console.log('Row clicked:', event.data);
+    this.whichRow = event.data.equipCode;
+    // 在这里处理您点击行后的逻辑
   }
 }
