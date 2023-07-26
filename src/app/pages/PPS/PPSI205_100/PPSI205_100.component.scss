@@ -271,3 +271,8 @@ example-box.cdk-drag-disabled {
   text-decoration: none;
   margin-right: 10px;
 }
+
+.horizontal-checkbox-wrapper {
+  display: flex;
+  flex-direction: row;
+}

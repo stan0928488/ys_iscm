@@ -1149,6 +1149,13 @@ export class PPSService {
     return this.http.get<any>(queryUrl);
   }
 
+  ppsi205100getShopCode(_parms) {
+    const body = JSON.stringify(_parms);
+    console.log(body);
+    let endpointUrl = this.APIURL + `/FCP/I205/getShopCode`;
+    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
   //upd102ListData 修改102List
   upd102ListData(obj) {
     const body = JSON.stringify(obj);
