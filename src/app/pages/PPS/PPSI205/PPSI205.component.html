@@ -925,15 +925,18 @@
           style="width: 100%; height: 500px;"
           class="ag-theme-alpine"
           [rowData]="rowData"
+          [context]="myContext"
           [suppressRowClickSelection]="true"
+          (cellDoubleClicked)="cellDoubleClickedHandler($event)"
+          (cellEditingStopped)="cellEditingStoppedHandler($event)"
           [frameworkComponents]="frameworkComponents"
-          [singleClickEdit]="true"
           [groupSelectsChildren]="true"
           [rowSelection]="'multiple'"
           [animateRows]="true"
           [pagination]="true"
           [animateRows]="true"
           [editType]="editType"
+          (gridReady)="onGridReady($event)"
         >
         </ag-grid-angular>
       </div>

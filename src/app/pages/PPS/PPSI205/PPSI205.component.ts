@@ -7,7 +7,7 @@ import * as XLSX from 'xlsx';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import {  ColDef, ColGroupDef, ICellEditorComp, RowValueChangedEvent, GridApi, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community';
+import {  ColDef, ColGroupDef, ICellEditorComp, RowValueChangedEvent, GridApi, GridReadyEvent, CellValueChangedEvent, CellDoubleClickedEvent, ValueFormatterParams, CellEditingStoppedEvent} from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 
 import * as moment from 'moment';
@@ -27,9 +27,7 @@ interface data {}
 })
 export class PPSI205Component implements AfterViewInit {
 
-  private gridApi!: GridApi;
   public editType: 'fullRow' = 'fullRow';
-  tcFrequenceLeft = ['升冪', '降冪'];
 
   frameworkComponents: any;
   PLANT_CODE;
@@ -38,6 +36,9 @@ export class PPSI205Component implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   isErrorMsg = false;
+  isEditing = false;
+  myContext : any;
+  gridApi : GridApi;
 
   titleArray1 = [
     '月份',
@@ -137,7 +138,7 @@ export class PPSI205Component implements AfterViewInit {
 
   public ColGroupDef: ColDef = {
     filter: true,
-    editable: false,
+    editable: true,
     enableRowGroup: false,
     enablePivot: false,
     enableValue: false,
@@ -157,15 +158,6 @@ export class PPSI205Component implements AfterViewInit {
     return moment(params.value).format('YYYY-MM');
   }
 
-  stringFormatter(params) {
-    params.tcFrequenceLeft === "升冪"
-    ? "ASC": "ASC";
-    params.tcFrequenceLeft === "降冪"
-    ? "DESC": "DESC";
-    return params.TC_FREQUENCE_LIFT;
-  }
-
-
   columnDefs: (ColDef | ColGroupDef)[] = [
     { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 120,  editable: false, },
     { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100,  editable: false, },
@@ -174,7 +166,6 @@ export class PPSI205Component implements AfterViewInit {
       headerName: '下一站站別',
       field: 'NEXT_SHOP_CODE',
       filter: true,
-      editable: true,
       width: 120,
     },
     { headerName: '天數', field: 'DAYS', filter: true, editable: true, width: 100, },
@@ -190,7 +181,6 @@ export class PPSI205Component implements AfterViewInit {
           onClick: this.onDatePickerBtnClick1.bind(this)
         }
       ],
-      editable: false,
       maxWidth: 150,
     },
     {
@@ -206,7 +196,6 @@ export class PPSI205Component implements AfterViewInit {
           onClick: this.onDatePickerBtnClick2.bind(this)
         }
       ],
-      editable: false,
       maxWidth: 150,
     },
     {
@@ -219,14 +208,15 @@ export class PPSI205Component implements AfterViewInit {
     {
       headerName: 'TC頻率升降冪',
       field: 'TC_FREQUENCE_LIFT',
-      valueFormatter: this.stringFormatter,
       filter: true,
       width: 140,
-      editable: true,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: {
-        values: this.tcFrequenceLeft,
+        values: ['ASC', 'DESC']
       },
+      valueFormatter: (params: ValueFormatterParams) : string =>{
+        return params.value === 'ASC' ? '升冪' : '降冪';
+      }
     },
     {
       headerName: "COMPAIGN_ID",
@@ -279,6 +269,9 @@ export class PPSI205Component implements AfterViewInit {
     this.frameworkComponents = {
       buttonRenderer: BtnCellRendererUpdate,
     };
+    this.myContext = {
+      componentParent: this
+    };
     
   }
 
@@ -287,12 +280,15 @@ export class PPSI205Component implements AfterViewInit {
       this.selectedTabIndex = +params['selectedTabIndex'] || 0;
       this.innerSelect = +params['innerSelect'] || 0;
     });
+
+    this.ngAfterViewInit();
   }
+
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTbppsm101List();
-    // this.getTbppsm102ListAll();
+    this.getTbppsm102ListAll();
     // this.getTbppsm113List();
     // this.getTbppsm100List();
   }
@@ -314,7 +310,7 @@ export class PPSI205Component implements AfterViewInit {
     this.getPPSService.getTbppsm101List(this.PLANT_CODE).subscribe((res) => {
       console.log('getTbppsm101List success');
       this.tbppsm101List = res;
-      console.log(this.tbppsm101List);
+      console.log('tbppsm101List-->', this.tbppsm101List);
 
       myObj.loading = false;
     });
@@ -340,6 +336,9 @@ export class PPSI205Component implements AfterViewInit {
       let result: any = res;
       if (result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
+        this.rowData.forEach(item => {
+          item['isEditing'] = false;
+        })
       } else {
         this.message.error('無資料');
         return;
@@ -1594,6 +1593,8 @@ export class PPSI205Component implements AfterViewInit {
   // 修改401存檔
   save401_dtlRow(i, data) {
     console.log('-------save_dtlRow------');
+    // oldlist存放更新根據的條件(複合主鍵:IMPORTDATETIME+PLANT_CODE+ORDER_ID)
+    this.oldlist = data;
     this.newlist = data;
     
     let importdatetime = this.newlist.IMPORTDATETIME;
@@ -1631,11 +1632,8 @@ export class PPSI205Component implements AfterViewInit {
 
    // 確定修改 Auto Campaign 存檔
    Save401OK(col) {
-    console.log('oldlist :');
-    console.log(this.oldlist);
-
-    console.log('newlist :');
-    console.log(this.newlist);
+    console.log('oldlist --> ', this.oldlist);
+    console.log('newlist --> ', this.newlist);
 
     this.LoadingPage = true;
     let myObj = this;
@@ -1658,6 +1656,8 @@ export class PPSI205Component implements AfterViewInit {
             this.newlist = [];
             this.getTbppsm102List();
             this.sucessMSG('修改存檔成功', '');
+            // 將編輯模式關閉
+            this.gridApi.getRowNode(col).data.isEditing = false;
           } else {
             this.errorMSG('修改存檔失敗', res[0].MSG);
             this.LoadingPage = false;
@@ -1901,11 +1901,29 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
+  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>){
+    event.data.isEditing = true;
+  }
+
+  cellEditingStoppedHandler(event : CellEditingStoppedEvent<any, any>){
+    const {oldValue, newValue } = event;
+    console.log('oldValue==>' , oldValue);
+    console.log('newValue==>' , newValue);
+    if(oldValue === newValue){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+      return;
+    }
+  }
+
   editOnClick(e) {}
 
   updateOnClick(e) {
-    this.upd_dtlRow(e.index, e.rowData);
+    // this.upd_dtlRow(e.index, e.rowData);
     this.save401_dtlRow(e.index, e.rowData);
+    this.isEditing = false;
   }
 
   calcelOnClick(e) {
@@ -1921,5 +1939,9 @@ export class PPSI205Component implements AfterViewInit {
   onDatePickerBtnClick2(e) {
     this.dateFormat('YYYY-MM-DD', 2);
     e.rowData.save401_dtlRow;
+  }
+
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 }

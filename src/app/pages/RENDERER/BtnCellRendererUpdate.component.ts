@@ -1,49 +1,54 @@
 // Author: T4professor
 
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
+import { ICellRendererParams } from 'ag-grid-community';
 
 @Component({
   selector: 'app-button-renderer',
   template: `
-  <button *ngIf="isNew == false"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
-  <button *ngIf="isNew == true"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
-  <button *ngIf="isNew == true"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
+  <button *ngIf="!this.params.data.isEditing"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
+  <button *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
+  <button *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
     `
 })
 
 export class BtnCellRendererUpdate implements ICellRendererAngularComp {
 
-  params;
-  isNew = false;
+  params : ICellRendererParams<any, any>;
+  isEditing = false;
+  componentParent : any;
 
-  agInit(params): void {
+  constructor(private changeDetectorRef: ChangeDetectorRef){
+
+  }
+
+  agInit(params: ICellRendererParams<any, any>): void {
     this.params = params;
+    // 獲取 PPSI205 的 this
+    this.componentParent = params.context.componentParent;
   }
 
   refresh(params?: any): boolean {
-    return true;
+    return false;
   }
   
+  // 編輯
   editOnClick($event) {
 
-    var actionParam = this.params[0];
-
-    this.isNew = true;
-    if (actionParam.onClick instanceof Function) {
-      const params = {
-        event: $event,
-        rowData: this.params.node.data,
-        index:this.params.node.id
-      }
-      actionParam.onClick(params);
-
-    }
-
+    this.params.data.isEditing = true;
+    
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，沒特別要求預設帶第一個欄位的值即可 
+    this.params.api.startEditingCell({
+      rowIndex : this.params.rowIndex,
+      colKey : 'TC_FREQUENCE_LIFT' 
+    });
   }
 
+  // 更新保存
   updateOnClick($event) {
-
     var actionParam = this.params[1];
     this.params.api.stopEditing();
 
@@ -60,12 +65,14 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
 
   }
 
+  // 取消
   calcelOnClick($event) {
     
+    this.params.data.isEditing = false;
+
     var actionParam = this.params[2];
     this.params.api.stopEditing(true);
 
-    this.isNew = false;
     if (actionParam.onClick instanceof Function) {
       const params = {
         event: $event,
