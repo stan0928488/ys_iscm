@@ -110,7 +110,6 @@ import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
-import { DatePickerCellRendererComponent } from './pages/RENDERER/datepicker-cell-renderer.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { AdjShopCodeCellRendererComponent } from './pages/MSH/MSHI003/AdjShopCodeCellRenderer.componet';
@@ -214,7 +213,6 @@ registerLocaleData(zh);
     MSHI004Component,
     PrimeDatePickerCellEditorComponent,
     PrimeDatePickerCellEditor,
-    DatePickerCellRendererComponent,
     LABI002Component,
     LABI003Component,
     AdjShopCodeCellRendererComponent,
