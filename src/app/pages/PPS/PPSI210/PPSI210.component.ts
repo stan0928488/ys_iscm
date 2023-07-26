@@ -780,7 +780,7 @@ export class PPSI210Component implements AfterViewInit {
         this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
       }
 
-      this.getMachineSortList('20220822215240');
+      this.getMachineSortList('20221025000001');
     });
 
     myObj.loading = false;
