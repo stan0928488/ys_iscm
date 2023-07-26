@@ -257,7 +257,7 @@
               [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
               nzType="primary"
               [disabled]="isRunFCP"
-              (click)="importCompaign()"
+              (click)="importCompaign(1)"
             >
               <span nz-icon nzType="upload" nzTheme="outline"></span>
               轉入 CAMPAIGN 表
@@ -844,16 +844,21 @@
       <div>
         <tr>
           <td style="width: 42%;">
-            &nbsp;&nbsp;
             <button
-            nz-button
-            nzType="primary"
-            (click)="importCompaign()"
-            [disabled]="isRunFCP"
-          >
-            <span nz-icon nzType="import" nzTheme="outline"></span>
-            轉入 Campaign 表
-          </button>
+              nz-button
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #e6a3c2;
+                border: 2px blue none;
+              "
+              [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
+              nzType="primary"
+              [disabled]="isRunFCP"
+              (click)="importCompaign(2)"
+            >
+              <span nz-icon nzType="upload" nzTheme="outline"></span>
+              轉入 CAMPAIGN 表
+            </button>
           </td>
 
           <td style="text-align: right;">
