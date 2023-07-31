@@ -8,7 +8,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { OpenSortRendererComponent } from './open-sort-renderer-component';
 import { SendChoiceRendererComponent } from './send-choice-renderer-component';
 import { firstValueFrom } from 'rxjs';
@@ -87,6 +87,8 @@ export class PPSI210Component implements AfterViewInit {
 
   nzPagination: any;
 
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
   agGridContext : any;
   planSetColumnDefs: ColDef[] = [
     { 
@@ -145,8 +147,7 @@ export class PPSI210Component implements AfterViewInit {
     defaultColDef: {
       sortable: false,
       resizable: true,
-      wrapText: true,
-      autoHeight: true
+      wrapText: true
     }
   };
 
@@ -1489,6 +1490,22 @@ export class PPSI210Component implements AfterViewInit {
     finally{
     }
   }
+
+
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    this.autoSizeAll();
+  }
+
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+
 
   sucessMSG(_title, _plan): void {
     this.Modal.success({

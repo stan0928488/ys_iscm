@@ -392,6 +392,7 @@
       [columnDefs]="planSetColumnDefs"
       [gridOptions]="gridOptions"
       [pagination]="true"
+      (gridReady)="onGridReady($event)"
       [paginationPageSize]="20">
     </ag-grid-angular>
 

@@ -10,6 +10,7 @@ import { NzModalService } from "ng-zorro-antd/modal";
             nz-button 
             nzType="primary"
             nzShape="round"
+            nzSize="small"
             (click)="componentParent.openSorting(params.data.SEQNO)">
             明細
         </button>
@@ -18,6 +19,7 @@ import { NzModalService } from "ng-zorro-antd/modal";
             nz-button 
             nzType="primary" 
             nzShape="round"
+            nzSize="small"
             nzDanger
             (click)="deletePlot()">
             刪除

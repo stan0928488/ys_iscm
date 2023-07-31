@@ -11,6 +11,7 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { AppComponent } from "src/app/app.component";
 import { DatePipe } from '@angular/common';
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
+import { firstValueFrom } from "rxjs";
 
 interface data {
 
@@ -63,11 +64,13 @@ export class PPSR304Component implements AfterViewInit {
     { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 120 },
     { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
     { headerName: '業務員' ,field: 'sales' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
+    { headerName: '付款條件' ,field: 'paymentTers' , filter: false,width: 120},
     { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
     { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
     { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
     { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
-    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:120, cellStyle: { textAlign: "center" }}
+    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:120, cellStyle: { textAlign: "center" }},
+    { headerName: '交期依據' ,field: 'deliveryDateBasis' , filter: false,width: 120},
  ];
 
  public defaultColDefTab: ColDef = {
@@ -89,21 +92,22 @@ public autoGroupColumnDef: ColDef = {
     
   }
   
-  getR304DataList(){
+  async getR304DataList(){
+    try{
+      const resObservable$ = this.PPSService.getR304DataList();
+      const result = await firstValueFrom(resObservable$);
 
-    let myObj = this ;
-
-    myObj.PPSService.getR304DataList().subscribe(res =>{
-
-      let result : any = res;
-
-      console.log(res);
       this.R304DataList = result ;
-
       this.uploadDate = result[0]['dateUpdate'] != undefined? result[0]['dateUpdate'].split(" ")[0]:result[0]['dateCreate'].split(" ")[0];
       this.uploadUser = result[0]['userUpdate'] != undefined? result[0]['userUpdate']:result[0]['userCreate'];
+
+    }
+    catch (error) {
+      this.errorMSG('獲取客戶出貨資訊清單失敗', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
+    }
+    finally{
       this.loading = false;
-    });
+    }
   }
 
   exportToExcel(){
@@ -158,6 +162,11 @@ public autoGroupColumnDef: ColDef = {
 
   Upload() {
 
+    if(_.isNil(this.file)){
+      this.message.error('無檔案，請先選擇要上傳的檔案');
+      return;
+    }
+
     let lastname = this.file.name.split('.').pop();
     console.log("this.file.name: "+this.file.name);
     console.log("incomingfile e : " + this.file);
@@ -178,13 +187,14 @@ public autoGroupColumnDef: ColDef = {
         var worksheet:any = workbook.Sheets[first_sheet_name];
 
         if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined ||
-          worksheet.F1 === undefined || worksheet.G1 === undefined  || worksheet.H1 === undefined ) {
+          worksheet.F1 === undefined || worksheet.G1 === undefined  || worksheet.H1 === undefined || worksheet.I1 === undefined || worksheet.J1 === undefined) {
         this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
         this.clearFile();
           return;
         } else if(worksheet.A1.v !== "客戶簡稱" || worksheet.B1.v !== "區別" 
-        || worksheet.C1.v !== "業務員" || worksheet.D1.v !== "預估出貨量" || worksheet.E1.v !== "異型棒目標" 
-        || worksheet.F1.v !== "大棒目標" || worksheet.G1.v !== "允收截止日" || worksheet.H1.v !== "可接受交期") {
+        || worksheet.C1.v !== "業務員" ||  worksheet.D1.v !== "付款條件" || worksheet.E1.v !== "預估出貨量" || worksheet.F1.v !== "異型棒目標" 
+        || worksheet.G1.v !== "大棒目標" || worksheet.H1.v !== "允收截止日" || worksheet.I1.v !== "可接受交期"
+        || worksheet.J1.v !== "交期依據") {
           this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
           this.clearFile();
           return;
@@ -246,11 +256,13 @@ public autoGroupColumnDef: ColDef = {
           custAbbreviations: _data[i]['客戶簡稱'].toString(),
           areaGroup : _data[i]['區別'] != undefined ?_data[i]['區別'].toString():null,
           sales : _data[i]['業務員'] != undefined ?_data[i]['業務員'].toString():null,
+          paymentTers : !_.isNil(_data[i]['付款條件']) ? _data[i]['付款條件'] : null,
           estimateWeight: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['預估出貨量']),
           profieldGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['異型棒目標']),
           bigStickGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['大棒目標']),
           datePlanInStorage : datePlanInStorage,
           dateAcceptTable :dateDeliveryPp,
+          deliveryDateBasis : !_.isNil(_data[i]['交期依據']) ? _data[i]['交期依據'] : null,
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
