@@ -35,20 +35,17 @@ export class ConfigService {
         // if(flag === "1") { 
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
         // } else {
-        //   var urlHost = "ys-webapt1.walsin.com"
+        //   var urlHost = "ys-ppsapt01.walsin.corp/"
         //   this.APIURL = `http://${urlHost}:8080${APIBODY}`;
         // }
        
         break;
-      case "ys-webapt1.walsin.com":
-        this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        break;
       case "ys-pps.walsin.corp":
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
-      case "ys-webapp.walsin.com":
-        this.APIURL = `https://${hostName}${APIBODY}`;
-        break;
+      // case "ys-webapp.walsin.com":
+      //   this.APIURL = `https://${hostName}${APIBODY}`;
+      //   break;
       default:
         this.APIURL = `http://${hostName}:8080${APIBODY}`;        
     }
