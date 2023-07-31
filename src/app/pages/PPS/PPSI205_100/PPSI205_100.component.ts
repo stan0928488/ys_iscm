@@ -31,6 +31,9 @@ export class PPSI205_100Component implements AfterViewInit {
   isRunFCP = false; // 如為true則不可異動
   isErrorMsg = false;
 
+  PickShopCode = [];
+  preinsert = [];
+
   titleArray1 = [
     '月份',
     '站別',
@@ -176,7 +179,7 @@ export class PPSI205_100Component implements AfterViewInit {
     await this.getFcpList();
     console.log(this.maxFcp + '最大');
     this.fcpEditionList = this.maxFcp;
-    this.getShopCode();
+    // this.getShopCode();
     this.getPPSService
       .getPpsfcptb16MsCustSortList(this.fcpEditionList)
       .subscribe((res) => {
@@ -208,6 +211,7 @@ export class PPSI205_100Component implements AfterViewInit {
         console.log('getppsfcptb16_ms_cust_sortList success');
         this.ppsfcptb16_ms_cust_sortList = res;
         console.log(this.fcpEditionList);
+        this.getShopCode();
         this.loading = false;
       });
   }
@@ -221,7 +225,7 @@ export class PPSI205_100Component implements AfterViewInit {
           this.fcpEditionOption = res;
           this.maxFcp = _.max(this.fcpEditionOption);
           this.getppsfcptb16_ms_cust_sortList();
-          this.getShopCode();
+          // this.getShopCode();
           this.loading = false;
           resolve();
         },
@@ -262,15 +266,26 @@ export class PPSI205_100Component implements AfterViewInit {
   convertToTbppsm100(userClick: boolean) {
     this.loading = true;
     let myObj = this;
-    this.getPPSService
-      .convertToTbppsm100(this.fcpEditionList)
-      .subscribe((res) => {
+    this.preinsert = [];
+    if (!_.isNil(this.PickShopCode)) {
+      for (var i = 0; i < this.PickShopCode.length; i++) {
+        const data = {
+          fcpEdition: this.fcpEditionList,
+          schShopCode: this.PickShopCode[i],
+        };
+        this.preinsert.push(data);
+      }
+      console.log(this.preinsert);
+      this.getPPSService.convertToTbppsm100(this.preinsert).subscribe((res) => {
         console.log('convertToTbppsm100 success');
         this.message.success('轉入成功');
-        console.log(this.fcpEditionList);
-
         myObj.loading = false;
       });
+      this.PickShopCode = [];
+      this.preinsert = [];
+    } else {
+      this.message.error('請選擇站別');
+    }
   }
 
   changeTab(tab): void {
@@ -287,7 +302,9 @@ export class PPSI205_100Component implements AfterViewInit {
       this.getppsfcptb16_ms_cust_sortList();
     }
   }
+
   log(value: string[]): void {
-    console.log(value);
+    this.PickShopCode = value.toString().split(',');
+    console.log(this.PickShopCode);
   }
 }

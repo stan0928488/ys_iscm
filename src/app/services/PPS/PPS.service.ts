@@ -1134,11 +1134,10 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  convertToTbppsm100(_fcpEditionList) {
-    const body = JSON.stringify(_fcpEditionList);
+  convertToTbppsm100(_data) {
+    const body = JSON.stringify(_data);
     console.log(body);
-    let queryUrl =
-      this.APIURL + `/FCP/I205/convertToTbppsm100/${_fcpEditionList}`;
+    let queryUrl = this.APIURL + `/FCP/I205/convertToTbppsm100`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
