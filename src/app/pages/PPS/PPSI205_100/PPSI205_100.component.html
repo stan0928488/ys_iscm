@@ -81,7 +81,8 @@
                 <div class="horizontal-checkbox-wrapper">
                   <label
                     nz-checkbox
-                    *ngFor="let item of shopCodeOptions"
+                    *ngFor="let item of shopCodeOptions; let i = index"
+                    [(ngModel)]="checkboxStatus[i]"
                     nzValue="{{ item }}"
                     >{{ item }}</label
                   >

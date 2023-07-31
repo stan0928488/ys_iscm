@@ -154,7 +154,8 @@ export class PPSI112Component implements AfterViewInit {
       cellEditorParams: {
         values: ['day', 'hour'],
       },
-      // valueGetter: this.customValueGetter,
+      valueFormatter: this.cumsumTypeSelect,
+      // valueGetter: this.cumsumTypeDisplay,
     },
     {
       headerName: '累積值',
@@ -724,8 +725,20 @@ export class PPSI112Component implements AfterViewInit {
     // 在这里处理您点击行后的逻辑
   }
 
-  customValueGetter(params: any): string {
-    const selectedOption = params.data.value;
+  cumsumTypeDisplay(params: any): string {
+    const selectedOption = params.data.cumsumType;
+    console.log('selected option:', selectedOption);
+    if (selectedOption === 'day') {
+      return '日';
+    } else if (selectedOption === 'hour') {
+      return '小時';
+    }
+    return '';
+  }
+
+  cumsumTypeSelect(params: any): string {
+    const selectedOption = params.value;
+    // console.log('cumsumTypeSelect option:', selectedOption);
     if (selectedOption === 'day') {
       return '日';
     } else if (selectedOption === 'hour') {

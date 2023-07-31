@@ -516,8 +516,8 @@ export class MSHI004Component {
       fcpEdition: a,
       mesPublishGroup: b,
     };
+    this.isSpinning = true;
     new Promise<boolean>((resolve, reject) => {
-      this.isSpinning = true;
       this.mshi004Service.getMesData(this.preMes).subscribe(
         (res) => {
           const { code, data } = res;
@@ -535,18 +535,17 @@ export class MSHI004Component {
                   let result: any = res;
                   if (result.code === 200) {
                     this.message.success(result.message);
-                    resolve(true);
                     this.isSpinning = false;
+                    resolve(true);
                   } else {
                     this.message.error(result.message);
-                    reject(true);
                     this.isSpinning = false;
+                    reject(true);
                   }
                 });
             } else {
               this.mesData = [];
             }
-            this.isSpinning = false;
             resolve(true);
           } else {
             reject(true);
@@ -563,11 +562,9 @@ export class MSHI004Component {
     })
       .then((success) => {
         this.mesData = [];
-        this.isSpinning = false;
       })
       .catch((error) => {
         this.mesData = [];
-        this.isSpinning = false;
       });
   }
 
