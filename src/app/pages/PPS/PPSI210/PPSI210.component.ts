@@ -137,7 +137,8 @@ export class PPSI210Component implements AfterViewInit {
       filter: true 
     },
     { 
-      headerName:'站別策略設定', 
+      headerName:'站別策略設定',
+      field:'action', 
       cellRenderer: OpenSortRendererComponent,
       filter: true 
     }
@@ -871,9 +872,11 @@ export class PPSI210Component implements AfterViewInit {
       console.log('getPlanSetData success');
       this.planSetDataList = res;
       
-     for (let index = 0; index < this.planSetDataList.length; index++) {
-      this.planSetDataList[index].selectedRadioValue = prePlanSetDataList[index].selectedRadioValue;
-     }
+    if(!_.isNil(prePlanSetDataList)){
+      for (let index = 0; index < this.planSetDataList.length; index++) {
+        this.planSetDataList[index].selectedRadioValue = prePlanSetDataList[index].selectedRadioValue;
+      }
+    }
 
       myObj.loading = false;
     });
@@ -1499,11 +1502,13 @@ export class PPSI210Component implements AfterViewInit {
   }
 
   autoSizeAll() {
-    const allColumnIds: string[] = [];
-    this.gridColumnApi.getColumns()!.forEach((column) => {
-      allColumnIds.push(column.getId());
-    });
-    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+   setTimeout(() => {
+      const allColumnIds: string[] = [];
+      this.gridColumnApi.getColumns()!.forEach((column) => {
+        allColumnIds.push(column.getId());
+      });
+      this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+    }, 20);
   }
 
 
