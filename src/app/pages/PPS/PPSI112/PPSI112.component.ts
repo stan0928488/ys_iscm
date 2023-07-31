@@ -59,6 +59,7 @@ export class PPSI112Component implements AfterViewInit {
   useFlag: string;
   dateUpdate: string;
   userUpdate: string;
+  discumsumType;
 
   isErrorMsg = false;
   isERROR = false;
@@ -101,6 +102,7 @@ export class PPSI112Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTBPPSM107();
+    this.onInit();
   }
 
   // 取得是否有正在執行的FCP
@@ -152,6 +154,7 @@ export class PPSI112Component implements AfterViewInit {
       cellEditorParams: {
         values: ['day', 'hour'],
       },
+      valueGetter: this.customValueGetter,
     },
     {
       headerName: '累積值',
@@ -232,6 +235,16 @@ export class PPSI112Component implements AfterViewInit {
     });
   }
 
+  changeDisplay() {
+    for (let i = 0; i < this.displayDataList.length; i++) {
+      if (this.displayDataList[i].cumsumType == 'day') {
+        this.discumsumType[i] = '天';
+      } else if (this.displayDataList[i].cumsumType == 'hour') {
+        this.discumsumType[i] = '小時';
+      }
+    }
+  }
+
   shopCodeOptions;
   getShopCode() {
     this.PPSService.getShopCode().subscribe((res) => {
@@ -263,13 +276,29 @@ export class PPSI112Component implements AfterViewInit {
     } else if (this.equipCode === '') {
       this.message.create('error', '「機台」不可為空');
       return;
+    } else if (this.cumsumType === '') {
+      this.message.create('error', '「累積單位」不可為空');
+      return;
+    } else if (this.accumulation === undefined) {
+      this.message.create('error', '「累積值」不可為空');
+      return;
+    } else if (this.dateLimit === undefined) {
+      this.message.create('error', '「強制投產」不可為空');
+      return;
+    } else if (this.useFlag === '') {
+      this.message.create('error', '「是否使用」不可為空');
+      return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
           this.insertSave();
+          this.onInit();
         },
-        nzOnCancel: () => console.log('cancel'),
+        nzOnCancel: () => {
+          console.log('cancel');
+          this.onInit();
+        },
       });
     }
   }
@@ -693,5 +722,15 @@ export class PPSI112Component implements AfterViewInit {
     console.log('Row clicked:', event.data);
     this.whichRow = event.data.equipCode;
     // 在这里处理您点击行后的逻辑
+  }
+
+  customValueGetter(params: any): string {
+    const selectedOption = params.data.value;
+    if (selectedOption === 'day') {
+      return '日';
+    } else if (selectedOption === 'hour') {
+      return '小時';
+    }
+    return '';
   }
 }
