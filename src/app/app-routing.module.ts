@@ -86,6 +86,7 @@ import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
+import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 
 const routes: Routes = [
   {
@@ -242,6 +243,7 @@ const routes: Routes = [
       { path: 'R307', component: PPSR307Component },
       { path: 'R308', component: PPSR308Component },
       { path: 'R309', component: PPSR309Component },
+      { path: 'R310', component: PPSR310Component },
     ],
     canActivate: [AuthGuard],
   },
