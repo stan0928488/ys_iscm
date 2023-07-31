@@ -154,7 +154,7 @@ export class PPSI112Component implements AfterViewInit {
       cellEditorParams: {
         values: ['day', 'hour'],
       },
-      valueGetter: this.customValueGetter,
+      // valueGetter: this.customValueGetter,
     },
     {
       headerName: '累積值',
