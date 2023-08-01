@@ -239,6 +239,7 @@ export class PPSI205_100Component implements AfterViewInit {
   }
 
   shopCodeOptions;
+  checkboxStatus: boolean[];
   getShopCode() {
     this.loading = true;
     let preShopCode = {
@@ -249,7 +250,19 @@ export class PPSI205_100Component implements AfterViewInit {
       this.getPPSService.ppsi205100getShopCode(preShopCode).subscribe(
         (res) => {
           console.log('getShopCode success');
+          // this.shopCodeOptions = [];
+          // for (var i = 0; i < res.length; i++) {
+          //   const option = {
+          //     label: res[i].schShopCode,
+          //     checked: false,
+          //   };
+          //   this.shopCodeOptions.push(option);
+          // }
           this.shopCodeOptions = res.map((item) => item.schShopCode);
+          this.checkboxStatus = new Array(this.shopCodeOptions.length).fill(
+            false
+          );
+          // console.log(res.length);
           console.log(this.shopCodeOptions);
           this.loading = false;
           resolve();
@@ -266,8 +279,9 @@ export class PPSI205_100Component implements AfterViewInit {
   convertToTbppsm100(userClick: boolean) {
     this.loading = true;
     let myObj = this;
-    this.preinsert = [];
-    if (!_.isNil(this.PickShopCode)) {
+    if (this.PickShopCode.length === 0) {
+      this.message.error('請選擇站別');
+    } else {
       for (var i = 0; i < this.PickShopCode.length; i++) {
         const data = {
           fcpEdition: this.fcpEditionList,
@@ -283,8 +297,8 @@ export class PPSI205_100Component implements AfterViewInit {
       });
       this.PickShopCode = [];
       this.preinsert = [];
-    } else {
-      this.message.error('請選擇站別');
+      this.getFcpList();
+      this.checkboxStatus.fill(false);
     }
   }
 
