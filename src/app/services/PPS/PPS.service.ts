@@ -1906,6 +1906,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getR310Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R310/getPPSR310List`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   getR308VerListData(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
