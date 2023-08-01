@@ -73,7 +73,7 @@ export class MSHI002Component implements OnInit {
       active: true,
       name: '已挑選欄位 （MO，投產機台 必選）',
     };
-
+  /***選擇欄位 */
   selectColumChecked(value: string[]): void {
     console.log("checked:"+JSON.stringify(this.allColumList) );
      //過濾已經篩選數據
@@ -82,7 +82,20 @@ export class MSHI002Component implements OnInit {
     })
     console.log("checked:"+JSON.stringify(this.selectAllColumList) );
    this.edited = true ;
+  }
 
+  selectColumCheckedEach(i){
+   //console.log("選擇第幾筆數據" + JSON.stringify(this.allColumList[i]) )
+    let checkItem =  this.allColumList[i] ;
+    if(checkItem.checked === true) {  // 選擇的數據有兩種可能 1 checked = true 添加就直接追加到 挑選欄位
+      this.selectAllColumList.push(checkItem) ;
+    }else{ // 選擇的數據有兩種可能 2 checked = false  從挑選欄位中移除
+      this.selectAllColumList = this.selectAllColumList.filter((item,index,array)=>{
+        return item.columValue !== checkItem.columValue ;
+      })
+    }
+    this.edited = true ;
+    console.log("選擇第幾筆數據" + JSON.stringify(this.allColumList[i]) ) 
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -156,7 +169,7 @@ saveDataByAdmin(){
       console.log(this.shopCodeList) ;
     })
   }
-
+  /***獲取ADMIN 設定的欄位 */
   getSetColumByAdminForUser(){
     let _param = {'shopCode' : this.selectShopCode} ;
     this.mshService.getSetColumByAdminForUser(this.selectShopCode).subscribe(res=>{
@@ -167,6 +180,7 @@ saveDataByAdmin(){
       this.getSetColumByUser();
     })
   }
+  /**獲取user設定的欄位 */
 
   getSetColumByUser(){
     let _param = {shopCode:this.selectShopCode}
