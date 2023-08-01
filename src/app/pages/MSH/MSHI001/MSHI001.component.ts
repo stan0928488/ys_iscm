@@ -53,6 +53,23 @@ export class MSHI001Component implements OnInit {
    this.edited = true ;
   }
 
+  selectColumCheckedEach(i){
+    console.log("選擇第幾筆數據" + JSON.stringify(this.allColumList[i]) )
+     let checkItem =  this.allColumList[i] ;
+     if(checkItem.checked === true) {  // 選擇的數據有兩種可能 1 checked = true 添加就直接追加到 挑選欄位
+      // checkItem.columLabel = checkItem.label ;
+      // checkItem.columValue = checkItem.value ;
+      this.selectAllColumList.push(checkItem) ;
+     }else{ // 選擇的數據有兩種可能 2 checked = false  從挑選欄位中移除
+       this.selectAllColumList = this.selectAllColumList.filter((item,index,array)=>{
+         return item.value !== checkItem.value ;
+       })
+     }
+     this.edited = true ;
+     console.log("選擇" + JSON.stringify(this.selectAllColumList) ) 
+   }
+ 
+
   drop(event: CdkDragDrop<string[]>) {
     console.log(event.item)
     moveItemInArray(this.selectAllColumList, event.previousIndex, event.currentIndex);

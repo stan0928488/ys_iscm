@@ -1320,9 +1320,8 @@ this.handleSelectCarModal() ;
   }
 //排序分群
   formateGroupRow(){
-    // console.log("原始數據:" + JSON.stringify(this.rowData))
-    // console.log("分群數組:" + JSON.stringify(this.groupArray))
-    // console.log("欄位是否數字：" + JSON.stringify(this.columKeyType))
+     console.log("原始數據:" + JSON.stringify(this.rowData))
+     console.log("分群數組:" + JSON.stringify(this.groupArray))
     let rowDataTemp = [] ;
     //前一條數據
     let preGroupString = "" ;
@@ -1350,6 +1349,10 @@ this.handleSelectCarModal() ;
         if(index === 0) {
           preGroupString = currentGroupString ;
           preGroupObject = item ;
+          if(originalDataTemp.length === 1) {
+            rowDataTemp.push(this.pushDataBeforeFormat(preGroupObject)) ;
+          }
+         
         }
         else {
           //如果當前分組跟上一次相等
@@ -1849,11 +1852,11 @@ this.handleSelectCarModal() ;
       let lastname = this.uploadFile.name.split('.').pop();
       console.log("lastname:" + lastname)
       console.log("exportFileName:" + this.exportFileName)
-      if(!this.uploadFile.name.includes(this.exportFileName)) {
+     /**  if(!this.uploadFile.name.includes(this.exportFileName)) {
         this.nzMessageService.error('請使用同一份文件檔案。');
         this.clearFile();
         return;
-      }
+      }*/
       if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
         this.clearFile();

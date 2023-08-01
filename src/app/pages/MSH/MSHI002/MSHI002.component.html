@@ -12,9 +12,10 @@
     <nz-collapse style="width: 100%;" nzAccordion>
       <nz-collapse-panel  [nzHeader]="panels2.name" [nzActive]="panels2.active">
         <p>
-          <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="selectColumChecked($event)">
+          <!-- (nzOnChange)="selectColumChecked($event)"-->
+          <nz-checkbox-wrapper style="width: 100%;">
             <div nz-row>
-              <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList"><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked">{{item2.columLabel}}</label></div>
+              <div nz-col  nzSpan="3" *ngFor="let item2 of allColumList ; let i = index "><label nz-checkbox [nzValue]="item2.columValue" [(ngModel)]="item2.checked"   (ngModelChange)="selectColumCheckedEach(i)"   >{{item2.columLabel}}</label></div>
               
             </div>
           </nz-checkbox-wrapper>
