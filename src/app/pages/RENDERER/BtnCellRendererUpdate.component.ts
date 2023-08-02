@@ -1,83 +1,73 @@
 // Author: T4professor
 
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
-import { ICellRendererParams } from 'ag-grid-community';
 
 @Component({
   selector: 'app-button-renderer',
   template: `
-  <button *ngIf="!this.params.data.isEditing"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
-  <button *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
-  <button style="margin-left:10px" *ngIf="this.params.data.isEditing"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
+    <button *ngIf="isNew == false"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
+    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
+    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
     `
 })
 
 export class BtnCellRendererUpdate implements ICellRendererAngularComp {
 
-  params : ICellRendererParams<any, any>;
-  isEditing = false;
-  componentParent : any;
+  params;
+  isNew = false;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef){
-
-  }
-
-  agInit(params: ICellRendererParams<any, any>): void {
+  agInit(params): void {
     this.params = params;
-    // 獲取 PPSI205 的 this
-    this.componentParent = params.context.componentParent;
   }
 
   refresh(params?: any): boolean {
-    return false;
-  }
-  
-  // 編輯
-  editOnClick(event) {
-
-    this.params.data.isEditing = true;
-    
-    // 使用ag-grid提供的api開啟整行進入編輯狀態
-    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
-    // 但一定要帶值，必須是可編輯的cloumn名稱
-    this.params.api.startEditingCell({
-      rowIndex : this.params.rowIndex,
-      colKey : 'TC_FREQUENCE_LIFT' 
-    });
+    return true;
   }
 
-  // 更新保存
-  updateOnClick(event) {
+  editOnClick($event) {
 
-    var actionParam = this.params[1];
-    this.params.api.stopEditing();
+    var actionParam = this.params[0];
 
+    this.isNew = true;
     if (actionParam.onClick instanceof Function) {
       const params = {
-        event: event,
+        event: $event,
         rowData: this.params.node.data,
-        index:this.params.node.id
+        params:this.params
       }
-      console.log(params);
       actionParam.onClick(params);
 
     }
 
   }
 
-  // 取消
-  calcelOnClick(event) {
-    this.params.data.isEditing = false;
+  updateOnClick($event) {
 
-    var actionParam = this.params[2];
-    this.params.api.stopEditing(true);
+    var actionParam = this.params[1];
+    this.params.api.stopEditing();
 
     if (actionParam.onClick instanceof Function) {
       const params = {
-        event: event,
-        rowData: this.params.node.data,
-        index:this.params.node.id
+        event: $event,
+        rowData: this.params.node.data
+      }
+      actionParam.onClick(params);
+
+    }
+
+  }
+
+  calcelOnClick($event) {
+    
+    var actionParam = this.params[2];
+    this.params.api.stopEditing(true);
+
+    this.isNew = false;
+    if (actionParam.onClick instanceof Function) {
+      const params = {
+        event: $event,
+        rowData: this.params.node.data
       }
       actionParam.onClick(params);
 

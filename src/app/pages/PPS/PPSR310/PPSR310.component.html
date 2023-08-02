@@ -21,4 +21,12 @@
         </nz-collapse-panel>
     </nz-collapse>
 
+    <ag-grid-angular style="width: 100%; height: 650px; overflow: scroll;" class="ag-theme-alpine" [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        class="ag-theme-alpine"
+        [gridOptions]="gridOptions"
+        >
+    </ag-grid-angular>
+
 </nz-content>

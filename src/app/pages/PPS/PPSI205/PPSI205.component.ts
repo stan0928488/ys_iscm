@@ -1692,7 +1692,7 @@ export class PPSI205Component implements AfterViewInit {
             this.EditMode[col] = false;
             this.oldlist = [];
             this.newlist = [];
-            this.getTbppsm102List();
+            this.getTbppsm102ListAll();
             this.sucessMSG('修改存檔成功', '');
             // 將編輯模式關閉
             this.gridApi.getRowNode(col).data.isEditing = false;
