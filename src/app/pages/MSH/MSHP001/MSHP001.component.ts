@@ -1852,11 +1852,11 @@ this.handleSelectCarModal() ;
       let lastname = this.uploadFile.name.split('.').pop();
       console.log("lastname:" + lastname)
       console.log("exportFileName:" + this.exportFileName)
-     /**  if(!this.uploadFile.name.includes(this.exportFileName)) {
+      if(!this.uploadFile.name.includes(this.exportFileName)) {
         this.nzMessageService.error('請使用同一份文件檔案。');
         this.clearFile();
         return;
-      }*/
+      }
       if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
         this.clearFile();

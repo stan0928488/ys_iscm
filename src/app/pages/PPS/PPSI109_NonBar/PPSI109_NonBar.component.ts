@@ -7,19 +7,29 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
-
+import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
+import {  ColDef, ColGroupDef} from 'ag-grid-community';
+import * as moment from 'moment';
 
 interface ItemData {
-  idx: number;
-  id: number;
-  plantCode: string;
-  schShopCode: string;
-  equipCode: string;
-  equipGroup: string;
-  groupAmount: number;
-  equipQuanity: number;
+  id: string;
+  ID: number;
+  PLANT_CODE: string;
+  SCH_SHOP_CODE: string;
+  GRADE_NO: string;
+  YIELD_VALUE: number;
+  DATE_CREATE: string;
+  USER_CREATE: string;
+  DATE_UPDATE: string;
+  USER_UPDATE: string;
 }
 
+interface data {
+  SCH_SHOP_CODE: string;
+  GRADE_NO: string;
+  YIELD_TYPE: string;
+  YIELD_VALUE: number;
+}
 
 @Component({
   selector: "app-PPSI109_NonBar",
@@ -28,26 +38,19 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI109_NonBarComponent implements AfterViewInit {
+  frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
-  userName;
-  plantCode;
+  USERNAME;
+  PLANT_CODE;
+  SCH_SHOP_CODE = '';
+  GRADE_NO = '';
+  YIELD_VALUE = 0;
 
-  // 產能維護
-  schShopCode = '';
-  equipCode = '';
-  equipGroup = '';
-  groupAmount = 0;
-  equipQuanity = 0;
-
-  isVisibleYield = false;
   searchSchShopCodeValue = '';
-  searchEquipCodeValue = '';
-  searchEquipGroupValue = '';
-  searchGroupAmountValue = '';
-  searchTransferTimeValue = '';
-  searchEquipQuanityValue = '';
+  searchGradeNoValue = '';
+  searchYieldValueValue = '';
 
   isErrorMsg = false;;
   isERROR = false;
@@ -56,6 +59,13 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   importdata = [];
   importdata_new = [];
   errorTXT = [];
+  isVisibleYieldDialog = false;
+  EditMode = [];
+  oldlist = {};
+  pageIndex = 1;
+  pageSize = 30;
+  datetime = moment();
+  titleArray = ["站別","鋼種","產率設定值",'建立日期', '建立者', '異動日期', '異動者', 'Action'];
 
   constructor(
     private PPSService: PPSService,
@@ -66,17 +76,98 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     private Modal: NzModalService,
   ) {
     this.i18n.setLocale(zh_TW);
-    this.userName = this.cookieService.getCookie("USERNAME");
-    this.plantCode = this.cookieService.getCookie("plantCode");
+    this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRendererUpdate,
+    };
   }
 
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getRunFCPCount();
-    this.getTbppsm013List();
+    this.getTbppsm012NoBarList();
   }
   
+  gridOptions = {
+    defaultColDef: {
+        editable: true,
+        enableRowGroup: false,
+        enablePivot: false,
+        enableValue: false,
+        sortable: true,
+        resizable: true,
+        filter: true,
+    }
+  };
+
+  public columnDefs: (ColDef | ColGroupDef)[] = [
+    {
+      headerName: '站別',
+      field: "SCH_SHOP_CODE",
+      width: 80,
+    },
+    {
+      headerName: '鋼種',
+      field: "GRADE_NO",
+      width: 80,
+    },
+    {
+      headerName: '產率設定值',
+      field: "YIELD_VALUE",
+      width: 80,
+    },
+    {
+      headerName: '建立日期',
+      field: "DATE_CREATE",
+      width: 80,
+    },
+    {
+      headerName: '建立者',
+      field: "USER_CREATE",
+      width: 80,
+    },
+    {
+      headerName: '異動日期',
+      field: "DATE_UPDATE",
+      width: 80,
+    },
+    {
+      headerName: '異動者',
+      field: "USER_UPDATE",
+      width: 80,
+    },
+    {
+      headerName: 'Action',
+      editable:false,
+      width: 170,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onclick: this.editOnClick.bind(this)
+        },
+        {
+          onClick: this.updateOnClick.bind(this)
+        },
+        {
+          onClick: this.calcelOnClick.bind(this)
+        },
+      ]
+    }
+  ]
+
+  dateTimeFormatter(params) {
+    return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  dayDateFormatter(params) {
+    return moment(params.value).format('YYYY-MM-DD');
+  }
+
+  yearMonthFormatter(params) {
+    return moment(params.value).format('YYYY-MM');
+  }
 
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
@@ -89,20 +180,15 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   }
 
   onInit() {
-    this.schShopCode = '';
-    this.equipCode = '';
-    this.equipGroup = '';
-    this.groupAmount = 0;
-    this.equipQuanity = 0;
-  
+    this.SCH_SHOP_CODE = '';
+    this.GRADE_NO = '';
+    this.YIELD_VALUE = 0;
+
     this.LoadingPage = false;
-    this.isVisibleYield = false;
+    this.isVisibleYieldDialog = false;
     this.searchSchShopCodeValue = '';
-    this.searchEquipCodeValue = '';
-    this.searchEquipGroupValue = '';
-    this.searchGroupAmountValue = '';
-    this.searchTransferTimeValue = '';
-    this.searchEquipQuanityValue = '';
+    this.searchGradeNoValue = '';
+    this.searchYieldValueValue = '';
     
     this.isErrorMsg = false;
     this.importdata = [];
@@ -143,18 +229,61 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     
   }
 
- 
+  tbppsm012NonBarTmp;
+  tbppsm012NonBarList: ItemData[] = [];
+  resultSet: { [key: string]: { edit: boolean; data: ItemData } } = {};
+  displayTbppsm012NonBarList: ItemData[] = [];
+  showYieldValue = false;
 
+  getTbppsm012NoBarList() {
+    this.loading = true;
+    let myObj = this;
+    const thisForFunc = this;
+    thisForFunc.PPSService.gettbppsm012NonBarList(
+      thisForFunc.pageIndex,
+      thisForFunc.pageSize
+    )
+    .subscribe(res => {
+      console.log("gettbppsm012NonBarList success");
+      this.tbppsm012NonBarTmp = res;
+
+      const data = [];
+      for (let i = 0; i < this.tbppsm012NonBarTmp.length ; i++) {
+        data.push({
+          // idx: `${i}`,
+          // id: this.tbppsm012NonBarTmp[i].id,
+          // plantCode: this.tbppsm012NonBarTmp[i].plantCode,
+          SCH_SHOP_CODE: this.tbppsm012NonBarTmp[i].SCH_SHOP_CODE,
+          GRADE_NO: this.tbppsm012NonBarTmp[i].GRADE_NO,
+          YIELD_VALUE: this.tbppsm012NonBarTmp[i].YIELD_VALUE,
+          USER_CREATE: this.tbppsm012NonBarTmp[i].USER_CREATE,
+          DATE_CREATE: this.tbppsm012NonBarTmp[i].DATE_CREATE,
+          USER_UPDATE: this.tbppsm012NonBarTmp[i].USER_UPDATE,
+          DATE_UPDATE: this.tbppsm012NonBarTmp[i].DATE_UPDATE,
+        });
+      }
+      this.tbppsm012NonBarList = data;
+      this.displayTbppsm012NonBarList = this.tbppsm012NonBarList;
+      this.updateEditCache();
+      console.log(this.tbppsm012NonBarList);
+      myObj.loading = false;
+    });
+    
+  }
+ 
   // insert
   insertTab() {
     let myObj = this;
-    if (this.schShopCode === "") {
+    if (this.SCH_SHOP_CODE === "") {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.equipCode === "" && this.equipGroup === "") {
-      myObj.message.create("error", "「機台」和「機群」至少填一項");
+    } else if (this.GRADE_NO === "") {
+      myObj.message.create("error", "「鋼種」不可為空");
       return;
-    } else {
+    } else if (this.YIELD_VALUE === undefined && this.YIELD_VALUE === null) {
+      myObj.message.create("error", "「產率設定值」不可為空");
+      return; 
+    }else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
@@ -187,7 +316,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   // cancel
   cancelEdit(id: number): void {
-    const index = this.tbppsm013List.findIndex(item => item.idx === id);
+    const index = this.tbppsm013List.findIndex(item => item.ID === id);
     this.editCache[id] = {
       data: { ...this.tbppsm013List[index] },
       edit: false
@@ -198,12 +327,14 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // update Save
   saveEdit(id: number): void {
     let myObj = this;
-    if (this.editCache[id].data.schShopCode === undefined) {
+    if (this.editCache[id].data.SCH_SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
-      myObj.message.create("error", "「機台」和「機群」至少填一項");
+    } else if (this.editCache[id].data.GRADE_NO === undefined) {
+      myObj.message.create("error", "「鋼種」不可為空");
       return;
+    } else if (this.editCache[id].data.YIELD_VALUE === undefined) {
+      myObj.message.create("error", "「產率設定值」不可為空");
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
@@ -220,7 +351,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // update
   updateEditCache(): void {
     this.tbppsm013List.forEach(item => {
-      this.editCache[item.idx] = {
+      this.editCache[item.ID] = {
         edit: false,
         data: { ...item }
       };
@@ -235,20 +366,24 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        plantCode : this.plantCode,
-        schShopCode : this.schShopCode,
-        equipCode : this.equipCode,
-        equipGroup : this.equipGroup,
-        groupAmount : this.groupAmount,
-        equipQuanity : this.equipQuanity,
-        userName : this.userName
+        SCH_SHOP_CODE : this.SCH_SHOP_CODE,
+        GRADE_NO : this.GRADE_NO,
+        YIELD_VALUE : this.YIELD_VALUE,
+        USERNAME : this.USERNAME,
+        DATETIME : this.dateTimeFormatter,
       })
 
-      myObj.PPSService.insertI106Save('2', obj).subscribe(res => {
+      myObj.PPSService.insertI109NonBarSave(obj).subscribe(res => {
         if(res[0].MSG === "Y") {
+          this.SCH_SHOP_CODE = undefined;
+          this.GRADE_NO = undefined;
+          this.YIELD_VALUE = undefined;
+          this.USERNAME = undefined;
+          this.datetime = undefined;
           this.onInit();
-          this.getTbppsm013List();
+          this.getTbppsm012NoBarList();
           this.sucessMSG("新增成功", ``);
+          this.isVisibleYieldDialog = false;
         } else {
           this.errorMSG("新增失敗", res[0].MSG);
         }
@@ -269,19 +404,17 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
       let obj = {};
       _.extend(obj, {
         id : this.editCache[_id].data.id,
-        plantCode : this.editCache[_id].data.plantCode,
-        schShopCode : this.editCache[_id].data.schShopCode,
-        equipCode : this.editCache[_id].data.equipCode,
-        equipGroup : this.editCache[_id].data.equipGroup,
-        groupAmount : this.editCache[_id].data.groupAmount,
-        equipQuanity : this.editCache[_id].data.equipQuanity,
-        userName : this.userName
+        PLANT_CODE : this.editCache[_id].data.PLANT_CODE,
+        SCH_SHOP_CODE : this.editCache[_id].data.SCH_SHOP_CODE,
+        GRADE_NO : this.editCache[_id].data.GRADE_NO,
+        YIELD_VALUE : this.editCache[_id].data.YIELD_VALUE,
+        userName : this.USERNAME
       })
       myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
-          const index = this.tbppsm013List.findIndex(item => item.idx === _id);
+          const index = this.tbppsm013List.findIndex(item => item.ID === _id);
           Object.assign(this.tbppsm013List[index], this.editCache[_id].data);
           this.editCache[_id].edit = false;
         } else {
@@ -321,12 +454,12 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     let data;
     let fileName;
     let titleArray = [];
-    if(this.tbppsm013List.length > 0) {
-      data = this.formatDataForExcel(this.tbppsm013List);
-      fileName = `非直棒產能維護`;
-      titleArray = ['廠區別', '站別', '機台', '機群', '機群設備數量', '單設備生產量'];
+    if(this.tbppsm012NonBarList.length > 0) {
+      data = this.formatDataForExcel(this.tbppsm012NonBarList);
+      fileName = `非直棒產率設定`;
+      titleArray = ['站別', '鋼種', '產率設定值', '建立日期', '建立者', '異動日期', '異動者'];
     } else {
-      this.errorMSG("匯出失敗", "非直棒產能維護目前無資料");
+      this.errorMSG("匯出失敗", "非直棒產率設定目前無資料");
       return;
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
@@ -338,12 +471,13 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     for (let item of _displayData) {
       let obj = {};
       _.extend(obj, {
-        plantCode: _.get(item, "plantCode"),
-        schShopCode: _.get(item, "schShopCode"),
-        equipCode: _.get(item, "equipCode"),
-        equipGroup: _.get(item, "equipGroup"),
-        groupAmount: _.get(item, "groupAmount"),
-        equipQuanity: _.get(item, "equipQuanity")
+        SCH_SHOP_CODE: _.get(item, "SCH_SHOP_CODE"),
+        GRADE_NO: _.get(item, "GRADE_NO"),
+        YIELD_VALUE: _.get(item, "YIELD_VALUE"),
+        DATE_CREATE: _.get(item, "DATE_CREATE"),
+        USER_CREATE: _.get(item, "USER_CREATE"),
+        DATE_UPDATE: _.get(item, "DATE_UPDATE"),
+        USER_UPDATE: _.get(item, "USER_UPDATE"),
       });
       excelData.push(obj);
     }
@@ -403,11 +537,11 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   // EXCEL 匯入樣版檢查
   checkTemplate(worksheet, importdata) {
-    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || worksheet.E1 === undefined || worksheet.F1 === undefined) {
+    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined ) {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
-    } else if(worksheet.A1.v !== "廠區別" || worksheet.B1.v !== "站別" || worksheet.C1.v !== "機台" || worksheet.D1.v !== "機群" || worksheet.E1.v !== "機群設備數量" || worksheet.F1.v !== "單設備生產量") {
+    } else if(worksheet.A1.v !== "站別" || worksheet.B1.v !== "鋼種" || worksheet.C1.v !== "產率設定值" ) {
       this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -417,72 +551,77 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   
   }
   
-  // EXCEL 資料上傳 (ppsinptb02_nonbar)
   importExcel(_data) {
+    console.log("EXCEL 資料上傳檢核開始");
+    var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
-      let plantCode = _data[i].廠區別;
-      let schShopCode = _data[i].站別;
-      let equipCode = _data[i].機台;
-      let equipGroup = _data[i].機群;
-      if(plantCode === undefined || schShopCode === undefined || (equipCode === undefined && equipGroup === undefined)) {
-        let col = i+2;
-        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
+      let allData = JSON.stringify(_data[i]);
+      console.log(_data[i]);
+      
+      // var findData = _data.some(element => 
+      //   element['SCH_SHOP_CODE'] == this.SCH_SHOP_CODE&&
+      //   element['GRADE_NO'] == this.GRADE_NO
+      //   );
+
+      if(this.importdata_new.includes(allData)){
+        this.errorTXT.push(`第 ` + (i+2) + `列站別+鋼種資料重複，請檢查` + "<BR/>");
         this.isERROR = true;
+
+      }else{
+        this.importdata_new.push(allData);
+
+        if(_data[i]['站別'] == undefined)
+          _data[i]['站別'] = '';
+        if(_data[i]['鋼種'] == undefined)
+          _data[i]['鋼種'] = '';
+        if(_data[i]['產率設定值'] == undefined)
+          _data[i]['產率設定值'] = '';
+
       }
-    }
-
-    if(this.isERROR) {
-      // 匯入錯誤失敗訊息提醒
-      this.clearFile();
-      this.isErrorMsg = true;
-      this.importdata_new = [];
-      this.errorMSG("匯入錯誤", this.errorTXT);
-
-    } else {
-      for(let i=0 ; i < _data.length ; i++) {
-
-        let plantCode = _data[i].廠區別.toString();
-        let schShopCode = _data[i].站別.toString();
-        let equipCode = _data[i].機台 !== undefined ? _data[i].機台.toString() : '';
-        let equipGroup = _data[i].機群 !== undefined ? _data[i].機群.toString() : '';
-        let groupAmount = _data[i].機群設備數量 !== undefined ? _data[i].機群設備數量.toString() : '0';
-        let equipQuanity = _data[i].單設備生產量 !== undefined ? _data[i].單設備生產量.toString() : '0';
-
-        this.importdata_new.push({plantCode: plantCode, schShopCode: schShopCode, equipCode: equipCode, equipGroup: equipGroup, groupAmount: groupAmount, equipQuanity: equipQuanity});
+        upload_data.push({
+          SCH_SHOP_CODE: _data[i]['站別'] ,
+          GRADE_NO: _data[i]['鋼種'],
+          YIELD_VALUE: _data[i]['產率設定值'],
+          DATETIME : this.dateTimeFormatter,
+          USERNAME : this.USERNAME,
+        }) 
+      }   
+          console.log(upload_data);
+          return new Promise((resolve, reject) => {
+            console.log("匯入開始");
+            this.LoadingPage = true;
+            let myObj = this;
+            let obj = {};
+            obj = {
+              EXCELDATA: upload_data
+            };
+      
+            console.log("EXCELDATA:"+ obj);
+            myObj.PPSService.importI109NonBarExcel(obj).subscribe(res => {
+              console.log("importI109NonBarExcel");
+              if(res[0].MSG === "Y") { 
+                this.loading = false;
+                this.LoadingPage = false;
+                
+                this.sucessMSG("EXCEL上傳成功", "");
+                this.clearFile();
+                this.getTbppsm012NoBarList();
+              }
+              else {
+                this.errorMSG("匯入錯誤", res[0].MSG);
+                this.clearFile();
+                this.loading = false;
+                this.LoadingPage = false;
+              }
+            },err => {
+              reject('upload fail');
+              this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+              this.loading = false;
+              this.LoadingPage = false;
+          })
+        });
+        this.getTbppsm012NoBarList();
       }
-
-      return new Promise((resolve, reject) => {
-        this.LoadingPage = true;
-        let myObj = this;
-        let obj = {};
-        _.extend(obj, {
-          excelData : this.importdata_new,
-          userName : this.userName
-        })
-        myObj.PPSService.importI106Excel('2', obj).subscribe(res => {
-          if(res[0].MSG === "Y") {
-            this.loading = false;
-            this.LoadingPage = false;
-
-            this.sucessMSG("EXCCEL上傳成功", "");
-            this.getTbppsm013List();
-            this.clearFile();
-            this.onInit();
-          } else {
-            this.errorMSG("匯入錯誤", res[0].MSG);
-            this.clearFile();
-            this.importdata_new = [];
-            this.LoadingPage = false;
-          }
-        },err => {
-          reject('upload fail');
-          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
-          this.importdata_new = [];
-          this.LoadingPage = false;
-        })
-      });
-    }
-  }
   
   // 清空資料
   clearFile() {
@@ -508,74 +647,39 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 	}
 
   //============== 新增資料之彈出視窗 =====================
-  // 新增產能維護之彈出視窗
-  openYieldInput() : void {
-    this.isVisibleYield = true;
+  // 新增產率設定彈出視窗 
+  openYieldDialog() : void {
+    this.isVisibleYieldDialog = true;
   }
-   //取消產能維護彈出視窗
-   cancelYieldInput() : void {
-    this.isVisibleYield = false;
+   // 關閉產率設定彈出視窗
+  closeYieldDialog() : void {
+    this.isVisibleYieldDialog = false;
+  }
+  
+  cancel012NonBar_dtlRow(i, data) {
+    console.log();
+    this.EditMode[i] = false;
+
+    this.tbppsm012NonBarList[i].SCH_SHOP_CODE = this.oldlist['SCH_SHOP_CODE'];
+    this.tbppsm012NonBarList[i].GRADE_NO = this.oldlist['GRADE_NO'];
+    this.tbppsm012NonBarList[i].YIELD_VALUE = this.oldlist['YIELD_VALUE'];
   }
 
-// ============= 過濾資料之menu ========================
-  // 4.(資料過濾)產能維護
-  tbppsm013ListFilter(property:string, keyWord:string){
-    const filterFunc = item => {
-      let propertyValue = _.get(item, property);
-      if (keyWord == "") {
-        return true;
-      } else {
-        return _.startsWith(propertyValue, keyWord);
-      }
-    };
-
-    const data = this.tbppsm013List.filter(item => filterFunc(item));
-    this.displayTbppsm013List = data;
+  editOnClick(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "dateLimit");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "dateLimit"
+    });
   }
 
-  // 資料過濾---產能維護 --> 站別
-  searchSchShopCode() : void{
-    this.tbppsm013ListFilter("schShopCode", this.searchSchShopCodeValue);
-  } 
-  resetBySchShopCode() : void{
-    this.searchSchShopCodeValue = '';
-    this.tbppsm013ListFilter("schShopCode", this.searchSchShopCodeValue);
+  updateOnClick(e) {
+    // this.upd_dtlRow(e.index, e.rowData);
+    // this.save012_dtlRow(e.index, e.rowData);
   }
 
-  // 資料過濾---產能維護 --> 機台
-  searchEquipCode() : void{
-    this.tbppsm013ListFilter("equipCode", this.searchEquipCodeValue);
-  } 
-  resetByEquipCode() : void{
-    this.searchEquipCodeValue = '';
-    this.tbppsm013ListFilter("equipCode", this.searchEquipCodeValue);
+  calcelOnClick(e) {
+    // this.cancel012_dtlRow(e.index, e.rowData);
   }
-  // 資料過濾---產能維護 --> 機群
-  searchEquipGroup() : void{
-    this.tbppsm013ListFilter("equipGroup", this.searchEquipGroupValue);
-  } 
-  resetByEquipGroup() : void{
-    this.searchEquipGroupValue = '';
-    this.tbppsm013ListFilter("equipGroup", this.searchEquipGroupValue);
-  }
-
-  // 資料過濾---產能維護 --> 機群設備數量
-  searchGroupAmount() : void{
-    this.tbppsm013ListFilter("groupAmount", this.searchGroupAmountValue);
-  } 
-  resetByGroupAmount() : void{
-    this.searchGroupAmountValue = '';
-    this.tbppsm013ListFilter("groupAmount", this.searchGroupAmountValue);
-  }
-
-  // 資料過濾---產能維護 --> 單設備生產量
-  searchByEquipQuanity() : void{
-    this.tbppsm013ListFilter("equipQuanity", this.searchEquipQuanityValue);
-  } 
-  resetByEquipQuanity() : void{
-    this.searchEquipQuanityValue = '';
-    this.tbppsm013ListFilter("equipQuanity", this.searchEquipQuanityValue);
-  }
-
 
 }

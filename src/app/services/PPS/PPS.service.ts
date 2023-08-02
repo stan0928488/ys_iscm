@@ -1980,4 +1980,73 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  //Get gettbppsm012List 取得tab14 data
+  gettbppsm012List(pageIndex: number, pageSize: number) {
+    const httpParams = new HttpParams()
+      .set('pageIndex', pageIndex)
+      .set('pageSize', pageSize);
+    console.log('api service gettbppsm012List');
+    let queryUrl = this.APIURL + '/FCP/I101/gettbppsm012List';
+    console.log(queryUrl);
+    return this.http.get<any>(queryUrl, { params: httpParams });
+  }
+
+  //Get getTbppsm012NonBarList 取得產率設定資料
+  gettbppsm012NonBarList(pageIndex: number, pageSize: number) {
+    const httpParams = new HttpParams()
+      .set('pageIndex', pageIndex)
+      .set('pageSize', pageSize);
+    console.log('api service gettbppsm012NonBarList');
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/gettbppsm012NonBarList`;
+    console.log(queryUrl);
+    return this.http.get<any>(queryUrl, { params: httpParams });
+  }
+
+  //importI109Excel
+  importI109Excel(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/importI109Excel`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  insertI109Save(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/insertI109Save`;;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  //importI109NonBarExcel
+  importI109NonBarExcel(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/importI109NonBarExcel`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  insertI109NonBarSave(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/insertI109NonBarSave`;;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  upd012BarData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + '/FCP/I101/upd012BarData';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  del012TabData(_ID) {
+    let queryUrl = this.APIURL + `/FCP/I101/delData/${_ID}`;
+    return this.http.post(queryUrl, '', this.httpOptions);
+  }
+
 }
