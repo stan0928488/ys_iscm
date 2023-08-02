@@ -1,24 +1,24 @@
-import { Component, AfterViewInit } from "@angular/core";
-import { CookieService } from "src/app/services/config/cookie.service";
-import { PPSService } from "src/app/services/PPS/PPS.service";
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
-import {NzMessageService} from "ng-zorro-antd/message"
-import {NzModalService} from "ng-zorro-antd/modal"
+import { Component, AfterViewInit } from '@angular/core';
+import { CookieService } from 'src/app/services/config/cookie.service';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
+import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 // // ag-grid
-// import { 
-//   ColDef, 
+// import {
+//   ColDef,
 //   RowModelType,
 //   IDatasource,
-//   IGetRowsParams, 
-//   GridOptions, 
+//   IGetRowsParams,
+//   GridOptions,
 //   GridReadyEvent } from 'ag-grid-community';
 //   import { AgGridModule } from 'ag-grid-angular';
 
 import * as moment from 'moment';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { ExcelService } from "src/app/services/common/excel.service";
+import { ExcelService } from 'src/app/services/common/excel.service';
 interface ItemData1 {
   id: string;
   tab1ID: number;
@@ -29,12 +29,11 @@ interface ItemData1 {
 }
 
 @Component({
-  selector: "app-PPSI101",
-  templateUrl: "./PPSI101.component.html",
-  styleUrls: ["./PPSI101.component.scss"],
-  providers:[NzMessageService]
+  selector: 'app-PPSI101',
+  templateUrl: './PPSI101.component.html',
+  styleUrls: ['./PPSI101.component.scss'],
+  providers: [NzMessageService],
 })
-
 export class PPSI101Component implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -58,12 +57,12 @@ export class PPSI101Component implements AfterViewInit {
   editCache1: { [key: string]: { edit: boolean; data: ItemData1 } } = {};
   PPSINP01List: ItemData1[] = [];
   displayPPSINP01List: ItemData1[] = [];
-  
-  file:File;
+
+  file: File;
   inputFileUseInUpload;
-  arrayBuffer:any;
+  arrayBuffer: any;
   importdata = [];
-  titleArray = ["鋼種","特殊機台使用","鋼種類別","鋼胚重(KG)"];
+  titleArray = ['鋼種', '特殊機台使用', '鋼種類別', '鋼胚重(KG)'];
   importdata_repeat = [];
   pageIndex = 1;
   pageSize = 20;
@@ -74,11 +73,11 @@ export class PPSI101Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private excelService: ExcelService,
+    private excelService: ExcelService
   ) {
     this.i18n.setLocale(zh_TW);
-    this.USERNAME = this.cookieService.getCookie("USERNAME");
-    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.USERNAME = this.cookieService.getCookie('USERNAME');
+    this.PLANT_CODE = this.cookieService.getCookie('plantCode');
   }
 
   // public rowBuffer = 0;
@@ -97,10 +96,10 @@ export class PPSI101Component implements AfterViewInit {
   //     rowCount: undefined,
 
   //     getRows: (params : IGetRowsParams) => {
-          
+
   //       this.PPSINP01List_tmp(params.startRow, params.endRow);
   //       console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-        
+
   //       const data = [];
 
   //       for (let i = 0; i < this.PPSINP01List_tmp.length ; i++) {
@@ -126,30 +125,31 @@ export class PPSI101Component implements AfterViewInit {
   //   }
 
   ngAfterViewInit() {
-    console.log("ngAfterViewChecked");
+    console.log('ngAfterViewChecked');
     this.getPPSINP01List(this.pageIndex, this.pageSize);
-
   }
-  
-  //tab1_select 
-  getPPSINP01List(pageIndex : number, pageSize : number) {
+
+  //tab1_select
+  getPPSINP01List(pageIndex: number, pageSize: number) {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP01List(pageIndex, pageSize).subscribe(res => {
-      console.log("getFCPTB26List success");
+    this.PPSService.getPPSINP01List(pageIndex, pageSize).subscribe((res) => {
+      console.log('getFCPTB26List success');
       this.PPSINP01List_tmp = res;
-      console.log("this.PPSINP01List_tmp==>", JSON.stringify(this.PPSINP01List_tmp));
-      
+      console.log(
+        'this.PPSINP01List_tmp==>',
+        JSON.stringify(this.PPSINP01List_tmp)
+      );
 
       const data = [];
-      for (let i = 0; i < this.PPSINP01List_tmp.length ; i++) {
+      for (let i = 0; i < this.PPSINP01List_tmp.length; i++) {
         data.push({
           id: `${i}`,
           tab1ID: this.PPSINP01List_tmp[i].ID,
           GRADE_NO: this.PPSINP01List_tmp[i].GRADE_NO,
           SPECIAL_EQUIP_CODE: this.PPSINP01List_tmp[i].SPECIAL_EQUIP_CODE,
           ROLL_WEIGHT: this.PPSINP01List_tmp[i].ROLL_WEIGHT,
-          GRADE_GROUP: this.PPSINP01List_tmp[i].GRADE_GROUP
+          GRADE_GROUP: this.PPSINP01List_tmp[i].GRADE_GROUP,
         });
       }
       this.PPSINP01List = data;
@@ -160,230 +160,237 @@ export class PPSI101Component implements AfterViewInit {
     });
   }
 
-
   // insert1
   insertTab1() {
     let myObj = this;
-    if (this.GRADE_NO === undefined || "" === this.GRADE_NO) {
-      myObj.message.create("error", "「設定鋼種」不可為空");
+    if (this.GRADE_NO === undefined || '' === this.GRADE_NO) {
+      myObj.message.create('error', '「設定鋼種」不可為空');
       return;
-    } else if (this.GRADE_GROUP === undefined || "" === this.GRADE_GROUP) {
-      myObj.message.create("error", "「鋼種類別」不可為空");
+    } else if (this.GRADE_GROUP === undefined || '' === this.GRADE_GROUP) {
+      myObj.message.create('error', '「鋼種類別」不可為空');
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
-          this.insertSave(1)
+          this.insertSave(1);
           this.isVisibleGrade = false;
         },
-        nzOnCancel: () =>
-          console.log("cancel")
+        nzOnCancel: () => console.log('cancel'),
       });
     }
   }
 
-
   // update
   editRow(id: string, _type): void {
-    if(_type === 1) {
+    if (_type === 1) {
       this.editCache1[id].edit = true;
     }
   }
 
-
   // delete
   deleteRow(id: string, _type): void {
-    console.log('id:'+id+'type:'+_type);
-    if(_type === 1) {
+    console.log('id:' + id + 'type:' + _type);
+    if (_type === 1) {
       this.Modal.confirm({
         nzTitle: '是否確定刪除',
         nzOnOk: () => {
-          this.delID(id, _type)
+          this.delID(id, _type);
         },
-        nzOnCancel: () =>
-          console.log("cancel")
+        nzOnCancel: () => console.log('cancel'),
       });
     }
   }
 
   // cancel
   cancelEdit(id: string, _type): void {
-    if(_type === 1) {
-      const index = this.PPSINP01List.findIndex(item => item.id === id);
+    if (_type === 1) {
+      const index = this.PPSINP01List.findIndex((item) => item.id === id);
       this.editCache1[id] = {
         data: { ...this.PPSINP01List[index] },
-        edit: false
+        edit: false,
       };
     }
   }
 
-
   // update Save
   saveEdit(id: string, _type): void {
-    if(_type === 1) {
-      console.log(this.editCache1[id])
+    if (_type === 1) {
+      console.log(this.editCache1[id]);
 
       let myObj = this;
-      if (this.editCache1[id].data.GRADE_NO === undefined || "" === this.editCache1[id].data.GRADE_NO) {
-        myObj.message.create("error", "「鋼種」不可為空");
+      if (
+        this.editCache1[id].data.GRADE_NO === undefined ||
+        '' === this.editCache1[id].data.GRADE_NO
+      ) {
+        myObj.message.create('error', '「鋼種」不可為空');
         return;
-      } else if (this.editCache1[id].data.GRADE_GROUP === undefined || "" === this.editCache1[id].data.GRADE_GROUP) {
-        myObj.message.create("error", "「鋼種類別」不可為空");
+      } else if (
+        this.editCache1[id].data.GRADE_GROUP === undefined ||
+        '' === this.editCache1[id].data.GRADE_GROUP
+      ) {
+        myObj.message.create('error', '「鋼種類別」不可為空');
         return;
       } else {
         this.Modal.confirm({
           nzTitle: '是否確定修改',
           nzOnOk: () => {
-            this.updateSave(id, 1)
+            this.updateSave(id, 1);
           },
-          nzOnCancel: () =>
-            console.log("cancel")
+          nzOnCancel: () => console.log('cancel'),
         });
       }
     }
   }
 
-
   // update
   updateEditCache(_type): void {
-    if(_type === 1) {
-      this.PPSINP01List.forEach(item => {
+    if (_type === 1) {
+      this.PPSINP01List.forEach((item) => {
         this.editCache1[item.id] = {
           edit: false,
-          data: { ...item }
+          data: { ...item },
         };
       });
     }
   }
 
   changeTab(tab): void {
-    console.log(tab)
-    if(tab === 1) {
+    console.log(tab);
+    if (tab === 1) {
       this.getPPSINP01List(10, 10);
     }
   }
-  
 
   // 新增資料
   insertSave(_type) {
-    if(_type === 1) {
+    if (_type === 1) {
       let myObj = this;
       this.LoadingPage = true;
-      
+
       return new Promise((resolve, reject) => {
         let obj = {};
         _.extend(obj, {
-          GRADE_NO : this.GRADE_NO,
-          GRADE_GROUP : this.GRADE_GROUP,
-          SPECIAL_EQUIP_CODE : this.SPECIAL_EQUIP_CODE,
-          ROLL_WEIGHT : this.ROLL_WEIGHT,
-          USERNAME : this.USERNAME,
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        })
+          GRADE_NO: this.GRADE_NO,
+          GRADE_GROUP: this.GRADE_GROUP,
+          SPECIAL_EQUIP_CODE: this.SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT: this.ROLL_WEIGHT,
+          USERNAME: this.USERNAME,
+          DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
+        });
 
-        myObj.PPSService.insertI101Tab1Save(obj).subscribe(res => {
-
-          console.log(res)
-          if(res[0].MSG === "Y") {
-            this.GRADE_NO = undefined;
-            this.GRADE_GROUP = undefined;
-            this.SPECIAL_EQUIP_CODE = undefined;
-            this.ROLL_WEIGHT = undefined;
-            this.getPPSINP01List(1, 0);
-            this.sucessMSG("新增成功", ``);
-          } else {
-            this.errorMSG("新增失敗", res[0].MSG);
+        myObj.PPSService.insertI101Tab1Save(obj).subscribe(
+          (res) => {
+            console.log(res);
+            if (res[0].MSG === 'Y') {
+              this.GRADE_NO = undefined;
+              this.GRADE_GROUP = undefined;
+              this.SPECIAL_EQUIP_CODE = undefined;
+              this.ROLL_WEIGHT = undefined;
+              this.getPPSINP01List(1, 0);
+              this.sucessMSG('新增成功', ``);
+            } else {
+              this.errorMSG('新增失敗', res[0].MSG);
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
+            this.LoadingPage = false;
           }
-        },err => {
-          reject('upload fail');
-          this.errorMSG("新增失敗", "後台新增錯誤，請聯繫系統工程師");
-          this.LoadingPage = false;
-        })
+        );
       });
     }
   }
-  
 
   // 修改資料
   updateSave(_id, _type) {
-    if(_type === 1) {
+    if (_type === 1) {
       let myObj = this;
       this.LoadingPage = true;
       return new Promise((resolve, reject) => {
         let obj = {};
         _.extend(obj, {
-          ID : this.editCache1[_id].data.tab1ID,
-          GRADE_NO : this.editCache1[_id].data.GRADE_NO,
-          GRADE_GROUP : this.editCache1[_id].data.GRADE_GROUP,
-          SPECIAL_EQUIP_CODE : this.editCache1[_id].data.SPECIAL_EQUIP_CODE,
-          ROLL_WEIGHT : this.editCache1[_id].data.ROLL_WEIGHT,
-          USERNAME : this.USERNAME,
-          DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-        })
-        myObj.PPSService.updateI101Tab1Save(obj).subscribe(res => {
-          if(res[0].MSG === "Y") {
-            this.GRADE_NO = undefined;
-            this.GRADE_GROUP = undefined;
-            this.SPECIAL_EQUIP_CODE = undefined;
-            this.ROLL_WEIGHT = undefined;
-            this.sucessMSG("修改成功", ``);
+          ID: this.editCache1[_id].data.tab1ID,
+          GRADE_NO: this.editCache1[_id].data.GRADE_NO,
+          GRADE_GROUP: this.editCache1[_id].data.GRADE_GROUP,
+          SPECIAL_EQUIP_CODE: this.editCache1[_id].data.SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT: this.editCache1[_id].data.ROLL_WEIGHT,
+          USERNAME: this.USERNAME,
+          DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
+        });
+        myObj.PPSService.updateI101Tab1Save(obj).subscribe(
+          (res) => {
+            if (res[0].MSG === 'Y') {
+              this.GRADE_NO = undefined;
+              this.GRADE_GROUP = undefined;
+              this.SPECIAL_EQUIP_CODE = undefined;
+              this.ROLL_WEIGHT = undefined;
+              this.sucessMSG('修改成功', ``);
 
-            const index = this.PPSINP01List.findIndex(item => item.id === _id);
-            Object.assign(this.PPSINP01List[index], this.editCache1[_id].data);
-            this.editCache1[_id].edit = false;
-          } else {
-            this.errorMSG("修改失敗", res[0].MSG);
+              const index = this.PPSINP01List.findIndex(
+                (item) => item.id === _id
+              );
+              Object.assign(
+                this.PPSINP01List[index],
+                this.editCache1[_id].data
+              );
+              this.editCache1[_id].edit = false;
+            } else {
+              this.errorMSG('修改失敗', res[0].MSG);
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
+            this.LoadingPage = false;
           }
-        },err => {
-          reject('upload fail');
-          this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
-          this.LoadingPage = false;
-        })
+        );
       });
     }
   }
-  
 
   // 刪除資料
   delID(_id, _type) {
-    if(_type === 1) {
+    if (_type === 1) {
       let myObj = this;
       return new Promise((resolve, reject) => {
         let _ID = this.editCache1[_id].data.tab1ID;
-        myObj.PPSService.delI101Tab1Data(_ID).subscribe(res => {
-          if(res[0].MSG === "Y") {
-            this.GRADE_NO = undefined;
-            this.GRADE_GROUP = undefined;
-            this.SPECIAL_EQUIP_CODE = undefined;
-            this.ROLL_WEIGHT = undefined;
+        myObj.PPSService.delI101Tab1Data(_ID).subscribe(
+          (res) => {
+            if (res[0].MSG === 'Y') {
+              this.GRADE_NO = undefined;
+              this.GRADE_GROUP = undefined;
+              this.SPECIAL_EQUIP_CODE = undefined;
+              this.ROLL_WEIGHT = undefined;
 
-            this.sucessMSG("刪除成功", ``);
-            this.getPPSINP01List(1, 0);
+              this.sucessMSG('刪除成功', ``);
+              this.getPPSINP01List(1, 0);
+            }
+          },
+          (err) => {
+            reject('upload fail');
+            this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
+            this.LoadingPage = false;
           }
-        },err => {
-          reject('upload fail');
-          this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
-          this.LoadingPage = false;
-        })
+        );
       });
     }
   }
 
+  sucessMSG(_title, _plan): void {
+    this.Modal.success({
+      nzTitle: _title,
+      nzContent: `${_plan}`,
+    });
+  }
 
-	sucessMSG(_title, _plan): void {
-		this.Modal.success({
-			nzTitle: _title,
-			nzContent: `${_plan}`
-		});
-	}
-
-	errorMSG(_title, _context): void {
-		this.Modal.error({
-			nzTitle: _title,
-			nzContent: `${_context}`
-		});
-	}
+  errorMSG(_title, _context): void {
+    this.Modal.error({
+      nzTitle: _title,
+      nzContent: `${_context}`,
+    });
+  }
 
   //============== 新增資料之彈出視窗 =====================
 
@@ -392,213 +399,200 @@ export class PPSI101Component implements AfterViewInit {
     this.isVisibleGrade = true;
   }
   // 取消鋼種彈出視窗
-  cancelGradeInput() : void{
+  cancelGradeInput(): void {
     this.isVisibleGrade = false;
   }
-
-
 
   // ============= 過濾資料之menu ========================
 
   // 1.(過濾資料)鋼種分類
-  ppsInp01ListFilter(property:string, keyWord:string){
-    const filterFunc = item => {
+  ppsInp01ListFilter(property: string, keyWord: string) {
+    const filterFunc = (item) => {
       let propertyValue = _.get(item, property);
-      if (keyWord == "") {
+      if (keyWord == '') {
         return true;
       } else {
         return _.startsWith(propertyValue, keyWord);
       }
     };
 
-     const data = this.PPSINP01List.filter(item => filterFunc(item));
+    const data = this.PPSINP01List.filter((item) => filterFunc(item));
     this.displayPPSINP01List = data;
   }
 
   // 資料過濾---鋼種分類 --> 鋼種
-  searchByGradeNo() : void {
-    this.ppsInp01ListFilter("GRADE_NO", this.searchByGradeNoValue);
+  searchByGradeNo(): void {
+    this.ppsInp01ListFilter('GRADE_NO', this.searchByGradeNoValue);
   }
-  resetByGradeNo() : void {
+  resetByGradeNo(): void {
     this.searchByGradeNoValue = '';
-    this.ppsInp01ListFilter("GRADE_NO", this.searchByGradeNoValue);
+    this.ppsInp01ListFilter('GRADE_NO', this.searchByGradeNoValue);
   }
-  
+
   // 資料過濾---鋼種分類 --> 特殊機台使用
-  searchBySpecialEquipCode() :void {
-    this.ppsInp01ListFilter("SPECIAL_EQUIP_CODE", this.searchBySpecialEquipCodeValue);
+  searchBySpecialEquipCode(): void {
+    this.ppsInp01ListFilter(
+      'SPECIAL_EQUIP_CODE',
+      this.searchBySpecialEquipCodeValue
+    );
   }
-  resetBySpecialEquipCode() :void {
+  resetBySpecialEquipCode(): void {
     this.searchBySpecialEquipCodeValue = '';
-    this.ppsInp01ListFilter("SPECIAL_EQUIP_CODE", this.searchBySpecialEquipCodeValue);
+    this.ppsInp01ListFilter(
+      'SPECIAL_EQUIP_CODE',
+      this.searchBySpecialEquipCodeValue
+    );
   }
 
-   // 資料過濾---鋼種分類 --> 鋼種類別
-   searchByGradeGroup() :void {
-    this.ppsInp01ListFilter("GRADE_GROUP", this.searchByGradeGroupValue);
+  // 資料過濾---鋼種分類 --> 鋼種類別
+  searchByGradeGroup(): void {
+    this.ppsInp01ListFilter('GRADE_GROUP', this.searchByGradeGroupValue);
   }
 
-  resetByGradeGroup() :void {
+  resetByGradeGroup(): void {
     this.searchByGradeGroupValue = '';
-    this.ppsInp01ListFilter("GRADE_GROUP", this.searchByGradeGroupValue);
+    this.ppsInp01ListFilter('GRADE_GROUP', this.searchByGradeGroupValue);
   }
 
   // 資料過濾---鋼種分類 --> 鋼胚重(KG)
-  searchByRollWeight() :void {
-    this.ppsInp01ListFilter("ROLL_WEIGHT", this.searchByRollWeightValue);
+  searchByRollWeight(): void {
+    this.ppsInp01ListFilter('ROLL_WEIGHT', this.searchByRollWeightValue);
   }
-  resetByRollWeight() :void {
+  resetByRollWeight(): void {
     this.searchByRollWeightValue = '';
-    this.ppsInp01ListFilter("ROLL_WEIGHT", this.searchByRollWeightValue);
+    this.ppsInp01ListFilter('ROLL_WEIGHT', this.searchByRollWeightValue);
   }
-  
 
-    // excel檔名
-    incomingfile(event) {
-      this.file = event.target.files[0]; 
-      console.log("incomingfile e : " + this.file);
-      let lastname = this.file.name.split('.').pop();
-      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
-        this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-        this.clearFile();
-        return;
-      }
+  // excel檔名
+  incomingfile(event) {
+    this.file = event.target.files[0];
+    console.log('incomingfile e : ' + this.file);
+    let lastname = this.file.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    }
+  }
+
+  clearFile() {
+    document.getElementsByTagName('input')[0].value = '';
+  }
+
+  Upload() {
+    // let getFileNull = this.inputFileUseInUpload;
+    // if(getFileNull === undefined){
+    //   this.errorMSG('請選擇檔案', '');
+    //   return;
+    // }
+
+    let lastname = this.file.name.split('.').pop();
+    console.log('this.file.name: ' + this.file.name);
+    console.log('incomingfile e : ' + this.file);
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    } else {
+      console.log('上傳檔案格式沒有錯誤');
+      let fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        this.arrayBuffer = fileReader.result;
+        var data = new Uint8Array(this.arrayBuffer);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i)
+          arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join('');
+        var workbook = XLSX.read(bstr, { type: 'binary' });
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet: any = workbook.Sheets[first_sheet_name];
+        this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
+        console.log('importExcel');
+        console.log(this.importdata);
+        this.importExcel(this.importdata);
+      };
+      fileReader.readAsArrayBuffer(this.file);
+    }
+  }
+
+  importExcel(_data) {
+    console.log('EXCEL 資料上傳檢核開始');
+    var upload_data = [];
+    for (let i = 0; i < _data.length; i++) {
+      console.log(_data[i]);
+
+      let allData = JSON.stringify(_data[i]);
+      this.importdata_repeat.push(allData);
+      console.log(_data[i]['特殊機台使用']);
+      if (_data[i]['特殊機台使用'] == undefined) _data[i]['特殊機台使用'] = '';
+
+      console.log(_data[i]['特殊機台使用']);
+      upload_data.push({
+        GRADE_NO: _data[i]['鋼種'],
+        SPECIAL_EQUIP_CODE: _data[i]['特殊機台使用'],
+        GRADE_GROUP: _data[i]['鋼種類別'],
+        ROLL_WEIGHT: _data[i]['鋼胚重(KG)'],
+        DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
+        USERNAME: this.USERNAME,
+        PLANT_CODE: this.PLANT_CODE,
+      });
     }
 
-    clearFile() {
-      document.getElementsByTagName('input')[0].value = '';
-  
-    }
+    return new Promise((resolve, reject) => {
+      console.log('匯入開始');
+      this.LoadingPage = true;
+      let myObj = this;
+      let obj = {};
+      obj = {
+        EXCELDATA: upload_data,
+      };
 
-    Upload() {
-    
-      // let getFileNull = this.inputFileUseInUpload;
-      // if(getFileNull === undefined){
-      //   this.errorMSG('請選擇檔案', '');
-      //   return;
-      // }
-  
-      let lastname = this.file.name.split('.').pop();
-      console.log("this.file.name: "+this.file.name);
-      console.log("incomingfile e : " + this.file);
-      if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
-        this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-        this.clearFile();
-        return;
-      } else {
-        console.log("上傳檔案格式沒有錯誤");
-        let fileReader = new FileReader();
-        fileReader.onload = (e) => {
-          this.arrayBuffer = fileReader.result;
-          var data = new Uint8Array(this.arrayBuffer);
-          var arr = new Array();
-          for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-          var bstr = arr.join("");
-          var workbook = XLSX.read(bstr, {type:"binary"});
-          var first_sheet_name = workbook.SheetNames[0];
-          var worksheet:any = workbook.Sheets[first_sheet_name];
-          this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-    
-          
-            console.log("importExcel")
-            console.log(this.importdata)
-            this.importExcel(this.importdata);
-          
-        }
-        fileReader.readAsArrayBuffer(this.file);
-      }
-    }
-
-    importExcel(_data) {
-
-      console.log("EXCEL 資料上傳檢核開始");
-      var upload_data = [];
-      for(let i=0 ; i < _data.length ; i++) {
-        console.log(_data[i]);
-
-        let allData = JSON.stringify(_data[i]);
-
-        if (this.importdata_repeat.includes(allData)){
-          this.errorMSG('重複資料', '第' + (i+2) + "筆與上一筆為重複資料");
-          this.clearFile();
-          return;
-        }
-        else{
-          this.importdata_repeat.push(allData);
-          console.log(_data[i]['特殊機台使用']);
-          if(_data[i]['特殊機台使用'] == undefined)
-            _data[i]['特殊機台使用'] = '';
-
-          console.log(_data[i]['特殊機台使用']);
-          upload_data.push({
-            GRADE_NO: _data[i]['鋼種'],
-            SPECIAL_EQUIP_CODE: _data[i]['特殊機台使用'] ,
-            GRADE_GROUP: _data[i]['鋼種類別'],
-            ROLL_WEIGHT: _data[i]['鋼胚重(KG)'],
-            DATETIME : moment().format('YYYY-MM-DD HH:mm:ss'),
-            USERNAME : this.USERNAME,
-            PLANT_CODE : this.PLANT_CODE
-          })
-        }
-      }
-      
-
-      return new Promise((resolve, reject) => {
-        console.log("匯入開始");
-        this.LoadingPage = true;
-        let myObj = this;
-        let obj = {};
-        obj = {
-          EXCELDATA: upload_data
-        };
-
-        console.log("EXCELDATA:"+ obj);
-        myObj.PPSService.importI101TablExcel(obj).subscribe(res => {
-          console.log("importExcelPPSI101");
-          if(res[0].MSG === "Y") { 
-            
-
+      console.log('EXCELDATA:' + obj);
+      myObj.PPSService.importI101TablExcel(obj).subscribe(
+        (res) => {
+          console.log('importExcelPPSI101');
+          if (res[0].MSG === 'Y') {
             this.loading = false;
             this.LoadingPage = false;
-            
-            this.sucessMSG("EXCCEL上傳成功", "");
+
+            this.sucessMSG('EXCCEL上傳成功', '');
             this.clearFile();
             this.getPPSINP01List(10, 10);
-            
           } else {
-            this.errorMSG("匯入錯誤", res[0].MSG);
+            this.errorMSG('匯入錯誤', res[0].MSG);
             this.clearFile();
             this.loading = false;
             this.LoadingPage = false;
           }
-        },err => {
+        },
+        (err) => {
           reject('upload fail');
-          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+          this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
           this.loading = false;
           this.LoadingPage = false;
-        })
-      });
-      this.getPPSINP01List(10, 10);
-
-    }
-
-    convertToExcel() {
-      console.log("convertToExcel");
-      let arr = [];
-      console.log(this.displayPPSINP01List);
-      let fileName = `鋼種分類`;
-      
-      for(let i = 0 ; i<this.displayPPSINP01List.length ; i++ ){
-
-        var ppsInP01 = {
-          GRADE_NO: this.displayPPSINP01List[i].GRADE_NO,         
-          SPECIAL_EQUIP_CODE: this.displayPPSINP01List[i].SPECIAL_EQUIP_CODE,
-          GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP,
-          ROLL_WEIGHT: this.displayPPSINP01List[i].ROLL_WEIGHT
         }
-        arr.push(ppsInP01);
-      }
-      
-      this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
+      );
+    });
+    this.getPPSINP01List(10, 10);
+  }
+
+  convertToExcel() {
+    console.log('convertToExcel');
+    let arr = [];
+    console.log(this.displayPPSINP01List);
+    let fileName = `鋼種分類`;
+
+    for (let i = 0; i < this.displayPPSINP01List.length; i++) {
+      var ppsInP01 = {
+        GRADE_NO: this.displayPPSINP01List[i].GRADE_NO,
+        SPECIAL_EQUIP_CODE: this.displayPPSINP01List[i].SPECIAL_EQUIP_CODE,
+        GRADE_GROUP: this.displayPPSINP01List[i].GRADE_GROUP,
+        ROLL_WEIGHT: this.displayPPSINP01List[i].ROLL_WEIGHT,
+      };
+      arr.push(ppsInP01);
     }
+
+    this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
+  }
 }
