@@ -16,9 +16,32 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class PPSR310Component implements OnInit {
 
-  constructor() { }
+  USERNAME;
+  PLANT_CODE;
+
+  constructor(
+    private PPSService: PPSService,
+    private i18n: NzI18nService,
+    private cookieService: CookieService,
+    private excelService: ExcelService,
+    private message: NzMessageService
+  ) {
+    this.i18n.setLocale(zh_TW);
+    this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+  }
 
   ngOnInit(): void {
+    this.getDataList();
+    this.getVerListData();
+  }
+
+  rowData: data[] = [];    
+  selectedVer = [{label:'',value:''}]; //版本选择
+  isSpinning = false;
+
+  searchData = {
+    selectedVer_default:null,
   }
 
   gridOptions = {
@@ -38,6 +61,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '銷售區域',
+            field: 'areaGroup' 
           }
       ]
     },
@@ -45,6 +69,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '業務員',
+            field: 'sales' 
           }
       ]
     },
@@ -52,6 +77,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '付款條件',
+            field: 'paymentTerms' 
           }
       ]
     },
@@ -59,6 +85,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '客戶簡稱',
+            field: 'custAbbreviations' 
           }
       ]
     },
@@ -67,7 +94,7 @@ export class PPSR310Component implements OnInit {
         children: [
             { 
               headerName: '總量',
-              field: 'athlete' 
+              field: 'orderBalanceWeight' 
             }
         ]
     },
@@ -76,7 +103,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '總量',
-            field: 'athlete' 
+            field: 'estimateWeight' 
           }
       ]
     },
@@ -85,7 +112,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '總量',
-            field: 'athlete' 
+            field: 'availableToShip' 
           }
       ]
     },
@@ -101,15 +128,15 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '已過帳',
-            field: 'athlete' 
+            field: 'shipmentPostedWeight' 
           },
           { 
             headerName: '未過帳',
-            field: 'athlete' 
+            field: 'shipmentUnpostedWeight' 
           },
           { 
             headerName: '小計',
-            field: 'athlete' 
+            field: 'shipmentWeightSum' 
           }
       ]
     },
@@ -118,15 +145,15 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '成品',
-            field: 'athlete' 
+            field: 'stockFinalProductWeight' 
           },
           { 
             headerName: '半成品',
-            field: 'athlete' 
+            field: 'stockUnfinalProductWeight' 
           },
           { 
             headerName: '小計',
-            field: 'athlete' 
+            field: 'stockWeightSum' 
           }
       ]
     },
@@ -134,12 +161,52 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '合計',
+            field: 'shipmentSumStock' 
           }
       ]
     }
   ];
 
-  rowData: data[] = [];    
+
+  getDataList(){
+
+    this.isSpinning = true;
+    let postData = this.searchData;
+    postData['mo_EDITION'] = this.searchData.selectedVer_default;
+    this.PPSService.getR310Data(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        this.rowData = JSON.parse(JSON.stringify(result));
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+      this.isSpinning = false;
+    },err => {
+      this.isSpinning = false;
+      this.message.error('網絡請求失敗');
+    })
+
+  }
+
+  getVerListData(){
+
+    let postData = {};
+    this.PPSService.getR308VerListData(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedVer.push({label:result[i].mo_EDITION, value:result[i].mo_EDITION})
+        }
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+    },err => {
+      this.message.error('網絡請求失敗');
+    })
+
+  }
 
 }
 
