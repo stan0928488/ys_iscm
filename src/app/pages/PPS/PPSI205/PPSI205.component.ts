@@ -7,7 +7,19 @@ import * as XLSX from 'xlsx';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import {  ColDef, ColGroupDef, ICellEditorComp, RowValueChangedEvent, GridApi, GridReadyEvent, CellValueChangedEvent, CellDoubleClickedEvent, ValueFormatterParams, CellEditingStoppedEvent, ValueParserParams} from 'ag-grid-community';
+import {
+  ColDef,
+  ColGroupDef,
+  ICellEditorComp,
+  RowValueChangedEvent,
+  GridApi,
+  GridReadyEvent,
+  CellValueChangedEvent,
+  CellDoubleClickedEvent,
+  ValueFormatterParams,
+  CellEditingStoppedEvent,
+  ValueParserParams,
+} from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -35,9 +47,9 @@ export class PPSI205Component implements AfterViewInit {
   isRunFCP = false; // 如為true則不可異動
   isErrorMsg = false;
   isEditing = false;
-  myContext : any;
-  gridApi : GridApi;
-  tbppsm102EditCacheList : { [id: string]: { data: any } } = {};
+  myContext: any;
+  gridApi: GridApi;
+  tbppsm102EditCacheList: { [id: string]: { data: any } } = {};
 
   titleArray1 = [
     '月份',
@@ -143,8 +155,9 @@ export class PPSI205Component implements AfterViewInit {
       resizable: true,
     },
     components: {
-      summaryDatePickerCellEditorComponent : SummaryDatePickerCellEditorComponent
-    }
+      summaryDatePickerCellEditorComponent:
+        SummaryDatePickerCellEditorComponent,
+    },
   };
 
   dateTimeFormatter(params) {
@@ -193,9 +206,11 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
       editable: true,
       width: 100,
-      valueParser : (params: ValueParserParams): number =>{
-        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-      }
+      valueParser: (params: ValueParserParams): number => {
+        return Number.isNaN(Number(params.newValue))
+          ? params.oldValue
+          : Number(params.newValue);
+      },
     },
     {
       headerName: 'max(EPST/ASAP)',
@@ -227,11 +242,11 @@ export class PPSI205Component implements AfterViewInit {
       width: 140,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: {
-        values: ['ASC', 'DESC']
+        values: ['ASC', 'DESC'],
       },
-      valueFormatter: (params: ValueFormatterParams) : string =>{
+      valueFormatter: (params: ValueFormatterParams): string => {
         return params.value === 'ASC' ? '升冪' : '降冪';
-      }
+      },
     },
     {
       headerName: 'COMPAIGN_ID',
@@ -245,7 +260,7 @@ export class PPSI205Component implements AfterViewInit {
       field: 'EXPORTDATETIME',
       filter: true,
       editable: false,
-      width: 220
+      width: 220,
     },
     {
       headerName: 'Action',
@@ -284,9 +299,8 @@ export class PPSI205Component implements AfterViewInit {
     };
 
     this.myContext = {
-      componentParent: this
+      componentParent: this,
     };
-    
   }
 
   ngOnInit() {
@@ -302,7 +316,9 @@ export class PPSI205Component implements AfterViewInit {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
     this.getTbppsm101List();
-    this.forTbppsm100Date = moment(this.currentDate).format('YYYY-MM-DD HH:mm:ss');
+    this.forTbppsm100Date = moment(this.currentDate).format(
+      'YYYY-MM-DD HH:mm:ss'
+    );
     this.getTbppsm102ListAll();
     this.getTbppsm113List();
     this.getTbppsm100List();
@@ -351,9 +367,9 @@ export class PPSI205Component implements AfterViewInit {
       let result: any = res;
       if (result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
-        this.rowData.forEach(item => {
+        this.rowData.forEach((item) => {
           item['isEditing'] = false;
-        })
+        });
         this.setupUpdateEditCache();
       } else {
         this.message.error('無資料');
@@ -367,11 +383,11 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   // 複製一份資料到Tbppsm102編輯專用的資料list
- setupUpdateEditCache(): void {
-    this.rowData.forEach((item,index) => {
-      this.tbppsm102EditCacheList[index] ={
-        data: _.cloneDeep(item)
-        }
+  setupUpdateEditCache(): void {
+    this.rowData.forEach((item, index) => {
+      this.tbppsm102EditCacheList[index] = {
+        data: _.cloneDeep(item),
+      };
     });
   }
 
@@ -428,7 +444,6 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
-  
   changeTab(tab): void {
     console.log(tab);
     if (tab === 1) {
@@ -445,8 +460,7 @@ export class PPSI205Component implements AfterViewInit {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=3';
     } else if (tab === 5) {
       this.getTbppsm100List();
-      window.location.href =
-        '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
     }
   }
 
@@ -580,7 +594,7 @@ export class PPSI205Component implements AfterViewInit {
               ? '降冪'
               : '',
           COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'),
-          EXPORTDATETIME: _.get(item, "EXPORTDATETIME")
+          EXPORTDATETIME: _.get(item, 'EXPORTDATETIME'),
         });
         excelData.push(obj);
       }
@@ -1417,27 +1431,23 @@ export class PPSI205Component implements AfterViewInit {
         myObj.getPPSService.importI205Excel(obj).subscribe(
           (res) => {
             if (res[0].MSG === 'Y') {
-              this.loading = false;
-              this.LoadingPage = false;
-
               this.sucessMSG('EXCCEL上傳成功', '');
               this.getTbppsm100List();
               this.clearFile();
             } else {
               this.errorMSG('匯入錯誤', res[0].MSG);
-              this.clearFile();
-              this.LoadingPage = false;
             }
           },
           (err) => {
             reject('upload fail');
             this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
-            this.LoadingPage = false;
           }
         );
         this.importdata = [];
         this.importdata_new = [];
         this.errorTXT = [];
+        this.loading = false;
+        this.LoadingPage = false;
       });
     }
   }
@@ -1452,14 +1462,14 @@ export class PPSI205Component implements AfterViewInit {
 
   // 上傳到compaign 資料到 ppsinptb16
   importCompaign(flag) {
-    console.log(this.tbppsm102ListAll )
+    console.log(this.tbppsm102ListAll);
     return new Promise((resolve, reject) => {
       this.LoadingPage = true;
       let myObj = this;
       let obj = {};
       let list = [];
-      if(flag === 1) list = this.tbppsm102List ; 
-      else if(flag === 2) list = this.rowData ;
+      if (flag === 1) list = this.tbppsm102List;
+      else if (flag === 2) list = this.rowData;
       _.extend(obj, {
         dataList: list,
         flag: flag,
@@ -1658,8 +1668,8 @@ export class PPSI205Component implements AfterViewInit {
     }
   }
 
-   // 確定修改 Auto Campaign 存檔
-   Save401OK(col) {
+  // 確定修改 Auto Campaign 存檔
+  Save401OK(col) {
     console.log('oldlist --> ', this.oldlist);
     console.log('newlist --> ', this.newlist);
 
@@ -1930,18 +1940,19 @@ export class PPSI205Component implements AfterViewInit {
       });
   }
 
-  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>){
+  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>) {
     event.data.isEditing = true;
   }
 
-  cellEditingStoppedHandler(event : CellEditingStoppedEvent<any, any>){
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
     // 排除 "isEditing" 屬性，不列入後續的資料比較
     const newValue = _.omit(event.data, ['isEditing']);
-    const oldValue = _.omit(this.tbppsm102EditCacheList[event.rowIndex].data, ['isEditing']);
-    if(_.isEqual(oldValue, newValue)){
+    const oldValue = _.omit(this.tbppsm102EditCacheList[event.rowIndex].data, [
+      'isEditing',
+    ]);
+    if (_.isEqual(oldValue, newValue)) {
       event.data.isEditing = false;
-    }
-    else{
+    } else {
       event.data.isEditing = true;
     }
   }
@@ -1956,7 +1967,9 @@ export class PPSI205Component implements AfterViewInit {
 
   calcelOnClick(e) {
     //this.cancel401_dtlRow(e.index, e.rowData);
-    this.rowData[e.index] = _.cloneDeep(this.tbppsm102EditCacheList[e.index].data);
+    this.rowData[e.index] = _.cloneDeep(
+      this.tbppsm102EditCacheList[e.index].data
+    );
     this.gridApi.setRowData(this.rowData);
   }
 
