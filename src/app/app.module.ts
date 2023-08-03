@@ -126,6 +126,7 @@ import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
+import { OpenMachineRendererComponent } from './pages/PPS/PPSI210/open-machine-renderer-component';
 
 registerLocaleData(zh);
 
@@ -223,6 +224,7 @@ registerLocaleData(zh);
     PPSR309Component,
     BtnCellRenderer,
     OpenSortRendererComponent,
+    OpenMachineRendererComponent,
     SendChoiceRendererComponent,
     PPSI112Component,
     BtnCellRendererUpdate,

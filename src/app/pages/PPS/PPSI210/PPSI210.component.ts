@@ -8,10 +8,11 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { ColDef, ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community';
+import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from 'ag-grid-community';
 import { OpenSortRendererComponent } from './open-sort-renderer-component';
 import { SendChoiceRendererComponent } from './send-choice-renderer-component';
 import { firstValueFrom } from 'rxjs';
+import { OpenMachineRendererComponent } from './open-machine-renderer-component';
 
 @Component({
   selector: 'app-PPSI210',
@@ -20,6 +21,9 @@ import { firstValueFrom } from 'rxjs';
   providers: [NzMessageService],
 })
 export class PPSI210Component implements AfterViewInit {
+  planSetLoading = false; // 現有規劃策略明細表是否載入中
+  shopSortLoading = false; // 站別優先順序明細表是否載入中
+  machineSortLoading = false // 站別機台優先順序明細表是否載入中
   loading = false; //loaging data flag
   isRunFCP = false; // 如為true則不可異動
   isSpinning = false;
@@ -78,6 +82,9 @@ export class PPSI210Component implements AfterViewInit {
 
   dtlSHOP_CODE; //機台優先順序站別
 
+  moSortListOfOption : any[] = []; // MO站別搬移順序選項
+  moSortListOfOptionLoading = false; // MO站別搬移順序載入狀態
+
   i = 1;
   j = 1;
   editId: string | null = null;
@@ -90,65 +97,142 @@ export class PPSI210Component implements AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
   agGridContext : any;
+
   planSetColumnDefs: ColDef[] = [
     { 
       headerName:'點選', 
       field:'choice',
       pinned: 'left', 
       width: 80,
-      filter: true,
       cellRenderer: SendChoiceRendererComponent
     },
     { 
       headerName:'策略版本', 
       field:'PLANSET_EDITION',
       pinned: 'left',  
-      filter: true 
     },
     { 
       headerName:'策略名稱', 
       field:'SETNAME',
       pinned: 'left', 
-      filter: true 
     },
     { 
       headerName:'Initial PST', 
       field:'INITIALFLAG', 
-      filter: true 
     },
     { 
-      headerName:'MO\n平衡搬移順序', 
+      headerName:'MO平衡搬移順序', 
       field:'MOSORTNA',
-      filter: true 
     },
     { 
-      headerName:'Cell 處理順序', 
-      field:'CELLSORTNA', 
-      filter: true 
+      headerName:'Cell處理順序', 
+      field:'CELLSORTNA',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'相臨站別平衡策略', 
       field:'NEXTSHOPSORTNA', 
-      filter: true 
     },
     { 
       headerName:'機台平衡策略', 
       field:'MACHINESORTNA', 
-      filter: true 
     },
     { 
       headerName:'站別策略設定',
       field:'action', 
       cellRenderer: OpenSortRendererComponent,
-      filter: true 
+    }
+  ];
+
+  // 站別優先順序明細表ColumnDefs
+  shopSortingColumnDefs: ColDef[] = [
+    { 
+      headerName:'站別',
+      field:'SCH_SHOP_CODE'
+    },
+    { 
+      headerName:'規劃優先順序',
+      field:'SORTING_SEQ',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'集批天數',
+      field:'INTERVAL'
+    },
+    { 
+      headerName:'集批條件',
+      field:'REQUIREMENT'
+    },
+    { 
+      headerName:'COMBINE執行',
+      field:'ISCOMBINE'
+    },
+    { 
+      headerName:'交期範圍(單位:月)',
+      field:'COMBINE_RANGE'
+    },
+    { 
+      headerName:'指定平衡設定',
+      field:'MO_SORT',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        this.getMoSortList();
+        let formatValue = null;
+        this.moSortListOfOption.some(item =>{
+          if(item.method === params.value) {
+            formatValue = item.notesChinese;
+            return true;
+          }
+        }); 
+        return formatValue;
+      }
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      cellRenderer: OpenMachineRendererComponent
+    }
+  ];
+
+  // 站別機台優先順序明細表ColumnDefs
+  machineSortingColumnDefs : ColDef[] = [
+    { 
+      headerName:'站別',
+      field:'SCH_SHOP_CODE_D2'
+    },
+    { 
+      headerName:'機台',
+      field:'MACHINE'
+    },
+    { 
+      headerName:'規劃優先順序',
+      field:'SORTING_SEQ_D2',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'集批天數',
+      field:'INTERVAL_D2'
+    },
+    { 
+      headerName:'集批條件',
+      field:'REQUIREMENT_D2'
+    },
+    { 
+      headerName:'COMBINE執行',
+      field:'ISCOMBINE_D2'
+    },
+    { 
+      headerName:'交期範圍(單位:月)',
+      field:'COMBINE_RANGE_D2'
     }
   ];
 
   gridOptions = {
     defaultColDef: {
+      filter: true,
       sortable: false,
       resizable: true,
-      wrapText: true
+      //wrapText: true,
+      autoHeight: true,
     }
   };
 
@@ -388,7 +472,7 @@ export class PPSI210Component implements AfterViewInit {
         INTERVAL: `0`,
         REQUIREMENT: `　`,
         ISCOMBINE: `Y`,
-        COMBINE_RANGE: `3`,
+        COMBINE_RANGE: `3`
       },
     ];
     this.i++;
@@ -864,21 +948,13 @@ export class PPSI210Component implements AfterViewInit {
     console.log('selPlanSet...');
 
     this.isVisibleSelPlanSet = true;
-    this.loading = true;
+    this.planSetLoading = true;
     let myObj = this;
-    const prePlanSetDataList = _.cloneDeep(this.planSetDataList);
     this.getPPSService.getPlanSetData().subscribe((res) => {
       // 取規劃策略
       console.log('getPlanSetData success');
       this.planSetDataList = res;
-      
-    if(!_.isNil(prePlanSetDataList)){
-      for (let index = 0; index < this.planSetDataList.length; index++) {
-        this.planSetDataList[index].selectedRadioValue = prePlanSetDataList[index].selectedRadioValue;
-      }
-    }
-
-      myObj.loading = false;
+      myObj.planSetLoading = false;
     });
   }
   plansethandleCancel(): void {
@@ -917,6 +993,7 @@ export class PPSI210Component implements AfterViewInit {
         var REQUIREMENT = this.pickerShopList[i].REQUIREMENT;
         const ISCOMBINE = this.pickerShopList[i].ISCOMBINE;
         const COMBINE_RANGE = this.pickerShopList[i].COMBINE_RANGE;
+        const MO_SORT = this.pickerShopList[i].MO_SORT === undefined ? 'null_string' : this.pickerShopList[i].MO_SORT;
 
         if (REQUIREMENT === undefined) {
           REQUIREMENT = `　`;
@@ -929,6 +1006,7 @@ export class PPSI210Component implements AfterViewInit {
           REQUIREMENT,
           ISCOMBINE,
           COMBINE_RANGE,
+          MO_SORT 
         });
       }
       this.listOfData = initdata;
@@ -937,6 +1015,7 @@ export class PPSI210Component implements AfterViewInit {
         this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
       }
       this.getMachineSortList(data.PLANSET_EDITION);
+      this.getMoSortList();
     });
 
     myObj.loading = false;
@@ -984,12 +1063,16 @@ export class PPSI210Component implements AfterViewInit {
 
   // 撈取 sorting 表
   getShopSortingList(_Mseqno) {
-    this.loading = true;
+    this.shopSortLoading = true;
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe((res) => {
       console.log('getShopSortingList success');
       this.ShopSortingList = res;
-      myObj.loading = false;
+      this.ShopSortingList.forEach(item => {
+        item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
+      });
+      this.getMoSortList();
+      myObj.shopSortLoading = false;
     });
   }
 
@@ -1015,7 +1098,7 @@ export class PPSI210Component implements AfterViewInit {
   }
 
   openMachineSorting(_planset, _shopcode): void {
-    this.loading = true;
+    this.machineSortLoading = true;
     let myObj = this;
     this.getPPSService
       .getShopMachineSortingList('Q', _planset)
@@ -1042,7 +1125,7 @@ export class PPSI210Component implements AfterViewInit {
             `站別「${_shopcode}」無設定機台優先順序`
           );
         }
-        myObj.loading = false;
+        myObj.machineSortLoading = false;
       });
   }
 
@@ -1308,69 +1391,74 @@ export class PPSI210Component implements AfterViewInit {
       myObj.message.create('error', '請輸入「FCP下站合併天數」');
       return;
     }
-
+    
+    const listOfData_cloneDeep = _.cloneDeep(this.listOfData);
+    
     // 檢查list 是否有空值
-    for (let i = 0; i < this.listOfData.length; i++) {
-      if (this.listOfData[i].SHOP_CODE === '　') {
+    for (let i = 0; i < listOfData_cloneDeep.length; i++) {
+      if (listOfData_cloneDeep[i].SHOP_CODE === '　') {
         myObj.message.create(
           'error',
-          '「站別策略設定」，第 ' + this.listOfData[i].id + ' 列未設定完整'
+          '「站別策略設定」，第 ' + listOfData_cloneDeep[i].id + ' 列未設定完整'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].SORTING === ''
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].SORTING === ''
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+            listOfData_cloneDeep[i].id +
             ' 列未設定排序，請檢查！'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].INTERVAL != 0 &&
-        (this.listOfData[i].REQUIREMENT === '' ||
-          this.listOfData[i].REQUIREMENT === '　' ||
-          this.listOfData[i].REQUIREMENT === undefined)
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].INTERVAL != 0 &&
+        (listOfData_cloneDeep[i].REQUIREMENT === '' ||
+          listOfData_cloneDeep[i].REQUIREMENT === '　' ||
+          listOfData_cloneDeep[i].REQUIREMENT === undefined)
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+            listOfData_cloneDeep[i].id +
             ' 列有集批天數，卻未設定「集批條件」，請檢查！'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].ISCOMBINE === 'Y' &&
-        this.listOfData[i].COMBINE_RANGE === 0
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
+        listOfData_cloneDeep[i].COMBINE_RANGE === 0
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+            listOfData_cloneDeep[i].id +
             " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].ISCOMBINE === 'N' &&
-        this.listOfData[i].COMBINE_RANGE !== 0
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
+        listOfData_cloneDeep[i].COMBINE_RANGE !== 0
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+            listOfData_cloneDeep[i].id +
             " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
         );
         return;
       }
+
+      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
+
     }
 
     this.loading = true;
@@ -1392,7 +1480,7 @@ export class PPSI210Component implements AfterViewInit {
         nextshopValue: this.nextshopValue,
         machineValue: this.machineValue,
         FROZAN_GROUP: this.FROZAN_GROUP,
-        listOfData: this.listOfData,
+        listOfData: listOfData_cloneDeep,
         listOfData_dtl: this.listOfData_dtl,
         usercode: this.USERNAME,
         datetime: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
@@ -1494,23 +1582,62 @@ export class PPSI210Component implements AfterViewInit {
     }
   }
 
+  async getMoSortList(){
 
-  onGridReady(params: GridReadyEvent<any>) {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
+    if(!_.isEmpty(this.moSortListOfOption)) return;
+
+    this.moSortListOfOptionLoading = true;
+
+    try{
+      const resObservable$ = this.getPPSService.getMoSort();
+      const res = await firstValueFrom<any>(resObservable$);
+
+      if(res.code !== 1){
+        this.errorMSG(
+          '獲取已變更的EPST資料失敗',
+          `請聯繫系統工程師。錯誤訊息 : ${res.message}`
+        );
+        return;
+      }
+      this.moSortListOfOption = res.data;
+    }
+    catch (error) {
+      this.errorMSG(
+        '獲取已變更的EPST資料失敗',
+        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.moSortListOfOptionLoading = false;
+    }
+  }
+  
+  // 首次渲染資料完畢後被調用
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，再做寬度適應的調整
     this.autoSizeAll();
   }
 
-  autoSizeAll() {
-   setTimeout(() => {
-      const allColumnIds: string[] = [];
-      this.gridColumnApi.getColumns()!.forEach((column) => {
-        allColumnIds.push(column.getId());
-      });
-      this.gridColumnApi.autoSizeColumns(allColumnIds, false);
-    }, 20);
+  // 獲取ag-grid的Api函數
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
   }
 
+  // 文字寬度適應的調整
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      if(column.getId() !== 'CELLSORTNA' && 
+          column.getId() !== 'SORTING_SEQ' && 
+          column.getId() !== 'SORTING_SEQ_D2'){
+        allColumnIds.push(column.getId());
+      }
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
 
   sucessMSG(_title, _plan): void {
     this.Modal.success({
