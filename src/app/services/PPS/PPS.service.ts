@@ -1232,10 +1232,19 @@ export class PPSService {
     const httpParams = new HttpParams().set('planSetEdition', planSetEdition);
 
     console.log('api service deletePlanSetData');
-    let queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
+    const queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
     console.log(`刪除策略API --> ${queryUrl}`);
     console.log(`刪除策略API參數 --> ${planSetEdition}`);
     return this.http.delete(queryUrl, { params: httpParams });
+  }
+
+  // 獲取MO站別搬移順序選項
+  getMoSort(){
+    console.log('api service 獲取MO站別搬移順序選項');
+    const queryUrl = this.APIURL + `/FCP/I210/getMoSort`;
+    console.log(`獲取MO站別搬移順序選項API --> ${queryUrl}`);
+    console.log(`刪除策略API參數 --> 無`);
+    return this.http.get(queryUrl);
   }
 
   //Get getPlanSetInitstData 取得規劃策略基礎表
@@ -1368,10 +1377,19 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-  // getFCPResRepo 取得表內容
-  getFCPResRepo(_data) {
+
+   // getFCPResRepo 取得表內容
+   getFCPResRepo(_data) {
     console.log('api service getFCPResRepo');
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
+  getFCPResRepoDynamic(_data) {
+    console.log('api service getFCPResRepoDynamic');
+    let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepoDynamic/${_data}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
