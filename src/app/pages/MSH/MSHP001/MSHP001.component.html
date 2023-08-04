@@ -27,6 +27,8 @@
 
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="getExportDataByShopCode()">以站別匯出</button>
 
+          <button style="margin-left: 20px;" nz-button nzType="primary" (click)="handleExcelBatchModelModal()"  *ngIf="selectShopCode === '453'" >批量Excel模式</button>
+
             <!-- <button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('3')">test</button> -->
           <!--<button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('2')">自動下載</button> -->
 
@@ -499,7 +501,7 @@ nzWidth="300"
         nz-button
         style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
         nzType="primary"
-        (click)="handleUploadFile()"
+        (click)="handleUploadFile('1')"
       ><span nz-icon nzType="upload" nzTheme="outline"></span>
       數據匯入確認
       </button>
@@ -515,5 +517,58 @@ nzWidth="300"
 <!---EXCEL模式結束-->
 
 
+
+<!---批量EXCEL模式開始-->
+<nz-modal
+[(nzVisible)]="excelBatchModelModalIsVisible"
+[nzTitle]="excelBatchModelModalTitle"
+[nzContent]="excelBatchModelModalContent"
+[nzFooter]="excelBatchModelModalFooter"
+(nzOnCancel)="handleExcelBatchModelModal()"
+nzWidth="300"
+>
+<ng-template #excelBatchModelModalTitle>批量EXCEL模式 《 替換與被替換機台必須要一起保存 》</ng-template>
+
+<ng-template #excelBatchModelModalContent>
+  <div nz-row>
+    <ag-grid-angular
+    style="width: 100% ; min-height:500px; overflow: scroll"
+    class="ag-theme-alpine"
+    [rowDragManaged]="false"
+    [gridOptions]="excelBatchModelGridOptions"
+    [rowDragMultiRow]="false"
+    [suppressScrollOnNewData] = "true"
+    [animateRows]="true"
+    [rowData]="rowExcelBatchModelData"
+    [columnDefs]="excelBatchColumnDefs">
+    </ag-grid-angular>
+  </div>
+  
+</ng-template>
+
+<ng-template #excelBatchModelModalFooter>
+ 
+  <span>
+    <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBatchModalBtn()">數據匯出</button>
+
+    <input type="file" id="fileupload" style="display: inline-block;margin-left: 30px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+        nzType="primary"
+        (click)="handleUploadFile('2')"
+      ><span nz-icon nzType="upload" nzTheme="outline"></span>
+      數據匯入確認
+      </button>
+  </span>
+  
+  <button style="margin-left: 20px;" nz-button nzType="primary" (click)="comitExcelBatchModelModal()" [nzLoading]="handleComitExcelBatchModelConfirmLoading">確定</button>
+
+  <button style="margin-left: 20px;" nz-button nzType="default" (click)="handleExcelBatchModelModal()">關閉</button>
+  <!-- <button style="margin-left: 20px;" nz-button nzType="primary" (click)="importBtn()">數據匯入</button> -->
+  
+</ng-template>
+</nz-modal>
+<!---EXCEL模式結束-->
 
 </div>
