@@ -7,6 +7,7 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-PPSR310',
@@ -167,6 +168,49 @@ export class PPSR310Component implements OnInit {
     }
   ];
 
+  excelExport() {
+
+    let exportData = [];
+    let postData = this.searchData;
+    postData['mo_EDITION'] = this.searchData.selectedVer_default;
+    this.PPSService.getR310Data(postData).subscribe(res =>{
+      
+      let result: any = res;
+
+
+      for (var i = 0; i <= result.length; i++) {
+        var element = result[i];
+        console.log(element);
+        if (element) {
+          var obj =
+          {
+            "銷售區域": (element['areaGroup'] ? element['areaGroup'] : null),
+            "業務員": (element['sales'] ? element['sales'] : null),
+            "付款條件": (element['paymentTerms'] ? element['paymentTerms'] : null),
+            "客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
+            "訂單餘量_總量": (element['orderBalanceWeight'] ? Number(element['orderBalanceWeight']) : null),
+            "目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
+            "生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
+            "出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),
+            "出貨量(總量)_未過帳": (element['shipmentUnpostedWeight'] ? Number(element['shipmentUnpostedWeight']) : null),
+            "出貨量(總量)_小計": (element['shipmentWeightSum'] ? Number(element['shipmentWeightSum']) : null),
+            "庫存量(庫存量)_成品": (element['stockFinalProductWeight'] ? Number(element['stockFinalProductWeight']) : null),
+            "庫存量(庫存量)_半成品": (element['stockUnfinalProductWeight'] ? Number(element['stockUnfinalProductWeight']) : null),
+            "庫存量(庫存量)_小計": (element['stockWeightSum'] ? Number(element['stockWeightSum']) : null),
+            "合計": (element['shipmentSumStock'] ? Number(element['shipmentSumStock']) : null)
+          }
+          exportData.push(obj);
+        }
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, '業務報表')
+      XLSX.writeFile(wb, ExcelService.toExportFileName("業務報表"));
+
+    });
+
+  }
 
   getDataList(){
 
