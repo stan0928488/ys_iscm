@@ -251,5 +251,9 @@ saveChangeOpCode(_param) {
   return this.http.get(queryUrl,this.httpOptions);
   }
 
-
+ /***批量換機台並保存排程 */
+ saveChangeMachineBatch(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeMachineBatch";
+  return this.http.post(queryUrl,_param,this.httpOptions);
+}
 }
