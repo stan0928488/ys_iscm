@@ -1863,10 +1863,15 @@ this.handleSelectCarModal() ;
     }
 
     comitExcelBatchModelModal(){
+      if(this.selectShopCode !== '453') {
+        this.nzMessageService.error("指定機台才可以使用當前功能")
+        return ;
+      }
       if(this.rowExcelBatchModelData.length < 1) {
         this.nzMessageService.error("請先匯入排程數據")
         return ;
       }
+      
       const comitData = [] ;
       this.rowExcelBatchModelData.forEach((item,index,array)=>{
         if(item.ID === "") {
