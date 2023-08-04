@@ -416,7 +416,6 @@
 
 
 <!-- 站別優先順序明細表 -->
-
   <nz-modal
     [(nzVisible)]="isVisibleSorting"
     [nzTitle]="shopSortTitle"
@@ -437,8 +436,6 @@
             [columnDefs]="shopSortingColumnDefs"
             [gridOptions]="gridOptions"
             [pagination]="true"
-            (firstDataRendered)="onFirstDataRendered($event)"
-            (gridReady)="onGridReady($event)"
             [paginationPageSize]="20">
         </ag-grid-angular>
       </nz-spin>
@@ -466,8 +463,6 @@
           [columnDefs]="machineSortingColumnDefs"
           [gridOptions]="gridOptions"
           [pagination]="true"
-          (firstDataRendered)="onFirstDataRendered($event)"
-          (gridReady)="onGridReady($event)"
           [paginationPageSize]="20">
       </ag-grid-angular>
     </nz-spin> 

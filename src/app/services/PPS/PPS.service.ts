@@ -1215,7 +1215,7 @@ export class PPSService {
     let queryUrl =
       this.APIURL + `/FCP/I210/getShopSortingList/${_type}/${_value}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //Get getShopMachineSortingList (I210-I220-I230 共用)
   getShopMachineSortingList(_type, _value) {

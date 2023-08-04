@@ -27,13 +27,13 @@
       <nz-collapse-panel [nzHeader]="panels3.name" [nzActive]="panels3.active"  [nzExtra]="extraTpl">
         <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)" >
           <div class="example-box" *ngFor="let item3 of selectAllColumList ; let index = index" cdkDrag        >
-            <span>{{index + 1}}-{{item3.columLabel}}</span>
+            <span style=" display:block; height: 50px">{{index + 1}}-{{item3.columLabel}}</span>
             <br>
             <span class="groupDiv" (click) = "clickCurrentFunc(index,item3)">
              <span [ngSwitch]="item3.isGroup">
                <!-- the same view can be shown in more than one case -->
-               <span *ngSwitchCase="0">[非分群]</span>
-               <span *ngSwitchCase="1">[分群]</span>
+               <span *ngSwitchCase="0"><nz-tag>非分群</nz-tag></span>
+               <span *ngSwitchCase="1"> <nz-tag [nzColor]="'#f50'">分群</nz-tag></span>
                <!--default case when there are no matches -->
                <span *ngSwitchDefault></span>
              </span>
@@ -42,8 +42,8 @@
              <span class="outSideDiv" (click)="doubleClickCurrentFunc(index,item3)">
              <span [ngSwitch]="item3.isOutside">
               <!-- the same view can be shown in more than one case -->
-              <span *ngSwitchCase="0">[內]</span>
-              <span *ngSwitchCase="1">[外]</span>
+              <span *ngSwitchCase="0">  <nz-tag [nzColor]="'#2db7f5'">[內]</nz-tag></span>
+              <span *ngSwitchCase="1"><nz-tag>[外]</nz-tag></span>
               <!--default case when there are no matches -->
               <span *ngSwitchDefault></span>
             </span>
