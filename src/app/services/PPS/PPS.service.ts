@@ -2055,16 +2055,38 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  upd012BarData(obj) {
-    const body = JSON.stringify(obj);
+  upd012BarData(_data) {
+    const body = JSON.stringify(_data);
     console.log(body);
     let queryUrl = this.APIURL + '/FCP/I101/upd012BarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  del012TabData(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I101/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+  upd012NonBarData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + '/FCP/I101/NonBar/upd012NonBarData';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  del012NonBarTabData(_ID) {
+    const body = JSON.stringify(_ID);
+    console.log(body);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/del012NonBarTabData/${_ID}`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+    
+  }
+
+  getI109ShopCodeList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109ShopCodeList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getI109GradeNoList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109GradeNoList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
 }

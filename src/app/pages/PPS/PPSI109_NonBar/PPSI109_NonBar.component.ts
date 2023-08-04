@@ -7,12 +7,12 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
-import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
-import {  ColDef, ColGroupDef} from 'ag-grid-community';
+import { BtnCellRenderer} from '../../RENDERER/BtnCellRenderer.component';
+import {  CellClickedEvent, ColDef, ColGroupDef} from 'ag-grid-community';
 import * as moment from 'moment';
 
 interface ItemData {
-  id: string;
+  idx: number;
   ID: number;
   PLANT_CODE: string;
   SCH_SHOP_CODE: string;
@@ -47,6 +47,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   SCH_SHOP_CODE = '';
   GRADE_NO = '';
   YIELD_VALUE = 0;
+  SHOP_CODE = '';
 
   searchSchShopCodeValue = '';
   searchGradeNoValue = '';
@@ -79,7 +80,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
     this.frameworkComponents = {
-      buttonRenderer: BtnCellRendererUpdate,
+      buttonRenderer: BtnCellRenderer,
     };
   }
 
@@ -88,8 +89,21 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getRunFCPCount();
     this.getTbppsm012NoBarList();
+    this.getI109GradeNoList();
+    this.getI109ShopCodeList();
   }
+
+  searchData= {
+    selectedShopCode_default:"",
+    selectedGradeNo_default:"",
+  }
+
+  selectedShopCode = [{label:'', value:''}]; // 站別選擇
+  selectedGradeNo = [{label:'', value:''}]; // 鋼種選擇
   
+  gradeNoRowData: gData[] = [];
+  shopCodeRowData: sData[] = [];
+
   gridOptions = {
     defaultColDef: {
         editable: true,
@@ -99,6 +113,10 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
         sortable: true,
         resizable: true,
         filter: true,
+    },
+    api:null,
+    onCellClicked: (event: CellClickedEvent) => {
+      this.gridOptions.api.stopEditing();
     }
   };
 
@@ -106,53 +124,62 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     {
       headerName: '站別',
       field: "SCH_SHOP_CODE",
-      width: 80,
+      width: 150,
     },
     {
       headerName: '鋼種',
       field: "GRADE_NO",
-      width: 80,
+      width: 150,
     },
     {
       headerName: '產率設定值',
       field: "YIELD_VALUE",
-      width: 80,
+      width: 150,
     },
     {
       headerName: '建立日期',
       field: "DATE_CREATE",
-      width: 80,
+      editable: false,
+      width: 200,
+      valueFormatter: this.dateTimeFormatter, 
     },
     {
       headerName: '建立者',
       field: "USER_CREATE",
-      width: 80,
+      editable: false,
+      width: 150,
     },
     {
       headerName: '異動日期',
       field: "DATE_UPDATE",
-      width: 80,
+      editable: false,
+      width: 200,
+      valueFormatter: this.dateTimeFormatter, 
     },
     {
       headerName: '異動者',
       field: "USER_UPDATE",
-      width: 80,
+      editable: false,
+      width: 150,
     },
     {
       headerName: 'Action',
       editable:false,
-      width: 170,
+      width: 200,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
-          onclick: this.editOnClick.bind(this)
+          onClick: this.editOnClick1.bind(this)
         },
         {
-          onClick: this.updateOnClick.bind(this)
+          onClick: this.updateOnClick2.bind(this)
         },
         {
-          onClick: this.calcelOnClick.bind(this)
+          onClick: this.calcelOnClick3.bind(this)
         },
+        {
+          onClick: this.deleteOnClick4.bind(this)
+        }
       ]
     }
   ]
@@ -231,7 +258,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   tbppsm012NonBarTmp;
   tbppsm012NonBarList: ItemData[] = [];
-  resultSet: { [key: string]: { edit: boolean; data: ItemData } } = {};
+  // resultSet: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayTbppsm012NonBarList: ItemData[] = [];
   showYieldValue = false;
 
@@ -250,9 +277,9 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
       const data = [];
       for (let i = 0; i < this.tbppsm012NonBarTmp.length ; i++) {
         data.push({
-          // idx: `${i}`,
-          // id: this.tbppsm012NonBarTmp[i].id,
-          // plantCode: this.tbppsm012NonBarTmp[i].plantCode,
+          idx: `${i}`,
+          ID: this.tbppsm012NonBarTmp[i].ID,
+          PLANT_CODE: this.tbppsm012NonBarTmp[i].PLANT_CODE,
           SCH_SHOP_CODE: this.tbppsm012NonBarTmp[i].SCH_SHOP_CODE,
           GRADE_NO: this.tbppsm012NonBarTmp[i].GRADE_NO,
           YIELD_VALUE: this.tbppsm012NonBarTmp[i].YIELD_VALUE,
@@ -264,7 +291,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
       }
       this.tbppsm012NonBarList = data;
       this.displayTbppsm012NonBarList = this.tbppsm012NonBarList;
-      this.updateEditCache();
+      this.updEditCache();
       console.log(this.tbppsm012NonBarList);
       myObj.loading = false;
     });
@@ -274,16 +301,22 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.SCH_SHOP_CODE === "") {
-      myObj.message.create("error", "「站別」不可為空");
-      return;
-    } else if (this.GRADE_NO === "") {
-      myObj.message.create("error", "「鋼種」不可為空");
-      return;
-    } else if (this.YIELD_VALUE === undefined && this.YIELD_VALUE === null) {
-      myObj.message.create("error", "「產率設定值」不可為空");
-      return; 
-    }else {
+
+    // if (this.SHOP_CODE === "") {
+    //   myObj.message.create("error", "「站別」不可為空");
+    //   return;
+    // } else if (this.GRADE_NO === "") {
+    //   myObj.message.create("error", "「鋼種」不可為空");
+    //   return;
+    // } 
+    // else if(this.SHOP_CODE === this.SCH_SHOP_CODE && this.GRADE_NO === this.GRADE_NO) {
+    //   myObj.message.create("error", "同站別下，「鋼種」不可重複新增");
+    //   return;
+    // } 
+    // else if (this.YIELD_VALUE === undefined && this.YIELD_VALUE === null) {
+    //   myObj.message.create("error", "「產率設定值」不可為空");
+    //   return; 
+    // } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
@@ -292,7 +325,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
         nzOnCancel: () =>
           console.log("cancel")
       });
-    }
+    // }
   }
 
 
@@ -302,11 +335,11 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   }
   
   // delete
-  deleteRow(id: number): void {
+  deleteRow(ID: number): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id)
+        this.delID(ID)
       },
       nzOnCancel: () =>
         console.log("cancel")
@@ -316,41 +349,50 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   // cancel
   cancelEdit(id: number): void {
-    const index = this.tbppsm013List.findIndex(item => item.ID === id);
+    const index = this.tbppsm012NonBarList.findIndex(item => item.ID === id);
     this.editCache[id] = {
-      data: { ...this.tbppsm013List[index] },
+      data: { ...this.tbppsm012NonBarList[index] },
       edit: false
     };
   }
 
 
   // update Save
-  saveEdit(id: number): void {
+  saveEdit(rowData:any,id: number): void {
     let myObj = this;
-    if (this.editCache[id].data.SCH_SHOP_CODE === undefined) {
-      myObj.message.create("error", "「站別」不可為空");
-      return;
-    } else if (this.editCache[id].data.GRADE_NO === undefined) {
-      myObj.message.create("error", "「鋼種」不可為空");
-      return;
-    } else if (this.editCache[id].data.YIELD_VALUE === undefined) {
-      myObj.message.create("error", "「產率設定值」不可為空");
-    } else {
+    // if (this.editCache[id].data.SCH_SHOP_CODE === undefined) {
+    //   myObj.message.create("error", "「站別」不可為空");
+    //   return;
+    // } else if (this.editCache[id].data.GRADE_NO === undefined) {
+    //   myObj.message.create("error", "「鋼種」不可為空");
+    //   return;
+    // } else if (this.editCache[id].data.YIELD_VALUE === undefined) {
+    //   myObj.message.create("error", "「產率設定值」不可為空");
+    // } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData, id)
         },
         nzOnCancel: () =>
           console.log("cancel")
       });
-    }
+    // }
   }
   
 
   // update
   updateEditCache(): void {
     this.tbppsm013List.forEach(item => {
+      this.editCache[item.ID] = {
+        edit: false,
+        data: { ...item }
+      };
+    });
+  }
+
+  updEditCache(): void {
+    this.tbppsm012NonBarList.forEach(item => {
       this.editCache[item.ID] = {
         edit: false,
         data: { ...item }
@@ -366,8 +408,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        SCH_SHOP_CODE : this.SCH_SHOP_CODE,
-        GRADE_NO : this.GRADE_NO,
+        SCH_SHOP_CODE : this.searchData.selectedShopCode_default,
+        GRADE_NO : this.searchData.selectedGradeNo_default,
         YIELD_VALUE : this.YIELD_VALUE,
         USERNAME : this.USERNAME,
         DATETIME : this.dateTimeFormatter,
@@ -397,25 +439,26 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData, _id) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        id : this.editCache[_id].data.id,
-        PLANT_CODE : this.editCache[_id].data.PLANT_CODE,
-        SCH_SHOP_CODE : this.editCache[_id].data.SCH_SHOP_CODE,
-        GRADE_NO : this.editCache[_id].data.GRADE_NO,
-        YIELD_VALUE : this.editCache[_id].data.YIELD_VALUE,
-        userName : this.USERNAME
+        ID : rowData.ID,
+        PLANT_CODE : rowData.PLANT_CODE,
+        SCH_SHOP_CODE : rowData.SCH_SHOP_CODE,
+        GRADE_NO : rowData.GRADE_NO,
+        YIELD_VALUE : rowData.YIELD_VALUE,
+        USERNAME : this.USERNAME
       })
-      myObj.PPSService.updateI106Save('2', obj).subscribe(res => {
+
+      myObj.PPSService.upd012NonBarData(obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
-          const index = this.tbppsm013List.findIndex(item => item.ID === _id);
-          Object.assign(this.tbppsm013List[index], this.editCache[_id].data);
+          const index = this.tbppsm012NonBarList.findIndex(item => item.idx === _id);
+          Object.assign(this.tbppsm012NonBarList[index], rowData);
           this.editCache[_id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
@@ -433,12 +476,14 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI106Data('2', id).subscribe(res => {
+      console.log(_id);
+      console.log(this.editCache);
+      let id = this.tbppsm012NonBarList[_id].ID;
+      myObj.PPSService.del012NonBarTabData(id).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("刪除成功", ``);
-          this.getTbppsm013List();
+          this.getTbppsm012NoBarList();
         }
       },err => {
         reject('upload fail');
@@ -557,11 +602,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     for(let i=0 ; i < _data.length ; i++) {
       let allData = JSON.stringify(_data[i]);
       console.log(_data[i]);
-      
-      // var findData = _data.some(element => 
-      //   element['SCH_SHOP_CODE'] == this.SCH_SHOP_CODE&&
-      //   element['GRADE_NO'] == this.GRADE_NO
-      //   );
+
 
       if(this.importdata_new.includes(allData)){
         this.errorTXT.push(`第 ` + (i+2) + `列站別+鋼種資料重複，請檢查` + "<BR/>");
@@ -582,8 +623,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
           SCH_SHOP_CODE: _data[i]['站別'] ,
           GRADE_NO: _data[i]['鋼種'],
           YIELD_VALUE: _data[i]['產率設定值'],
-          DATETIME : this.dateTimeFormatter,
           USERNAME : this.USERNAME,
+          DATETIME : this.dateTimeFormatter
         }) 
       }   
           console.log(upload_data);
@@ -649,6 +690,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   //============== 新增資料之彈出視窗 =====================
   // 新增產率設定彈出視窗 
   openYieldDialog() : void {
+    this.getI109ShopCodeList();
+    this.getI109GradeNoList();
     this.isVisibleYieldDialog = true;
   }
    // 關閉產率設定彈出視窗
@@ -665,21 +708,81 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     this.tbppsm012NonBarList[i].YIELD_VALUE = this.oldlist['YIELD_VALUE'];
   }
 
-  editOnClick(e) {
-    e.params.api.setFocusedCell(e.params.node.rowIndex, "dateLimit");
+  editOnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "YIELD_VALUE");
     e.params.api.startEditingCell({
       rowIndex: e.params.node.rowIndex,
-      colKey: "dateLimit"
+      colKey: "YIELD_VALUE"
     });
   }
 
-  updateOnClick(e) {
-    // this.upd_dtlRow(e.index, e.rowData);
-    // this.save012_dtlRow(e.index, e.rowData);
+  updateOnClick2(e) {
+    this.saveEdit(e.rowData,e.rowData.idx);
   }
 
-  calcelOnClick(e) {
-    // this.cancel012_dtlRow(e.index, e.rowData);
+  calcelOnClick3(e) {
+    this.cancelEdit(e.rowData.idx);
   }
 
+  deleteOnClick4(e) {
+    this.deleteRow(e.rowData.idx);
+  }
+
+  // shopCodeList
+  getI109ShopCodeList() {
+    this.LoadingPage = true;
+    let postData = this.searchData;
+    postData['SHOP_CODE'] = this.searchData.selectedShopCode_default;
+    this.PPSService.getI109ShopCodeList(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        this.shopCodeRowData = JSON.parse(JSON.stringify(result));
+
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedShopCode.push({label:result[i], value:result[i]})
+          console.log(result[i]);
+        }
+        console.log(this.selectedShopCode);
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+      this.LoadingPage = false;
+    },err => {
+      this.LoadingPage = false;
+      this.message.error('網絡請求失敗');
+    })
+  }
+
+  getI109GradeNoList() {
+    this.LoadingPage = true;
+    let postData = this.searchData;
+    postData['GRADE_NO'] = this.searchData.selectedGradeNo_default;
+    this.PPSService.getI109GradeNoList(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result.length > 0) {
+        this.gradeNoRowData = JSON.parse(JSON.stringify(result));
+
+        for(let i = 0 ; i<result.length ; i++) {
+          this.selectedGradeNo.push({label:result[i], value:result[i]})
+        }
+        console.log(this.selectedGradeNo);
+      } else {
+        this.message.error('無資料');
+        return;
+      }
+      this.LoadingPage = false;
+    },err => {
+      this.LoadingPage = false;
+      this.message.error('網絡請求失敗');
+    })
+  }
+}
+
+interface sData{
+  "SHOP_CODE": String
+}
+
+interface gData{
+  "GRADE_NO": String
 }
