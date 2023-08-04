@@ -13,6 +13,8 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
+import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
+import { OpenMachineRendererComponent } from "../PPSI210/open-machine-renderer-component";
 registerLocaleData(zh);
 
 
@@ -27,6 +29,9 @@ registerLocaleData(zh);
 export class PPSI220Component implements AfterViewInit {
 	loading = false; //loaging data flag
   isRunFCP = false; // 如為true則不可異動
+  moSortList : any[] = []; // 平衡設定選項選項
+  shopSortLoading = false; // 站別優先順序明細表是否載入中
+  machineSortLoading = false; // 站別機台優先順序明細表是否載入中
   LoadingPage = false;
   isVisibleRun = false;
   isVisibleSorting = false;
@@ -98,6 +103,101 @@ export class PPSI220Component implements AfterViewInit {
   FCPResRepo = [];
 
   nzPagination:any ;
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext : any;
+
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      resizable: true,
+      //wrapText: true,
+      autoHeight: true,
+    }
+  };
+
+   // 站別優先順序明細表ColumnDefs
+   shopSortingColumnDefs: ColDef[] = [
+    { 
+      headerName:'站別',
+      field:'SCH_SHOP_CODE'
+    },
+    { 
+      headerName:'規劃優先順序',
+      field:'SORTING_SEQ',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'集批天數',
+      field:'INTERVAL'
+    },
+    { 
+      headerName:'集批條件',
+      field:'REQUIREMENT'
+    },
+    { 
+      headerName:'COMBINE執行',
+      field:'ISCOMBINE'
+    },
+    { 
+      headerName:'交期範圍(單位:月)',
+      field:'COMBINE_RANGE'
+    },
+    { 
+      headerName:'指定平衡設定',
+      field:'MO_SORT',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        this.getMoSortList();
+        let formatValue = null;
+        this.moSortList.some(item =>{
+          if(item.method === params.value) {
+            formatValue = item.notesChinese;
+            return true;
+          }
+        }); 
+        return formatValue;
+      }
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      cellRenderer: OpenMachineRendererComponent
+    }
+  ];
+
+    // 站別機台優先順序明細表ColumnDefs
+    machineSortingColumnDefs : ColDef[] = [
+      { 
+        headerName:'站別',
+        field:'SCH_SHOP_CODE_D2'
+      },
+      { 
+        headerName:'機台',
+        field:'MACHINE'
+      },
+      { 
+        headerName:'規劃優先順序',
+        field:'SORTING_SEQ_D2',
+        cellClass:'wrap-cell-Text'
+      },
+      { 
+        headerName:'集批天數',
+        field:'INTERVAL_D2'
+      },
+      { 
+        headerName:'集批條件',
+        field:'REQUIREMENT_D2'
+      },
+      { 
+        headerName:'COMBINE執行',
+        field:'ISCOMBINE_D2'
+      },
+      { 
+        headerName:'交期範圍(單位:月)',
+        field:'COMBINE_RANGE_D2'
+      }
+    ];
 
   constructor(
     private router: Router,
@@ -113,6 +213,9 @@ export class PPSI220Component implements AfterViewInit {
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.agGridContext = {
+      componentParent: this,
+    };
   }
 
   ngAfterViewInit() {
@@ -177,12 +280,16 @@ export class PPSI220Component implements AfterViewInit {
 
   // 撈取 sorting 表
   async getShopSortingList(_Mseqno) {
-    this.loading = true;
+    this.getMoSortList();
+    this.shopSortLoading = true;
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(res => {
       console.log("getShopSortingList success");
+      res.forEach(item => {
+        item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
+      })
       this.ShopSortingList = res;
-      myObj.loading = false;
+      myObj.shopSortLoading = false;
     });
   }
 
@@ -202,7 +309,7 @@ export class PPSI220Component implements AfterViewInit {
 
 
   openMachineSorting(_planset, _shopcode): void {
-    this.loading = true;
+    this.machineSortLoading = true;
     let myObj = this;
     this.getPPSService.getShopMachineSortingList('Q', _planset).subscribe(res => {
       console.log("getShopMachineSortingList success");
@@ -221,7 +328,7 @@ export class PPSI220Component implements AfterViewInit {
       } else {
         myObj.message.create("warning", `站別「${_shopcode}」無設定機台優先順序`);
       }
-      myObj.loading = false;
+      myObj.machineSortLoading = false;
     });
   }
 
@@ -1478,6 +1585,63 @@ export class PPSI220Component implements AfterViewInit {
     }
   }
 
+  async getMoSortList(){
+
+    if(!_.isEmpty(this.moSortList)) return;
+
+    this.shopSortLoading = true;
+
+    try{
+      const resObservable$ = this.getPPSService.getMoSort();
+      const res = await firstValueFrom<any>(resObservable$);
+
+      if(res.code !== 1){
+        this.errorMSG(
+          '獲取平衡設定選項資料失敗',
+          `請聯繫系統工程師。錯誤訊息 : ${res.message}`
+        );
+        return;
+      }
+      this.moSortList = res.data;
+    }
+    catch (error) {
+      this.errorMSG(
+        '獲取平衡設定選項資料失敗',
+        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.shopSortLoading = false;
+    }
+  }
+
+  // 首次渲染資料完畢後被調用
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，再做寬度適應的調整
+    this.autoSizeAll();
+  }
+
+  // 獲取ag-grid的Api函數
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  // 文字寬度適應的調整
+  // (目前三個ag-grid共用此方法，有必要時需分開)
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      if(column.getId() !== 'CELLSORTNA' && 
+          column.getId() !== 'SORTING_SEQ' && 
+          column.getId() !== 'SORTING_SEQ_D2'){
+        allColumnIds.push(column.getId());
+      }
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+  
 
 	sucessMSG(_title, _plan): void {
 		this.Modal.success({

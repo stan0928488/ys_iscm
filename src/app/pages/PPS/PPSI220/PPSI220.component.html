@@ -643,9 +643,6 @@
 
 
 
-
-
-
 <nz-modal
   [(nzVisible)]="isVisibleSorting"
   [nzTitle]="shopSortTitle"
@@ -657,46 +654,22 @@
 
   <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
   <ng-template #shopSortContent>
-    <div>
-      <nz-table
-        #rowSelectionTable
-        [nzData]="ShopSortingList"
-        [nzFrontPagination]="nzPagination"
-        [nzShowPagination]="nzPagination"
-        [nzScroll]="{ y: '400px' }"
-        >
-        <thead>
-          <tr>
-            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
-            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
-            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
-            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
-            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
-            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
-            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of rowSelectionTable.data; let i = index">
-            <td>{{data.SCH_SHOP_CODE}}</td>
-            <td>{{data.SORTING_SEQ}}</td>
-            <td>{{data.INTERVAL}}</td>
-            <td>{{data.REQUIREMENT}}</td>
-            <td>{{data.ISCOMBINE}}</td>
-            <td>{{data.COMBINE_RANGE}}</td>
-            <td style="text-align:center; width: 100px;;"><a (click)="openMachineSorting(data.PLANSET_EDITION, data.SCH_SHOP_CODE)">明細</a></td>
-          </tr>
-        </tbody>
-
-      </nz-table>
-    </div>
-
+    <nz-spin style="z-index:9999;" nzTip="站別優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "shopSortLoading">
+      <ag-grid-angular
+          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          class="ag-theme-alpine"
+          [rowData]="ShopSortingList"
+          [columnDefs]="shopSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [context]="agGridContext"
+          [pagination]="true"
+          (firstDataRendered)="onFirstDataRendered($event)"
+          (gridReady)="onGridReady($event)"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin>
   </ng-template>
 </nz-modal>
-
-
-
-
 
 
 <nz-modal
@@ -709,40 +682,19 @@
 >
   <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
   <ng-template #MachineSortContent>
-    <div>
-      <nz-table
-        #MrowSelectionTable
-        [nzData]="MachineSortingList"
-        [nzFrontPagination]="nzPagination"
-        [nzShowPagination]="nzPagination"
-        [nzScroll]="{ y: '350px' }"
-        >
-        <thead>
-          <tr>
-            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
-            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台</th>
-            <th nzWidth="42%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
-            <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
-            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
-            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
-            <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of MrowSelectionTable.data; let i = index">
-            <td>{{data.SCH_SHOP_CODE_D2}}</td>
-            <td>{{data.MACHINE}}</td>
-            <td>{{data.SORTING_SEQ_D2}}</td>
-            <td>{{data.INTERVAL_D2}}</td>
-            <td>{{data.REQUIREMENT_D2}}</td>
-            <td>{{data.ISCOMBINE_D2}}</td>
-            <td>{{data.COMBINE_RANGE_D2}}</td>
-          </tr>
-        </tbody>
-
-      </nz-table>
-    </div>
-
+    <nz-spin style="z-index:9999;" nzTip="站別機台優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "machineSortLoading">
+      <ag-grid-angular
+          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          class="ag-theme-alpine"
+          [rowData]="MachineSortingList"
+          [columnDefs]="machineSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [pagination]="true"
+          (firstDataRendered)="onFirstDataRendered($event)"
+          (gridReady)="onGridReady($event)"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin> 
   </ng-template>
 </nz-modal>
 

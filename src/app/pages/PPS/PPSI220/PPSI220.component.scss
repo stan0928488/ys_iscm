@@ -219,3 +219,24 @@ example-box.cdk-drag-disabled {
 .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+::ng-deep .ag-header-cell-label {
+	justify-content: center;
+}
+
+::ng-deep .ag-cell-value {
+	text-align: center;
+}
+
+::ng-deep .ag-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+::ng-deep .wrap-cell-Text{
+  white-space : pre-wrap;
+  line-height : 1.2;
+  padding-top : 15px;
+  padding-bottom : 15px
+}

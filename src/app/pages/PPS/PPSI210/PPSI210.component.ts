@@ -1594,7 +1594,7 @@ export class PPSI210Component implements AfterViewInit {
 
       if(res.code !== 1){
         this.errorMSG(
-          '獲取已變更的EPST資料失敗',
+          '獲取平衡設定選項資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
         );
         return;
@@ -1603,7 +1603,7 @@ export class PPSI210Component implements AfterViewInit {
     }
     catch (error) {
       this.errorMSG(
-        '獲取已變更的EPST資料失敗',
+        '獲取平衡設定選項資料失敗',
         `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
       );
     } finally {
@@ -1612,21 +1612,21 @@ export class PPSI210Component implements AfterViewInit {
   }
   
   // 首次渲染資料完畢後被調用
-  // (目前三個ag-grid共用此方法，有必要時需分開)
+  // (目前兩個ag-grid共用此方法，有必要時需分開)
   onFirstDataRendered(event : FirstDataRenderedEvent<any>){
     // 在首次資料渲染完畢後，再做寬度適應的調整
     this.autoSizeAll();
   }
 
   // 獲取ag-grid的Api函數
-  // (目前三個ag-grid共用此方法，有必要時需分開)
+  // (目前兩個ag-grid共用此方法，有必要時需分開)
   onGridReady(params: GridReadyEvent<any>) {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
   }
 
   // 文字寬度適應的調整
-  // (目前三個ag-grid共用此方法，有必要時需分開)
+  // (目前兩個ag-grid共用此方法，有必要時需分開)
   autoSizeAll() {
     const allColumnIds: string[] = [];
     this.gridColumnApi.getColumns()!.forEach((column) => {
