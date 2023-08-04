@@ -10,7 +10,9 @@ import {NzModalService} from "ng-zorro-antd/modal"
 import { Router } from "@angular/router";
 import * as moment from 'moment';
 import * as _ from "lodash";
+import * as XLSX from 'xlsx';
 import zh from '@angular/common/locales/zh';
+import { firstValueFrom } from "rxjs";
 registerLocaleData(zh);
 
 
@@ -1021,14 +1023,64 @@ export class PPSI220Component implements AfterViewInit {
     })
   }
 
+  async exportExcel(fcpEdition : string){
 
+    this.LoadingPage = true;
+
+    try{
+      const editionExistObservable$ = this.getPPSService.getFCP_EDITIONexist(fcpEdition);
+      const editionExistRes = await firstValueFrom<any>(editionExistObservable$);
+      if(editionExistRes[0].MSG === "Y") {
+
+        // 根據版次獲取該表的資料
+        const fcpResObservable$ = this.getPPSService.getFCPResRepoDynamic(fcpEdition);
+        const fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        if(fcpRes.length <= 0){
+          this.message.create("error", `該FCP版本：${fcpEdition}，無資料，不可轉出excel`);
+          this.LoadingPage = false;
+          return;
+        }
+
+        // 獲取該表中英文屬性名稱(key-value)
+        const excelTitleObservable$ =  this.getPPSService.getTitleName();
+        const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
+
+        // 擷取出英文的屬性名稱放到firstRow
+        const firstRow = _.keys(excelTitleRes);
+
+        // 哪個英文title名稱要轉成哪個中文的title
+        const firstRowDisplay = excelTitleRes;
+
+        const exportData = [firstRowDisplay, ...fcpRes];
+        const workSheet = XLSX.utils.json_to_sheet(exportData, {
+          header: firstRow,
+          skipHeader: true,
+        });
+        const workBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
+        XLSX.writeFileXLSX(
+          workBook,
+          `FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+        );
+      }
+      else {
+          this.message.create("error", `FCP版本：${fcpEdition}，已逾時，不可轉出excel`);
+      }
+    }catch (error) {
+        this.errorMSG('獲取檔案發生異常', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
+    }
+    finally{
+      this.LoadingPage = false;
+    }
+
+  }
 
   
 
 
 
   //convert to Excel and Download
-  exportExcel(data) {
+  exportExcel_暫時沒有使用到(data) {
     var titleName = [];
     this.LoadingPage = true;
     this.isVisibleRun = false;
