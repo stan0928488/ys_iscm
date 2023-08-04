@@ -267,3 +267,7 @@ example-box.cdk-drag-disabled {
   padding-top : 15px;
   padding-bottom : 15px
 }
+
+::ng-deep .wrap-header-Text{
+  white-space : pre-wrap;
+}

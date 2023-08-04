@@ -83,36 +83,54 @@ export class PPSI230Component implements AfterViewInit {
     }
   };
 
-   // 站別優先順序明細表ColumnDefs
-   shopSortingColumnDefs: ColDef[] = [
+  // 站別優先順序明細表ColumnDefs
+  shopSortingColumnDefs: ColDef[] = [
     { 
       headerName:'站別',
-      field:'SCH_SHOP_CODE'
+      field:'SCH_SHOP_CODE',
+      width:80,
+      headerClass:'wrap-header-Text',
     },
     { 
       headerName:'規劃優先順序',
       field:'SORTING_SEQ',
+      width:180,
       cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'集批天數',
-      field:'INTERVAL'
+      field:'INTERVAL',
+      width:105,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'集批條件',
-      field:'REQUIREMENT'
+      field:'REQUIREMENT',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'COMBINE執行',
-      field:'ISCOMBINE'
+      field:'ISCOMBINE',
+      width:120,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'交期範圍(單位:月)',
-      field:'COMBINE_RANGE'
+      field:'COMBINE_RANGE',
+      width:120,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'指定平衡設定',
       field:'MO_SORT',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text',
       valueFormatter : (params: ValueFormatterParams) : string => {
         this.getMoSortList();
         let formatValue = null;
@@ -128,42 +146,63 @@ export class PPSI230Component implements AfterViewInit {
     { 
       headerName:'Action',
       field:'action',
+      width:95,
+      headerClass:'wrap-header-Text',
       cellRenderer: OpenMachineRendererComponent
     }
   ];
 
-    // 站別機台優先順序明細表ColumnDefs
-    machineSortingColumnDefs : ColDef[] = [
-      { 
-        headerName:'站別',
-        field:'SCH_SHOP_CODE_D2'
-      },
-      { 
-        headerName:'機台',
-        field:'MACHINE'
-      },
-      { 
-        headerName:'規劃優先順序',
-        field:'SORTING_SEQ_D2',
-        cellClass:'wrap-cell-Text'
-      },
-      { 
-        headerName:'集批天數',
-        field:'INTERVAL_D2'
-      },
-      { 
-        headerName:'集批條件',
-        field:'REQUIREMENT_D2'
-      },
-      { 
-        headerName:'COMBINE執行',
-        field:'ISCOMBINE_D2'
-      },
-      { 
-        headerName:'交期範圍(單位:月)',
-        field:'COMBINE_RANGE_D2'
-      }
-    ];
+  // 站別機台優先順序明細表ColumnDefs
+  machineSortingColumnDefs : ColDef[] = [
+    { 
+      headerName:'站別',
+      field:'SCH_SHOP_CODE_D2',
+      width:80,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'機台',
+      field:'MACHINE',
+      width:80,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'規劃優先順序',
+      field:'SORTING_SEQ_D2',
+      width:200,
+      cellClass:'wrap-cell-Text',
+    },
+    { 
+      headerName:'集批天數',
+      field:'INTERVAL_D2',
+      width:105,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'集批條件',
+      field:'REQUIREMENT_D2',
+      width:150,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'COMBINE執行',
+      field:'ISCOMBINE_D2',
+      width:120,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    },
+    { 
+      headerName:'交期範圍(單位:月)',
+      field:'COMBINE_RANGE_D2',
+      width:120,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
+    }
+  ];
   
   constructor(
     private route: ActivatedRoute,
@@ -355,34 +394,6 @@ export class PPSI230Component implements AfterViewInit {
     } finally {
       this.shopSortLoading = false;
     }
-  }
-
-// 首次渲染資料完畢後被調用
-  // (目前兩個ag-grid共用此方法，有必要時需分開)
-  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
-    // 在首次資料渲染完畢後，再做寬度適應的調整
-    this.autoSizeAll();
-  }
-
-  // 獲取ag-grid的Api函數
-  // (目前兩個ag-grid共用此方法，有必要時需分開)
-  onGridReady(params: GridReadyEvent<any>) {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-  }
-
-  // 文字寬度適應的調整
-  // (目前兩個ag-grid共用此方法，有必要時需分開)
-  autoSizeAll() {
-    const allColumnIds: string[] = [];
-    this.gridColumnApi.getColumns()!.forEach((column) => {
-      if(column.getId() !== 'CELLSORTNA' && 
-          column.getId() !== 'SORTING_SEQ' && 
-          column.getId() !== 'SORTING_SEQ_D2'){
-        allColumnIds.push(column.getId());
-      }
-    });
-    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
   }
 
   sucessMSG(_title, _plan): void {

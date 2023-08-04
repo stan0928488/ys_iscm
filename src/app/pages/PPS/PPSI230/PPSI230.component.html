@@ -123,8 +123,6 @@
           [gridOptions]="gridOptions"
           [context]="agGridContext"
           [pagination]="true"
-          (firstDataRendered)="onFirstDataRendered($event)"
-          (gridReady)="onGridReady($event)"
           [paginationPageSize]="20">
       </ag-grid-angular>
     </nz-spin>
@@ -151,8 +149,6 @@
           [columnDefs]="machineSortingColumnDefs"
           [gridOptions]="gridOptions"
           [pagination]="true"
-          (firstDataRendered)="onFirstDataRendered($event)"
-          (gridReady)="onGridReady($event)"
           [paginationPageSize]="20">
       </ag-grid-angular>
     </nz-spin> 
