@@ -38,8 +38,12 @@ export class MSHP001Component implements OnInit {
   public gridOptionsRowDataModal: GridOptions;
   // excel 模式表格 
   public excelModelGridOptions: GridOptions;
+  //批量 excel 模式表格 
+  public excelBatchModelGridOptions: GridOptions;
   // excel 模式表格數據
   rowExcelModelData = [] ;
+   //批量 excel 模式表格數據
+   rowExcelBatchModelData = [] ;
   // 表格頭
   columnDefs: ColDef[] = [];
   //外層表格頭部
@@ -48,7 +52,8 @@ export class MSHP001Component implements OnInit {
   rowData = [];
 
   rowData1 = [];
-
+ // 批量表格頭
+ excelBatchColumnDefs: ColDef[] = [];
 
 //識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
 category = '' ;
@@ -430,12 +435,16 @@ this.handleSelectCarModal() ;
 
     //excelModelModal 顯示 
     excelModelModalIsVisible = false ;
+    excelBatchModelModalIsVisible = false ;
+
     //確認按鈕 loading 
     handlecomitExcelModelConfirmLoading = false ;
     excelModelModal = {
       tbHeader:[],
       tbData:[]
     }
+    // 批量提交 loading 
+    handleComitExcelBatchModelConfirmLoading = false ;
     //exportFileName
     exportFileName = "" ;
     uploadFile:File;
@@ -602,6 +611,20 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataOnExcelModal(event);},
     }
+ // 批量excel模式表格
+ this.excelBatchModelGridOptions = {
+  rowDragMultiRow:false,
+  rowDragManaged: false,
+  getRowStyle(params) {
+    if (params.data["ACT_PST_MACHINE_ADD"] !== params.data["PST_MACHINE_ADD"]) {
+      return { background: 'powderblue' };
+    } else {
+      return { background: 'white' };
+    }
+  },
+ // onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndRowDataOnExcelModal(event);},
+}
+
      
    }
 
@@ -739,18 +762,34 @@ this.handleSelectCarModal() ;
       if(result.code === 200) {
         let exportHeader = result.data.tableHeader ;
         let exportData = result.data.TableContent ;
+        
         let rowDataTemp = [] ;
         let header = [] ;
+        let excelBatchColumnDefsTemp = [] ;
         exportData.forEach((item1,index1,array1)=>{
           let rowDataObjectTemp = {} ;
+          let excelBatchColumnDefsTempObj = {} ;
           exportHeader.forEach((item2,index2,array2)=>{
             if(index1 === 0 ) {
-              header.push(item2.columLabel)
+              header.push(item2.columLabel)   
+              let widthTemp = 100 ;
+              switch(item2.columValue){
+                case "sort": widthTemp = 50 ;break;
+                case "ID": widthTemp = 80 ;break;
+                case "PLAN_START_TIME": widthTemp = 160 ;break;
+                case "PLAN_END_TIME": widthTemp = 160 ;break;
+
+              }
+              excelBatchColumnDefsTempObj = {headerName:item2.columLabel,field:item2.columValue,rowDrag: false,resizable:true,width:widthTemp }
+              excelBatchColumnDefsTemp.push(excelBatchColumnDefsTempObj);
             }
             rowDataObjectTemp[item2.columValue] = item1[item2.columValue] ;
           })
           rowDataTemp.push(rowDataObjectTemp) ;
+         
         })
+        this.excelBatchColumnDefs = excelBatchColumnDefsTemp ;
+       // this.rowExcelBatchModelData = rowDataTemp ;
         this.exportDataByShopCode(rowDataTemp,header) ;
 
       }else{
@@ -762,6 +801,7 @@ this.handleSelectCarModal() ;
 
   exportDataByShopCode(exportData,exportHeader){
     let tableName = this.export.title + "_" + this.selectShopCode  ;
+    this.exportFileName = tableName ;
     if(this.export.data.length < 1) {
       this.nzMessageService.error("沒有可以導出的數據，請查詢確認！")
       return 
@@ -1815,6 +1855,94 @@ this.handleSelectCarModal() ;
       this.rowExcelModelData = [] ;
       this.excelModelModalIsVisible = !this.excelModelModalIsVisible ;
     }
+    // Batch批量使用 
+    handleExcelBatchModelModal(){
+      this.rowExcelBatchModelData = [] ;
+      this.excelBatchColumnDefs = [] ;
+      this.excelBatchModelModalIsVisible = !this.excelBatchModelModalIsVisible ;
+    }
+
+    comitExcelBatchModelModal(){
+      if(this.selectShopCode !== '453') {
+        this.nzMessageService.error("指定機台才可以使用當前功能")
+        return ;
+      }
+      if(this.rowExcelBatchModelData.length < 1) {
+        this.nzMessageService.error("請先匯入排程數據")
+        return ;
+      }
+      
+      const comitData = [] ;
+      this.rowExcelBatchModelData.forEach((item,index,array)=>{
+        if(item.ID === "") {
+          this.nzMessageService.error("ID不能為空")
+          return ;
+        }
+        if(item.ACT_PST_MACHINE_ADD === "") {
+          this.nzMessageService.error("實際機台不能為空")
+          return ;
+        }
+        if(item.ACT_PST_MACHINE_ADD !== item.PST_MACHINE_ADD  ) {
+          if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD ) {
+            this.nzMessageService.error("替換機台時，提換機台必須在允許替換的機台中")
+            return ;
+          }
+         
+        }
+
+       let BEST_MACHINE_ADD_Temp = ""
+       if(item.BEST_MACHINE_ADD === undefined || item.BEST_MACHINE_ADD === null) {
+        BEST_MACHINE_ADD_Temp = null
+       } else {
+        BEST_MACHINE_ADD_Temp = item.BEST_MACHINE_ADD
+       }
+
+       let MACHINE1_ADD_Temp = ""
+       if(item.MACHINE1_ADD === undefined || item.MACHINE1_ADD === null) {
+        MACHINE1_ADD_Temp = null
+       } else {
+        MACHINE1_ADD_Temp = item.MACHINE1_ADD
+       }
+
+       let MACHINE2_ADD_Temp = ""
+       if(item.MACHINE2_ADD === undefined || item.MACHINE2_ADD === null) {
+        MACHINE2_ADD_Temp = null
+       } else {
+        MACHINE2_ADD_Temp = item.MACHINE2_ADD
+       }
+       let MACHINE3_ADD_Temp = ""
+       if(item.MACHINE3_ADD === undefined || item.MACHINE3_ADD === null) {
+        MACHINE3_ADD_Temp = null
+       } else {
+        MACHINE3_ADD_Temp = item.MACHINE3_ADD
+       }
+       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD} ;
+       comitData.push(obj) ;
+      })
+      //console.log(JSON.stringify(comitData)) ;
+      this.handleComitExcelBatchModelConfirmLoading  = true ;
+      this.mshService.saveChangeMachineBatch(comitData).subscribe(res=>{
+        this.handleComitExcelBatchModelConfirmLoading  = false ;
+        let result:any = res ;
+        if(result.code == 200) {
+          this.nzMessageService.success(result.message)
+          this.excelBatchModelModalIsVisible = false
+          this.uploadFile = null
+          this.getTableData()
+        } else{
+          this.nzMessageService.error(result.message)
+        }
+      })
+
+
+
+    }
+    // 批量導出排程模版
+    exportBatchModalBtn(){
+      this.getExportDataByShopCode();
+    }
+
+
     //確認使用當前排程
     comitExcelModelModal(){
       if(this.rowExcelModelData.length < 1) {
@@ -1870,8 +1998,8 @@ this.handleSelectCarModal() ;
   
     }
 
-    handleUploadFile(){
-      console.log(this.uploadFile)
+    handleUploadFile(flag){
+      console.log("上傳文件： "+this.uploadFile)
       if(this.uploadFile === null || this.uploadFile === undefined) {
         this.nzMessageService.error("請先上傳檔案")
         return
@@ -1883,8 +2011,19 @@ this.handleSelectCarModal() ;
         this.nzMessageService.error('檔案格式錯誤,僅限定上傳 Excel 格式。');
         this.clearFile();
         return;
-      } else {
+      } else if(!this.uploadFile.name.includes(this.exportFileName)) {
+        this.nzMessageService.error('請使用同一份文件檔案。');
+        this.clearFile();
+        return;
+      }
+      else {
         console.log("上傳檔案格式沒有錯誤");
+        if(flag === "2") {
+          if(this.excelBatchColumnDefs.length < 1){
+            this.nzMessageService.error('請先下載模板！');
+            return ;
+          }
+        }
         let fileReader = new FileReader();
         fileReader.onload = (e) => {
           this.arrayBuffer = fileReader.result;
@@ -1896,31 +2035,39 @@ this.handleSelectCarModal() ;
           var first_sheet_name = workbook.SheetNames[0];
           var worksheet:any = workbook.Sheets[first_sheet_name];
           this.upLoadExcelData = XLSX.utils.sheet_to_json(worksheet, {raw:true});
-    
-          
-            console.log("importExcel")
-            console.log(this.upLoadExcelData)
-            this.importExcel(this.upLoadExcelData);
+          this.importExcel(this.upLoadExcelData,flag);
           
         }
         fileReader.readAsArrayBuffer(this.uploadFile);
       }
     }
 
-    importExcel(_data) {
-      console.log("EXCEL 資料上傳檢核開始");
+    importExcel(_data,flag) {
+      console.log("EXCEL 資料上傳檢核開始:" + flag);
       var upload_data = [];
       for(let i=0 ; i < _data.length ; i++) {
         console.log("數據： " + JSON.stringify(_data[i]));
         let dataTemp = _data[i];
         const myObject = {};
-        this.columnDefs.forEach((item2,index2,array2)=>{
-          myObject[item2.field] = dataTemp[item2.headerName] 
-        })
+        if(flag === '1') {
+          this.columnDefs.forEach((item2,index2,array2)=>{
+            myObject[item2.field] = dataTemp[item2.headerName] 
+          })
+        } else if(flag === '2') {
+          this.excelBatchColumnDefs.forEach((item2,index2,array2)=>{
+            myObject[item2.field] = dataTemp[item2.headerName] 
+          })
+        }
         upload_data.push(myObject);
       }
-      this.rowExcelModelData = upload_data ;
-      this.excelModelGridOptions.api.setRowData(this.rowExcelModelData) ;
+      if(flag === '1') {
+        this.rowExcelModelData = upload_data ;
+        this.excelModelGridOptions.api.setRowData(this.rowExcelModelData) ;
+      } else if(flag === '2') {
+        this.rowExcelBatchModelData = upload_data ;
+        this.excelBatchModelGridOptions.api.setRowData(this.rowExcelModelData) ;
+      }
+   
 
     }
 
