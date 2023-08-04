@@ -25,7 +25,9 @@ interface ItemData {
   USER_UPDATE: string;
 }
 
-interface data {
+interface ItemData {
+  // ID: number;
+  // PLAN_CODE: string;
   SCH_SHOP_CODE: string;
   EQUIP_GROUP: string;
   YIELD_TYPE: string;
@@ -43,6 +45,7 @@ export class PPSI109Component implements AfterViewInit {
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
+  ID;
   USERNAME;
   PLANT_CODE;
   SCH_SHOP_CODE;
@@ -136,37 +139,37 @@ export class PPSI109Component implements AfterViewInit {
     {
       headerName: '站別',
       field: "SCH_SHOP_CODE",
-      width: 80,
+      width: 150,
     },
     {
       headerName: '機群',
       field: "EQUIP_GROUP",
-      width: 80,
+      width: 150,
     },
     {
-      headerName: '設定類型',
+      headerName: '產率設定類型',
       field: "YIELD_TYPE",
-      width: 80,
+      width: 150,
     },
     {
       headerName: '設定值',
       field: "YIELD_VALUE",
-      width: 80,
+      width: 150,
     },
     {
       headerName: 'Action',
-      width: 170,
+      width: 200,
       editable: false,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
-          onclick: this.editOnClick.bind(this)
+          onClick: this.editOnClick1.bind(this)
         },
         {
-          onClick: this.updateOnClick.bind(this)
+          onClick: this.updateOnClick2.bind(this)
         },
         {
-          onClick: this.calcelOnClick.bind(this)
+          onClick: this.calcelOnClick3.bind(this)
         },
       ]
     }
@@ -186,7 +189,7 @@ export class PPSI109Component implements AfterViewInit {
 
   tbppsm012List_tmp;
   tbppsm012List: ItemData[] = [];
-  displayTbppsm012List : data[] = [];
+  displayTbppsm012List : ItemData[] = [];
   editCache14: { [key: string]: { edit: boolean; data: ItemData } } = {};
   showYieldValue = false;
   editColse14 = false;
@@ -206,9 +209,8 @@ export class PPSI109Component implements AfterViewInit {
       const data = [];
       for (let i = 0; i < this.tbppsm012List_tmp.length ; i++) {
         data.push({
-          // id: `${i}`,
-          // ID: this.tbppsm012List_tmp[i].ID,
-          // PLANT_CODE: this.tbppsm012List_tmp[i].PLANT_CODE,
+          ID: this.tbppsm012List_tmp[i].ID,
+          PLANT_CODE: this.tbppsm012List_tmp[i].PLANT_CODE,
           SCH_SHOP_CODE: this.tbppsm012List_tmp[i].SCH_SHOP_CODE,
           EQUIP_GROUP: this.tbppsm012List_tmp[i].EQUIP_GROUP,
           YIELD_TYPE: this.tbppsm012List_tmp[i].YIELD_TYPE,
@@ -244,17 +246,17 @@ export class PPSI109Component implements AfterViewInit {
   // update Save
   saveEdit(rowData:any): void {
     let myObj = this;
-    // if (rowData.schShopCode === undefined) {
+    // if (rowData.SCH_SHOP_CODE === undefined) {
     //   myObj.message.create("error", "「站別」不可為空");
     //   return;
-    // } else if ( rowData.equipGroup === undefined) {
+    // } else if ( rowData.EQUIP_GROUP === undefined) {
     //   myObj.message.create("error", "「機群」不可為空");
     //   return;
-    // } else {
+    // } else { 
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(rowData)
+          this.upd012BarData(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -276,28 +278,27 @@ export class PPSI109Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  upd012BarData(rowData) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache14[_id].data.ID,
-        PLANT_CODE : this.editCache14[_id].data.PLANT_CODE,
-        SCH_SHOP_CODE : this.editCache14[_id].data.SCH_SHOP_CODE,
-        EQUIP_GROUP : this.editCache14[_id].data.EQUIP_GROUP,
-        YIELD_TYPE : this.editCache14[_id].data.YIELD_TYPE,
-        YIELD_VALUE : this.editCache14[_id].data.YIELD_VALUE,
+        ID : rowData.ID,
+        PLANT_CODE : rowData.PLANT_CODE,
+        SCH_SHOP_CODE : rowData.SCH_SHOP_CODE,
+        EQUIP_GROUP : rowData.EQUIP_GROUP,
+        YIELD_TYPE : rowData.YIELD_TYPE,
+        YIELD_VALUE : rowData.YIELD_VALUE,
         USERNAME : this.USERNAME
       })
       myObj.PPSService.upd012BarData(obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.sucessMSG("修改成功", ``);
 
-          const index = this.tbppsm012List.findIndex(item => item.idx === _id);
-          Object.assign(this.tbppsm012List[index], this.editCache14[_id].data);
-          this.editCache14[_id].edit = false;
-          this.editColse14 = false;
+          const index = this.tbppsm012List.findIndex(item => item.ID === rowData);
+          Object.assign(this.tbppsm012List[index], rowData);
+          this.editCache14[rowData].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -379,11 +380,11 @@ export class PPSI109Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
+        USERNAME : this.USERNAME,
         SCH_SHOP_CODE : this.SCH_SHOP_CODE,
         EQUIP_GROUP : this.EQUIP_GROUP,
         YIELD_TYPE : this.YIELD_TYPE,
         YIELD_VALUE : this.YIELD_VALUE,
-        USERNAME : this.USERNAME,
         DATETIME : this.dateTimeFormatter,
       })
 
@@ -391,11 +392,11 @@ export class PPSI109Component implements AfterViewInit {
 
         console.log(res)
         if(res[0].MSG === "Y") {
+          this.USERNAME = undefined;
           this.SCH_SHOP_CODE = undefined;
           this.EQUIP_GROUP = undefined;
           this.YIELD_TYPE = undefined;
           this.YIELD_VALUE = undefined;
-          this.USERNAME = undefined;
           this.datetime = undefined;
           this.gettbppsm012List();
           this.sucessMSG("新增成功", ``);
@@ -524,7 +525,7 @@ export class PPSI109Component implements AfterViewInit {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
-    } else if(worksheet.A1.v !== "站別" || worksheet.B1.v !== "機群" || worksheet.C1.v !== "設定類型" || worksheet.D1.v !== "設定值") {
+    } else if(worksheet.A1.v !== "站別" || worksheet.B1.v !== "機群" || worksheet.C1.v !== "產率設定類型" || worksheet.D1.v !== "產率設定值") {
       this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
@@ -540,11 +541,6 @@ export class PPSI109Component implements AfterViewInit {
     for(let i=0; i < _data.length; i++) {
       let allData = JSON.stringify(_data[i]);
       console.log(_data[i]);
-
-      // var findData = _data.some(element => 
-      //   element['SCH_SHOP_CODE'] == this.SCH_SHOP_CODE&&
-      //   element['EQUIP_GROUP'] == this.EQUIP_GROUP
-      //   );
 
       if(this.importdata_repeat.includes(allData)){
         this.errorTXT.push(`第 ` + (i+2) + `列站別+機群資料重複，請檢查` + "<BR/>");
@@ -563,12 +559,12 @@ export class PPSI109Component implements AfterViewInit {
           _data[i]['設定值'] = '';
       }  
         upload_data.push({
+          USERNAME : this.USERNAME,
           SCH_SHOP_CODE: _data[i]['站別'] ,
           EQUIP_GROUP: _data[i]['機群'],
           YIELD_TYPE: _data[i]['設定類型'],
           YIELD_VALUE: _data[i]['設定值'],
           DATETIME : this.dateTimeFormatter,
-          USERNAME : this.USERNAME,
         })
       }
 
@@ -609,31 +605,21 @@ export class PPSI109Component implements AfterViewInit {
       this.gettbppsm012List();
     }
 
-  convertToExcel() {
-    console.log("convertToExcel");
-    let ID_List = [];
-    let arr = [];
-    console.log(JSON.stringify(this.displayTbppsm012List[0]));
-    let fileName = `產率設定 - 直棒`;
-    
-    this.excelService.exportAsExcelFile(this.displayTbppsm012List, fileName, this.titleArray);
-  }
-
   // 修改直棒產率設定存檔
   save012_dtlRow(i, ItemData) {
     console.log('-------save_dtlRow------');
     this.newlist = ItemData;
 
-    // let ID = this.newlist.ID;
-    // let PLANT_CODE = this.newlist.PLANT_CODE;
+    let ID = this.newlist.ID;
+    let PLANT_CODE = this.newlist.PLANT_CODE;
     let SCH_SHOP_CODE = this.newlist.SCH_SHOP_CODE;
     let EQUIP_GROUP = this.newlist.EQUIP_GROUP;
     let YIELD_TYPE = this.newlist.YIELD_TYPE;
     let YIELD_VALUE = this.newlist.YIELD_VALUE;
 
     if (
-      // ID === '' ||
-      // PLANT_CODE === '' ||
+      ID === '' ||
+      PLANT_CODE === '' ||
       SCH_SHOP_CODE === '' ||
       EQUIP_GROUP === '' ||
       YIELD_TYPE === '' ||
@@ -705,20 +691,53 @@ export class PPSI109Component implements AfterViewInit {
     };
   }
 
-  editOnClick(e) {
+  editOnClick1(e) {
+    console.log("Clicked" + e);
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "YIELD_VALUE");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "YIELD_VALUE"
+    });
+  }
+
+  updateOnClick2(e) {
     console.log(e);
-    // e.params.api.setFocusedCell(e.params.index, "YIELD_VALUE");
-    // e.params.api.startEditingCell({
-    //   rowIndex: e.params.index,
-    //   colKey: "YIELD_VALUE"
-    // });
+    console.log("rowData = " , e.params.node.data);
+    this.upd012BarData(e.params.node.data)
   }
 
-  updateOnClick(e) {
-    this.saveEdit(e.rowData)
+  calcelOnClick3(e) {
+    this.cancel012_dtlRow(e.rowData.node.data);
   }
 
-  calcelOnClick(e) {
-    this.cancel012_dtlRow(e.rowData);
+  excelExport() {
+    let exportData = [];
+    this.PPSService.gettbppsm012List(this.pageIndex, this.pageSize).subscribe(res => {
+      
+      let result: any = res;
+
+
+      for (var i = 0; i <= result.length; i++) {
+        var element = result[i];
+        console.log(element);
+        if (element) {
+          var obj =
+          {
+            "站別": (element['SCH_SHOP_CODE'] ? element['SCH_SHOP_CODE'] : null),
+            "機群": (element['EQUIP_GROUP'] ? element['EQUIP_GROUP'] : null),
+            "產率設定類型": (element['YIELD_TYPE'] ? element['YIELD_TYPE'] : null),
+            "產率設定值": (element['YIELD_VALUE'] ? element['YIELD_VALUE'] : null)
+          }
+          exportData.push(obj);
+        }
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, '產率設定 - 直棒')
+      XLSX.writeFile(wb, ExcelService.toExportFileName("產率設定 - 直棒"));
+
+    });
+
   }
 }
