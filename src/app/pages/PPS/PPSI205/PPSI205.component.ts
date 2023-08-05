@@ -24,8 +24,8 @@ import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
-import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './SummaryDatePickerCellEditor.Component';
+import { AutoCampaignUpdateSaveCellRenderer } from './AutoCampaign-UpdateSave-Cell-Renderer.component';
 registerLocaleData(zh);
 
 interface data {}
@@ -38,8 +38,6 @@ interface data {}
 })
 export class PPSI205Component implements AfterViewInit {
   public editType: 'fullRow' = 'fullRow';
-
-  frameworkComponents: any;
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
@@ -266,7 +264,7 @@ export class PPSI205Component implements AfterViewInit {
       headerName: 'Action',
       editable: false,
       width: 170,
-      cellRenderer: 'buttonRenderer',
+      cellRenderer: AutoCampaignUpdateSaveCellRenderer,
       cellRendererParams: [
         {
           onclick: this.editOnClick.bind(this),
@@ -294,10 +292,6 @@ export class PPSI205Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
-    this.frameworkComponents = {
-      buttonRenderer: BtnCellRendererUpdate,
-    };
-
     this.myContext = {
       componentParent: this,
     };

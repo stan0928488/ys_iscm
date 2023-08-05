@@ -1215,7 +1215,7 @@ export class PPSService {
     let queryUrl =
       this.APIURL + `/FCP/I210/getShopSortingList/${_type}/${_value}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //Get getShopMachineSortingList (I210-I220-I230 共用)
   getShopMachineSortingList(_type, _value) {
@@ -1232,10 +1232,19 @@ export class PPSService {
     const httpParams = new HttpParams().set('planSetEdition', planSetEdition);
 
     console.log('api service deletePlanSetData');
-    let queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
+    const queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
     console.log(`刪除策略API --> ${queryUrl}`);
     console.log(`刪除策略API參數 --> ${planSetEdition}`);
     return this.http.delete(queryUrl, { params: httpParams });
+  }
+
+  // 獲取MO站別搬移順序選項
+  getMoSort(){
+    console.log('api service 獲取MO站別搬移順序選項');
+    const queryUrl = this.APIURL + `/FCP/I210/getMoSort`;
+    console.log(`獲取MO站別搬移順序選項API --> ${queryUrl}`);
+    console.log(`刪除策略API參數 --> 無`);
+    return this.http.get(queryUrl);
   }
 
   //Get getPlanSetInitstData 取得規劃策略基礎表
@@ -1368,10 +1377,19 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-  // getFCPResRepo 取得表內容
-  getFCPResRepo(_data) {
+
+   // getFCPResRepo 取得表內容
+   getFCPResRepo(_data) {
     console.log('api service getFCPResRepo');
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
+  getFCPResRepoDynamic(_data) {
+    console.log('api service getFCPResRepoDynamic');
+    let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepoDynamic/${_data}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1908,7 +1926,7 @@ export class PPSService {
 
   getR310Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R310/getPPSR310List`;
+    let queryUrl = this.APIURL + `/FCP/R310/getPPSR310Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2037,16 +2055,38 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  upd012BarData(obj) {
-    const body = JSON.stringify(obj);
+  upd012BarData(_data) {
+    const body = JSON.stringify(_data);
     console.log(body);
     let queryUrl = this.APIURL + '/FCP/I101/upd012BarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  del012TabData(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I101/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+  upd012NonBarData(obj) {
+    const body = JSON.stringify(obj);
+    console.log(body);
+    let queryUrl = this.APIURL + '/FCP/I101/NonBar/upd012NonBarData';
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  del012NonBarTabData(_ID) {
+    const body = JSON.stringify(_ID);
+    console.log(body);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/del012NonBarTabData/${_ID}`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+    
+  }
+
+  getI109ShopCodeList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109ShopCodeList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getI109GradeNoList(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109GradeNoList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
 }

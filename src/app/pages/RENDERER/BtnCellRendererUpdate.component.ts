@@ -26,11 +26,11 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
   }
 
   editOnClick($event) {
-
     var actionParam = this.params[0];
 
     this.isNew = true;
     if (actionParam.onClick instanceof Function) {
+      console.log("actionParam: ", actionParam);
       const params = {
         event: $event,
         rowData: this.params.node.data,
@@ -50,7 +50,8 @@ export class BtnCellRendererUpdate implements ICellRendererAngularComp {
     if (actionParam.onClick instanceof Function) {
       const params = {
         event: $event,
-        rowData: this.params.node.data
+        rowData: this.params.node.data,
+        params: this.params
       }
       actionParam.onClick(params);
 
