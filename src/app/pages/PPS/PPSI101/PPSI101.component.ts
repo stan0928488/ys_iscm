@@ -126,6 +126,11 @@ export class PPSI101Component implements AfterViewInit {
 
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
+    document.getElementById('li101').style.backgroundColor = '#E4E3E3';
+    document.getElementById('a101').style.cssText =
+      'color: blue; font-weight:bold;';
+    document.getElementById('a101').innerHTML = '鋼種分類(PPSI101)';
+    document.getElementById('a101').style.fontSize = '17px';
     this.getPPSINP01List(this.pageIndex, this.pageSize);
   }
 
@@ -134,6 +139,11 @@ export class PPSI101Component implements AfterViewInit {
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP01List(pageIndex, pageSize).subscribe((res) => {
+      document.getElementById('li101').style.backgroundColor = '#E4E3E3';
+      document.getElementById('a101').style.cssText =
+        'color: blue; font-weight:bold;';
+      document.getElementById('a101').innerHTML = '鋼種分類(PPSI101)';
+      document.getElementById('a101').style.fontSize = '17px';
       console.log('getFCPTB26List success');
       this.PPSINP01List_tmp = res;
       console.log(

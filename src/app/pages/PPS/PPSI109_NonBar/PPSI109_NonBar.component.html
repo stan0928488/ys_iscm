@@ -1,28 +1,5 @@
-<nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
-        <ul>
-            <li><a href="#/commonData/I101">鋼種分類</a></li>
-            <li><a href="#/commonData/I102_NonBar">站別機台關聯表</a></li>
-            <li><a href="#/commonData/I103_NonBar">設備能力</a></li>
-            <li><a href="#/commonData/I104_NonBar">整備時間</a></li>
-            <li><a href="#/commonData/I105_NonBar">大調機</a></li>
-            <li><a href="#/commonData/I106_NonBar">小調機</a></li>
-            <li><a href="#/commonData/I107_NonBar">線速工時</a></li>
-            <li><a href="#/commonData/I108_NonBar">非線速工時</a></li>
-            <li class="active"><a href="#/commonData/I109_NonBar"><label style="color:blue">產率設定</label></a></li>
-            <li><a href="#/commonData/I110_NonBar">產能維護</a></li>
-            <li><a href="#/commonData/I111_NonBar">combine資料設定</a></li>
-            <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
-
+<nz-content style="margin: 0 16px">
+  <app-list-pps></app-list-pps>
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
@@ -38,47 +15,64 @@
     </nz-tab>
   </nz-tabset>
 
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-        nzType="primary"
-        (click)="openYieldDialog()"
-        ><span nz-icon nzType="plus" nzTheme="outline"></span>
-          新增
-      </button>
-      <input type="file" id="fileupload" style="display: inline-block;margin-left: 550px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-        nzType="primary"
-        (click)="Upload()"
-        ><span nz-icon nzType="upload" nzTheme="outline"></span>
-        E X C E L 匯入
-      </button>
-      &nbsp;&nbsp;
-      <button
-        nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
-        nzType="primary"
-        (click)="convertToExcel()"
-        ><span nz-icon nzType="download" nzTheme="outline"></span>
-        E X C E L 匯出
-      </button>
-      <ag-grid-angular
-      style="width: 100%; height: 500px; overflow: scroll"
-      class="ag-theme-alpine"
-      [rowData]="displayTbppsm012NonBarList"
-      [suppressRowClickSelection]="true"
-      [groupSelectsChildren]="true"
-      [rowSelection]="'multiple'"
-      [animateRows]="true"
-      [suppressClickEdit]="true"
-      [frameworkComponents]="frameworkComponents"
-      [columnDefs]="columnDefs"
-      [gridOptions]="gridOptions"
-      [pagination]="true"
-    ></ag-grid-angular>
-
+  <button
+    nz-button
+    style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+    nzType="primary"
+    (click)="openYieldDialog()"
+  >
+    <span nz-icon nzType="plus" nzTheme="outline"></span>
+    新增
+  </button>
+  <input
+    type="file"
+    id="fileupload"
+    style="display: inline-block; margin-left: 550px"
+    (change)="incomingfile($event)"
+    placeholder="Upload file"
+    accept=".xlsx, .xls, .csv"
+  />
+  <button
+    nz-button
+    style="
+      box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+      background-color: #4caf50;
+      border: 2px blue none;
+    "
+    nzType="primary"
+    (click)="Upload()"
+  >
+    <span nz-icon nzType="upload" nzTheme="outline"></span>
+    E X C E L 匯入
+  </button>
+  &nbsp;&nbsp;
+  <button
+    nz-button
+    style="
+      box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+      background-color: #4caf50;
+      border: 2px blue none;
+    "
+    nzType="primary"
+    (click)="convertToExcel()"
+  >
+    <span nz-icon nzType="download" nzTheme="outline"></span>
+    E X C E L 匯出
+  </button>
+  <ag-grid-angular
+    style="width: 100%; height: 500px; overflow: scroll"
+    class="ag-theme-alpine"
+    [rowData]="displayTbppsm012NonBarList"
+    [suppressRowClickSelection]="true"
+    [groupSelectsChildren]="true"
+    [rowSelection]="'multiple'"
+    [animateRows]="true"
+    [suppressClickEdit]="true"
+    [frameworkComponents]="frameworkComponents"
+    [columnDefs]="columnDefs"
+    [gridOptions]="gridOptions"
+    [pagination]="true"
+  ></ag-grid-angular>
 </nz-content>
 
 <!-- 產率設定新增 -->
@@ -90,8 +84,8 @@
   [nzFooter]="yieldInputFooter"
   (nzOnCancel)="closeYieldDialog()"
 >
-<ng-template #yieldTitle>新增非直棒產率設定</ng-template>
-<ng-template #yieldInputContent>
+  <ng-template #yieldTitle>新增非直棒產率設定</ng-template>
+  <ng-template #yieldInputContent>
     <div>
       <table style="border-collapse: separate">
         <tr>
@@ -107,12 +101,17 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select 
-            nzPlaceHolder="請選擇站別碼"
-            nzShowSearch nzAllowClear
-            [(ngModel)]="searchData.selectedShopCode_default"
+            <nz-select
+              nzPlaceHolder="請選擇站別碼"
+              nzShowSearch
+              nzAllowClear
+              [(ngModel)]="searchData.selectedShopCode_default"
             >
-            <nz-option *ngFor="let x of selectedShopCode" [nzLabel]="x.label" [nzValue]="x.value"></nz-option>
+              <nz-option
+                *ngFor="let x of selectedShopCode"
+                [nzLabel]="x.label"
+                [nzValue]="x.value"
+              ></nz-option>
             </nz-select>
           </td>
           <td
@@ -127,14 +126,19 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select 
-            nzPlaceHolder="請選擇鋼種"
-            nzShowSearch nzAllowClear
-            [(ngModel)]="searchData.selectedGradeNo_default"
-          >
-          <nz-option *ngFor="let x of selectedGradeNo" [nzLabel]="x.label" [nzValue]="x.value"></nz-option>
-          </nz-select>
-          </td>        
+            <nz-select
+              nzPlaceHolder="請選擇鋼種"
+              nzShowSearch
+              nzAllowClear
+              [(ngModel)]="searchData.selectedGradeNo_default"
+            >
+              <nz-option
+                *ngFor="let x of selectedGradeNo"
+                [nzLabel]="x.label"
+                [nzValue]="x.value"
+              ></nz-option>
+            </nz-select>
+          </td>
           <td
             style="
               width: 330px;
@@ -157,7 +161,7 @@
         </tr>
       </table>
     </div>
-</ng-template>
+  </ng-template>
   <ng-template #yieldInputFooter>
     <button nz-button nzType="default" (click)="closeYieldDialog()">
       取消新增

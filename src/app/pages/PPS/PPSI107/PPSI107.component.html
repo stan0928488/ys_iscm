@@ -1,237 +1,529 @@
-<nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
-        <ul>
-            <li><a href="#/commonData/I101">鋼種分類</a></li>
-            <li><a href="#/commonData/I102">站別機台關聯表</a></li>
-            <li><a href="#/commonData/I103">設備能力</a></li>
-            <li><a href="#/commonData/I104">整備時間</a></li>
-            <li><a href="#/commonData/I105">大調機</a></li>
-            <li><a href="#/commonData/I106">小調機</a></li>
-            <li class="active"><a href="#/commonData/I107"><label style="color:blue">線速工時</label></a></li>
-            <li><a href="#/commonData/I108">非線速工時</a></li>
-            <li><a href="#/commonData/I109">產率設定</a></li>
-            <li><a href="#/commonData/I110">產能維護</a></li>
-            <li><a href="#/commonData/I111">combine資料設定</a></li>
-            <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
-  
+<nz-content style="margin: 0 16px">
+  <app-list-pps></app-list-pps>
+
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
       <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         直棒
       </a>
-      <nz-spin  nzTip="執行中..." [nzSize]="'large'" [nzSpinning] = "loading">
-        <div style="min-height: 1200px;">
+      <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="loading">
+        <div style="min-height: 1200px">
           <div>
             <button
-            nz-button
-            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
-            nzType="primary"
-            (click)="openSpeedInput()"
-            ><span nz-icon nzType="plus" nzTheme="outline"></span>
-            新增
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+              nzType="primary"
+              (click)="openSpeedInput()"
+            >
+              <span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增
             </button>
             &nbsp;&nbsp;
-            <input type="file" id="fileupload" style="display: inline-block;margin-left: 550px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
+            <input
+              type="file"
+              id="fileupload"
+              style="display: inline-block; margin-left: 550px"
+              (change)="incomingfile($event)"
+              placeholder="Upload file"
+              accept=".xlsx, .xls, .csv"
+            />
             <button
               nz-button
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+              "
               nzType="primary"
               (click)="Upload()"
-            ><span nz-icon nzType="upload" nzTheme="outline"></span>
-            E X C E L 匯入
+            >
+              <span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
             </button>
             &nbsp;&nbsp;
             <button
               nz-button
-              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;"
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+              "
               nzType="primary"
               (click)="convertToExcel()"
-            ><span nz-icon nzType="download" nzTheme="outline"></span>
-            E X C E L 匯出
+            >
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
             </button>
           </div>
-          <div nz-col [nzSpan]="25" style="padding-top:10px;">
-            <nz-table class="table05" #RowTable05 nzBordered [nzData]="displayPPSINP05List" [nzPageSize]="20" [nzScroll]="{y: '500px'}">
+          <div nz-col [nzSpan]="25" style="padding-top: 10px">
+            <nz-table
+              class="table05"
+              #RowTable05
+              nzBordered
+              [nzData]="displayPPSINP05List"
+              [nzPageSize]="20"
+              [nzScroll]="{ y: '500px' }"
+            >
               <thead>
-              <tr>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-                >站號
-                <nz-filter-trigger 
-                [nzActive]="searchShopCode5Value.length > 0" 
-                [nzDropdownMenu]="shopCode5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:100px"
-                >機台
-                <nz-filter-trigger 
-                [nzActive]="searchEquipCode5Value.length > 0" 
-                [nzDropdownMenu]="equipCode5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >產出型態
-                <nz-filter-trigger 
-                [nzActive]="searchShapeType5Value.length > 0" 
-                [nzDropdownMenu]="shapeType5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >鋼種類別
-                <nz-filter-trigger 
-                [nzActive]="searchGradeGroup5Value.length > 0" 
-                [nzDropdownMenu]="gradeGroup5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >線速分類
-                <nz-filter-trigger 
-                [nzActive]="searchSpeedType5Value.length > 0" 
-                [nzDropdownMenu]="speedType5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >減面率MIN
-                <nz-filter-trigger 
-                [nzActive]="searchReductionRateMin5Value.length > 0" 
-                [nzDropdownMenu]="reductionRateMin5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >減面率MAX
-                <nz-filter-trigger 
-                [nzActive]="searchReductionRateMax5Value.length > 0" 
-                [nzDropdownMenu]="reductionRateMax5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:120px"
-                >產出尺寸最小值
-                <nz-filter-trigger 
-                [nzActive]="searchDiaMin5Value.length > 0" 
-                [nzDropdownMenu]="diaMin5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:150px"
-                >產出尺寸最大值
-                <nz-filter-trigger 
-                [nzActive]="searchDiaMax5Value.length > 0" 
-                [nzDropdownMenu]="diaMax5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px"
-                >線速(公尺/分)
-                <nz-filter-trigger 
-                [nzActive]="searchSpeed5Value.length > 0" 
-                [nzDropdownMenu]="speed5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px"
-                >日產出量
-                <nz-filter-trigger 
-                [nzActive]="searchEquipCap5Value.length > 0" 
-                [nzDropdownMenu]="equipCap5Menu">
-                <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-                </th>
-                <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px; width:200px">Action</th>
-              </tr>
+                <tr>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 150px;
+                    "
+                  >
+                    站號
+                    <nz-filter-trigger
+                      [nzActive]="searchShopCode5Value.length > 0"
+                      [nzDropdownMenu]="shopCode5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 100px;
+                    "
+                  >
+                    機台
+                    <nz-filter-trigger
+                      [nzActive]="searchEquipCode5Value.length > 0"
+                      [nzDropdownMenu]="equipCode5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    產出型態
+                    <nz-filter-trigger
+                      [nzActive]="searchShapeType5Value.length > 0"
+                      [nzDropdownMenu]="shapeType5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    鋼種類別
+                    <nz-filter-trigger
+                      [nzActive]="searchGradeGroup5Value.length > 0"
+                      [nzDropdownMenu]="gradeGroup5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    線速分類
+                    <nz-filter-trigger
+                      [nzActive]="searchSpeedType5Value.length > 0"
+                      [nzDropdownMenu]="speedType5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    減面率MIN
+                    <nz-filter-trigger
+                      [nzActive]="searchReductionRateMin5Value.length > 0"
+                      [nzDropdownMenu]="reductionRateMin5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    減面率MAX
+                    <nz-filter-trigger
+                      [nzActive]="searchReductionRateMax5Value.length > 0"
+                      [nzDropdownMenu]="reductionRateMax5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 120px;
+                    "
+                  >
+                    產出尺寸最小值
+                    <nz-filter-trigger
+                      [nzActive]="searchDiaMin5Value.length > 0"
+                      [nzDropdownMenu]="diaMin5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 150px;
+                    "
+                  >
+                    產出尺寸最大值
+                    <nz-filter-trigger
+                      [nzActive]="searchDiaMax5Value.length > 0"
+                      [nzDropdownMenu]="diaMax5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 200px;
+                    "
+                  >
+                    線速(公尺/分)
+                    <nz-filter-trigger
+                      [nzActive]="searchSpeed5Value.length > 0"
+                      [nzDropdownMenu]="speed5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 200px;
+                    "
+                  >
+                    日產出量
+                    <nz-filter-trigger
+                      [nzActive]="searchEquipCap5Value.length > 0"
+                      [nzDropdownMenu]="equipCap5Menu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                      width: 200px;
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let data of RowTable05.data;let i = index" class="editable-row">
-                <ng-container *ngIf="!editCache05[data.id].edit; else editTemplate1">
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 100px;">{{ data.SHOP_CODE_5 }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 150px;">{{ data.EQUIP_CODE_5 }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.SHAPE_TYPE_5 }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.GRADE_GROUP_5 }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.SPEED_TYPE_5 }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.REDUCTION_RATE_MIN_5 | number }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.REDUCTION_RATE_MAX_5 | number }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.DIA_MIN_5 | number }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.DIA_MAX_5 | number }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.SPEED_5 | number }}</td>
-                  <td style="text-align:center; padding: 5px; height: 40px; width: 120px;">{{ data.EQUIP_CAP_5 | number }}</td>
-                  <td style="text-align:center; padding: 0px; height: 40px; width: 200px;">
-                    <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-                    <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id)">刪除</a>
-                  </td>
-                </ng-container>
-                <ng-template #editTemplate1>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入站別" [(ngModel)]="editCache05[data.id].data.SHOP_CODE_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入機台" [(ngModel)]="editCache05[data.id].data.EQUIP_CODE_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入產出型態" [(ngModel)]="editCache05[data.id].data.SHAPE_TYPE_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入鋼種分類" [(ngModel)]="editCache05[data.id].data.GRADE_GROUP_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入線速分類" [(ngModel)]="editCache05[data.id].data.SPEED_TYPE_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入減面率MIN" [(ngModel)]="editCache05[data.id].data.REDUCTION_RATE_MIN_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入減面率MAX" [(ngModel)]="editCache05[data.id].data.REDUCTION_RATE_MAX_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入尺寸最小值" [(ngModel)]="editCache05[data.id].data.DIA_MIN_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入尺寸最大值" [(ngModel)]="editCache05[data.id].data.DIA_MAX_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入線速" [(ngModel)]="editCache05[data.id].data.SPEED_5" />
-                  </td>
-                  <td>
-                    <input nz-width="20%" nz-input placeholder="輸入日產出量" [(ngModel)]="editCache05[data.id].data.EQUIP_CAP_5" />
-                  </td>
-                  <td>
-                    <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-                    <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id)">取消</a>
-                  </td>
-                </ng-template>
-              </tr>
+                <tr
+                  *ngFor="let data of RowTable05.data; let i = index"
+                  class="editable-row"
+                >
+                  <ng-container
+                    *ngIf="!editCache05[data.id].edit; else editTemplate1"
+                  >
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 100px;
+                      "
+                    >
+                      {{ data.SHOP_CODE_5 }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 150px;
+                      "
+                    >
+                      {{ data.EQUIP_CODE_5 }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.SHAPE_TYPE_5 }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.GRADE_GROUP_5 }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.SPEED_TYPE_5 }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.REDUCTION_RATE_MIN_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.REDUCTION_RATE_MAX_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.DIA_MIN_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.DIA_MAX_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.SPEED_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 5px;
+                        height: 40px;
+                        width: 120px;
+                      "
+                    >
+                      {{ data.EQUIP_CAP_5 | number }}
+                    </td>
+                    <td
+                      style="
+                        text-align: center;
+                        padding: 0px;
+                        height: 40px;
+                        width: 200px;
+                      "
+                    >
+                      <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
+                      <a
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to delete?"
+                        (nzOnConfirm)="deleteRow(data.id)"
+                        >刪除</a
+                      >
+                    </td>
+                  </ng-container>
+                  <ng-template #editTemplate1>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入站別"
+                        [(ngModel)]="editCache05[data.id].data.SHOP_CODE_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入機台"
+                        [(ngModel)]="editCache05[data.id].data.EQUIP_CODE_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入產出型態"
+                        [(ngModel)]="editCache05[data.id].data.SHAPE_TYPE_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入鋼種分類"
+                        [(ngModel)]="editCache05[data.id].data.GRADE_GROUP_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入線速分類"
+                        [(ngModel)]="editCache05[data.id].data.SPEED_TYPE_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入減面率MIN"
+                        [(ngModel)]="
+                          editCache05[data.id].data.REDUCTION_RATE_MIN_5
+                        "
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入減面率MAX"
+                        [(ngModel)]="
+                          editCache05[data.id].data.REDUCTION_RATE_MAX_5
+                        "
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入尺寸最小值"
+                        [(ngModel)]="editCache05[data.id].data.DIA_MIN_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入尺寸最大值"
+                        [(ngModel)]="editCache05[data.id].data.DIA_MAX_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入線速"
+                        [(ngModel)]="editCache05[data.id].data.SPEED_5"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入日產出量"
+                        [(ngModel)]="editCache05[data.id].data.EQUIP_CAP_5"
+                      />
+                    </td>
+                    <td>
+                      <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
+                      <a
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to cancel?"
+                        (nzOnConfirm)="cancelEdit(data.id)"
+                        >取消</a
+                      >
+                    </td>
+                  </ng-template>
+                </tr>
               </tbody>
             </nz-table>
           </div>
         </div>
       </nz-spin>
-      
     </nz-tab>
 
     <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I107_NonBar']" style="color: gray">
+      <a
+        *nzTabLink
+        nz-tab-link
+        [routerLink]="['../I107_NonBar']"
+        style="color: gray"
+      >
         非直棒
       </a>
     </nz-tab>
   </nz-tabset>
-
-
 </nz-content>
-
-
 
 <!-- 線速新增 -->
 <nz-modal
@@ -239,105 +531,278 @@
   [nzWidth]="800"
   [nzContent]="speedInputContent"
   [nzFooter]="speedInputFooter"
-  (nzOnCancel)="cancelSpeedInput()">
-
+  (nzOnCancel)="cancelSpeedInput()"
+>
   <ng-template #speedInputContent>
     <div>
-      <table style="border-collapse: separate;">
-
+      <table style="border-collapse: separate">
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;站號</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="站號" [(ngModel)]="SHOP_CODE_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;站號
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="站號"
+              [(ngModel)]="SHOP_CODE_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;機台</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入機台" [(ngModel)]="EQUIP_CODE_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;機台
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入機台"
+              [(ngModel)]="EQUIP_CODE_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出型態</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出型態" [(ngModel)]="SHAPE_TYPE_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;產出型態
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入產出型態"
+              [(ngModel)]="SHAPE_TYPE_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼種類別</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入鋼種類別" [(ngModel)]="GRADE_GROUP_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;鋼種類別
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入鋼種類別"
+              [(ngModel)]="GRADE_GROUP_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;線速分類</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入線速分類" [(ngModel)]="SPEED_TYPE_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;線速分類
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入線速分類"
+              [(ngModel)]="SPEED_TYPE_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;減面率MIN</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入減面率MIN" [(ngModel)]="REDUCTION_RATE_MIN_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;減面率MIN
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入減面率MIN"
+              [(ngModel)]="REDUCTION_RATE_MIN_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;減面率MAX</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入減面率MAX" [(ngModel)]="REDUCTION_RATE_MAX_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;減面率MAX
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入減面率MAX"
+              [(ngModel)]="REDUCTION_RATE_MAX_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出最小尺寸</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最小尺寸" [(ngModel)]="DIA_MIN_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;產出最小尺寸
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入產出最小尺寸"
+              [(ngModel)]="DIA_MIN_5"
+            />
           </td>
         </tr>
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;產出最大尺寸</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入產出最大尺寸" [(ngModel)]="DIA_MAX_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;產出最大尺寸
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入產出最大尺寸"
+              [(ngModel)]="DIA_MAX_5"
+            />
           </td>
         </tr>
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;線速(m/min)</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入線速" [(ngModel)]="SPEED_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;線速(m/min)
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入線速"
+              [(ngModel)]="SPEED_5"
+            />
           </td>
         </tr>
 
         <tr>
-          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;日產出量</td>
-          <td style = "width: 600px; background-color: #eee;">&nbsp;
-            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入日產出量" [(ngModel)]="EQUIP_CAP_5" />
+          <td
+            style="
+              width: 110px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;日產出量
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <input
+              style="width: 22%; color: darkblue"
+              nz-input
+              placeholder="輸入日產出量"
+              [(ngModel)]="EQUIP_CAP_5"
+            />
           </td>
         </tr>
-
       </table>
     </div>
-    
   </ng-template>
 
   <ng-template #speedInputFooter>
-    <button nz-button nzType="default" (click)="cancelSpeedInput()">取消新增</button>
+    <button nz-button nzType="default" (click)="cancelSpeedInput()">
+      取消新增
+    </button>
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
-
 </nz-modal>
 
 <nz-dropdown-menu #shopCode5Menu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchShopCode5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByShopCode5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByShopCode5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByShopCode5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByShopCode5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -346,8 +811,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchEquipCode5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipCode5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByEquipCode5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByEquipCode5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByEquipCode5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -356,8 +831,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchShapeType5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByShapeType5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByShapeType5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByShapeType5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByShapeType5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -366,8 +851,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchGradeGroup5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByGradeGroup5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByGradeGroup5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByGradeGroup5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByGradeGroup5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -376,8 +871,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchSpeedType5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchBySpeedType5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetBySpeedType5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchBySpeedType5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetBySpeedType5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -386,8 +891,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchReductionRateMin5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByReductionRateMin5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByReductionRateMin5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByReductionRateMin5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByReductionRateMin5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -396,8 +911,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchReductionRateMax5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByReductionRateMax5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByReductionRateMax5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByReductionRateMax5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByReductionRateMax5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -406,7 +931,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchDiaMin5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMin5()" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByDiaMin5()"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetByDiaMin5()">重設</button>
     </div>
   </div>
@@ -416,7 +949,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchDiaMax5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByDiaMax5()" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByDiaMax5()"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetByDiaMax5()">重設</button>
     </div>
   </div>
@@ -426,7 +967,15 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchSpeed5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchBySpeed5()" class="search-button">查詢</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchBySpeed5()"
+        class="search-button"
+      >
+        查詢
+      </button>
       <button nz-button nzSize="small" (click)="resetBySpeed5()">重設</button>
     </div>
   </div>
@@ -436,9 +985,18 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchEquipCap5Value" />
-      <button nz-button nzSize="small" nzType="primary" (click)="searchByEquipCap5()" class="search-button">查詢</button>
-      <button nz-button nzSize="small" (click)="resetByEquipCap5()">重設</button>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="searchByEquipCap5()"
+        class="search-button"
+      >
+        查詢
+      </button>
+      <button nz-button nzSize="small" (click)="resetByEquipCap5()">
+        重設
+      </button>
     </div>
   </div>
 </nz-dropdown-menu>
-

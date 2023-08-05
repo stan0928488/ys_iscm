@@ -1,32 +1,5 @@
 <nz-content style="margin: 0 16px">
-  <nz-breadcrumb style="margin: 16px 0">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
-        <ul>
-          <li><a href="#/commonData/I101">鋼種分類</a></li>
-          <li><a href="#/commonData/I102">站別機台關聯表</a></li>
-          <li><a href="#/commonData/I103">設備能力</a></li>
-          <li><a href="#/commonData/I104">整備時間</a></li>
-          <li><a href="#/commonData/I105">大調機</a></li>
-          <li><a href="#/commonData/I106">小調機</a></li>
-          <li><a href="#/commonData/I107">線速工時</a></li>
-          <li><a href="#/commonData/I108">非線速工時</a></li>
-          <li><a href="#/commonData/I109">產率設定</a></li>
-          <li class="active">
-            <a href="#/commonData/I110"
-              ><label style="color: blue">產能維護</label></a
-            >
-          </li>
-          <li><a href="#/commonData/I112">累計生產</a></li>
-          <li><a href="#/commonData/I111">combine資料設定</a></li>
-          <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+  <app-list-pps></app-list-pps>
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
@@ -59,7 +32,7 @@
           新增
         </button>
       </td>
-      <td style="text-align:right;width:40%">
+      <td style="text-align: right; width: 40%">
         <input
           type="file"
           id="fileupload"
@@ -99,15 +72,17 @@
     </nz-collapse-panel>
   </nz-collapse>
 
-  <ag-grid-angular style="width: 100%; height: 550px; overflow: scroll;" class="ag-theme-alpine" 
-  [rowData]="displayTbppsm013List"
-  [columnDefs]="columnDefs"
-  [pagination]="true"
-  class="ag-theme-alpine"
-  [frameworkComponents]="frameworkComponents"
-  [gridOptions]="gridOptions"
-  editType="fullRow"
-  [suppressClickEdit]="true"
+  <ag-grid-angular
+    style="width: 100%; height: 550px; overflow: scroll"
+    class="ag-theme-alpine"
+    [rowData]="displayTbppsm013List"
+    [columnDefs]="columnDefs"
+    [pagination]="true"
+    class="ag-theme-alpine"
+    [frameworkComponents]="frameworkComponents"
+    [gridOptions]="gridOptions"
+    editType="fullRow"
+    [suppressClickEdit]="true"
   >
   </ag-grid-angular>
 </nz-content>

@@ -214,6 +214,11 @@ export class PPSI112Component implements AfterViewInit {
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   async getTBPPSM107() {
     this.PPSService.getTBPPSM107().subscribe((res) => {
+      document.getElementById('li112').style.backgroundColor = '#E4E3E3';
+      const a = document.getElementById('a112');
+      a.style.cssText = 'color: blue; font-weight:bold;';
+      a.innerHTML = '累計生產(PPSI112)';
+      a.style.fontSize = '17px';
       this.myDataList = res;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
