@@ -50,6 +50,7 @@ class forMes {
 })
 export class MSHI004Component {
   USERNAME; //
+  PLANTCODE;
   lock;
   mgroup;
   isRunFCP = false;
@@ -74,6 +75,12 @@ export class MSHI004Component {
   normTime;
 
   normday = 10;
+
+  forMo;
+  moEdition;
+  lpstStartDate;
+  lpstEndDate;
+  shopList;
 
   machineDataList: MSHI004MACHINE[] = [];
   machineDataListDeepClone: MSHI004MACHINE[] = [];
@@ -133,7 +140,7 @@ export class MSHI004Component {
     private http: HttpClient
   ) {
     this.USERNAME = this.cookieService.getCookie('USERNAME');
-    console.log(this.USERNAME);
+    this.PLANTCODE = this.cookieService.getCookie('plantCode');
 
     this.dataTransferService.getData().subscribe((node) => {
       this.isSpinning = true;
@@ -179,11 +186,9 @@ export class MSHI004Component {
   }
 
   async ngOnInit() {
-    console.log('預載入');
     await this.getFcpList();
     for (let value of this.shopCodeOfOption) {
       if (value.indexOf('(鎖定)') >= 0) {
-        console.log(value.indexOf('(鎖定)'));
         this.shopCodeInputList = value;
         this.serach(true);
       }
@@ -498,17 +503,12 @@ export class MSHI004Component {
 
   //點擊一下即可複製的功能
   onCellClicked(e: CellClickedEvent): void {
-    console.log('=======>>>>cellClicked', e);
     const { value } = e;
-    console.log('value:' + value);
     this.clipboardApi.copyFromContent(value);
-    console.log('copyFromContent:' + value);
-    console.log(`====>已複製: ${value} `);
     this.message.create('success', `MES群組已複製：${value} `);
   }
 
   buttonClicked(params: any) {
-    console.log('呼叫PUBLISH API');
     let a = this.lock.fcpEdition;
     let b = params.mesPublishGroup;
     this.mgroup = b;
@@ -525,7 +525,6 @@ export class MSHI004Component {
           forMesData.forEach((obj) => {
             obj.publishType = '1';
           });
-          console.log(forMesData);
           if (code === 200) {
             if (_.size(forMesData) > 0) {
               this.mesData = forMesData;
@@ -571,8 +570,6 @@ export class MSHI004Component {
   getRunFCPCount() {
     let myObj = this;
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
-      console.log('getRunFCPCount success');
-      console.log(res);
       if (res > 0) this.isRunFCP = true;
     });
   }
@@ -650,8 +647,6 @@ export class MSHI004Component {
               (res) => {
                 if (res.code === 200) {
                   this.sucessMSG(res.message, res.message);
-                  console.log('以下是本次更新的資料');
-                  console.log(this.MSHI004PendingDataList);
                 } else {
                   this.errorMSG(res.message, res.message);
                 }
@@ -715,10 +710,6 @@ export class MSHI004Component {
         (res) => {
           const { code, data } = res;
           const myDataList = JSON.parse(data);
-          console.log(
-            '🚀 ~ file: MSHI004.component.ts:333 ~ MSHI004Component ~ serachEPST ~ myDataList:',
-            myDataList
-          );
 
           if (code === 200) {
             if (_.size(myDataList) > 0) {
@@ -728,7 +719,6 @@ export class MSHI004Component {
               this.message.success('查無資料');
               this.MSHI004DataList = [];
             }
-
             resolve(true);
           } else {
             this.message.error('後台錯誤，獲取不到資料');
@@ -761,7 +751,6 @@ export class MSHI004Component {
     await new Promise<boolean>((resolve, reject) => {
       this.mshi004Service.getFcpList().subscribe(
         (res) => {
-          console.log(res);
           if (res.code === 200) {
             this.shopCodeOfOption = res.data;
             // this.MSHI004DataList.forEach((item, index, array) => {
@@ -799,7 +788,6 @@ export class MSHI004Component {
           const { code, data } = res;
           const myDataList = JSON.parse(data);
           if (res.code === 200) {
-            console.log(data);
             if (data == '0') {
               this.fcp(this.USERNAME);
               this.message.success('開始重啟fcp');
@@ -834,14 +822,27 @@ export class MSHI004Component {
     this.mshi004Service.getReRunFcp(USERNAME).subscribe(
       (response) => {
         // 处理API响应
-        console.log(response);
-        console.log(USERNAME);
+        this.forMo = response.FCP_EDITION;
+        this.getMoData();
       },
       (error) => {
         // 处理API调用错误
         console.error(error);
       }
     );
+    // this.mshi004Service.test().subscribe(
+    //   (response) => {
+    //     // 处理API响应
+    //     console.log(response);
+    //     this.forMo = response.FCP_EDITION;
+    //     console.log(this.forMo);
+    //     this.getMoData();
+    //   },
+    //   (error) => {
+    //     // 处理API调用错误
+    //     console.error(error);
+    //   }
+    // );
   }
 
   sucessMSG(_title, _plan): void {
@@ -916,7 +917,6 @@ export class MSHI004Component {
   convertSubmit() {
     const a: Array<String> = [];
     this.normData = [];
-    console.log(this.PickShopCode);
     if (!_.isNil(this.PickShopCode)) {
       for (var i = 0; i < this.PickShopCode.length; i++) {
         const data = {
@@ -983,7 +983,6 @@ export class MSHI004Component {
         this.message.info(result.message);
       });
     this.isVisibleConvert = false;
-    console.log(this.normData);
   }
   convertCancel(): void {
     this.isVisibleConvert = false;
@@ -1032,7 +1031,6 @@ export class MSHI004Component {
   async fcpStart() {
     await new Promise<boolean>((resolve, reject) => {
       this.isSpinning = true;
-      console.log(this.lock);
       let a = this.lock.fcpEdition.split('(')[0];
       let data = {
         fcpEdition: a,
@@ -1046,7 +1044,6 @@ export class MSHI004Component {
               for (var i = 0; i < forMesData.length; i++) {
                 this.publishStartTime = forMesData[i].startDatetime;
               }
-              console.log(this.publishStartTime);
             } else {
             }
             this.isSpinning = false;
@@ -1073,7 +1070,6 @@ export class MSHI004Component {
   }
   clickShopCode(_value) {
     this.PickShopCode = _value.toString().split(',');
-    console.log(this.PickShopCode);
   }
   inputDay() {
     this.now = moment(this.publishStartTime).format('YYYY-MM-DD');
@@ -1085,6 +1081,243 @@ export class MSHI004Component {
     this.publishEndTime = moment(
       moment(this.publishStartTime).add(this.normday, 'days')
     ).format('yyyy-MM-DD 23:59:59');
-    console.log(this.publishEndTime);
+  }
+
+  async getMoData() {
+    await new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+      let predata = {
+        fcpEdition: this.forMo,
+      };
+      this.mshi004Service.moData(predata).subscribe({
+        next: (res) => {
+          const { code, data } = res;
+          const modata = JSON.parse(data);
+          this.moEdition = modata[0].moEdition;
+          this.lpstStartDate = JSON.parse(modata[0].plansetList).startDate;
+          this.lpstEndDate = JSON.parse(modata[0].plansetList).endDate;
+          this.shopList = JSON.parse(modata[0].plansetList).shop_code;
+          this.isSpinning = false;
+          // 在這裡處理 next 事件的邏輯
+          resolve(true);
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    }).then((success) => {
+      this.labSamplingRun();
+      this.getMESPassedWeight();
+      this.getMESFinishedProduct();
+      this.getMESIsToShip();
+      this.getMESGoodsReceipt();
+      this.getMESrollOverOrder();
+      this.getMESwipChange();
+      this.runRepoData();
+      console.log('hiiiiiiiiiiiiiiiiiiiiiiiii');
+    });
+  }
+  labSamplingRun() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service
+        .labSamplingRun(this.moEdition, this.PLANTCODE, this.USERNAME)
+        .subscribe({
+          next: (res) => {
+            this.isSpinning = false;
+            resolve(true);
+            // 在這裡處理 next 事件的邏輯
+          },
+          error: (error) => {
+            this.isSpinning = false;
+            // 在這裡處理 error 事件的邏輯
+          },
+        });
+    })
+      .then((success) => {
+        this.message.success('實驗室工時計算完成');
+      })
+      .catch((error) => {
+        this.message.error('實驗室工時計算失敗');
+      });
+  }
+
+  getMESPassedWeight() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESPassedWeight(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success('已過機量取得完成');
+      })
+      .catch((error) => {
+        this.message.error('已過機量取得失敗');
+      });
+  }
+
+  getMESFinishedProduct() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESFinishedProduct(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success(
+          '出貨計畫表(成品/半成品庫存現況)取得 mes 成品完成'
+        );
+      })
+      .catch((error) => {
+        this.message.error('出貨計畫表(成品/半成品庫存現況)取得 mes 成品失敗');
+      });
+  }
+
+  getMESIsToShip() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESIsToShip(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success('出貨計畫表(出貨移轉統計表)取得 mes 已出貨完成');
+      })
+      .catch((error) => {
+        this.message.error('出貨計畫表(出貨移轉統計表)取得 mes 已出貨失敗');
+      });
+  }
+
+  getMESGoodsReceipt() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESGoodsReceipt(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success('取得 MES已入庫量完成');
+      })
+      .catch((error) => {
+        this.message.error('取得 MES已入庫量失敗');
+      });
+  }
+  getMESrollOverOrder() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESrollOverOrder(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success('取得 MES月初庫存訂單結轉完成');
+      })
+      .catch((error) => {
+        this.message.error('取得 MES月初庫存訂單結轉失敗');
+      });
+  }
+  getMESwipChange() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service.getMESwipChange(this.moEdition).subscribe({
+        next: (res) => {
+          this.isSpinning = false;
+          resolve(true);
+          // 在這裡處理 next 事件的邏輯
+        },
+        error: (error) => {
+          this.isSpinning = false;
+          // 在這裡處理 error 事件的邏輯
+        },
+      });
+    })
+      .then((success) => {
+        this.message.success('取得 MES入庫儲區異動完成');
+      })
+      .catch((error) => {
+        this.message.error('取得 MES入庫儲區異動失敗');
+      });
+  }
+
+  runRepoData() {
+    new Promise<boolean>((resolve, reject) => {
+      this.isSpinning = true;
+
+      this.mshi004Service
+        .runRepoData(
+          this.forMo,
+          this.moEdition,
+          this.lpstStartDate,
+          this.lpstEndDate,
+          this.shopList,
+          this.USERNAME
+        )
+        .subscribe({
+          next: (res) => {
+            this.isSpinning = false;
+            resolve(true);
+            // 在這裡處理 next 事件的邏輯
+          },
+          error: (error) => {
+            this.isSpinning = false;
+            // 在這裡處理 error 事件的邏輯
+          },
+        });
+    })
+      .then((success) => {
+        this.message.success('FCP計算結束階段完成');
+      })
+      .catch((error) => {
+        this.message.error('FCP計算結束階段失敗');
+      });
   }
 }

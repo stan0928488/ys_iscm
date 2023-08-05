@@ -23,7 +23,7 @@
       <button
         style="
           float: right;
-          margin-left: 20px;
+          margin: 0px 20px 0px 20px;
           border-color: #ff3460;
           background: #ff3460;
         "
@@ -33,6 +33,12 @@
       >
         <span nz-icon nzType="caret-right" nzTheme="outline"></span>重啟FCP
       </button>
+      <label
+        style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
+        *ngIf="isRunFCP"
+      >
+        ※ 目前 FCP 執行中，不可重啟fcp！
+      </label>
     </div>
 
     <div class="flex">

@@ -126,6 +126,7 @@ import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
+import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
 
 registerLocaleData(zh);
 
@@ -228,6 +229,7 @@ registerLocaleData(zh);
     BtnCellRendererUpdate,
     SummaryDatePickerCellEditorComponent,
     PPSR310Component,
+    ListPpsComponent,
   ],
   imports: [
     BrowserModule,

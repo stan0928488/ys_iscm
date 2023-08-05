@@ -105,6 +105,13 @@ export class MSHI004Service {
     );
   }
 
+  test() {
+    console.log('testMO..');
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/test`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(endpointUrl);
+  }
+
   // sentMesData(_parms) {
   //   const body = JSON.stringify(_parms);
   //   // let endpointUrl = ``;
@@ -163,5 +170,97 @@ export class MSHI004Service {
     console.log(`API Url : ${endpointUrl}`);
     console.log(`發佈者；發佈日期 : ${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  }
+
+  moData(_parms) {
+    // const body = JSON.stringify(_parms);
+    let endpointUrl = `${this.APIURL}/mshi/tbppsm117/moData`;
+    return this.http.post<any>(endpointUrl, _parms, this.httpOptions);
+  }
+
+  labSamplingRun(moEdition: string, plantCode: string, userName: string) {
+    let apiUrl = this.APIURL + `/lab/samplingRun`;
+    let body = {
+      moEdition: moEdition,
+      plantCode: plantCode,
+      userName: userName,
+    };
+    console.log(`API Url : ${apiUrl}`);
+    return this.http.get<any>(
+      // `http://10.106.9.66:8080/pps_FCP/rest/run/execute_FS?startPoint=ASAP&USERNAME=${USERNAME}`
+      `${apiUrl}?moEdition=${moEdition}&plantCode=${plantCode}&userName=${userName}`
+    );
+  }
+
+  getMESPassedWeight(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESPassedWeight/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
+  }
+
+  getMESFinishedProduct(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESFinishedProduct/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
+  }
+
+  getMESIsToShip(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESIsToShip/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
+  }
+
+  getMESGoodsReceipt(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESGoodsReceipt/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
+  }
+
+  runRepoData(
+    fcpEdition: string,
+    moEdition: string,
+    lpstStartDate: string,
+    lpstEndDate: string,
+    shopList: string,
+    userName: string
+  ) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/runRepoData`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(
+      `${endpointUrl}/${fcpEdition}/${moEdition}/${lpstStartDate}/${lpstEndDate}/${shopList}/${userName}`
+    );
+  }
+
+  getMESrollOverOrder(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESrollOverOrder/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
+  }
+
+  getMESwipChange(moEdition) {
+    let endpointUrl = `${this.APIURL.substring(
+      0,
+      this.APIURL.lastIndexOf('/')
+    )}/pps/rest/FCP/Run/getMESwipChange/`;
+    console.log(`API Url : ${endpointUrl}`);
+    return this.http.get<any>(`${endpointUrl}${moEdition}`);
   }
 }
