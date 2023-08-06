@@ -111,11 +111,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP07List('2').subscribe((res) => {
-      document.getElementById('li102').style.backgroundColor = '#E4E3E3';
-      document.getElementById('a102').style.cssText =
-        'color: blue; font-weight:bold;';
-      document.getElementById('a102').innerHTML = '站別機台關聯表(PPSI102)';
-      document.getElementById('a102').style.fontSize = '17px';
       console.log('getPPSINP07List success');
       this.PPSINP07List_tmp = res;
       console.log(res);

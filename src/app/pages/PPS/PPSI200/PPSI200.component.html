@@ -1,7 +1,33 @@
-<nz-content style="margin: 0 16px">
-  <app-list-pps></app-list-pps>
-  <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'">
-    <!-- 20221028-暫不實作
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+        <ul>
+            <li><a href="#/commonData/I101">鋼種分類</a></li>
+            <li><a href="#/commonData/I102">站別機台關聯表</a></li>
+            <li><a href="#/commonData/I103">設備能力</a></li>
+            <li><a href="#/commonData/I104">整備時間</a></li>
+            <li><a href="#/commonData/I105">大調機</a></li>
+            <li><a href="#/commonData/I106">小調機</a></li>
+            <li><a href="#/commonData/I107">線速工時</a></li>
+            <li><a href="#/commonData/I108">非線速工時</a></li>
+            <li><a href="#/commonData/I109">產率設定</a></li>
+            <li><a href="#/commonData/I110">產能維護</a></li>
+            <li><a href="#/commonData/I111">combine資料設定</a></li>
+            <li class="active"><a href="#/commonData/I200"><label style="color:blue">系統設定</label></a></li>
+        </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+
+    <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'">
+
+<!-- 20221028-暫不實作
       <nz-tab nzTitle="combine站別設定" (nzClick)="changeTab(2)">
         <div style="background: rgb(255, 255, 255); min-height: 600px;">
           <div nz-col [nzSpan]="8">
@@ -62,145 +88,119 @@
         </div>
       </nz-tab> -->
 
-    <nz-tab nzTitle="星期起始設定" (nzClick)="changeTab(4)">
-      <!-- TODO: 自動新增+刪除 -->
-      <div style="background: rgb(255, 255, 255); min-height: 600px">
-        <div nz-col [nzSpan]="14">
-          <nz-collapse style="background-color: aliceblue">
-            <nz-collapse-panel
+
+
+      <nz-tab nzTitle="星期起始設定" (nzClick)="changeTab(4)">    <!-- TODO: 自動新增+刪除 -->
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="14">
+            <nz-collapse style="background-color: aliceblue;">
+              <nz-collapse-panel
               *ngFor="let panel of setAddDatePanels"
               [nzHeader]="panel.name"
               [nzActive]="panel.active"
               [nzDisabled]="panel.disabled"
-            >
+              >
               <table>
                 <tr>
                   <td>設定區間</td>
                   <td>
-                    <nz-month-picker
-                      style="width: 110px"
+
+                    <nz-month-picker style="width: 110px;"
                       [(ngModel)]="startDateForAdd"
                       nzPlaceHolder="開始年月"
-                    ></nz-month-picker>
-                    ~
-                    <nz-month-picker
-                      style="width: 110px"
+                      ></nz-month-picker>
+                      ~
+                      <nz-month-picker style="width: 110px;"
                       nzPlaceHolder="結束年月"
                       [(ngModel)]="endDateForAdd"
-                    ></nz-month-picker>
+                      ></nz-month-picker>
                   </td>
                   <td>&nbsp;&nbsp;設定星期</td>
                   <td>
-                    <nz-select
-                      style="width: 100px; margin-left: 10px"
-                      [(ngModel)]="weekDayValueForAdd"
-                      (ngModelChange)="weekDayChange($event)"
-                    >
-                      <nz-option
-                        *ngFor="let option1 of weekDayList"
-                        [nzValue]="option1"
-                        [nzLabel]="option1.label"
-                      ></nz-option>
-                    </nz-select>
+                    <nz-select style="width: 100px; margin-left:10px;"
+                        [(ngModel)]="weekDayValueForAdd"
+                        (ngModelChange)="weekDayChange($event)"
+                      >
+                        <nz-option *ngFor="let option1 of weekDayList"
+                          [nzValue]="option1"
+                          [nzLabel]="option1.label"
+                        ></nz-option>
+                      </nz-select>
                   </td>
                   <td>
                     &nbsp;&nbsp;
                     <button
                       nz-button
-                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
                       nzType="primary"
                       (click)="insertTab4()"
                     >
-                      <span nz-icon nzType="save" nzTheme="outline"></span>
-                      確認
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    確認
                     </button>
                   </td>
                 </tr>
               </table>
-            </nz-collapse-panel>
-          </nz-collapse>
+
+
+              </nz-collapse-panel>
+            </nz-collapse>
 
           <p></p>
           <div>
-            <nz-table
-              #editSetWeekTable
-              nzBordered
-              *ngIf="weekData.length > 0"
-              [nzData]="weekData"
-            >
+            <nz-table #editSetWeekTable nzBordered  *ngIf="weekData.length > 0 "  [nzData]="weekData"   >
               <thead>
                 <tr>
-                  <th
-                    nzWidth="10px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    年-月
-                  </th>
-                  <th
-                    nzWidth="10px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    星期
-                  </th>
-                  <th
-                    nzWidth="2px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    Action
-                  </th>
+                  <th nzWidth="10px" style="text-align:center;background-color: #eee;">年-月</th>
+                  <th nzWidth="10px" style="text-align:center;background-color: #eee;">星期</th>
+                  <th nzWidth="2px" style="text-align:center;background-color: #eee;">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of editSetWeekTable.data; index as i">
-                  <td style="text-align: center">
-                    {{ item.month }}
+                <tr *ngFor="let item of editSetWeekTable.data ; index as i" >
+                  <td style="text-align:center;">
+                    {{item.month}}
                   </td>
-                  <td style="text-align: center">
+                  <td style="text-align:center;">
                     <ng-container *ngIf="!item.editStatus; else weekInputTpl">
                       {{ item.week_name }}
                     </ng-container>
                     <ng-template #weekInputTpl>
                       <nz-select
                         [nzDisabled]="item.disabledFlag"
-                        style="width: 90px; text-align: center"
+                        style="width: 90px;text-align: center;"
                         [compareWith]="compareWeekFn"
                         [(ngModel)]="selectOptionWeekDay"
                         (ngModelChange)="selectWeekChange($event)"
+
                         nzPlaceHolder="Choose"
                       >
                         <nz-option
-                          *ngFor="let option of weekDayList2"
-                          [nzValue]="option"
-                          [nzLabel]="option.label"
-                        ></nz-option>
-                      </nz-select>
+
+                           *ngFor="let option of weekDayList2"
+                           [nzValue]="option"
+                           [nzLabel]="option.label"></nz-option>
+                    </nz-select>
                     </ng-template>
                   </td>
 
-                  <td style="text-align: center">
+                  <td style="text-align:center;">
                     <div class="editable-row-operations">
                       <ng-container *ngIf="!item.editStatus; else saveTpl">
                         <a
-                          [attr.disabled]="item.disabledFlag ? true : null"
-                          (click)="weekEditFunc(item.ID, i)"
-                          >修改</a
-                        >
+                          [attr.disabled] = " item.disabledFlag ? true : null "
+                           (click)="weekEditFunc(item.ID,i)">修改</a>
                       </ng-container>
                       <ng-template #saveTpl>
                         <a
-                          [attr.disabled]="item.disabledFlag ? true : null"
-                          (click)="weekSaveEdit(item.ID, i)"
-                          >確認</a
-                        >
+                        [attr.disabled] = " item.disabledFlag ? true : null "
+                          (click)="weekSaveEdit(item.ID,i)">確認</a>
 
-                        <a
-                          style="margin-left: 15px"
+                        <a  style="margin-left: 15px;"
                           nz-popconfirm
-                          [attr.disabled]="item.disabledFlag ? true : null"
+                          [attr.disabled] = " item.disabledFlag ? true : null "
                           nzPopconfirmTitle="Sure to cancel?"
-                          (nzOnConfirm)="weekCancelEdit(item.id, i)"
-                          >取消</a
-                        >
+                          (nzOnConfirm)="weekCancelEdit(item.id,i)">取消</a>
                       </ng-template>
                     </div>
                   </td>
@@ -209,145 +209,118 @@
             </nz-table>
           </div>
         </div>
-      </div>
-    </nz-tab>
 
-    <nz-tab nzTitle="FCP結果保留設定" (nzClick)="changeTab(5)">
-      <div style="background: rgb(255, 255, 255); min-height: 600px">
-        <div nz-col [nzSpan]="14">
-          <nz-collapse style="background-color: aliceblue">
-            <nz-collapse-panel
+        </div>
+      </nz-tab>
+
+
+
+      <nz-tab nzTitle="FCP結果保留設定" (nzClick)="changeTab(5)">
+        <div style="background: rgb(255, 255, 255); min-height: 600px;">
+          <div nz-col [nzSpan]="14">
+            <nz-collapse style="background-color: aliceblue;">
+              <nz-collapse-panel
               *ngFor="let panel of setTab5AddDatePanels"
               [nzHeader]="panel.name"
               [nzActive]="panel.active"
               [nzDisabled]="panel.disabled"
-            >
+              >
               <table>
                 <tr>
                   <td>設定年月</td>
                   <td>
-                    <nz-month-picker
-                      style="width: 110px"
+
+                    <nz-month-picker style="width: 110px;"
                       [(ngModel)]="tab5DateOf_YYYYMM_ForAdd"
                       nzPlaceHolder="年月"
                       (ngModelChange)="FCP_YYYYMMChange($event)"
-                    ></nz-month-picker>
+                      ></nz-month-picker>
+
                   </td>
                   <td>&nbsp;&nbsp;設定日期</td>
                   <td>
-                    <nz-select
-                      style="width: 140px; margin-left: 10px"
-                      nzMode="multiple"
-                      [(ngModel)]="tab5DateOf_DD_ForAdd"
-                      (ngModelChange)="FCPDayChange($event)"
-                    >
-                      <nz-option
-                        *ngFor="let option1 of DayOfMonthList"
-                        [nzValue]="option1"
-                        [nzLabel]="option1.label"
-                      ></nz-option>
-                    </nz-select>
+                    <nz-select style="width: 140px; margin-left:10px;"
+                        nzMode="multiple"
+                        [(ngModel)]="tab5DateOf_DD_ForAdd"
+                        (ngModelChange)="FCPDayChange($event)"
+                      >
+                        <nz-option *ngFor="let option1 of DayOfMonthList"
+                          [nzValue]="option1"
+                          [nzLabel]="option1.label"
+                        ></nz-option>
+                      </nz-select>
                   </td>
                   <td>
                     &nbsp;&nbsp;
                     <button
                       nz-button
-                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+                      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
                       nzType="primary"
                       (click)="insertTab5()"
                     >
-                      <span nz-icon nzType="save" nzTheme="outline"></span>
-                      確認
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    確認
                     </button>
                   </td>
                 </tr>
               </table>
-            </nz-collapse-panel>
-          </nz-collapse>
+
+
+              </nz-collapse-panel>
+            </nz-collapse>
 
           <p></p>
           <div>
-            <nz-table
-              #editSetFCPRSTable
-              nzBordered
-              *ngIf="FCPRSData.length > 0"
-              [nzData]="FCPRSData"
-            >
+            <nz-table #editSetFCPRSTable nzBordered
+                      *ngIf="FCPRSData.length > 0 "
+                      [nzData]="FCPRSData"   >
               <thead>
-                <tr style="width: 80%">
-                  <th
-                    nzWidth="100px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    年-月-日
-                  </th>
-                  <th
-                    nzWidth="100px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    狀態
-                  </th>
-                  <th
-                    nzWidth="100px"
-                    style="text-align: center; background-color: #eee"
-                  >
-                    Action
-                  </th>
+                <tr style="width: 80%;">
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">年-月-日</th>
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">狀態</th>
+                  <th nzWidth="100px" style="text-align:center;background-color: #eee;">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item1 of editSetFCPRSTable.data; index as i">
-                  <td style="text-align: center">
-                    {{ item1.setDate }}
+                <tr *ngFor="let item1 of editSetFCPRSTable.data ; index as i" >
+                  <td style="text-align:center;">
+                    {{item1.setDate}}
                   </td>
-                  <td style="text-align: center">
-                    <ng-container
-                      *ngIf="!item1.editStatus; else statusInputTpl"
-                    >
+                  <td style="text-align:center;">
+
+                    <ng-container *ngIf="!item1.editStatus; else statusInputTpl">
                       {{ item1.STATUS }}
                     </ng-container>
                     <ng-template #statusInputTpl>
-                      <nz-switch
-                        [(ngModel)]="tab5Switch"
-                        nzCheckedChildren="啟用"
-                        nzUnCheckedChildren="停用"
-                      ></nz-switch>
+                      <nz-switch [(ngModel)]="tab5Switch"
+                                 nzCheckedChildren="啟用"
+                                 nzUnCheckedChildren="停用"></nz-switch>
                     </ng-template>
                   </td>
 
-                  <td style="text-align: center">
+                  <td style="text-align:center;">
                     <div class="editable-row-operations">
                       <ng-container *ngIf="!item1.editStatus; else saveTp2">
                         <a
-                          [attr.disabled]="item1.disabledFlag ? true : null"
-                          (click)="statusEditFunc(item1.id, i)"
-                          >修改</a
-                        >
+                          [attr.disabled] = " item1.disabledFlag ? true : null "
+                           (click)="statusEditFunc(item1.id,i)">修改</a>
 
-                        <a
-                          style="margin-left: 15px"
-                          nz-popconfirm
-                          [attr.disabled]="item1.disabledFlag ? true : null"
-                          nzPopconfirmTitle="Sure to delete?"
-                          (nzOnConfirm)="deleteRow(item1.id, 5)"
-                          >刪除</a
-                        >
+                        <a style="margin-left: 15px;"
+                           nz-popconfirm
+                           [attr.disabled] = " item1.disabledFlag ? true : null "
+                           nzPopconfirmTitle="Sure to delete?"
+                           (nzOnConfirm)="deleteRow(item1.id, 5)">刪除</a>
                       </ng-container>
                       <ng-template #saveTp2>
                         <a
-                          [attr.disabled]="item1.disabledFlag ? true : null"
-                          (click)="statusSaveEdit(item1.id, i)"
-                          >確認</a
-                        >
+                        [attr.disabled] = " item1.disabledFlag ? true : null "
+                          (click)="statusSaveEdit(item1.id, i)">確認</a>
 
-                        <a
-                          style="margin-left: 15px"
+                        <a  style="margin-left: 15px;"
                           nz-popconfirm
-                          [attr.disabled]="item1.disabledFlag ? true : null"
+                          [attr.disabled] = " item1.disabledFlag ? true : null "
                           nzPopconfirmTitle="Sure to cancel?"
-                          (nzOnConfirm)="statusCancelEdit(item1.id, i)"
-                          >取消</a
-                        >
+                          (nzOnConfirm)="statusCancelEdit(item1.id,i)">取消</a>
                       </ng-template>
                     </div>
                   </td>
@@ -355,8 +328,10 @@
               </tbody>
             </nz-table>
           </div>
+          </div>
         </div>
-      </div>
-    </nz-tab>
-  </nz-tabset>
+      </nz-tab>
+
+    </nz-tabset>
+
 </nz-content>

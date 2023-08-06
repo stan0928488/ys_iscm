@@ -1,255 +1,129 @@
-<nz-content style="margin: 0 16px">
-  <app-list-pps></app-list-pps>
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+          <ul>
+              <li class="active"><a href="#/commonData/I101"><label style="color:blue">鋼種分類</label></a></li>
+              <li><a href="#/commonData/I102">站別機台關聯表</a></li>
+              <li><a href="#/commonData/I103">設備能力</a></li>
+              <li><a href="#/commonData/I104">整備時間</a></li>
+              <li><a href="#/commonData/I105">大調機</a></li>
+              <li><a href="#/commonData/I106">小調機</a></li>
+              <li><a href="#/commonData/I107">線速工時</a></li>
+              <li><a href="#/commonData/I108">非線速工時</a></li>
+              <li><a href="#/commonData/I109">產率設定</a></li>
+              <li><a href="#/commonData/I110">產能維護</a></li>
+              <li><a href="#/commonData/I111">combine資料設定</a></li>
+              <li><a href="#/commonData/I200">系統設定</a></li>
+          </ul>
+      </tr>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  
 
-  <div style="min-height: 1200px">
+  <div style="min-height: 1200px;">
     <div>
       <button
         nz-button
-        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer"
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);cursor: pointer;"
         nzType="primary"
         (click)="openGradeInput()"
-      >
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
+      ><span nz-icon nzType="plus" nzTheme="outline"></span>
         新增
-      </button>
+      </button>               
       &nbsp;&nbsp;
-      <input
-        type="file"
-        id="fileupload"
-        style="display: inline-block; margin-left: 550px"
-        (change)="incomingfile($event)"
-        placeholder="Upload file"
-        accept=".xlsx, .xls, .csv"
-      />
+      <input type="file" id="fileupload" style="display: inline-block;margin-left: 550px;" (change)="incomingfile($event)" placeholder="Upload file" accept=".xlsx, .xls, .csv">
       <button
         nz-button
-        style="
-          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-          background-color: #4caf50;
-          border: 2px blue none;
-          cursor: pointer;
-        "
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
         nzType="primary"
         (click)="Upload()"
-      >
-        <span nz-icon nzType="upload" nzTheme="outline"></span>
-        E X C E L 匯入
+      ><span nz-icon nzType="upload" nzTheme="outline"></span>
+      E X C E L 匯入
       </button>
       &nbsp;&nbsp;
       <button
         nz-button
-        style="
-          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-          background-color: #4caf50;
-          border: 2px blue none;
-          cursor: pointer;
-        "
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
         nzType="primary"
         (click)="convertToExcel()"
-      >
-        <span nz-icon nzType="download" nzTheme="outline"></span>
+      ><span nz-icon nzType="download" nzTheme="outline"></span>
         E X C E L 匯出
       </button>
-    </div>
-    <div nz-col [nzSpan]="24" style="padding-top: 10px">
-      <nz-table
-        #RowTable1
-        nzBordered
-        [nzData]="displayPPSINP01List"
-        [nzPageIndex]="pageIndex"
-        [nzPageSize]="pageSize"
-        [nzScroll]="{ y: '500px' }"
-      >
+    </div>       
+    <div nz-col [nzSpan]="24" style="padding-top:10px;">
+      <nz-table #RowTable1 nzBordered [nzData]="displayPPSINP01List" [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" [nzScroll]="{ y: '500px' }">
         <thead>
           <tr>
-            <th
-              style="
-                text-align: center;
-                background-color: #eee;
-                padding: 0px;
-                height: 55px;
-                width: 400px;
-              "
-            >
-              鋼種
-              <nz-filter-trigger
-                [nzActive]="searchByGradeNoValue.length > 0"
-                [nzDropdownMenu]="gradeNoMenu"
-              >
-                <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px;width: 400px; "
+            >鋼種
+            <nz-filter-trigger 
+            [nzActive]="searchByGradeNoValue.length > 0" 
+            [nzDropdownMenu]="gradeNoMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
             </th>
-            <th
-              style="
-                text-align: center;
-                background-color: #eee;
-                padding: 0px;
-                height: 55px;
-                width: 400px;
-              "
-            >
-              特殊機台使用
-              <nz-filter-trigger
-                [nzActive]="searchBySpecialEquipCodeValue.length > 0"
-                [nzDropdownMenu]="specialEquipCodeMenu"
-              >
-                <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px;width: 400px; "
+            >特殊機台使用
+            <nz-filter-trigger 
+            [nzActive]="searchBySpecialEquipCodeValue.length > 0" 
+            [nzDropdownMenu]="specialEquipCodeMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
             </th>
-            <th
-              style="
-                text-align: center;
-                background-color: #eee;
-                padding: 0px;
-                height: 55px;
-                width: 400px;
-              "
-            >
-              鋼種類別
-              <nz-filter-trigger
-                [nzActive]="searchByGradeGroupValue.length > 0"
-                [nzDropdownMenu]="gradeGroupMenu"
-              >
-                <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px;width: 400px; "
+            >鋼種類別
+            <nz-filter-trigger 
+            [nzActive]="searchByGradeGroupValue.length > 0" 
+            [nzDropdownMenu]="gradeGroupMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
             </th>
 
-            <th
-              style="
-                text-align: center;
-                background-color: #eee;
-                padding: 0px;
-                height: 55px;
-                width: 400px;
-              "
-            >
-              鋼胚重(KG)
-              <nz-filter-trigger
-                [nzActive]="searchByRollWeightValue.length > 0"
-                [nzDropdownMenu]="gradeGroupMenu"
-              >
-                <span nz-icon nzType="search"></span>
-              </nz-filter-trigger>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px;width: 400px; "
+            >鋼胚重(KG)
+            <nz-filter-trigger 
+            [nzActive]="searchByRollWeightValue.length > 0" 
+            [nzDropdownMenu]="gradeGroupMenu">
+            <span nz-icon nzType="search"></span>
+            </nz-filter-trigger>
             </th>
 
-            <th
-              style="
-                text-align: center;
-                background-color: #eee;
-                padding: 0px;
-                height: 55px;
-                width: 400px;
-              "
-            >
-              Action
-            </th>
+            <th style="text-align:center; background-color: #eee; padding: 0px; height: 55px;width: 400px;">Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let data of RowTable1.data; let i = index"
-            class="editable-row"
-          >
+          <tr *ngFor="let data of RowTable1.data;let i = index" class="editable-row">
             <ng-container *ngIf="!editCache1[data.id].edit; else editTemplate1">
-              <td
-                style="
-                  text-align: center;
-                  padding: 5px;
-                  height: 40px;
-                  width: 25%;
-                "
-              >
-                {{ data.GRADE_NO }}
-              </td>
-              <td
-                style="
-                  text-align: center;
-                  padding: 5px;
-                  height: 40px;
-                  width: 25%;
-                "
-              >
-                {{ data.SPECIAL_EQUIP_CODE }}
-              </td>
-              <td
-                style="
-                  text-align: center;
-                  padding: 5px;
-                  height: 40px;
-                  width: 25%;
-                "
-              >
-                {{ data.GRADE_GROUP }}
-              </td>
-              <td
-                style="
-                  text-align: center;
-                  padding: 5px;
-                  height: 40px;
-                  width: 25%;
-                "
-              >
-                {{ data.ROLL_WEIGHT }}
-              </td>
-              <td
-                style="
-                  text-align: center;
-                  padding: 0px;
-                  height: 40px;
-                  width: 25%;
-                "
-              >
+              <td style="text-align:center; padding: 5px; height: 40px; width: 25%;">{{ data.GRADE_NO }}</td>
+              <td style="text-align:center; padding: 5px; height: 40px; width: 25%;">{{ data.SPECIAL_EQUIP_CODE }}</td>
+              <td style="text-align:center; padding: 5px; height: 40px; width: 25%;">{{ data.GRADE_GROUP }}</td>
+              <td style="text-align:center; padding: 5px; height: 40px; width: 25%;">{{ data.ROLL_WEIGHT }}</td>
+              <td style="text-align:center; padding: 0px; height: 40px; width: 25%;">
                 <a (click)="editRow(data.id, 1)">修改</a>&nbsp;&nbsp;&nbsp;
-                <a
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to delete?"
-                  (nzOnConfirm)="deleteRow(data.id, 1)"
-                  >刪除</a
-                >
+                <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteRow(data.id, 1)">刪除</a>
               </td>
             </ng-container>
 
             <ng-template #editTemplate1>
               <td>
-                <input
-                  nz-width="20%"
-                  nz-input
-                  placeholder="輸入鋼種"
-                  [(ngModel)]="editCache1[data.id].data.GRADE_NO"
-                />
+                <input nz-width="20%" nz-input placeholder="輸入鋼種" [(ngModel)]="editCache1[data.id].data.GRADE_NO" />
               </td>
               <td>
-                <input
-                  nz-width="20%"
-                  nz-input
-                  placeholder="輸入特殊機台使用"
-                  [(ngModel)]="editCache1[data.id].data.SPECIAL_EQUIP_CODE"
-                />
+                <input nz-width="20%" nz-input placeholder="輸入特殊機台使用" [(ngModel)]="editCache1[data.id].data.SPECIAL_EQUIP_CODE" />
               </td>
               <td>
-                <input
-                  nz-width="20%"
-                  nz-input
-                  placeholder="鋼種類別"
-                  [(ngModel)]="editCache1[data.id].data.GRADE_GROUP"
-                />
+                <input nz-width="20%" nz-input placeholder="鋼種類別" [(ngModel)]="editCache1[data.id].data.GRADE_GROUP" />
               </td>
               <td>
-                <input
-                  nz-width="20%"
-                  nz-input
-                  placeholder="鋼胚重(KG)"
-                  [(ngModel)]="editCache1[data.id].data.ROLL_WEIGHT"
-                />
+                <input nz-width="20%" nz-input placeholder="鋼胚重(KG)" [(ngModel)]="editCache1[data.id].data.ROLL_WEIGHT" />
               </td>
               <td>
                 <a (click)="saveEdit(data.id, 1)">確認</a>&nbsp;&nbsp;&nbsp;
-                <a
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to cancel?"
-                  (nzOnConfirm)="cancelEdit(data.id, 1)"
-                  >取消</a
-                >
+                <a nz-popconfirm nzPopconfirmTitle="Sure to cancel?" (nzOnConfirm)="cancelEdit(data.id, 1)">取消</a>
               </td>
             </ng-template>
           </tr>
@@ -279,6 +153,7 @@
     >
     </ag-grid-angular> -->
   </div>
+  
 </nz-content>
 
 <!-- 鋼種新增 -->
@@ -287,123 +162,57 @@
   [nzWidth]="800"
   [nzContent]="gradeInputContent"
   [nzFooter]="gradeInputFooter"
-  (nzOnCancel)="cancelGradeInput()"
->
+  (nzOnCancel)="cancelGradeInput()">
+
   <ng-template #gradeInputContent>
     <div>
-      <table style="border-collapse: separate">
+      <table style="border-collapse: separate;">
+
         <tr>
-          <td
-            style="
-              width: 110px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;設定鋼種
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 22%; color: darkblue"
-              nz-input
-              placeholder="輸入鋼種"
-              [(ngModel)]="GRADE_NO"
-            />
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;設定鋼種</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="輸入鋼種" [(ngModel)]="GRADE_NO" />
           </td>
         </tr>
 
         <tr>
-          <td
-            style="
-              width: 110px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;特殊機台使用
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 22%; color: darkblue"
-              nz-input
-              placeholder="特殊機台使用"
-              [(ngModel)]="SPECIAL_EQUIP_CODE"
-            />
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;特殊機台使用</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="特殊機台使用" [(ngModel)]="SPECIAL_EQUIP_CODE" />
           </td>
         </tr>
 
         <tr>
-          <td
-            style="
-              width: 110px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;鋼種類別
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 22%; color: darkblue"
-              nz-input
-              placeholder="鋼種類別"
-              [(ngModel)]="GRADE_GROUP"
-            />
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼種類別</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="鋼種類別" [(ngModel)]="GRADE_GROUP" />
           </td>
         </tr>
 
         <tr>
-          <td
-            style="
-              width: 110px;
-              background-color: rgb(156, 182, 206);
-              font-weight: bold;
-              border-radius: 5px;
-            "
-          >
-            &nbsp;&nbsp;鋼胚重(KG)
-          </td>
-          <td style="width: 600px; background-color: #eee">
-            &nbsp;
-            <input
-              style="width: 22%; color: darkblue"
-              nz-input
-              placeholder="鋼胚重(KG)"
-              [(ngModel)]="ROLL_WEIGHT"
-            />
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;鋼胚重(KG)</td>
+          <td style = "width: 600px; background-color: #eee;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input placeholder="鋼胚重(KG)" [(ngModel)]="ROLL_WEIGHT" />
           </td>
         </tr>
+
       </table>
     </div>
+    
   </ng-template>
 
   <ng-template #gradeInputFooter>
-    <button nz-button nzType="default" (click)="cancelGradeInput()">
-      取消新增
-    </button>
+    <button nz-button nzType="default" (click)="cancelGradeInput()">取消新增</button>
     <button nz-button nzType="primary" (click)="insertTab1()">確定</button>
   </ng-template>
+
 </nz-modal>
 
 <nz-dropdown-menu #gradeNoMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchByGradeNoValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByGradeNo()"
-        class="search-button"
-      >
-        查詢
-      </button>
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByGradeNo()" class="search-button">查詢</button>
       <button nz-button nzSize="small" (click)="resetByGradeNo()">重設</button>
     </div>
   </div>
@@ -413,18 +222,8 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchBySpecialEquipCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchBySpecialEquipCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetBySpecialEquipCode()">
-        重設
-      </button>
+      <button nz-button nzSize="small" nzType="primary" (click)="searchBySpecialEquipCode()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetBySpecialEquipCode()">重設</button>
     </div>
   </div>
 </nz-dropdown-menu>
@@ -433,18 +232,8 @@
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
       <input type="text" nz-input [(ngModel)]="searchByGradeGroupValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByGradeGroup()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByGradeGroup()">
-        重設
-      </button>
+      <button nz-button nzSize="small" nzType="primary" (click)="searchByGradeGroup()" class="search-button">查詢</button>
+      <button nz-button nzSize="small" (click)="resetByGradeGroup()">重設</button>
     </div>
   </div>
 
@@ -452,18 +241,8 @@
     <div class="ant-table-filter-dropdown">
       <div class="search-box">
         <input type="text" nz-input [(ngModel)]="searchByRollWeightValue" />
-        <button
-          nz-button
-          nzSize="small"
-          nzType="primary"
-          (click)="searchByRollWeight()"
-          class="search-button"
-        >
-          查詢
-        </button>
-        <button nz-button nzSize="small" (click)="resetByRollWeight()">
-          重設
-        </button>
+        <button nz-button nzSize="small" nzType="primary" (click)="searchByRollWeight()" class="search-button">查詢</button>
+        <button nz-button nzSize="small" (click)="resetByRollWeight()">重設</button>
       </div>
     </div>
   </nz-dropdown-menu>

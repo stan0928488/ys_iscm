@@ -128,7 +128,6 @@ import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/Summar
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { OpenMachineRendererComponent } from './pages/PPS/PPSI210/open-machine-renderer-component';
 import { AutoCampaignUpdateSaveCellRenderer } from './pages/PPS/PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
-import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
 
 registerLocaleData(zh);
 
@@ -232,8 +231,7 @@ registerLocaleData(zh);
     BtnCellRendererUpdate,
     SummaryDatePickerCellEditorComponent,
     PPSR310Component,
-    AutoCampaignUpdateSaveCellRenderer,
-    ListPpsComponent,
+    AutoCampaignUpdateSaveCellRenderer
   ],
   imports: [
     BrowserModule,
