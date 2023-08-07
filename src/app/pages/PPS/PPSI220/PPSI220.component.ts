@@ -1226,7 +1226,7 @@ export class PPSI220Component implements AfterViewInit {
 
 
   //convert to Excel and Download
-  exportExcel_暫時沒有使用到(data) {
+  exportExcel_original(data) {
     var titleName = [];
     this.LoadingPage = true;
     this.isVisibleRun = false;
