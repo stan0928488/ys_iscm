@@ -247,27 +247,27 @@ example-box.cdk-drag-disabled {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-::ng-deep .ag-header-cell-label {
-	justify-content: center;
+::ng-deep .ag-theme-PPSI210-custom .ag-header-cell-label {
+    justify-content: center;
 }
 
-::ng-deep .ag-cell-value {
-	text-align: center;
+::ng-deep .ag-theme-PPSI210-custom .ag-cell-value {
+    text-align: center;
 }
 
-::ng-deep .ag-cell {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+::ng-deep .ag-theme-PPSI210-custom .ag-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-::ng-deep .wrap-cell-Text{
-  white-space : pre-wrap;
-  line-height : 1.2;
-  padding-top : 15px;
-  padding-bottom : 15px
+::ng-deep .ag-theme-PPSI210-custom .wrap-cell-Text{
+    white-space : pre-wrap;
+    line-height : 1.2;
+    padding-top : 15px;
+    padding-bottom : 15px
 }
 
-::ng-deep .wrap-header-Text{
-  white-space : pre-wrap;
+::ng-deep .ag-theme-PPSI210-custom .wrap-header-Text{
+    white-space : pre-wrap;
 }
