@@ -40,15 +40,12 @@ export class ConfigService {
         //  }
        
         break;
-      case "ys-webapt1.walsin.com":
-        this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        break;
       case "ys-pps.walsin.corp":
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
-      case "ys-webapp.walsin.com":
-        this.APIURL = `https://${hostName}${APIBODY}`;
-        break;
+      // case "ys-webapp.walsin.com":
+      //   this.APIURL = `https://${hostName}${APIBODY}`;
+      //   break;
       default:
         this.APIURL = `http://${hostName}:8080${APIBODY}`;        
     }

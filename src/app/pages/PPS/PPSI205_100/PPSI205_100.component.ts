@@ -304,14 +304,14 @@ export class PPSI205_100Component implements AfterViewInit {
 
   changeTab(tab): void {
     console.log(tab);
-    if (tab === 1) {
+    /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-    } else if (tab === 2) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
+    } else */if (tab === 2) {
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
     } else if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
     } else if (tab === 4) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=3';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
     } else if (tab === 5) {
       this.getppsfcptb16_ms_cust_sortList();
     }

@@ -6,11 +6,11 @@
     <nz-breadcrumb-item><font size="4">公版設定維護(PPSI205)</font></nz-breadcrumb-item>
   </nz-breadcrumb>
 
-  <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'"  [nzSelectedIndex]="3">
+  <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'"  [nzSelectedIndex]="2">
 
     <!-- 盤元冷抽尺寸優先順序表 -->
-    <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
-    </nz-tab>
+    <!-- <nz-tab nzTitle="盤元冷抽尺寸優先順序" (nzClick)="changeTab(1)">
+    </nz-tab> -->
 
 
     <!-- 401站優先順序表 -->
@@ -37,7 +37,7 @@
             *nzTabLink
             nz-tab-link
             [routerLink]="['/PlanSet/I205']"
-            [queryParams]="{ selectedTabIndex: 3 }"
+            [queryParams]="{ selectedTabIndex: 2 }"
             style="color: black"
             (nzClick)="changeTab(4)"
           >

@@ -1518,7 +1518,10 @@ export class PPSI220Component implements AfterViewInit {
         MS_SORT: _.get(item, "MS_SORT"),
         PLAN_START_TIME: _.get(item, "PLAN_START_TIME"),
         PLAN_END_TIME: _.get(item, "PLAN_END_TIME"),
-        FROZAN_GROUP: _.get(item, "FROZAN_GROUP")
+        FROZAN_GROUP: _.get(item, "FROZAN_GROUP"),
+        FCP_USE_FLAG: _.get(item, "FCP_USE_FLAG"),
+        SALE_ORDER_DIA: _.get(item, "SALE_ORDER_DIA"),
+        SFC_PROCESS: _.get(item, "SFC_PROCESS")
     
       });
       excelData.push(obj);

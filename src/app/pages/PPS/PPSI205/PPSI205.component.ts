@@ -49,6 +49,7 @@ export class PPSI205Component implements AfterViewInit {
   gridApi: GridApi;
   tbppsm102EditCacheList: { [id: string]: { data: any } } = {};
 
+  isTabVisible = false;
   titleArray1 = [
     '月份',
     '站別',
@@ -301,15 +302,15 @@ export class PPSI205Component implements AfterViewInit {
     this.route.queryParams.subscribe((params) => {
       this.selectedTabIndex = +params['selectedTabIndex'] || 0;
       this.innerSelect = +params['innerSelect'] || 0;
+      
     });
-
     this.ngAfterViewInit();
   }
 
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
-    this.getTbppsm101List();
+    this.getTbppsm102List();
     this.forTbppsm100Date = moment(this.currentDate).format(
       'YYYY-MM-DD HH:mm:ss'
     );
@@ -439,19 +440,19 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   changeTab(tab): void {
-    console.log(tab);
-    if (tab === 1) {
+    // this.isTabVisible = false;
+    /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm101List();
-    } else if (tab === 2) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
+    } else */if (tab === 2) {
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
     } else if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
       this.getTbppsm113List();
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=3';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
     } else if (tab === 5) {
       this.getTbppsm100List();
       window.location.href = '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
