@@ -33,7 +33,7 @@
              <span [ngSwitch]="item3.isGroup">
                <!-- the same view can be shown in more than one case -->
                <span *ngSwitchCase="0"><nz-tag>非分群</nz-tag></span>
-               <span *ngSwitchCase="1"> <nz-tag [nzColor]="'#f50'">分群</nz-tag></span>
+               <span *ngSwitchCase="1"> <nz-tag [nzColor]="'#f50'">[分群]</nz-tag></span>
                <!--default case when there are no matches -->
                <span *ngSwitchDefault></span>
              </span>
