@@ -1239,7 +1239,7 @@ export class PPSService {
   }
 
   // 獲取MO站別搬移順序選項
-  getMoSort(){
+  getMoSort() {
     console.log('api service 獲取MO站別搬移順序選項');
     const queryUrl = this.APIURL + `/FCP/I210/getMoSort`;
     console.log(`獲取MO站別搬移順序選項API --> ${queryUrl}`);
@@ -1378,8 +1378,8 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-   // getFCPResRepo 取得表內容
-   getFCPResRepo(_data) {
+  // getFCPResRepo 取得表內容
+  getFCPResRepo(_data) {
     console.log('api service getFCPResRepo');
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
     console.log(queryUrl);
@@ -2032,7 +2032,7 @@ export class PPSService {
 
   insertI109Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I101/insertI109Save`;;
+    let queryUrl = this.APIURL + `/FCP/I101/insertI109Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -2049,7 +2049,7 @@ export class PPSService {
 
   insertI109NonBarSave(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I101/NonBar/insertI109NonBarSave`;;
+    let queryUrl = this.APIURL + `/FCP/I101/NonBar/insertI109NonBarSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -2074,7 +2074,6 @@ export class PPSService {
     console.log(body);
     let queryUrl = this.APIURL + `/FCP/I101/NonBar/del012NonBarTabData/${_ID}`;
     return this.http.post(queryUrl, body, this.httpOptions);
-    
   }
 
   getI109ShopCodeList(_data) {
@@ -2088,5 +2087,4 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109GradeNoList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-
 }
