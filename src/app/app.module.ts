@@ -129,6 +129,7 @@ import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { OpenMachineRendererComponent } from './pages/PPS/PPSI210/open-machine-renderer-component';
 import { AutoCampaignUpdateSaveCellRenderer } from './pages/PPS/PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
 import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
+import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 
 registerLocaleData(zh);
 
@@ -234,6 +235,7 @@ registerLocaleData(zh);
     PPSR310Component,
     AutoCampaignUpdateSaveCellRenderer,
     ListPpsComponent,
+    PPSI201NonBarComponent,
   ],
   imports: [
     BrowserModule,

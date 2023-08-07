@@ -121,6 +121,7 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '出貨進度',
+            field: 'shippingProgress' 
           }
       ]
     },
