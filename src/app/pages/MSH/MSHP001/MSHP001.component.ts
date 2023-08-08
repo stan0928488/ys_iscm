@@ -1874,50 +1874,49 @@ this.handleSelectCarModal() ;
       
       const comitData = [] ;
       this.rowExcelBatchModelData.forEach((item,index,array)=>{
-        if(item.ID === "") {
+       /* if(item.ID === "") {
           this.nzMessageService.error("ID不能為空")
           return ;
-        }
-        if(item.ACT_PST_MACHINE_ADD === "") {
+        } else if(item.ACT_PST_MACHINE_ADD === "") {
           this.nzMessageService.error("實際機台不能為空")
           return ;
-        }
-        if(item.ACT_PST_MACHINE_ADD !== item.PST_MACHINE_ADD  ) {
+        } else if(item.ACT_PST_MACHINE_ADD !== item.PST_MACHINE_ADD  ) {
           if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD ) {
-            this.nzMessageService.error("替換機台時，提換機台必須在允許替換的機台中")
+            this.nzMessageService.error("替換機台時，實際機台必須在允許替換的機台中")
             return ;
           }
          
-        }
+        } else { */
+          let BEST_MACHINE_ADD_Temp = ""
+          if(item.BEST_MACHINE_ADD === undefined || item.BEST_MACHINE_ADD === null) {
+           BEST_MACHINE_ADD_Temp = null
+          } else {
+           BEST_MACHINE_ADD_Temp = item.BEST_MACHINE_ADD
+          }
+   
+          let MACHINE1_ADD_Temp = ""
+          if(item.MACHINE1_ADD === undefined || item.MACHINE1_ADD === null) {
+           MACHINE1_ADD_Temp = null
+          } else {
+           MACHINE1_ADD_Temp = item.MACHINE1_ADD
+          }
+   
+          let MACHINE2_ADD_Temp = ""
+          if(item.MACHINE2_ADD === undefined || item.MACHINE2_ADD === null) {
+           MACHINE2_ADD_Temp = null
+          } else {
+           MACHINE2_ADD_Temp = item.MACHINE2_ADD
+          }
+          let MACHINE3_ADD_Temp = ""
+          if(item.MACHINE3_ADD === undefined || item.MACHINE3_ADD === null) {
+           MACHINE3_ADD_Temp = null
+          } else {
+           MACHINE3_ADD_Temp = item.MACHINE3_ADD
+          }
+          let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD} ;
+          comitData.push(obj) ;
+        //}
 
-       let BEST_MACHINE_ADD_Temp = ""
-       if(item.BEST_MACHINE_ADD === undefined || item.BEST_MACHINE_ADD === null) {
-        BEST_MACHINE_ADD_Temp = null
-       } else {
-        BEST_MACHINE_ADD_Temp = item.BEST_MACHINE_ADD
-       }
-
-       let MACHINE1_ADD_Temp = ""
-       if(item.MACHINE1_ADD === undefined || item.MACHINE1_ADD === null) {
-        MACHINE1_ADD_Temp = null
-       } else {
-        MACHINE1_ADD_Temp = item.MACHINE1_ADD
-       }
-
-       let MACHINE2_ADD_Temp = ""
-       if(item.MACHINE2_ADD === undefined || item.MACHINE2_ADD === null) {
-        MACHINE2_ADD_Temp = null
-       } else {
-        MACHINE2_ADD_Temp = item.MACHINE2_ADD
-       }
-       let MACHINE3_ADD_Temp = ""
-       if(item.MACHINE3_ADD === undefined || item.MACHINE3_ADD === null) {
-        MACHINE3_ADD_Temp = null
-       } else {
-        MACHINE3_ADD_Temp = item.MACHINE3_ADD
-       }
-       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD} ;
-       comitData.push(obj) ;
       })
       //console.log(JSON.stringify(comitData)) ;
       this.handleComitExcelBatchModelConfirmLoading  = true ;
