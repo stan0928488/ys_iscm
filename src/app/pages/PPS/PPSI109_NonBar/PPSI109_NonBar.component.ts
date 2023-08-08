@@ -27,7 +27,6 @@ interface ItemData {
 interface data {
   SCH_SHOP_CODE: string;
   GRADE_NO: string;
-  YIELD_TYPE: string;
   YIELD_VALUE: number;
 }
 
@@ -124,15 +123,18 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     {
       headerName: '站別',
       field: "SCH_SHOP_CODE",
+      editable: true,
       width: 150,
     },
     {
       headerName: '鋼種',
       field: "GRADE_NO",
+      editable: true,
       width: 150,
     },
     {
       headerName: '產率設定值',
+      editable: true,
       field: "YIELD_VALUE",
       width: 150,
     },
@@ -258,7 +260,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   tbppsm012NonBarTmp;
   tbppsm012NonBarList: ItemData[] = [];
-  // resultSet: { [key: string]: { edit: boolean; data: ItemData } } = {};
+  resultSet: { [key: string]: { edit: boolean; rowData: ItemData } } = {};
   displayTbppsm012NonBarList: ItemData[] = [];
   showYieldValue = false;
 
@@ -312,10 +314,6 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     // else if(this.SHOP_CODE === this.SCH_SHOP_CODE && this.GRADE_NO === this.GRADE_NO) {
     //   myObj.message.create("error", "同站別下，「鋼種」不可重複新增");
     //   return;
-    // } 
-    // else if (this.YIELD_VALUE === undefined && this.YIELD_VALUE === null) {
-    //   myObj.message.create("error", "「產率設定值」不可為空");
-    //   return; 
     // } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
@@ -350,8 +348,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // cancel
   cancelEdit(id: number): void {
     const index = this.tbppsm012NonBarList.findIndex(item => item.ID === id);
-    this.editCache[id] = {
-      data: { ...this.tbppsm012NonBarList[index] },
+    this.resultSet[id] = {
+      rowData: { ...this.tbppsm012NonBarList[index] },
       edit: false
     };
   }
@@ -360,15 +358,15 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // update Save
   saveEdit(rowData:any,id: number): void {
     let myObj = this;
-    // if (this.editCache[id].data.SCH_SHOP_CODE === undefined) {
-    //   myObj.message.create("error", "「站別」不可為空");
-    //   return;
-    // } else if (this.editCache[id].data.GRADE_NO === undefined) {
-    //   myObj.message.create("error", "「鋼種」不可為空");
-    //   return;
-    // } else if (this.editCache[id].data.YIELD_VALUE === undefined) {
-    //   myObj.message.create("error", "「產率設定值」不可為空");
-    // } else {
+    console.log(this.resultSet)
+    // e.rowData.idx
+    if (this.resultSet[id].rowData.SCH_SHOP_CODE === undefined) {
+      myObj.message.create("error", "「站別」不可為空");
+      return;
+    } else if (this.resultSet[id].rowData.GRADE_NO === undefined) {
+      myObj.message.create("error", "「鋼種」不可為空");
+      return;
+    } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
@@ -377,7 +375,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
         nzOnCancel: () =>
           console.log("cancel")
       });
-    // }
+    }
   }
   
 
@@ -393,9 +391,9 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
 
   updEditCache(): void {
     this.tbppsm012NonBarList.forEach(item => {
-      this.editCache[item.ID] = {
+      this.resultSet[item.ID] = {
         edit: false,
-        data: { ...item }
+        rowData: { ...item }
       };
     });
   }
@@ -420,8 +418,6 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
           this.SCH_SHOP_CODE = undefined;
           this.GRADE_NO = undefined;
           this.YIELD_VALUE = undefined;
-          this.USERNAME = undefined;
-          this.datetime = undefined;
           this.onInit();
           this.getTbppsm012NoBarList();
           this.sucessMSG("新增成功", ``);
@@ -450,7 +446,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
         SCH_SHOP_CODE : rowData.SCH_SHOP_CODE,
         GRADE_NO : rowData.GRADE_NO,
         YIELD_VALUE : rowData.YIELD_VALUE,
-        USERNAME : this.USERNAME
+        USERNAME : this.USERNAME,
+        DATETIME : this.dateTimeFormatter,
       })
 
       myObj.PPSService.upd012NonBarData(obj).subscribe(res => {
@@ -459,7 +456,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
           this.sucessMSG("修改成功", ``);
           const index = this.tbppsm012NonBarList.findIndex(item => item.idx === _id);
           Object.assign(this.tbppsm012NonBarList[index], rowData);
-          this.editCache[_id].edit = false;
+          this.resultSet[_id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -477,7 +474,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     let myObj = this;
     return new Promise((resolve, reject) => {
       console.log(_id);
-      console.log(this.editCache);
+      console.log(this.resultSet);
       let id = this.tbppsm012NonBarList[_id].ID;
       myObj.PPSService.del012NonBarTabData(id).subscribe(res => {
         if(res[0].MSG === "Y") {
@@ -690,8 +687,6 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   //============== 新增資料之彈出視窗 =====================
   // 新增產率設定彈出視窗 
   openYieldDialog() : void {
-    this.getI109ShopCodeList();
-    this.getI109GradeNoList();
     this.isVisibleYieldDialog = true;
   }
    // 關閉產率設定彈出視窗
