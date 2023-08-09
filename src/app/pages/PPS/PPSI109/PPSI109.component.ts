@@ -26,8 +26,6 @@ interface ItemData {
 }
 
 interface ItemData {
-  // ID: number;
-  // PLAN_CODE: string;
   SCH_SHOP_CODE: string;
   EQUIP_GROUP: string;
   YIELD_TYPE: string;
@@ -246,13 +244,13 @@ export class PPSI109Component implements AfterViewInit {
   // update Save
   saveEdit(rowData:any): void {
     let myObj = this;
-    // if (rowData.SCH_SHOP_CODE === undefined) {
-    //   myObj.message.create("error", "「站別」不可為空");
-    //   return;
-    // } else if ( rowData.EQUIP_GROUP === undefined) {
-    //   myObj.message.create("error", "「機群」不可為空");
-    //   return;
-    // } else { 
+    if (rowData.SCH_SHOP_CODE === undefined) {
+      myObj.message.create("error", "「站別」不可為空");
+      return;
+    } else if ( rowData.EQUIP_GROUP === undefined) {
+      myObj.message.create("error", "「機群」不可為空");
+      return;
+    } else { 
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
@@ -261,7 +259,7 @@ export class PPSI109Component implements AfterViewInit {
         nzOnCancel: () =>
           console.log("cancel")
       });
-    // }
+    }
   }
   
 
@@ -290,10 +288,12 @@ export class PPSI109Component implements AfterViewInit {
         EQUIP_GROUP : rowData.EQUIP_GROUP,
         YIELD_TYPE : rowData.YIELD_TYPE,
         YIELD_VALUE : rowData.YIELD_VALUE,
-        USERNAME : this.USERNAME
+        USERNAME : this.USERNAME,
+        DATETIME : this.dateTimeFormatter,   
       })
       myObj.PPSService.upd012BarData(obj).subscribe(res => {
         if(res[0].MSG === "Y") {
+          this.onInit();
           this.sucessMSG("修改成功", ``);
 
           const index = this.tbppsm012List.findIndex(item => item.ID === rowData);
@@ -380,11 +380,11 @@ export class PPSI109Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        USERNAME : this.USERNAME,
         SCH_SHOP_CODE : this.SCH_SHOP_CODE,
         EQUIP_GROUP : this.EQUIP_GROUP,
         YIELD_TYPE : this.YIELD_TYPE,
         YIELD_VALUE : this.YIELD_VALUE,
+        USERNAME : this.USERNAME,
         DATETIME : this.dateTimeFormatter,
       })
 
@@ -392,12 +392,6 @@ export class PPSI109Component implements AfterViewInit {
 
         console.log(res)
         if(res[0].MSG === "Y") {
-          this.USERNAME = undefined;
-          this.SCH_SHOP_CODE = undefined;
-          this.EQUIP_GROUP = undefined;
-          this.YIELD_TYPE = undefined;
-          this.YIELD_VALUE = undefined;
-          this.datetime = undefined;
           this.gettbppsm012List();
           this.sucessMSG("新增成功", ``);
           this.isVisibleYieldDialog = false;
@@ -480,8 +474,11 @@ export class PPSI109Component implements AfterViewInit {
     }
   }
   clearFile() {
-    document.getElementsByTagName('input')[0].value = '';
-
+    var objFile = document.getElementsByTagName('input')[0];
+    console.log(objFile.value + "已清除");
+    objFile.value = "";
+    console.log(this.file)
+    console.log(JSON.stringify(this.file))
   }
 
   Upload() {
@@ -548,22 +545,21 @@ export class PPSI109Component implements AfterViewInit {
 
       }else{
         this.importdata_repeat.push(allData);
-
         if(_data[i]['站別'] == undefined)
           _data[i]['站別'] = '';
         if(_data[i]['機群'] == undefined)
           _data[i]['機群'] = '';
-        if(_data[i]['設定類型'] == undefined)
-          _data[i]['設定類型'] = '';
-        if(_data[i]['設定值'] == undefined)
-          _data[i]['設定值'] = '';
+        if(_data[i]['產率設定類型'] == undefined)
+          _data[i]['產率設定類型'] = '';
+        if(_data[i]['產率設定值'] == undefined)
+          _data[i]['產率設定值'] = '';
       }  
         upload_data.push({
-          USERNAME : this.USERNAME,
           SCH_SHOP_CODE: _data[i]['站別'] ,
           EQUIP_GROUP: _data[i]['機群'],
-          YIELD_TYPE: _data[i]['設定類型'],
-          YIELD_VALUE: _data[i]['設定值'],
+          YIELD_TYPE: _data[i]['產率設定類型'],
+          YIELD_VALUE: _data[i]['產率設定值'],
+          USERNAME : this.USERNAME,
           DATETIME : this.dateTimeFormatter,
         })
       }
@@ -623,7 +619,7 @@ export class PPSI109Component implements AfterViewInit {
       SCH_SHOP_CODE === '' ||
       EQUIP_GROUP === '' ||
       YIELD_TYPE === '' ||
-      YIELD_VALUE === '' 
+      YIELD_VALUE === ''
     ) {
       this.errorMSG('錯誤', '有欄位尚未填寫完畢，請檢查');
       return;
@@ -703,11 +699,11 @@ export class PPSI109Component implements AfterViewInit {
   updateOnClick2(e) {
     console.log(e);
     console.log("rowData = " , e.params.node.data);
-    this.upd012BarData(e.params.node.data)
+    this.save012_dtlRow(e.params.node.rowIndex, e.params.node.data);
   }
 
   calcelOnClick3(e) {
-    this.cancel012_dtlRow(e.rowData.node.data);
+    this.cancel012_dtlRow(e.params.node.data);
   }
 
   excelExport() {

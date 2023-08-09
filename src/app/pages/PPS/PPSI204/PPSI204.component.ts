@@ -4,6 +4,8 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
+import { ExcelService } from "src/app/services/common/excel.service";
+import * as XLSX from 'xlsx';
 import * as _ from "lodash";
 
 
@@ -38,6 +40,10 @@ export class PPSI204Component implements AfterViewInit {
   loading = false; //loaging data flag
   USERNAME;
   PLANT_CODE;
+  file:File;
+  importdata = [];
+  importdata_new = [];
+  arrayBuffer:any;
 
 
   // Campaign限制
@@ -70,13 +76,14 @@ export class PPSI204Component implements AfterViewInit {
   searchStartTimeValue = '';
   searchEndTimeValue = '';
 
-
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private excelService: ExcelService,
+
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -582,6 +589,209 @@ export class PPSI204Component implements AfterViewInit {
     this.ppsInp16ListFilter("END_TIME", this.searchEndTimeValue);
   }
 
+  // 匯出 Excel
+  convertToExcel() {
+    let data;
+    let fileName;
+    let titleArray = [];
+    if(this.PPSINP16List.length > 0) {
+      data = this.formatDataForExcel(this.PPSINP16List);
+      fileName = `Campaign限制資料_直棒`;
+      titleArray = ['站別', '機台', 'Campaign ID', '欄位', '條件', '參數', '產出尺寸MIN', '產出尺寸MAX', '抽數別', '交期區間MIN', '交期區間MAX', '生產日期 起', '生產日期 迄'];
+    } else {
+      this.errorMSG("匯出失敗", "Campaign 限制資料內目前無資料");
+      return;
+    }
+    this.excelService.exportAsExcelFile(data, fileName, titleArray);
+  }
 
+  formatDataForExcel(_displayData) {
+    console.log("_displayData");
+    let excelData = [];
+    for (let item of _displayData) {
+      let obj = {};
+      _.extend(obj, {
+        SHOP_CODE_SCHE: _.get(item, "SHOP_CODE_SCHE"),
+        CHOOSE_EQUIP_CODE: _.get(item, "CHOOSE_EQUIP_CODE"),
+        COMPAIGN_ID: _.get(item, "COMPAIGN_ID"),
+        PARAMETER_COL: _.get(item, "PARAMETER_COL"),
+        PARAMETER_CONDITION: _.get(item, "PARAMETER_CONDITION"),
+        PARAMETER_NAME: _.get(item, "PARAMETER_NAME"),
+        TURN_DIA_MAX_MIN: _.get(item, "TURN_DIA_MAX_MIN"),
+        TURN_DIA_MAX_MAX: _.get(item, "TURN_DIA_MAX_MAX"),
+        SCHE_TYPE: _.get(item, "SCHE_TYPE"),
+        DATA_DELIVERY_RANGE_MIN: _.get(item, "DATA_DELIVERY_RANGE_MIN"),
+        DATA_DELIVERY_RANGE_MAX: _.get(item, "DATA_DELIVERY_RANGE_MAX"),
+        START_TIME: _.get(item, "START_TIME"),
+        END_TIME: _.get(item, "END_TIME"),
+      });
+      excelData.push(obj);
+    }
+    console.log(excelData);
+    return excelData;
+  }
+
+ // 匯入 Excel，excel檔名
+  incomingfile(event) {
+    this.file = event.target.files[0]; 
+    console.log("incomingfile e : " + this.file);
+    let lastname = this.file.name.split('.').pop();
+    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+      this.clearFile();
+      return;
+    }
+  }
+
+  clearFile() {
+    var objFile = document.getElementsByTagName('input')[0];
+    console.log(objFile.value + "已清除資料");
+    objFile.value = "";
+    console.log(this.file)
+    console.log(JSON.stringify(this.file))
+  }
+
+  Upload() {
+    let value = document.getElementsByTagName('input')[0].value;
+    let lastname = this.file.name.split('.').pop();
+    console.log("incomingfile e2 : " + this.file);
+      if(value === null) {
+          this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
+          this.clearFile();
+        } else if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
+          this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
+          this.clearFile();
+          return;
+        } else {
+          this.Excelimport();
+        }
+    }
+
+  // EXCEL 樣板內資料取得及檢誤
+  Excelimport() {
+    let fileReader = new FileReader();
+    this.importdata = [];
+    fileReader.onload = (e) => {
+      this.arrayBuffer = fileReader.result;
+      var data = new Uint8Array(this.arrayBuffer);
+      var arr = new Array();
+      for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+      var bstr = arr.join("");
+      var workbook = XLSX.read(bstr, {type:"binary"});
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet:any = workbook.Sheets[first_sheet_name];
+      this.importdata = XLSX.utils.sheet_to_json(worksheet, {raw:true});
+
+      this.checkTemplate(worksheet, this.importdata);
+    }
+      fileReader.readAsArrayBuffer(this.file);
+  }
+
+  // EXCEL 匯入樣版檢查
+  checkTemplate(worksheet, importdata) {
+    if(worksheet.A1 === undefined || worksheet.B1 === undefined || worksheet.C1 === undefined || worksheet.D1 === undefined || 
+      worksheet.E1 === undefined || worksheet.F1 === undefined || worksheet.G1 === undefined || worksheet.H1 === undefined || 
+      worksheet.I1 === undefined || worksheet.J1 === undefined || worksheet.K1 === undefined || worksheet.L1 === undefined || worksheet.M1 === undefined) {
+      this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+      this.clearFile();
+      return;
+    } else if(worksheet.A1.v !== "站別" || worksheet.B1.v !== "機台" || worksheet.C1.v !== "Campaign ID" || worksheet.D1.v !== "欄位" || 
+    worksheet.E1.v !== "條件" || worksheet.F1.v !== "參數" || worksheet.G1.v !== "產出尺寸MIN" || worksheet.H1.v !== "產出尺寸MAX" || 
+    worksheet.I1.v !== "抽數別" || worksheet.J1.v !== "交期區間MIN" || worksheet.K1.v !== "交期區間MAX" || worksheet.L1.v !== "生產日期 起" || worksheet.M1.v !== "生產日期 迄") {
+      this.errorMSG('檔案樣板欄位表頭錯誤', '請先下載資料後，再透過該檔案調整上傳。');
+      this.clearFile();
+      return;
+    } else {
+        this.importExcel(importdata);
+    }
+  }
+
+  importExcel(_data) {
+    console.log("EXCEL 資料上傳檢核開始");
+    var upload_data = [];
+    for(let i=0; i < _data.length; i++) {
+      let allData = JSON.stringify(_data[i]);
+      console.log(_data[i]);
+        this.importdata_new.push(allData);
+        if(_data[i]['站別'] == undefined)
+          _data[i]['站別'] = '';
+        if(_data[i]['機台'] == undefined)
+          _data[i]['機台'] = '';
+        if(_data[i]['Campaign ID'] == undefined)
+          _data[i]['Campaign ID'] = '';
+        if(_data[i]['欄位'] == undefined)
+          _data[i]['欄位'] = '';
+        if(_data[i]['條件'] == undefined)
+          _data[i]['條件'] = '';
+        if(_data[i]['參數'] == undefined)
+          _data[i]['參數'] = '';
+        if(_data[i]['產出尺寸MIN'] == undefined)
+          _data[i]['產出尺寸MIN'] = '';
+        if(_data[i]['產出尺寸MAX'] == undefined)
+          _data[i]['產出尺寸MAX'] = '';
+        if(_data[i]['抽數別'] == undefined)
+          _data[i]['抽數別'] = '';
+        if(_data[i]['交期區間MIN'] == undefined)
+          _data[i]['交期區間MIN'] = '';
+        if(_data[i]['交期區間MAX'] == undefined)
+          _data[i]['交期區間MAX'] = '';
+        if(_data[i]['生產日期 起'] == undefined)
+          _data[i]['生產日期 起'] = '';
+        if(_data[i]['生產日期 迄'] == undefined)
+          _data[i]['生產日期 迄'] = '';
+
+        upload_data.push({
+          SHOP_CODE_SCHE: _data[i]['站別'] ,
+          CHOOSE_EQUIP_CODE: _data[i]['機台'],
+          COMPAIGN_ID: _data[i]['Campaign ID'],
+          PARAMETER_COL: _data[i]['欄位'],
+          PARAMETER_CONDITION: _data[i]['條件'],
+          PARAMETER_NAME: _data[i]['參數'],
+          TURN_DIA_MAX_MIN: _data[i]['產出尺寸MIN'],
+          TURN_DIA_MAX_MAX: _data[i]['產出尺寸MAX'],
+          SCHE_TYPE: _data[i]['抽數別'],
+          DATA_DELIVERY_RANGE_MIN: _data[i]['交期區間MIN'],
+          DATA_DELIVERY_RANGE_MAX: _data[i]['交期區間MAX'],
+          START_TIME: _data[i]['生產日期 起'],
+          END_TIME: _data[i]['生產日期 迄'],
+        })
+      }
+
+      console.log(upload_data);
+      return new Promise((resolve, reject) => {
+        console.log("匯入開始");
+        this.LoadingPage = true;
+        let myObj = this;
+        let obj = {};
+        obj = {
+          EXCELDATA: upload_data
+        };
+  
+        console.log("EXCELDATA:"+ obj);
+        myObj.PPSService.importExcelPPSI116(obj).subscribe(res => {
+          console.log("importExcelPPSI116");
+          if(res[0].MSG === "Y") { 
+            this.loading = false;
+            this.LoadingPage = false;
+            
+            this.sucessMSG("EXCEL上傳成功", "");
+            this.clearFile();
+            this.getPPSINP16List();
+          }
+          else {
+            this.errorMSG("匯入錯誤", res[0].MSG);
+            this.clearFile();
+            this.loading = false;
+            this.LoadingPage = false;
+          }
+        },err => {
+          reject('upload fail');
+          this.errorMSG("修改存檔失敗", "後台存檔錯誤，請聯繫系統工程師");
+          this.loading = false;
+          this.LoadingPage = false;
+        })
+      });
+      this.getPPSINP16List();
+    }
 
 }
