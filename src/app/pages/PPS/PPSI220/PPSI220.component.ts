@@ -166,7 +166,6 @@ export class PPSI220Component implements AfterViewInit {
       headerClass:'wrap-header-Text',
       cellClass:'wrap-cell-Text',
       valueFormatter : (params: ValueFormatterParams) : string => {
-        this.getMoSortList();
         let formatValue = null;
         this.moSortList.some(item =>{
           if(item.method === params.value) {
@@ -257,10 +256,11 @@ export class PPSI220Component implements AfterViewInit {
     };
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPlanDataList();
     this.getRunFCPCount();
+    await this.getMoSortList();
     
     if(this.USERNAME === 'UR10167' || this.USERNAME === 'UR07210' || this.USERNAME === 'UR10369' || this.USERNAME === 'UR11994' ||
        this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084' || this.USERNAME === 'UR11118') {
@@ -319,7 +319,6 @@ export class PPSI220Component implements AfterViewInit {
 
   // 撈取 sorting 表
   async getShopSortingList(_Mseqno) {
-    this.getMoSortList();
     this.shopSortLoading = true;
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(res => {

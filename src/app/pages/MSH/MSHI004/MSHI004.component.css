@@ -7,27 +7,27 @@
     align-items: center;
 }
 
-::ng-deep .ag-header-cell-label {
+::ng-deep .ag-theme-MSHI004-custom .ag-header-cell-label {
 	justify-content: center;
 }
 
-::ng-deep .ag-cell-value {
+::ng-deep .ag-theme-MSHI004-custom .ag-cell-value {
 	text-align: center;
 }
 
-::ng-deep .header-editable-color { 
+::ng-deep .ag-theme-MSHI004-custom .header-editable-color { 
     background-color: gold;
 }
 
-::ng-deep .cell-editable-color{
+::ng-deep .ag-theme-MSHI004-custom .cell-editable-color{
     background-color: lightblue;
 }
 
-::ng-deep .ag-header-cell{
+::ng-deep .ag-theme-MSHI004-custom .ag-header-cell{
   padding: 0px;
 }
 
-::ng-deep .ag-cell{
+::ng-deep .ag-theme-MSHI004-custom .ag-cell{
   padding:0px;
 }
 

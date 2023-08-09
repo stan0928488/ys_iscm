@@ -8,6 +8,7 @@ import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } f
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-PPSR308',
@@ -116,6 +117,7 @@ export class PPSR308Component implements OnInit {
             children: [{
               pinned: 'left',
               headerName: 'B.訂單餘量',
+              field: "orderBalance",
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
@@ -526,8 +528,7 @@ export class PPSR308Component implements OnInit {
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
       } else {
-        this.message.error('無資料');
-        return;
+        this.message.error("版次:"+this.searchData.selectedVer_default+"無資料");
       }
       this.isSpinning = false;
     },err => {
@@ -622,6 +623,10 @@ export class PPSR308Component implements OnInit {
     });
   }
   
+  exportPDF() {
+    const dataURI = 'https://drive.google.com/file/d/1yInal584Dbpw0pFQZSODl9lU-uZECo-t/view?usp=sharing';
+    saveAs(dataURI ,'出貨計畫表相關說明.pdf');
+  }
 }
 
 interface data {
