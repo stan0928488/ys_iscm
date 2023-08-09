@@ -130,7 +130,6 @@
     [rowData]="rowData"
     [columnDefs]="outsideColumnDefs">
     [enableCellTextSelection]="true"
-    [ensureDomOrder]="true"
     [getRowId]="getRowId"
     (cellClicked)="onCellClicked($event)"
    
@@ -188,7 +187,6 @@
         [suppressScrollOnNewData] = "true"
         [animateRows]="true"
         [enableCellTextSelection]="true"
-        [ensureDomOrder]="true"
         [rowData]="rowSortedData"
         [columnDefs]="columnDefs">
         </ag-grid-angular>
