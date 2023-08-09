@@ -116,6 +116,7 @@ export class PPSR308Component implements OnInit {
             children: [{
               pinned: 'left',
               headerName: 'B.訂單餘量',
+              field: "orderBalance",
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
@@ -526,8 +527,7 @@ export class PPSR308Component implements OnInit {
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
       } else {
-        this.message.error('無資料');
-        return;
+        this.message.error("版次:"+this.searchData.selectedVer_default+"無資料");
       }
       this.isSpinning = false;
     },err => {

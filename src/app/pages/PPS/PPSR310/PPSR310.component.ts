@@ -95,7 +95,7 @@ export class PPSR310Component implements OnInit {
         children: [
             { 
               headerName: '總量',
-              field: 'orderBalanceWeight' 
+              field: 'orderbalanceweight' 
             }
         ]
     },
@@ -223,8 +223,7 @@ export class PPSR310Component implements OnInit {
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
       } else {
-        this.message.error('無資料');
-        return;
+        this.message.error("版次:"+this.searchData.selectedVer_default+"無資料");
       }
       this.isSpinning = false;
     },err => {
