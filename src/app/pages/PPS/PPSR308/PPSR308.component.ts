@@ -116,6 +116,7 @@ export class PPSR308Component implements OnInit {
             children: [{
               pinned: 'left',
               headerName: 'B.訂單餘量',
+              field: "orderBalance",
               width:120,
               cellStyle: params => {
                 if (params.value < 0) {
