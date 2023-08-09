@@ -8,6 +8,7 @@ import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } f
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-PPSR308',
@@ -622,6 +623,10 @@ export class PPSR308Component implements OnInit {
     });
   }
   
+  exportPDF() {
+    const dataURI = 'https://drive.google.com/file/d/1yInal584Dbpw0pFQZSODl9lU-uZECo-t/view?usp=sharing';
+    saveAs(dataURI ,'出貨計畫表相關說明.pdf');
+  }
 }
 
 interface data {
