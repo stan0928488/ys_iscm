@@ -304,7 +304,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
-    this.getPPSService.getPickerShopEQUIPNEW('1', '　').subscribe(res => {
+    this.getPPSService.getPickerShopEQUIPNEW('3', '　').subscribe(res => {
       console.log("SHOP_CODEList success");
       this.SHOP_CODEList = res;
       console.log("this.SHOP_CODEList :" + JSON.stringify(this.SHOP_CODEList));
@@ -313,6 +313,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
       for (let i = 0; i < this.SHOP_CODEList.length; i++) {
         newres.push(this.SHOP_CODEList[i].SHOP_CODE);
       }
+      newres = Array.from(new Set(newres));
       this.SHOP_splitList = _.chunk(newres, 13);    // list 13組 一分群
       console.log("this.SHOP_CODEList chunk  :" + JSON.stringify(this.SHOP_splitList));
       myObj.loading = false;
@@ -364,7 +365,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
       this.loading = true;
       this.LoadingPage = true;
       let myObj = this;
-      this.getPPSService.getPickerShopEQUIPNEW('2', _ShopArr.toString()).subscribe(res => {
+      this.getPPSService.getPickerShopEQUIPNEW('3', _ShopArr.toString()).subscribe(res => {
         console.log("EQUIP_CODEList success");
         this.EQUIP_CODEList = res;
         console.log("幾台數據網絡獲取EQUIP_CODEList：" + JSON.stringify(this.EQUIP_CODEList));
@@ -372,6 +373,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
         for (let i = 0; i < this.EQUIP_CODEList.length; i++) {
           newres.push({ value: this.EQUIP_CODEList[i].EQUIP_CODE, checked: false, shopCode: this.EQUIP_CODEList[i].SHOP_CODE });
         }
+        newres = Array.from(new Set(newres));
         if (this.PickEquipCode.length > 0) {
           for (let j = 0; j < newres.length; j++) {    // 判斷目前機台及已挑選機台
             for (let k = 0; k < this.PickEquipCode.length; k++) {
