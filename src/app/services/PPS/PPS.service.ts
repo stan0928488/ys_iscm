@@ -2087,4 +2087,13 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109GradeNoList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  //importPPSI116Excel
+  importExcelPPSI116(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/I116/importExcelPPSI116`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 }
