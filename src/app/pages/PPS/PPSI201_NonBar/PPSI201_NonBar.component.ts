@@ -330,7 +330,12 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
-    let comitParamete = { pageNum: this.pageNum, pageSize: this.pageSize, queryKey: this.queryShopAndCode.toString() };
+    let comitParamete = { 
+      type:"TYPE_NON_STRAIGHT_ROD",
+      pageNum: this.pageNum, 
+      pageSize: this.pageSize,
+      queryKey: this.queryShopAndCode.toString() 
+    };
     //this.getPPSService.getSetShopEQUIP(this.pageNum, this.pageSize,this.queryShopAndCode.toString()).subscribe(res => {
     console.log("查詢數據:" + JSON.stringify(comitParamete));
     myObj.getPPSService.getSetShopEQUIP(comitParamete).subscribe(res => {
