@@ -747,7 +747,12 @@ export class PPSI201Component implements AfterViewInit {
 
     let myObj = this;
     let exportData = [];
-    let comitParamete = { pageNum: 1, pageSize: 1000, queryKey: this.queryShopAndCode.toString() };
+    let comitParamete = { 
+      type:"TYPE_STRAIGHT_ROD",
+      pageNum: 1, 
+      pageSize: 1000, 
+      queryKey: this.queryShopAndCode.toString() 
+    };
     console.log("excel匯出查詢數據:" + JSON.stringify(comitParamete));
     myObj.getPPSService.getSetShopEQUIP(comitParamete).subscribe(res => {
       let result: any = res;
