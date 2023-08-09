@@ -2087,4 +2087,22 @@ export class PPSService {
     let queryUrl = this.APIURL + `/FCP/I101/NonBar/getI109GradeNoList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  getShipRepoEditionList(){
+    console.log('Api Service 獲取報表維護版次');
+    let queryUrl = this.APIURL + `/FCP/R311/getShipRepoEditionList`;
+    console.log(`Api Service 獲取報表維護版次 url -> ${queryUrl}`);
+    return this.http.get(queryUrl);
+  }
+
+  getPPSR311Data(edition : string){
+    console.log('Api Service 獲取訂單結轉資料');
+    let queryUrl = `${this.APIURL}/FCP/R311/getPPSR311Data/${edition}`;
+    console.log(`Api Service 獲取訂單節轉資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取訂單節轉資料 參數 -> ${edition}`);
+    return this.http.get(queryUrl);
+  }
+
+
+  
 }

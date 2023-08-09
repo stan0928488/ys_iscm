@@ -1,0 +1,17 @@
+<nz-content style="margin:0 16px;">
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+        <app-list-ship-repo></app-list-ship-repo>
+        <div style="min-height: 1200px;">
+            <div style ="width:80%;">
+                版次 :
+                <nz-select style=" margin-left:10px; margin-right:10px; width: 160px;" nzShowSearch  nzPlaceHolder="選擇版次" [(ngModel)]="edition" (nzOpenChange)="getEditions()">
+                <nz-option *ngFor="let edition of editionList ;let i = index" [nzLabel]="edition" [nzValue]="edition"></nz-option>
+                <nz-option *ngIf="editionsLoading" nzDisabled nzCustomContent>
+                    <span nz-icon nzType="loading" class="loading-icon"></span>
+                    版次載入中...
+                </nz-option>
+                </nz-select> 
+            </div> 
+        </div> 
+    </nz-spin>
+</nz-content>

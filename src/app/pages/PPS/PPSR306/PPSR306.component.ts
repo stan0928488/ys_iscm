@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
+import { ListShipRepoDataTransferService } from "../list-ship-repo/ListShipRepoDataTransferService";
 interface data {
 
 }
@@ -22,6 +23,8 @@ interface data {
 })
 
 export class PPSR306Component implements AfterViewInit {
+
+  // 
 
 
   USERNAME;
@@ -76,16 +79,22 @@ export class PPSR306Component implements AfterViewInit {
     private Modal: NzModalService,
     private excelService: ExcelService,
     private route: ActivatedRoute,
+    private listShipRepoDataTransferService:ListShipRepoDataTransferService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
-    
   }
 
   ngOnInit(){
     this.edition = this.route.snapshot.queryParamMap.has('edition')?this.route.snapshot.queryParamMap.get('edition'):'';
     this.date = this.route.snapshot.queryParamMap.has('date')?this.route.snapshot.queryParamMap.get('date'):'';
+
+    if(!_.isEmpty(this.edition)){
+      this.listShipRepoDataTransferService.setEdition(this.edition);
+    }
+
+    this.listShipRepoDataTransferService.setSelectedPage("R306");
     
   }
 
@@ -109,11 +118,13 @@ export class PPSR306Component implements AfterViewInit {
 
       let result : any = res;
 
-      if(this.edition == '')
+      if(this.edition == '') {
         this.edition = result[0];
-      else
+      }
+      else{
+        this.listShipRepoDataTransferService.setEdition(this.edition);
         this.redirect307Url = this.R307Url.concat("?edition=").concat(this.edition);
-
+      }
       this.editionList = result;
       this.isLoading = false;
       
@@ -151,8 +162,10 @@ export class PPSR306Component implements AfterViewInit {
 
   onEditionChange(result: string): void {
         console.log('onChange: ', result);
-        if (result != null)
+        if (result != null){
+          this.listShipRepoDataTransferService.setEdition(this.edition);
           this.redirect307Url = this.R307Url.concat("?edition=").concat(this.edition);
+        }
         else
           this.redirect307Url = this.R307Url;
   }
