@@ -19,13 +19,13 @@ import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
   }
 
 @Component({
-  selector: 'app-PPSR302',
-  templateUrl: './PPSR302.component.html',
-  styleUrls: ['./PPSR302.component.scss'],
+  selector: 'app-PPSR302_coil',
+  templateUrl: './PPSR302_coil.component.html',
+  styleUrls: ['./PPSR302_coil.component.scss'],
   providers:[NzMessageService,NzModalService,DatePipe]
 })
 
-export class PPSR302Component implements OnInit {
+export class PPSR302_coilComponent implements OnInit {
 // 测试提交
   constructor(
     private nzInputModule:NzInputModule ,
@@ -473,7 +473,8 @@ export class PPSR302Component implements OnInit {
       pointStatus:this.selectedVer.pointStatus,
       searchData:this.searchData
     }
-    myObj.getPPSService.getR302DelayDataList("", paramete).subscribe(res => {
+    console.log("fcpVer : " + this.selectedVer.value)
+    myObj.getPPSService.getR302DelayDataList("_coil", paramete).subscribe(res => {
       this.delayModalLoading = false
       this.modalDelayDataExportList = [] ;
       // console.log("comitData :" + JSON.stringify(res)) ;
@@ -637,7 +638,7 @@ export class PPSR302Component implements OnInit {
       tableLeftList: this.tableSplitData,
       searchData:this.searchData
     }
-  myObj.getPPSService.getR302DataList("", paramete).subscribe(res => {
+  myObj.getPPSService.getR302DataList("_coil", paramete).subscribe(res => {
     //console.log("comitData :" + JSON.stringify(res)) ;
 
     let result:any = res ;
@@ -669,22 +670,28 @@ export class PPSR302Component implements OnInit {
 // 取得版本號
 getVerList() {
   let myObj = this;
-  this.getPPSService.getCurrentMonVerList("").subscribe(res => {
+  this.getPPSService.getCurrentMonVerList("_coil").subscribe(res => {
     console.log("getVerList success");
     console.log("获取版本号： " + res)
     let result:any = res ;
     if(result.code === 1) {
       let verList:any = result.data;
+      console.log(verList)
+
       const children: Array<{ label: string; value: string ; pointStatus : string}> = [];
       for(let i = 0 ; i<verList.length ; i++) {
         let pointLabel = verList[i].startpoint === "A" ? 'ASAP' : verList[i].startpoint ;
         console.log("获取版本号：" + pointLabel)
-        children.push({ label: verList[i].fcp_EDITION+"("+pointLabel+")", value: verList[i].fcp_EDITION ,pointStatus:verList[i].startpoint })
+        children.push({ label: verList[i].fcpVer+"("+pointLabel+")", value: verList[i].fcp_EDITION, pointStatus:verList[i].startpoint })
       }
+
       this.listOfOption = children;
       let pointLabel = verList[0].startpoint === "A" ? 'ASAP' : verList[0].startpoint ;
-      this.selectedVer = {label:verList[0].fcp_EDITION+"("+pointLabel+")", value:verList[0].fcp_EDITION,pointStatus:verList[0].startpoint}
+      this.selectedVer = {label:verList[0].fcpVer+"("+pointLabel+")", value:verList[0].fcp_EDITION, pointStatus:verList[0].startpoint}
       this.initTable() ;
+
+      console.log(this.selectedVer)
+      console.log(this.selectedVer.value)
     } else{
       this.message.error(result.message);
     }
