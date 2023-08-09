@@ -95,7 +95,7 @@ export class PPSR310Component implements OnInit {
         children: [
             { 
               headerName: '總量',
-              field: 'orderBalanceWeight' 
+              field: 'orderbalanceweight' 
             }
         ]
     },
