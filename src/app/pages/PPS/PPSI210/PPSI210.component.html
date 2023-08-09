@@ -90,7 +90,7 @@
           &nbsp;&nbsp;&nbsp;&nbsp;
           <nz-radio-group [(ngModel)]="AJValue" (click) = "changeValue('AJValue')">
             <label nz-radio nzValue="ASAP">ASAP</label>
-            <label nz-radio nzValue="JIT">JIT</label>
+            <label style="display:none" nz-radio nzValue="JIT">JIT</label>
           </nz-radio-group>
         </td>
       </tr>
@@ -117,7 +117,7 @@
         </td>
       </tr>
 
-      <tr>
+      <tr style="display:none">
         <th>相臨站別平衡策略</th>
         <td>
           &nbsp;&nbsp;&nbsp;&nbsp;
@@ -129,7 +129,7 @@
         </td>
       </tr>
 
-      <tr>
+      <tr style="display:none">
         <th>機台平衡策略</th>
         <td>
           &nbsp;&nbsp;&nbsp;&nbsp;

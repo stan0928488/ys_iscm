@@ -131,11 +131,13 @@ export class PPSI210Component implements AfterViewInit {
     },
     { 
       headerName:'相臨站別平衡策略', 
-      field:'NEXTSHOPSORTNA', 
+      field:'NEXTSHOPSORTNA',
+      hide: true
     },
     { 
       headerName:'機台平衡策略', 
-      field:'MACHINESORTNA', 
+      field:'MACHINESORTNA',
+      hide: true,
     },
     { 
       headerName:'站別策略設定',
