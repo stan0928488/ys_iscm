@@ -1107,13 +1107,13 @@ export class MSHI004Component {
         },
       });
     }).then((success) => {
-      this.labSamplingRun();
-      this.getMESPassedWeight();
-      this.getMESFinishedProduct();
-      this.getMESIsToShip();
-      this.getMESGoodsReceipt();
-      this.getMESrollOverOrder();
-      this.getMESwipChange();
+      // this.labSamplingRun();
+      // this.getMESPassedWeight();
+      // this.getMESFinishedProduct();
+      // this.getMESIsToShip();
+      // this.getMESGoodsReceipt();
+      // this.getMESrollOverOrder();
+      // this.getMESwipChange();
       this.runRepoData();
       console.log('hiiiiiiiiiiiiiiiiiiiiiiiii');
     });

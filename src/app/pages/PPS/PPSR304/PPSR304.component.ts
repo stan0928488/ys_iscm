@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, OnInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -12,6 +12,7 @@ import { AppComponent } from "src/app/app.component";
 import { DatePipe } from '@angular/common';
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { firstValueFrom } from "rxjs";
+import { ListShipRepoDataTransferService } from "../list-ship-repo/ListShipRepoDataTransferService";
 
 interface data {
 
@@ -24,7 +25,7 @@ interface data {
   providers:[NzMessageService]
 })
 
-export class PPSR304Component implements AfterViewInit {
+export class PPSR304Component implements AfterViewInit, OnInit {
 
 
   USERNAME;
@@ -53,11 +54,17 @@ export class PPSR304Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
-    private component: AppComponent
+    private component: AppComponent,
+    private listShipRepoDataTransferService:ListShipRepoDataTransferService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    
+  }
+
+  ngOnInit(): void {
+    this.listShipRepoDataTransferService.setSelectedPage("R304");
   }
 
   columnDefsTab: ColDef<data>[] = [
@@ -89,7 +96,6 @@ public autoGroupColumnDef: ColDef = {
     this.loading = true;
     console.log("ngAfterViewChecked");
     this.getR304DataList();
-    
   }
   
   async getR304DataList(){

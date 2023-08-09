@@ -91,6 +91,8 @@ import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
+import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
+import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
 
 const routes: Routes = [
   {
@@ -250,6 +252,8 @@ const routes: Routes = [
       { path: 'R308', component: PPSR308Component },
       { path: 'R309', component: PPSR309Component },
       { path: 'R310', component: PPSR310Component },
+      { path: 'R311', component: PPSR311Component },
+      { path: 'R312', component: PPSR312Component }
     ],
     canActivate: [AuthGuard],
   },

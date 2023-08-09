@@ -304,7 +304,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
-    this.getPPSService.getPickerShopEQUIPNEW('1', '　').subscribe(res => {
+    this.getPPSService.getPickerShopEQUIPNEW('3', '　').subscribe(res => {
       console.log("SHOP_CODEList success");
       this.SHOP_CODEList = res;
       console.log("this.SHOP_CODEList :" + JSON.stringify(this.SHOP_CODEList));
@@ -313,6 +313,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
       for (let i = 0; i < this.SHOP_CODEList.length; i++) {
         newres.push(this.SHOP_CODEList[i].SHOP_CODE);
       }
+      newres = Array.from(new Set(newres));
       this.SHOP_splitList = _.chunk(newres, 13);    // list 13組 一分群
       console.log("this.SHOP_CODEList chunk  :" + JSON.stringify(this.SHOP_splitList));
       myObj.loading = false;
@@ -330,7 +331,12 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
-    let comitParamete = { pageNum: this.pageNum, pageSize: this.pageSize, queryKey: this.queryShopAndCode.toString() };
+    let comitParamete = { 
+      type:"TYPE_NON_STRAIGHT_ROD",
+      pageNum: this.pageNum, 
+      pageSize: this.pageSize, 
+      queryKey: this.queryShopAndCode.toString() 
+    };
     //this.getPPSService.getSetShopEQUIP(this.pageNum, this.pageSize,this.queryShopAndCode.toString()).subscribe(res => {
     console.log("查詢數據:" + JSON.stringify(comitParamete));
     myObj.getPPSService.getSetShopEQUIP(comitParamete).subscribe(res => {
@@ -359,7 +365,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
       this.loading = true;
       this.LoadingPage = true;
       let myObj = this;
-      this.getPPSService.getPickerShopEQUIPNEW('2', _ShopArr.toString()).subscribe(res => {
+      this.getPPSService.getPickerShopEQUIPNEW('3', _ShopArr.toString()).subscribe(res => {
         console.log("EQUIP_CODEList success");
         this.EQUIP_CODEList = res;
         console.log("幾台數據網絡獲取EQUIP_CODEList：" + JSON.stringify(this.EQUIP_CODEList));
@@ -367,6 +373,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
         for (let i = 0; i < this.EQUIP_CODEList.length; i++) {
           newres.push({ value: this.EQUIP_CODEList[i].EQUIP_CODE, checked: false, shopCode: this.EQUIP_CODEList[i].SHOP_CODE });
         }
+        newres = Array.from(new Set(newres));
         if (this.PickEquipCode.length > 0) {
           for (let j = 0; j < newres.length; j++) {    // 判斷目前機台及已挑選機台
             for (let k = 0; k < this.PickEquipCode.length; k++) {
@@ -742,7 +749,12 @@ export class PPSI201NonBarComponent implements AfterViewInit {
 
     let myObj = this;
     let exportData = [];
-    let comitParamete = { pageNum: 1, pageSize: 1000, queryKey: this.queryShopAndCode.toString() };
+    let comitParamete = { 
+      type:"TYPE_NON_STRAIGHT_ROD",
+      pageNum: 1, 
+      pageSize: 1000, 
+      queryKey: this.queryShopAndCode.toString() 
+    };
     console.log("excel匯出查詢數據:" + JSON.stringify(comitParamete));
     myObj.getPPSService.getSetShopEQUIP(comitParamete).subscribe(res => {
       let result: any = res;

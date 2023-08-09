@@ -78,11 +78,11 @@
         <td style="width: 50px;">&nbsp;&nbsp;Cell平衡排序</td>
         <td style="width: 120px;">&nbsp;&nbsp;{{CELLSORTNA}}</td>
       </tr>
-      <tr style="height: 50px;">
+      <tr style="height: 50px; display:none;">
         <td style="width: 50px;">&nbsp;&nbsp;相臨站別<br>&nbsp;&nbsp;平衡排序</td>
         <td style="width: 120px;">&nbsp;&nbsp;{{NEXTSHOPSORTNA}}</td>
       </tr>
-      <tr style="height: 50px;">
+      <tr style="height: 50px; display:none;">
         <td style="width: 50px;">&nbsp;&nbsp;機台平衡策略</td>
         <td style="width: 120px;">&nbsp;&nbsp;{{MACHINESORTNA}}</td>
       </tr>
@@ -117,7 +117,7 @@
     <nz-spin style="z-index:9999;" nzTip="站別優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "shopSortLoading">
       <ag-grid-angular
           style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
-          class="ag-theme-alpine"
+          class="ag-theme-alpine ag-theme-PPSI230-custom"
           [rowData]="ShopSortingList"
           [columnDefs]="shopSortingColumnDefs"
           [gridOptions]="gridOptions"
@@ -144,7 +144,7 @@
     <nz-spin style="z-index:9999;" nzTip="站別機台優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "machineSortLoading">
       <ag-grid-angular
           style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
-          class="ag-theme-alpine"
+          class="ag-theme-alpine ag-theme-PPSI230-custom"
           [rowData]="MachineSortingList"
           [columnDefs]="machineSortingColumnDefs"
           [gridOptions]="gridOptions"

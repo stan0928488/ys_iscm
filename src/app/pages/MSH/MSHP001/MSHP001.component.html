@@ -129,6 +129,7 @@
     [animateRows]="true"
     [rowData]="rowData"
     [columnDefs]="outsideColumnDefs">
+    [enableCellTextSelection]="true"
     [getRowId]="getRowId"
     (cellClicked)="onCellClicked($event)"
    
@@ -147,6 +148,8 @@
         [suppressScrollOnNewData] = "true"
         [rowSelection]="rowSelection"
         [animateRows]="true"
+        [enableCellTextSelection]="true"
+       
         [rowData]="rowSelectData"
         [columnDefs]="columnDefs">
         </ag-grid-angular>
@@ -183,6 +186,7 @@
         [rowSelection]="rowSelection"
         [suppressScrollOnNewData] = "true"
         [animateRows]="true"
+        [enableCellTextSelection]="true"
         [rowData]="rowSortedData"
         [columnDefs]="columnDefs">
         </ag-grid-angular>

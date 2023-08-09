@@ -108,6 +108,7 @@
           <td style="width: 600px; background-color: #eee">
             &nbsp;
             <nz-select 
+            style="width: 100px;"
             nzPlaceHolder="請選擇站別碼"
             nzShowSearch nzAllowClear
             [(ngModel)]="searchData.selectedShopCode_default"
@@ -127,13 +128,13 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select 
+            <nz-select
+            style="width: 100px;"
             nzPlaceHolder="請選擇鋼種"
-            nzShowSearch nzAllowClear
             [(ngModel)]="searchData.selectedGradeNo_default"
-          >
-          <nz-option *ngFor="let x of selectedGradeNo" [nzLabel]="x.label" [nzValue]="x.value"></nz-option>
-          </nz-select>
+            >
+            <nz-option *ngFor="let x of selectedGradeNo" [nzLabel]="x.label" [nzValue]="x.value"></nz-option>
+            </nz-select>
           </td>        
           <td
             style="

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, OnInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -9,6 +9,7 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
+import { ListShipRepoDataTransferService } from "../list-ship-repo/ListShipRepoDataTransferService";
 
 interface data {
 
@@ -21,7 +22,7 @@ interface data {
   providers:[NzMessageService]
 })
 
-export class PPSR305Component implements AfterViewInit {
+export class PPSR305Component implements AfterViewInit, OnInit {
 
 
   USERNAME;
@@ -67,10 +68,14 @@ export class PPSR305Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private listShipRepoDataTransferService:ListShipRepoDataTransferService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+  }
+  ngOnInit(): void {
+    this.listShipRepoDataTransferService.setSelectedPage("R305");
   }
 
   ngAfterViewInit() {

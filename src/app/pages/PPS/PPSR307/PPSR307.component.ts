@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
+import { ListShipRepoDataTransferService } from "../list-ship-repo/ListShipRepoDataTransferService";
 
 interface data {
 
@@ -80,6 +81,8 @@ export class PPSR307Component implements AfterViewInit {
     private Modal: NzModalService,
     private excelService: ExcelService,
     private route: ActivatedRoute,
+    private listShipRepoDataTransferService:ListShipRepoDataTransferService
+    
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -90,6 +93,10 @@ export class PPSR307Component implements AfterViewInit {
     this.edition = this.route.snapshot.queryParamMap.has('edition')?this.route.snapshot.queryParamMap.get('edition'):'';
     this.date = this.route.snapshot.queryParamMap.has('date')?this.route.snapshot.queryParamMap.get('date'):'';
     console.log(this.edition)
+    if(!_.isEmpty(this.edition)){
+      this.listShipRepoDataTransferService.setEdition(this.edition);
+    }
+    this.listShipRepoDataTransferService.setSelectedPage("R307");
   }
   ngAfterViewInit() {
     this.isLoading = true;
@@ -110,9 +117,11 @@ export class PPSR307Component implements AfterViewInit {
 
       let result : any = res;
 
-      if(this.edition == '')
+      if(this.edition == ''){
         this.edition = result[0];
+      }
       else{
+        this.listShipRepoDataTransferService.setEdition(this.edition);
         this.redirect306Url = this.R306Url.concat("?edition=").concat(this.edition);
       }
 
@@ -152,8 +161,10 @@ export class PPSR307Component implements AfterViewInit {
   }
 
   onEditionChange(result: string): void {
-      if(this.edition != null)
+      if(this.edition != null){
+        this.listShipRepoDataTransferService.setEdition(this.edition);
         this.redirect306Url = this.R306Url.concat("?edition=").concat(this.edition);
+      }
       else
         this.redirect306Url = this.R306Url
         console.log('onChange: ', result);
