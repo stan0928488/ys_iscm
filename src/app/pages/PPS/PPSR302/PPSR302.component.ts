@@ -517,7 +517,7 @@ export class PPSR302Component implements OnInit {
     this.firstSearchParamete.tableHeader = header;
     this.firstSearchParamete.tableLeft = left;
 
-  myObj.getPPSService.getR302FirstModalDataList(this.firstSearchParamete).subscribe(res => {
+  myObj.getPPSService.getR302FirstModalDataList("", this.firstSearchParamete).subscribe(res => {
     this.firstModalLoading = false
     this.modalDataExportList = [] ;
     console.log("comitData :" + JSON.stringify(res)) ;

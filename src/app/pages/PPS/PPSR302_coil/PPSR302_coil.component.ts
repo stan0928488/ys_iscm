@@ -13,6 +13,8 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import * as _ from "lodash";
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import { ActivatedRoute } from '@angular/router';
+
 
   interface data {
 
@@ -35,7 +37,8 @@ export class PPSR302_coilComponent implements OnInit {
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private message:NzMessageService ,
-    private modalService: NzModalService
+    private modalService: NzModalService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -43,10 +46,13 @@ export class PPSR302_coilComponent implements OnInit {
     this.getVerList();
     this.getAreaGroup();
     this.getWeekData();
+    this.getRouter();
+
   }
 
   gridApi: GridApi;
   params: GridReadyEvent;
+
 
 
   //补充定义
@@ -199,6 +205,15 @@ export class PPSR302_coilComponent implements OnInit {
   //选择版本
   changeVersion(value){
     console.log(this.selectedVer);
+  }
+
+  getRouter(){
+    const routerLink = this.route.snapshot.url.map(segment => segment.path).join('/');
+    const path = this.route.snapshot.routeConfig;
+    
+    console.log('Router Link:', routerLink);
+    console.log('Path:', path.component.name);
+    
   }
 
   firstModalClick(orderNo,orderItemNo,secondModalTitle: TemplateRef<{}>, secondModalContent: TemplateRef<{}>, secondModalFooter: TemplateRef<{}>){
@@ -518,7 +533,7 @@ export class PPSR302_coilComponent implements OnInit {
     this.firstSearchParamete.tableHeader = header;
     this.firstSearchParamete.tableLeft = left;
 
-  myObj.getPPSService.getR302FirstModalDataList(this.firstSearchParamete).subscribe(res => {
+  myObj.getPPSService.getR302FirstModalDataList("_coil", this.firstSearchParamete).subscribe(res => {
     this.firstModalLoading = false
     this.modalDataExportList = [] ;
     console.log("comitData :" + JSON.stringify(res)) ;
@@ -676,8 +691,6 @@ getVerList() {
     let result:any = res ;
     if(result.code === 1) {
       let verList:any = result.data;
-      console.log(verList)
-
       const children: Array<{ label: string; value: string ; pointStatus : string}> = [];
       for(let i = 0 ; i<verList.length ; i++) {
         let pointLabel = verList[i].startpoint === "A" ? 'ASAP' : verList[i].startpoint ;
@@ -689,9 +702,6 @@ getVerList() {
       let pointLabel = verList[0].startpoint === "A" ? 'ASAP' : verList[0].startpoint ;
       this.selectedVer = {label:verList[0].fcpVer+"("+pointLabel+")", value:verList[0].fcp_EDITION, pointStatus:verList[0].startpoint}
       this.initTable() ;
-
-      console.log(this.selectedVer)
-      console.log(this.selectedVer.value)
     } else{
       this.message.error(result.message);
     }

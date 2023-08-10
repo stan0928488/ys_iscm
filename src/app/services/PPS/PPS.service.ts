@@ -1660,9 +1660,9 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //获取交期总表第一層数据
-  getR302FirstModalDataList(_data) {
+  getR302FirstModalDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getFirstModalData';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getFirstModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取延遲訂單信息
