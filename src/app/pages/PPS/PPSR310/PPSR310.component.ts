@@ -204,7 +204,7 @@ export class PPSR310Component implements OnInit {
             "業務員": (element['sales'] ? element['sales'] : null),
             "付款條件": (element['paymentTerms'] ? element['paymentTerms'] : null),
             "客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
-            "訂單餘量_總量": (element['orderBalanceWeight'] ? Number(element['orderBalanceWeight']) : null),
+            "訂單餘量_總量": (element['orderbalanceweight'] ? Number(element['orderbalanceweight']) : null),
             "目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
             "生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
             "出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),

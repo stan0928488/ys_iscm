@@ -575,7 +575,7 @@ export class PPSR308Component implements OnInit {
             "區別": (element['areaGroup'] ? element['areaGroup'] : null),
             "客戶": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
             "A.負責業務": (element['sales'] ? element['sales'] : null),
-            "B.訂單餘量": "",
+            "B.訂單餘量": (element['orderBalance'] ? element['orderBalance'] : null),
             "C.出貨目標": (element['shippingTarget'] ? Number(element['shippingTarget']) : null),
             "D.出貨進度": (element['shippingProgress'] ? Number(element['shippingProgress']) : null),
             "E.可供出貨量(無卡計畫量)": (element['availableToShipNoCard'] ? Number(element['availableToShipNoCard']) : null),
