@@ -2103,6 +2103,14 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  getPPSR312Data(edition : string){
+    console.log('Api Service 獲取入庫儲區異動資料');
+    const queryUrl = `${this.APIURL}/FCP/R312/getPPSR312Data/${edition}`;
+    console.log(`Api Service 獲取入庫儲區異動資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取入庫儲區異動資料 參數 -> ${edition}`);
+    return this.http.get(queryUrl);
+  }
+
   //importPPSI116Excel
   importExcelPPSI116(_data) {
     const body = JSON.stringify(_data);
@@ -2111,5 +2119,4 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  
 }

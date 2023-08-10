@@ -1,3 +1,4 @@
+import { async } from '@angular/core/testing';
 import { Component, AfterViewInit, NgZone } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
@@ -195,7 +196,6 @@ export class PPSI210Component implements AfterViewInit {
       headerClass:'wrap-header-Text',
       cellClass:'wrap-cell-Text',
       valueFormatter : (params: ValueFormatterParams) : string => {
-        this.getMoSortList();
         let formatValue = null;
         this.moSortListOfOption.some(item =>{
           if(item.method === params.value) {
@@ -291,10 +291,11 @@ export class PPSI210Component implements AfterViewInit {
       componentParent: this,
     };
   }
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPickerShopData(0);
     this.getRunFCPCount();
+    await this.getMoSortList();
   }
 
   // 取得是否有正在執行的FCP
@@ -1056,7 +1057,6 @@ export class PPSI210Component implements AfterViewInit {
         this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
       }
       this.getMachineSortList(data.PLANSET_EDITION);
-      this.getMoSortList();
     });
 
     myObj.loading = false;
@@ -1103,16 +1103,15 @@ export class PPSI210Component implements AfterViewInit {
   }
 
   // 撈取 sorting 表
-  getShopSortingList(_Mseqno) {
+   getShopSortingList(_Mseqno) {
     this.shopSortLoading = true;
     let myObj = this;
-    this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe((res) => {
+    this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(async (res) => {
       console.log('getShopSortingList success');
       this.ShopSortingList = res;
       this.ShopSortingList.forEach(item => {
         item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
       });
-      this.getMoSortList();
       myObj.shopSortLoading = false;
     });
   }
@@ -1640,6 +1639,7 @@ export class PPSI210Component implements AfterViewInit {
         );
         return;
       }
+      
       this.moSortListOfOption = res.data;
     }
     catch (error) {

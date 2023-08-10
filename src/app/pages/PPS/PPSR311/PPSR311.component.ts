@@ -273,7 +273,7 @@ export class PPSR311Component implements OnInit, AfterViewInit {
     XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
     XLSX.writeFileXLSX(
       workBook,
-      `報表維護-訂單結轉${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+      `訂單結轉_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
     );
 
     this.isLoading = false;

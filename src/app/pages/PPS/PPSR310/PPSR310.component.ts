@@ -62,7 +62,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '銷售區域',
-            field: 'areaGroup' 
+            field: 'areaGroup',
+            width:150
           }
       ]
     },
@@ -70,7 +71,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '業務員',
-            field: 'sales' 
+            field: 'sales',
+            width:120
           }
       ]
     },
@@ -78,7 +80,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '付款條件',
-            field: 'paymentTerms' 
+            field: 'paymentTerms',
+            width:150
           }
       ]
     },
@@ -86,7 +89,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '客戶簡稱',
-            field: 'custAbbreviations' 
+            field: 'custAbbreviations',
+            width:150
           }
       ]
     },
@@ -95,7 +99,8 @@ export class PPSR310Component implements OnInit {
         children: [
             { 
               headerName: '總量',
-              field: 'orderbalanceweight' 
+              field: 'orderbalanceweight',
+              width:150
             }
         ]
     },
@@ -104,7 +109,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '總量',
-            field: 'estimateWeight' 
+            field: 'estimateWeight',
+            width:120
           }
       ]
     },
@@ -113,7 +119,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '總量',
-            field: 'availableToShip' 
+            field: 'availableToShip',
+            width:150
           }
       ]
     },
@@ -121,7 +128,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '出貨進度',
-            field: 'shippingProgress' 
+            field: 'shippingProgress',
+            width:150
           }
       ]
     },
@@ -130,15 +138,18 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '已過帳',
-            field: 'shipmentPostedWeight' 
+            field: 'shipmentPostedWeight',
+            width:120
           },
           { 
             headerName: '未過帳',
-            field: 'shipmentUnpostedWeight' 
+            field: 'shipmentUnpostedWeight',
+            width:120
           },
           { 
             headerName: '小計',
-            field: 'shipmentWeightSum' 
+            field: 'shipmentWeightSum',
+            width:80
           }
       ]
     },
@@ -147,15 +158,18 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '成品',
-            field: 'stockFinalProductWeight' 
+            field: 'stockFinalProductWeight',
+            width:80
           },
           { 
             headerName: '半成品',
-            field: 'stockUnfinalProductWeight' 
+            field: 'stockUnfinalProductWeight',
+            width:120
           },
           { 
             headerName: '小計',
-            field: 'stockWeightSum' 
+            field: 'stockWeightSum',
+            width:80
           }
       ]
     },
@@ -163,7 +177,8 @@ export class PPSR310Component implements OnInit {
       children: [
           { 
             headerName: '合計',
-            field: 'shipmentSumStock' 
+            field: 'shipmentSumStock',
+            width:80
           }
       ]
     }
@@ -189,7 +204,7 @@ export class PPSR310Component implements OnInit {
             "業務員": (element['sales'] ? element['sales'] : null),
             "付款條件": (element['paymentTerms'] ? element['paymentTerms'] : null),
             "客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
-            "訂單餘量_總量": (element['orderBalanceWeight'] ? Number(element['orderBalanceWeight']) : null),
+            "訂單餘量_總量": (element['orderbalanceweight'] ? Number(element['orderbalanceweight']) : null),
             "目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
             "生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
             "出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),
@@ -223,8 +238,7 @@ export class PPSR310Component implements OnInit {
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
       } else {
-        this.message.error('無資料');
-        return;
+        this.message.error("版次:"+this.searchData.selectedVer_default+"無資料");
       }
       this.isSpinning = false;
     },err => {
