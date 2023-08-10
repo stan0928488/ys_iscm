@@ -14,8 +14,6 @@ export class ListShipRepoComponent implements OnInit, AfterViewInit {
   // 當前使用者選擇的是哪個頁面
   selectedPage : string = undefined;
 
-  aElements : HTMLAnchorElement[] = [];
-
   constructor(private listShipRepoDataTransferService:ListShipRepoDataTransferService,
               private elementRef : ElementRef) { 
 
@@ -30,13 +28,14 @@ export class ListShipRepoComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
    
-    this.aElements = this.elementRef.nativeElement.querySelectorAll('#repoList > li > a');
-
-      this.aElements.forEach(aItem =>{
-        if(aItem.dataset['selected'] === this.selectedPage){
-          aItem.classList.add('active');
-        }
-      });
+    const aElements : HTMLAnchorElement[]= this.elementRef.nativeElement.querySelectorAll('#repoList > li > a');
+    aElements.forEach(aItem =>{
+      if(aItem.dataset['selected'] === this.selectedPage){
+        const parentLi : HTMLLIElement = aItem.parentElement as HTMLLIElement;
+        parentLi.classList.add('active');
+        aItem.classList.add('active');
+      }
+    });
   }
 
   ngOnInit(): void {
