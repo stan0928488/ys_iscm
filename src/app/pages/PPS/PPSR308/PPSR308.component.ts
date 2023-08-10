@@ -8,6 +8,7 @@ import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } f
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-PPSR308',
@@ -575,7 +576,7 @@ export class PPSR308Component implements OnInit {
             "區別": (element['areaGroup'] ? element['areaGroup'] : null),
             "客戶": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
             "A.負責業務": (element['sales'] ? element['sales'] : null),
-            "B.訂單餘量": "",
+            "B.訂單餘量": (element['orderBalance'] ? element['orderBalance'] : null),
             "C.出貨目標": (element['shippingTarget'] ? Number(element['shippingTarget']) : null),
             "D.出貨進度": (element['shippingProgress'] ? Number(element['shippingProgress']) : null),
             "E.可供出貨量(無卡計畫量)": (element['availableToShipNoCard'] ? Number(element['availableToShipNoCard']) : null),
@@ -622,6 +623,10 @@ export class PPSR308Component implements OnInit {
     });
   }
   
+  exportPDF() {
+    const dataURI = 'https://drive.google.com/file/d/1yInal584Dbpw0pFQZSODl9lU-uZECo-t/view?usp=sharing';
+    saveAs(dataURI ,'出貨計畫表相關說明.pdf');
+  }
 }
 
 interface data {

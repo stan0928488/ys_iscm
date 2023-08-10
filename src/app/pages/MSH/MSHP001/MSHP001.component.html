@@ -280,6 +280,7 @@ nzWidth="300"
         <th>MO</th>
         <th>CARID</th>
         <th>作業代碼</th>
+        <th>原始作業代碼</th>
         <th>可替換作業</th>
         <th>選擇替換作業代碼</th>
         <th>車次編號</th>
@@ -290,7 +291,9 @@ nzWidth="300"
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.ID_NO}}</td>
         <td>{{data.OLD_CAR_ID}}</td>
+       
         <td>{{data.OP_CODE}}</td>
+        <td>{{data.ORIGINAL_OP_CODE}}</td>
         <td>{{data.NEW_OP_CODE}}</td>
         <td>
           <nz-radio-group *ngIf="data.selectedOpCodeList.length > 0 " [(ngModel)]="data.selectedOpCode" nzName="radiogroup" (ngModelChange)="selectOpCodeFun()">
