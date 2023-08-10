@@ -345,6 +345,7 @@ export class PPSR310Component implements OnInit {
             "訂單餘量_總量": (element['orderbalanceweight'] ? Number(element['orderbalanceweight']) : null),
             "目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
             "生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
+            "出貨進度": (element['shippingProgress'] ? Math.round(element['shippingProgress'] * 100) + '%' : null),
             "出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),
             "出貨量(總量)_未過帳": (element['shipmentUnpostedWeight'] ? Number(element['shipmentUnpostedWeight']) : null),
             "出貨量(總量)_小計": (element['shipmentWeightSum'] ? Number(element['shipmentWeightSum']) : null),
