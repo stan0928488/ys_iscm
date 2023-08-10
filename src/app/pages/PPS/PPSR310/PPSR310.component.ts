@@ -100,7 +100,19 @@ export class PPSR310Component implements OnInit {
             { 
               headerName: '總量',
               field: 'orderbalanceweight',
-              width:150
+              width:150,
+              cellStyle: params => {
+                if (params.value < 0) {
+                    return {color: 'red'};
+                }
+              },
+              cellRenderer: function (params) {
+                if (params.value < 0) {
+                  return "(" + params.value * -1 + ")";
+                }else {
+                  return params.value
+                }
+              },
             }
         ]
     },
@@ -110,7 +122,19 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '總量',
             field: 'estimateWeight',
-            width:120
+            width:120,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           }
       ]
     },
@@ -120,7 +144,19 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '總量',
             field: 'availableToShip',
-            width:150
+            width:150,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           }
       ]
     },
@@ -129,7 +165,22 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '出貨進度',
             field: 'shippingProgress',
-            width:150
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value > 0) {
+                return Math.round(params.value * 100) + "%";
+              }
+              else if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }
+              else {
+                return params.value
+              }
+            },
           }
       ]
     },
@@ -139,17 +190,54 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '已過帳',
             field: 'shipmentPostedWeight',
-            width:120
+            width:120,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           },
           { 
             headerName: '未過帳',
             field: 'shipmentUnpostedWeight',
-            width:120
+            width:120,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           },
           { 
             headerName: '小計',
             field: 'shipmentWeightSum',
-            width:80
+            width:80,
+            cellStyle: params => {
+              if (params.value < 0) {
+                return {color: 'red', 'background-color': '#FFAAD5'}
+              }
+              return {'background-color': '#FFAAD5'}
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           }
       ]
     },
@@ -159,17 +247,54 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '成品',
             field: 'stockFinalProductWeight',
-            width:80
+            width:80,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           },
           { 
             headerName: '半成品',
             field: 'stockUnfinalProductWeight',
-            width:120
+            width:120,
+            cellStyle: params => {
+              if (params.value < 0) {
+                  return {color: 'red'};
+              }
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           },
           { 
             headerName: '小計',
             field: 'stockWeightSum',
-            width:80
+            width:80,
+            cellStyle: params => {
+              if (params.value < 0) {
+                return {color: 'red', 'background-color': '#FFAAD5'}
+              }
+              return {'background-color': '#FFAAD5'}
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           }
       ]
     },
@@ -178,7 +303,20 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '合計',
             field: 'shipmentSumStock',
-            width:80
+            width:80,
+            cellStyle: params => {
+              if (params.value < 0) {
+                return {color: 'red', 'background-color': '#84C1FF'}
+              }
+              return {'background-color': '#84C1FF'}
+            },
+            cellRenderer: function (params) {
+              if (params.value < 0) {
+                return "(" + params.value * -1 + ")";
+              }else {
+                return params.value
+              }
+            },
           }
       ]
     }
