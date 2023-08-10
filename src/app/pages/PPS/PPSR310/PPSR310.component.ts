@@ -72,7 +72,7 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '業務員',
             field: 'sales',
-            width:150
+            width:120
           }
       ]
     },
@@ -110,7 +110,7 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '總量',
             field: 'estimateWeight',
-            width:150
+            width:120
           }
       ]
     },
@@ -139,17 +139,17 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '已過帳',
             field: 'shipmentPostedWeight',
-            width:150
+            width:120
           },
           { 
             headerName: '未過帳',
             field: 'shipmentUnpostedWeight',
-            width:150
+            width:120
           },
           { 
             headerName: '小計',
             field: 'shipmentWeightSum',
-            width:150
+            width:80
           }
       ]
     },
@@ -159,17 +159,17 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '成品',
             field: 'stockFinalProductWeight',
-            width:150
+            width:80
           },
           { 
             headerName: '半成品',
             field: 'stockUnfinalProductWeight',
-            width:150
+            width:120
           },
           { 
             headerName: '小計',
             field: 'stockWeightSum',
-            width:150
+            width:80
           }
       ]
     },
@@ -178,7 +178,7 @@ export class PPSR310Component implements OnInit {
           { 
             headerName: '合計',
             field: 'shipmentSumStock',
-            width:150
+            width:80
           }
       ]
     }
