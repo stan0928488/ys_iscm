@@ -161,6 +161,37 @@ category = '' ;
 
  //當前站別下載機台數
  shopMachineList = [] ;
+// modal 寬
+modalWidth = '90vw';
+
+// modal body 高
+modalBodyHeight = '75vh';
+
+// modal body padding
+modalBodyPadding = '24px';
+
+  // modal body 內容樣式 ffa39e
+  modalBodyStyle = {
+   
+    height: this.modalBodyHeight,
+    overflow: 'auto',
+    background: '#fff',
+    padding: this.modalBodyPadding,
+  };
+
+// modal style
+modalStyle = {
+  top: `calc((100vh - ${this.modalBodyHeight} - 55px - 55px) / 2) `,
+  with:this.modalWidth ,
+};
+
+// ag gird 外層 div style
+style: any = {
+  width: `calc(${this.modalWidth} - ${this.modalBodyPadding} - ${this.modalBodyPadding})`,
+  height: `calc(${this.modalBodyHeight} - ${this.modalBodyPadding} - ${this.modalBodyPadding})`,
+  flex: '1 1 auto',
+};
+
 
 
  handleOpCodeModal(){
