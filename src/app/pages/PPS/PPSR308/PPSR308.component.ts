@@ -624,7 +624,7 @@ export class PPSR308Component implements OnInit {
   }
   
   exportPDF() {
-    const dataURI = 'https://drive.google.com/file/d/1yInal584Dbpw0pFQZSODl9lU-uZECo-t/view?usp=sharing';
+    const dataURI = 'https://walsinsmc.sharepoint.com/:b:/s/iSCM/Eaq3J7W6l9VMjprVz6GXnSsBO9Fa-r4IMiKrGBUMzvIWjQ?e=bmjIfO';
     saveAs(dataURI ,'出貨計畫表相關說明.pdf');
   }
 }

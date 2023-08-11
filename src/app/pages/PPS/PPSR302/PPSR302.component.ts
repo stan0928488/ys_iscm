@@ -223,7 +223,7 @@ export class PPSR302Component implements OnInit {
       orderNo:orderNo,
       orderItemNo:orderItemNo
     }
-    myObj.getPPSService.getR302OrderDataList(paramete).subscribe(res => {
+    myObj.getPPSService.getR302OrderDataList("", paramete).subscribe(res => {
       this.secondModalLoading = false
       this.secondModalTableHeaderLast = [] ;
       this.secondModalExportList = [] ;

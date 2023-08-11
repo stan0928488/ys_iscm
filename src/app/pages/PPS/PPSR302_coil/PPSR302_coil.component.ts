@@ -238,7 +238,7 @@ export class PPSR302_coilComponent implements OnInit {
       orderNo:orderNo,
       orderItemNo:orderItemNo
     }
-    myObj.getPPSService.getR302OrderDataList(paramete).subscribe(res => {
+    myObj.getPPSService.getR302OrderDataList("_coil", paramete).subscribe(res => {
       this.secondModalLoading = false
       this.secondModalTableHeaderLast = [] ;
       this.secondModalExportList = [] ;

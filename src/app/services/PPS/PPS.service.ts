@@ -1672,9 +1672,9 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取訂單詳情 第二層modal
-  getR302OrderDataList(_data) {
+  getR302OrderDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getSecondModalData';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getSecondModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // 取得mes以入庫量明細
