@@ -291,13 +291,25 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'LABPlan',
+    path: 'SaleInput',
     children: [
-      { path: '', redirectTo: '/LABPlan/P100', pathMatch: 'full' },
-      { path: 'P100', component: LABP100Component },
+      { path: '', redirectTo: '/SaleInput/I001', pathMatch: 'full' },
+      { path: 'I001', component: ErrorPageComponent },
+      { path: 'I002', component: ErrorPageComponent },
+      { path: 'I003', component: ErrorPageComponent },
     ],
     canActivate: [AuthGuard],
   },
+
+  {
+    path: 'SaleView',
+    children: [
+      { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
+      { path: 'R001', component: ErrorPageComponent },
+    ],
+    canActivate: [AuthGuard],
+  },
+
 
   /* RMP & PAS & DCM */
   {
