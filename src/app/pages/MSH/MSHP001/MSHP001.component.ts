@@ -911,7 +911,7 @@ this.handleSelectCarModal() ;
   //   })
   // }
 
-///User設定的欄位 包含分群數據
+///User設定的欄位 包含分群數據CAR_ID_ADD
   getSetColumByUser(){
     this.mshService.getSetColumByUser(this.selectShopCode).subscribe(res=>{
       let result:any = res ;
@@ -1771,20 +1771,25 @@ this.handleSelectCarModal() ;
      this.saveLoading = true ;
      this.isLoading = true ;
 
-     //調整接收數據
+     //調整接收數據  id carId
      this.finalChangeDataIds = [] ;
      //原始數據調取
      this.originalData = JSON.parse(localStorage.getItem("originalData"))
      // 微调确认
      if(flag === '3') {
       this.rowSortedData.forEach((item,index,array)=>{
-        this.finalChangeDataIds.push(item.ID) ;
+        if(this.selectEquipCode === 'RF') {
+          this.finalChangeDataIds.push({id:item.ID,carId:item.CAR_ID_ADD}) ;
+        } else{
+          this.finalChangeDataIds.push({id:item.ID}) ;
+        }
+        
       })
      } else {  //内外层 遍歷分群數據
       this.rowData.forEach((item,index,array)=>{
         let ids = item.sortId.split(',')
         ids.forEach((val)=>{
-         this.finalChangeDataIds.push(this.originalData[val-1].ID) 
+         this.finalChangeDataIds.push({id:this.originalData[val-1].ID,carId:this.originalData[val-1].CAR_ID_ADD}) 
         })
       })
      }
@@ -1792,7 +1797,13 @@ this.handleSelectCarModal() ;
     
      let finalChangeDataTemp = [] ;
      this.finalChangeDataIds.forEach((item,index,array)=>{
-      finalChangeDataTemp.push({id:item,sort:index + 1})
+      if(this.selectEquipCode === 'RF') {
+       // finalChangeDataTemp.push({id:item,sort:index + 1,carId:item.CAR_ID_ADD})
+        finalChangeDataTemp.push({id:item.id,sort:index + 1,carId:item.carId})
+      }  else {
+        finalChangeDataTemp.push({id:item.id,sort:index + 1})
+      }
+     
      }) ;
     // console.log("使用："+this.finalChangeDataIds)
     // this.originalData = JSON.parse(localStorage.getItem("originalData")) ;
@@ -1947,7 +1958,7 @@ this.handleSelectCarModal() ;
        } else {
         MACHINE3_ADD_Temp = item.MACHINE3_ADD
        }
-       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD} ;
+       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD,fcpUseFlag:item.FCP_USE_FLAG} ;
        comitData.push(obj) ;
       })
       //console.log(JSON.stringify(comitData)) ;
@@ -1982,7 +1993,11 @@ this.handleSelectCarModal() ;
       }
       let finalChangeDataTemp = [] ;
       this.rowExcelModelData.forEach((item,index,array)=>{
-        finalChangeDataTemp.push({id:item.ID,sort:index + 1})
+        if(this.selectEquipCode === 'RF') {
+          finalChangeDataTemp.push({id:item,sort:index + 1,carId:item.CAR_ID_ADD})
+        }  else {
+          finalChangeDataTemp.push({id:item,sort:index + 1})
+        }
       }) 
       this.handlecomitExcelModelConfirmLoading = true
       let saveSortData = {saveByIDSList:finalChangeDataTemp,fcpNumber:this.fcpNumber}
