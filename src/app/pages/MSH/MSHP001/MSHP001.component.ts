@@ -1894,7 +1894,7 @@ this.handleSelectCarModal() ;
     }
 
     comitExcelBatchModelModal(){
-      if(this.selectShopCode !== '453') {
+      if(this.selectShopCode !== '453' && this.selectShopCode !== '452') {
         this.nzMessageService.error("指定機台才可以使用當前功能")
         return ;
       }
