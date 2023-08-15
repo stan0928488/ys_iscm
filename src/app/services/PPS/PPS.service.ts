@@ -1947,7 +1947,7 @@ export class PPSService {
   getTBPPSM107() {
     let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl).toPromise();
   }
 
   insertTBPPSM107(_type, _data) {
@@ -1995,6 +1995,20 @@ export class PPSService {
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
       this.APIURL + `/FCP/I112` + nonbarUrl + `/importExcelPPSI112`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getCondition() {
+    let querUrl = this.APIURL + `/FCP/I112/getCondition`;
+    return this.http.get(querUrl);
+  }
+
+  orderPPSI112(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/orderPPSI112`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -2088,14 +2102,14 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  getShipRepoEditionList(){
+  getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
     let queryUrl = this.APIURL + `/FCP/R311/getShipRepoEditionList`;
     console.log(`Api Service 獲取報表維護版次 url -> ${queryUrl}`);
     return this.http.get(queryUrl);
   }
 
-  getPPSR311Data(edition : string){
+  getPPSR311Data(edition: string) {
     console.log('Api Service 獲取訂單結轉資料');
     let queryUrl = `${this.APIURL}/FCP/R311/getPPSR311Data/${edition}`;
     console.log(`Api Service 獲取訂單節轉資料 url -> ${queryUrl}`);
@@ -2103,7 +2117,7 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  getPPSR312Data(edition : string){
+  getPPSR312Data(edition: string) {
     console.log('Api Service 獲取入庫儲區異動資料');
     const queryUrl = `${this.APIURL}/FCP/R312/getPPSR312Data/${edition}`;
     console.log(`Api Service 獲取入庫儲區異動資料 url -> ${queryUrl}`);
