@@ -93,6 +93,7 @@ import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
+import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 
 const routes: Routes = [
   {
@@ -305,7 +306,7 @@ const routes: Routes = [
     path: 'SaleView',
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
-      { path: 'R001', component: ErrorPageComponent },
+      { path: 'R001', component: PPSR320Component },
     ],
     canActivate: [AuthGuard],
   },
