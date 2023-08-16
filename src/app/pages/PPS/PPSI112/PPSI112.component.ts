@@ -24,6 +24,7 @@ import { TBPPSM107 } from './TBPPSM107.model';
 import { GridOptions } from 'ag-grid-community';
 
 interface ItemData {
+  id: number;
   sort: number;
   schShopCode: string;
   equipCode: string;
@@ -251,6 +252,7 @@ export class PPSI112Component implements AfterViewInit {
       this.myDataList = res;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
+          id: this.myDataList[i].id,
           sort: this.myDataList[i].sort,
           schShopCode: this.myDataList[i].schShopCode,
           equipCode: this.myDataList[i].equipCode,
@@ -279,12 +281,9 @@ export class PPSI112Component implements AfterViewInit {
     await this.PPSService.getCondition()
       .toPromise()
       .then((res: Array<string>) => {
-        const data = Object(res);
         // this.conditionList = data.map((item) => item.columnComment);
         // this.conditionList = res;
         this.cdRef.detectChanges();
-        console.log(this.conditionList);
-        console.log(data);
         this.temp = res;
         for (let i = 0; i < this.temp.length; i++) {
           this.data.push(this.temp[i].columnComment);
@@ -311,7 +310,6 @@ export class PPSI112Component implements AfterViewInit {
     this.PPSService.getShopCode().subscribe((res) => {
       const data = Object.values(res);
       this.shopCodeOptions = data.map((item) => item.schShopCode);
-      console.log(this.shopCodeOptions);
     });
   }
 
@@ -406,34 +404,32 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   // update
-  editRow(equipCode: string): void {
-    this.editCache[equipCode].edit = true;
+  editRow(id: number): void {
+    this.editCache[id].edit = true;
   }
 
   // delete
-  deleteRow(equipCode: string): void {
+  deleteRow(id: number): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delByEquipCode(equipCode);
+        this.delByEquipCode(id);
       },
       nzOnCancel: () => console.log('cancel'),
     });
   }
 
   // cancel
-  cancelEdit(equipCode: string): void {
-    const index = this.displayDataList.findIndex(
-      (item) => item.equipCode === equipCode
-    );
-    this.editCache[equipCode] = {
+  cancelEdit(id: number): void {
+    const index = this.displayDataList.findIndex((item) => item.id === id);
+    this.editCache[id] = {
       data: { ...this.displayDataList[index] },
       edit: false,
     };
   }
 
   // update Save
-  saveEdit(rowData: any, equipCode: string): void {
+  saveEdit(rowData: any, id: number): void {
     let myObj = this;
     if (rowData.schShopCode === undefined) {
       myObj.message.create('error', '「站別」不可為空');
@@ -445,7 +441,7 @@ export class PPSI112Component implements AfterViewInit {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(rowData, equipCode);
+          this.updateSave(rowData, id);
           this.loading = true;
         },
         nzOnCancel: () => console.log('cancel'),
@@ -464,13 +460,14 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(rowData, _equipCode) {
+  updateSave(rowData, _id) {
     let myObj = this;
     this.loading = true;
     console.log(rowData);
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
+        id: rowData.id,
         sort: rowData.sort,
         schShopCode: rowData.schShopCode,
         equipCode: rowData.equipCode,
@@ -488,7 +485,7 @@ export class PPSI112Component implements AfterViewInit {
             this.onInit();
             this.sucessMSG('修改成功', ``);
             const index = this.displayDataList.findIndex(
-              (item) => item.equipCode === _equipCode
+              (item) => item.id === _id
             );
             this.getTBPPSM107();
             // Object.assign(this.displayDataList[index], rowData);
@@ -508,11 +505,11 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delByEquipCode(_equipCode) {
+  delByEquipCode(_id) {
     let myObj = this;
     this.loading = true;
     return new Promise((resolve, reject) => {
-      myObj.PPSService.delTBPPSM107('1', _equipCode).subscribe(
+      myObj.PPSService.delTBPPSM107('1', _id).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
             this.onInit();
@@ -804,14 +801,12 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   onBtnClick4(e) {
-    this.deleteRow(e.rowData.equipCode);
+    this.deleteRow(e.rowData.id);
   }
 
   onRowClicked(event: any) {
     console.log('Row clicked:', event.node);
     this.whichRow = event.data.equipCode;
-    // 在这里处理您点击行后的逻辑
-    console.log(this.conditionList);
   }
 
   cumsumTypeDisplay(params: any): string {
@@ -827,34 +822,11 @@ export class PPSI112Component implements AfterViewInit {
 
   cumsumTypeSelect(params: any): string {
     const selectedOption = params.value;
-    // console.log('cumsumTypeSelect option:', selectedOption);
     if (selectedOption === 'day') {
       return '日';
     } else if (selectedOption === 'hour') {
       return '小時';
     }
     return '';
-  }
-
-  onRowDragEnd(event: RowDragEvent) {
-    const overIndex = event.overIndex;
-    const draggedNode = event.node;
-
-    // 更新数据源中的行顺序
-    const oldIndex = this.displayDataList.indexOf(draggedNode.data);
-    const newDataArray = [...this.displayDataList];
-    newDataArray.splice(overIndex, 0, newDataArray.splice(oldIndex, 1)[0]);
-
-    // 更新数据源并刷新视图
-    this.displayDataList = newDataArray;
-    this.cdRef.detectChanges();
-    console.log(newDataArray);
-    let obj = {};
-    obj = {
-      order: newDataArray,
-    };
-    this.PPSService.orderPPSI112('1', obj).subscribe((res) => {
-      console.log(res);
-    });
   }
 }
