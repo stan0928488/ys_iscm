@@ -2133,4 +2133,11 @@ export class PPSService {
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  getR320Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R320/getPPSR320Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 }

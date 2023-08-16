@@ -135,6 +135,7 @@ import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBa
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { ListShipRepoComponent } from './pages/PPS/list-ship-repo/list-ship-repo.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
+import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 
 registerLocaleData(zh);
 
@@ -245,6 +246,7 @@ registerLocaleData(zh);
     PPSR311Component,
     ListShipRepoComponent,
     PPSR312Component,
+    PPSR320Component,
   ],
   imports: [
     BrowserModule,
