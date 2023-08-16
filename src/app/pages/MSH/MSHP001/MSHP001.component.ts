@@ -1994,9 +1994,9 @@ this.handleSelectCarModal() ;
       let finalChangeDataTemp = [] ;
       this.rowExcelModelData.forEach((item,index,array)=>{
         if(this.selectEquipCode === 'RF') {
-          finalChangeDataTemp.push({id:item,sort:index + 1,carId:item.CAR_ID_ADD})
+          finalChangeDataTemp.push({id:item.ID,sort:index + 1,carId:item.CAR_ID_ADD})
         }  else {
-          finalChangeDataTemp.push({id:item,sort:index + 1})
+          finalChangeDataTemp.push({id:item.ID,sort:index + 1})
         }
       }) 
       this.handlecomitExcelModelConfirmLoading = true
