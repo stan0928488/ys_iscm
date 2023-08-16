@@ -123,7 +123,7 @@ export class PPSR320Component implements OnInit {
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
-            width:130
+            width:140
           }
       ]
     },
@@ -153,7 +153,7 @@ export class PPSR320Component implements OnInit {
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
-            width:130
+            width:140
           }
       ]
     },
@@ -177,13 +177,13 @@ export class PPSR320Component implements OnInit {
             width:100
           },
           { 
+            wrapHeaderText:true,
             openByDefault: false,
             columnGroupShow: 'open',
             groupId: 'A',
-            wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
-            width:130
+            width:140
           }
       ]
     },
@@ -213,7 +213,7 @@ export class PPSR320Component implements OnInit {
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
-            width:130
+            width:140
           }
       ]
     },
@@ -243,7 +243,7 @@ export class PPSR320Component implements OnInit {
             groupId: 'A',
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
-            width:130
+            width:140
           }
       ]
     },
