@@ -348,6 +348,9 @@ export class PPSI112Component implements AfterViewInit {
     } else if (this.useFlag === '') {
       this.message.create('error', '「是否使用」不可為空');
       return;
+    } else if (this.condition != '鋼種群組') {
+      this.message.create('error', '「條件」目前只能選 鋼種群組; ');
+      return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
@@ -436,6 +439,9 @@ export class PPSI112Component implements AfterViewInit {
       return;
     } else if (rowData.equipCode === undefined) {
       myObj.message.create('error', '「機台」不可為空');
+      return;
+    } else if (rowData.condition != '鋼種群組') {
+      myObj.message.create('error', '「條件」目前只能選 鋼種群組');
       return;
     } else {
       this.Modal.confirm({
