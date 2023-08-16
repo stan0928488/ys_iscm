@@ -291,6 +291,14 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'LABPlan',
+    children: [
+      { path: '', redirectTo: '/LABPlan/P100', pathMatch: 'full' },
+      { path: 'P100', component: LABP100Component },
+    ],
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'SaleInput',
     children: [
       { path: '', redirectTo: '/SaleInput/I001', pathMatch: 'full' },
