@@ -8,6 +8,7 @@ import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-PPSR310',
@@ -61,17 +62,8 @@ export class PPSR310Component implements OnInit {
     {
       children: [
           { 
-            headerName: '銷售區域',
+            headerName: 'A.銷售區域',
             field: 'areaGroup',
-            width:150
-          }
-      ]
-    },
-    {
-      children: [
-          { 
-            headerName: '業務員',
-            field: 'sales',
             width:120
           }
       ]
@@ -79,28 +71,37 @@ export class PPSR310Component implements OnInit {
     {
       children: [
           { 
-            headerName: '付款條件',
-            field: 'paymentTerms',
-            width:150
+            headerName: 'B.業務員',
+            field: 'sales',
+            width:110
           }
       ]
     },
     {
       children: [
           { 
-            headerName: '客戶簡稱',
+            headerName: 'C.付款條件',
+            field: 'paymentTerms',
+            width:120
+          }
+      ]
+    },
+    {
+      children: [
+          { 
+            headerName: 'D.客戶簡稱',
             field: 'custAbbreviations',
             width:150
           }
       ]
     },
     {
-        headerName: '訂單餘量',
+        headerName: 'E.訂單餘量',
         children: [
             { 
-              headerName: '總量',
+              headerName: 'E.總量',
               field: 'orderbalanceweight',
-              width:150,
+              width:100,
               cellStyle: params => {
                 if (params.value < 0) {
                     return {color: 'red'};
@@ -117,12 +118,12 @@ export class PPSR310Component implements OnInit {
         ]
     },
     {
-      headerName: '目標量',
+      headerName: 'F.目標量',
       children: [
           { 
-            headerName: '總量',
+            headerName: 'F.總量',
             field: 'estimateWeight',
-            width:120,
+            width:100,
             cellStyle: params => {
               if (params.value < 0) {
                   return {color: 'red'};
@@ -139,12 +140,12 @@ export class PPSR310Component implements OnInit {
       ]
     },
     {
-      headerName: '生計回覆',
+      headerName: 'G.生計回覆',
       children: [
           { 
-            headerName: '總量',
+            headerName: 'G.總量',
             field: 'availableToShip',
-            width:150,
+            width:110,
             cellStyle: params => {
               if (params.value < 0) {
                   return {color: 'red'};
@@ -163,8 +164,9 @@ export class PPSR310Component implements OnInit {
     {
       children: [
           { 
-            headerName: '出貨進度',
+            headerName: 'H.出貨進度',
             field: 'shippingProgress',
+            width:120,
             cellStyle: params => {
               if (params.value < 0) {
                   return {color: 'red'};
@@ -188,7 +190,7 @@ export class PPSR310Component implements OnInit {
       headerName: '出貨量(總量)',
       children: [
           { 
-            headerName: '已過帳',
+            headerName: 'I.已過帳',
             field: 'shipmentPostedWeight',
             width:120,
             cellStyle: params => {
@@ -205,7 +207,7 @@ export class PPSR310Component implements OnInit {
             },
           },
           { 
-            headerName: '未過帳',
+            headerName: 'J.未過帳',
             field: 'shipmentUnpostedWeight',
             width:120,
             cellStyle: params => {
@@ -222,9 +224,9 @@ export class PPSR310Component implements OnInit {
             },
           },
           { 
-            headerName: '小計',
+            headerName: 'K.小計',
             field: 'shipmentWeightSum',
-            width:80,
+            width:100,
             cellStyle: params => {
               if (params.value < 0) {
                 return {color: 'red', 'background-color': '#FFAAD5'}
@@ -245,9 +247,9 @@ export class PPSR310Component implements OnInit {
       headerName: '庫存量(庫存量)',
       children: [
           { 
-            headerName: '成品',
+            headerName: 'L.成品',
             field: 'stockFinalProductWeight',
-            width:80,
+            width:90,
             cellStyle: params => {
               if (params.value < 0) {
                   return {color: 'red'};
@@ -262,9 +264,9 @@ export class PPSR310Component implements OnInit {
             },
           },
           { 
-            headerName: '半成品',
+            headerName: 'M.半成品',
             field: 'stockUnfinalProductWeight',
-            width:120,
+            width:110,
             cellStyle: params => {
               if (params.value < 0) {
                   return {color: 'red'};
@@ -279,9 +281,9 @@ export class PPSR310Component implements OnInit {
             },
           },
           { 
-            headerName: '小計',
+            headerName: 'N.小計',
             field: 'stockWeightSum',
-            width:80,
+            width:100,
             cellStyle: params => {
               if (params.value < 0) {
                 return {color: 'red', 'background-color': '#FFAAD5'}
@@ -301,9 +303,9 @@ export class PPSR310Component implements OnInit {
     {
       children: [
           { 
-            headerName: '合計',
+            headerName: 'O.合計',
             field: 'shipmentSumStock',
-            width:80,
+            width:100,
             cellStyle: params => {
               if (params.value < 0) {
                 return {color: 'red', 'background-color': '#84C1FF'}
@@ -338,21 +340,21 @@ export class PPSR310Component implements OnInit {
         if (element) {
           var obj =
           {
-            "銷售區域": (element['areaGroup'] ? element['areaGroup'] : null),
-            "業務員": (element['sales'] ? element['sales'] : null),
-            "付款條件": (element['paymentTerms'] ? element['paymentTerms'] : null),
-            "客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
-            "訂單餘量_總量": (element['orderbalanceweight'] ? Number(element['orderbalanceweight']) : null),
-            "目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
-            "生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
-            "出貨進度": (element['shippingProgress'] ? Math.round(element['shippingProgress'] * 100) + '%' : null),
-            "出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),
-            "出貨量(總量)_未過帳": (element['shipmentUnpostedWeight'] ? Number(element['shipmentUnpostedWeight']) : null),
-            "出貨量(總量)_小計": (element['shipmentWeightSum'] ? Number(element['shipmentWeightSum']) : null),
-            "庫存量(庫存量)_成品": (element['stockFinalProductWeight'] ? Number(element['stockFinalProductWeight']) : null),
-            "庫存量(庫存量)_半成品": (element['stockUnfinalProductWeight'] ? Number(element['stockUnfinalProductWeight']) : null),
-            "庫存量(庫存量)_小計": (element['stockWeightSum'] ? Number(element['stockWeightSum']) : null),
-            "合計": (element['shipmentSumStock'] ? Number(element['shipmentSumStock']) : null)
+            "A.銷售區域": (element['areaGroup'] ? element['areaGroup'] : null),
+            "B.業務員": (element['sales'] ? element['sales'] : null),
+            "C.付款條件": (element['paymentTerms'] ? element['paymentTerms'] : null),
+            "D.客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
+            "E.訂單餘量_總量": (element['orderbalanceweight'] ? Number(element['orderbalanceweight']) : null),
+            "F.目標量_總量": (element['estimateWeight'] ? Number(element['estimateWeight']) : null),
+            "G.生計回覆_總量": (element['availableToShip'] ? Number(element['availableToShip']) : null),
+            "H.出貨進度": (element['shippingProgress'] ? Math.round(element['shippingProgress'] * 100) + '%' : null),
+            "I.出貨量(總量)_已過帳": (element['shipmentPostedWeight'] ? Number(element['shipmentPostedWeight']) : null),
+            "J.出貨量(總量)_未過帳": (element['shipmentUnpostedWeight'] ? Number(element['shipmentUnpostedWeight']) : null),
+            "K.出貨量(總量)_小計": (element['shipmentWeightSum'] ? Number(element['shipmentWeightSum']) : null),
+            "L.庫存量(庫存量)_成品": (element['stockFinalProductWeight'] ? Number(element['stockFinalProductWeight']) : null),
+            "M.庫存量(庫存量)_半成品": (element['stockUnfinalProductWeight'] ? Number(element['stockUnfinalProductWeight']) : null),
+            "N.庫存量(庫存量)_小計": (element['stockWeightSum'] ? Number(element['stockWeightSum']) : null),
+            "O.合計": (element['shipmentSumStock'] ? Number(element['shipmentSumStock']) : null)
           }
           exportData.push(obj);
         }
@@ -404,6 +406,11 @@ export class PPSR310Component implements OnInit {
       this.message.error('網絡請求失敗');
     })
 
+  }
+
+  exportPDF() {
+    const dataURI = 'https://walsinsmc.sharepoint.com/:b:/s/iSCM/EUdi_NQeAMVHmV-MQcBXNOQBpL0yDIqPhm4MPMyj7pkZdQ?e=V2t0Ey';
+    saveAs(dataURI ,'業務報表相關說明.pdf');
   }
 
 }

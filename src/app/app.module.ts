@@ -89,6 +89,8 @@ import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
 import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
 
+import { PPSR302_coilComponent } from './pages/PPS/PPSR302_coil/PPSR302_coil.component';
+
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
 import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
@@ -141,6 +143,8 @@ import { PPSI202_NonBarEditEndTimeCellEditorComponent  } from './pages/PPS/PPSI2
 import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShopCellEditorComponent';
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
+import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+
 
 registerLocaleData(zh);
 
@@ -210,6 +214,7 @@ registerLocaleData(zh);
     PPSI230Component,
     PPSR301Component,
     PPSR302Component,
+    PPSR302_coilComponent,
     PPSR303Component,
     PPSR304Component,
     PPSR305Component,
@@ -257,7 +262,8 @@ registerLocaleData(zh);
     PPSI202_NonBarEditEndTimeCellEditorComponent,
     PPSI202_NonBarEditShopCellEditorComponent,
     PPSI202_NonBarEditEquipCellEditorComponent,
-    PPSI202_NonBarEditShutdownTypeCellEditorComponent
+    PPSI202_NonBarEditShutdownTypeCellEditorComponent,
+    PPSR320Component,
   ],
   imports: [
     BrowserModule,

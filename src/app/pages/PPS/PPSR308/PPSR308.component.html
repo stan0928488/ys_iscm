@@ -26,7 +26,7 @@
         [(ngModel)]="searchData.specialBar"
         (ngModelChange)="getDataList()"
         [nzButtonStyle]="'solid'">
-          <label nz-radio-button nzDisabled="true">產品:</label>
+          <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">產品:</label>
           <label nz-radio-button nzValue="">ALL</label>
           <label nz-radio-button nzValue="IS_BIG_STICK">大棒</label>
           <label nz-radio-button nzValue="IS_PROFIELD">異型棒</label>
@@ -40,7 +40,7 @@
             <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
         </nz-select>
         <br>
-        <nz-radio-group style="margin-top: 8px; margin-left: 10px;" 
+        <nz-radio-group style="margin-top: 8px; " 
         [(ngModel)]="searchData.saleAreaGroup" 
         (ngModelChange)="getDataList()"
         [nzButtonStyle]="'solid'">
@@ -50,16 +50,16 @@
         </nz-radio-group>
         <br>
         <div nz-row>
-            <div nz-col nzSpan="4">
+            <div style = "margin-top: 8px;" nz-col nzSpan="4">
                 <input nz-input [(ngModel)]="searchData.custAbbreviations"
                 placeholder="客戶" />
             </div>
-            <button style="margin-left:20px ;"  (click) = "getDataList()"  nz-button nzType="primary" >
+            <button style="margin-left:20px ; margin-top: 8px;"  (click) = "getDataList()"  nz-button nzType="primary" >
                 <span nz-icon nzType="search" nzTheme="outline"></span>查詢
             </button>
             <button
               nz-button
-              style="margin-left:30px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+              style="margin-left:30px; margin-top: 8px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
               nzType="primary"
               (click) = "excelExport()"
             ><span nz-icon nzType="download" nzTheme="outline"></span>
@@ -68,7 +68,7 @@
 
             <button
                 nz-button
-                style="margin-left:30px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); font-weight: bold;"
+                style="margin-left:30px; margin-top: 8px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); font-weight: bold;"
                 nzType="default" nzDanger
                 (click) = "exportPDF()"
             ><span nz-icon nzType="file-pdf" nzTheme="outline"></span>

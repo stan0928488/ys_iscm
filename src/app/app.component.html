@@ -285,6 +285,9 @@
               <li nz-menu-item>
                 <a [routerLink]="['/FCPBarRepo/R302']"> 交期-計畫彙總表 </a>
               </li>
+              <li nz-menu-item *ngIf="userName == 'UR10369'">
+                <a [routerLink]="['/FCPBarRepo/R302_coil']"> 交期-計畫彙總表(鋼捲) </a>
+              </li>
               <li nz-menu-item>
                 <a [routerLink]="['/FCPBarRepo/R301']"> 機台產能分析表 </a>
               </li>
@@ -361,6 +364,33 @@
             <ul>
               <li nz-menu-item>
                 <a [routerLink]="['/LABPlan/P100']"> 工時擷取與結果 </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <!-- 業務報表 SALE -->
+      <li nz-submenu nzTitle="業務報表" nzIcon="area-chart">
+        <ul>
+          <li nz-submenu nzTitle="報表維護" nzIcon="file-text">
+            <ul>
+              <li nz-menu-item>
+                <a [routerLink]="['/SaleInput/I001']">出貨移轉統計表 </a>
+              </li>
+              <li nz-menu-item>
+                <a [routerLink]="['/SaleInput/I002']">訂單交期回覆 </a>
+              </li>
+              <li nz-menu-item>
+                <a [routerLink]="['/SaleInput/I003']">成品半成品庫存現況 </a>
+              </li>
+            </ul>
+          </li>
+
+          <li nz-submenu nzTitle="報表檢視" nzIcon="fund-projection-screen">
+            <ul>
+              <li nz-menu-item>
+                <a [routerLink]="['/SaleView/R001']"> 出貨追蹤管理報表​ </a>
               </li>
             </ul>
           </li>

@@ -66,6 +66,7 @@
       [gridOptions]="gridOptions"
       editType="fullRow"
       [suppressClickEdit]="true"
+      [animateRows]="true"
       (rowClicked)="onRowClicked($event)"
     >
     </ag-grid-angular>
@@ -92,7 +93,26 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 7px;
+              padding-left: 10px;
+            "
+          >
+            順序
+          </td>
+          <td>
+            <input
+              style="width: 190px; color: darkblue"
+              nz-input
+              placeholder="輸入順序"
+              [(ngModel)]="sort"
+            />
+          </td>
+          <td
+            style="
+              width: 160px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+              padding-left: 10px;
             "
           >
             站別
@@ -118,7 +138,7 @@
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 7px;
+              padding-left: 10px;
             "
           >
             機台
@@ -139,13 +159,16 @@
               ></nz-option>
             </nz-select>
           </td>
+        </tr>
+
+        <tr>
           <td
             style="
               width: 160px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;
               border-radius: 5px;
-              padding-left: 7px;
+              padding-left: 10px;
             "
           >
             累積單位
@@ -160,9 +183,6 @@
               <nz-option [nzLabel]="'小時'" [nzValue]="'hour'"></nz-option>
             </nz-select>
           </td>
-        </tr>
-
-        <tr>
           <td
             style="
               width: 160px;
@@ -199,6 +219,55 @@
               nz-input
               placeholder="輸入強制投產"
               [(ngModel)]="dateLimit"
+            />
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              width: 160px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+              padding-left: 10px;
+            "
+          >
+            條件
+          </td>
+          <td>
+            <nz-select
+              (nzOpenChange)="onSelect($event)"
+              style="width: 190px; color: darkblue"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder="請選擇條件"
+              [(ngModel)]="condition"
+            >
+              <nz-option
+                *ngFor="let option of conditionList"
+                [nzValue]="option"
+                [nzLabel]="option"
+              ></nz-option>
+            </nz-select>
+          </td>
+          <td
+            style="
+              width: 160px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+              padding-left: 10px;
+            "
+          >
+            條件值
+          </td>
+          <td>
+            <input
+              style="width: 190px; color: darkblue"
+              nz-input
+              placeholder="輸入條件值"
+              [(ngModel)]="conditionValue"
             />
           </td>
           <td

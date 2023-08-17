@@ -180,7 +180,7 @@ export class PPSR308Component implements OnInit {
           }],
         },
         {
-          headerName: 'E.可供出貨量(無卡計畫量)',
+          headerName: 'E.可供出貨量(無卡出貨目標)',
           children: [
             {
               children: [{
@@ -225,7 +225,7 @@ export class PPSR308Component implements OnInit {
           ],
         },
         {
-          headerName: 'F.可供出貨量(符合計畫量/缺項)',
+          headerName: 'F.可供出貨量',
           children: [
             {
               children: [{
@@ -270,7 +270,7 @@ export class PPSR308Component implements OnInit {
           ],
         },
         {
-          headerName: 'G.至月底可供出貨量(符合計畫量/缺項)',
+          headerName: 'G.可供出貨量(至月底)',
           children: [
             {
               children: [{
@@ -344,8 +344,8 @@ export class PPSR308Component implements OnInit {
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
                   "是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
-                  width:120,
-                  headerName: '1.足項',
+                  width:250,
+                  headerName: 'I1.1成品(交期符合/允收日符合/足項)',
                   field: "finishedProductDateAcceptableEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
@@ -363,8 +363,8 @@ export class PPSR308Component implements OnInit {
                 {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
                   "是否符合允收截止日Y、是否符合可接受交期Y、是否缺項N者",
-                  width:120,
-                  headerName: '2.缺項',
+                  width:250,
+                  headerName: ' I1.2成品(交期符合/允收日符合/缺項)',
                   field: "finishedProductDateAcceptableNotEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
@@ -384,9 +384,9 @@ export class PPSR308Component implements OnInit {
             {
               children: [{
                 headerTooltip:"是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
-                headerName: '2.交期符合_至月底足項',
+                headerName: 'I2成品(交期符合/至月底/足項)',
                 field: "finishedProductEnoughBeforeEndOfMonth",
-                width:120,
+                width:250,
                 cellStyle: params => {
                   if (params.value < 0) {
                       return {color: 'red'};
@@ -404,9 +404,9 @@ export class PPSR308Component implements OnInit {
             {
               children: [{
                 headerTooltip:"生計交期>可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)",
-                headerName: '3.交期不符',
+                headerName: 'I3成品(交期不符/允收日符合)',
                 field: "finishedProductDateNotMatch",
-                width:120,
+                width:250,
                 cellStyle: params => {
                   if (params.value < 0) {
                       return {color: 'red'};
@@ -433,8 +433,8 @@ export class PPSR308Component implements OnInit {
                   headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
                   "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)"+
                   "是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
-                  width:120,
-                  headerName: '1.足項',
+                  width:250,
+                  headerName: 'J1.1生產計劃(交期符合/允收日符合/足項)',
                   field: "productPlanDateAcceptableEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
@@ -450,11 +450,11 @@ export class PPSR308Component implements OnInit {
                   },
                 },
                 {
-                  headerTooltip:"生計交期<=可接受交期 (DATE_DELIVERY_PP<=DATE_ACCEPTABLE)"+
+                  headerTooltip:"生計交期>可接受交期 (DATE_DELIVERY_PP>DATE_ACCEPTABLE)"+
                   "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)"+
                   "是否符合允收截止日Y、是否符合可接受交期Y、是否缺項N者",
-                  width:120,
-                  headerName: '2.缺項',
+                  width:250,
+                  headerName: 'J1.2生產計劃(交期符合/允收日符合/缺項)',
                   field: "productPlanDateAcceptableNotEnough",
                   cellStyle: params => {
                     if (params.value < 0) {
@@ -474,9 +474,9 @@ export class PPSR308Component implements OnInit {
             {
               children: [{
                 headerTooltip:"是否符合允收截止日、是否符合可接受交期、是否缺項皆為Y者",
-                headerName: '2.交期符合_至月底足項',
+                headerName: 'J2生產計劃(交期符合/至月底/足項)',
                 field: "productPlanEnoughBeforeEndOfMonth",
-                width:120,
+                width:250,
                 cellStyle: params => {
                   if (params.value < 0) {
                       return {color: 'red'};
@@ -495,8 +495,8 @@ export class PPSR308Component implements OnInit {
               children: [{
                 headerTooltip:"生計交期>可接受交期 (DATE_DELIVERY_PP>DATE_ACCEPTABLE)"+
                 "PST<=允收截止日 (PST<=DATE_PLAN_IN_STORAGE)",
-                headerName: '3.交期不符',
-                width:120,
+                headerName: 'J3生產計劃(交期不符/允收日符合)',
+                width:250,
                 field: "productPlanDateNotMatch",
                 cellStyle: params => {
                   if (params.value < 0) {
@@ -579,21 +579,21 @@ export class PPSR308Component implements OnInit {
             "B.訂單餘量": (element['orderBalance'] ? element['orderBalance'] : null),
             "C.出貨目標": (element['shippingTarget'] ? Number(element['shippingTarget']) : null),
             "D.出貨進度": (element['shippingProgress'] ? Number(element['shippingProgress']) : null),
-            "E.可供出貨量(無卡計畫量)": (element['availableToShipNoCard'] ? Number(element['availableToShipNoCard']) : null),
-            "E.可供出貨量(無卡計畫量) GAP": (element['gapNoCard'] ? Number(element['gapNoCard']) : null),
-            "F.可供出貨量(符合計畫量/缺項)": (element['availableToShipMeetThePlanned'] ? Number(element['availableToShipMeetThePlanned']) : null),
-            "F.可供出貨量(符合計畫量/缺項) GAP": (element['gapMeetThePlanned'] ? Number(element['gapMeetThePlanned']) : null),
-            "G.至月底可供出貨量(符合計畫量/缺項)": (element['endOfMonthAvailableToShipMeetThePlanned'] ? Number(element['endOfMonthAvailableToShipMeetThePlanned']) : null),
-            "G.至月底可供出貨量(符合計畫量/缺項) GAP": (element['endOfMonthgapMeetThePlanned'] ? Number(element['endOfMonthgapMeetThePlanned']) : null),
+            "E.可供出貨量(無卡出貨目標)": (element['availableToShipNoCard'] ? Number(element['availableToShipNoCard']) : null),
+            "E.可供出貨量(無卡出貨目標) GAP": (element['gapNoCard'] ? Number(element['gapNoCard']) : null),
+            "F.可供出貨量": (element['availableToShipMeetThePlanned'] ? Number(element['availableToShipMeetThePlanned']) : null),
+            "F.可供出貨量 GAP": (element['gapMeetThePlanned'] ? Number(element['gapMeetThePlanned']) : null),
+            "G.可供出貨量(至月底)": (element['endOfMonthAvailableToShipMeetThePlanned'] ? Number(element['endOfMonthAvailableToShipMeetThePlanned']) : null),
+            "G.可供出貨量(至月底) GAP": (element['endOfMonthgapMeetThePlanned'] ? Number(element['endOfMonthgapMeetThePlanned']) : null),
             "H.已出貨": (element['shipped'] ? Number(element['shipped']) : null),
-            "I.成品_交期符合_足項": (element['finishedProductDateAcceptableEnough'] ? Number(element['finishedProductDateAcceptableEnough']) : null),
-            "I.成品_交期符合_缺項": (element['finishedProductDateAcceptableNotEnough'] ? Number(element['finishedProductDateAcceptableNotEnough']) : null),
-            "I.成品_交期符合_至月底足項": (element['finishedProductEnoughBeforeEndOfMonth'] ? Number(element['finishedProductEnoughBeforeEndOfMonth']) : null),
-            "I.成品_交期不符": (element['finishedProductDateNotMatch'] ? Number(element['finishedProductDateNotMatch']) : null),
-            "J.生產計劃_交期符合_足項": (element['productPlanDateAcceptableEnough'] ? Number(element['productPlanDateAcceptableEnough']) : null),
-            "J.生產計劃_交期符合_缺項": (element['productPlanDateAcceptableNotEnough'] ? Number(element['productPlanDateAcceptableNotEnough']) : null),
-            "J.生產計劃_交期符合_至月底足項": (element['productPlanEnoughBeforeEndOfMonth'] ? Number(element['productPlanEnoughBeforeEndOfMonth']) : null),
-            "J.生產計劃_交期不符": (element['productPlanDateNotMatch'] ? Number(element['productPlanDateNotMatch']) : null)
+            "I1.1成品(交期符合/允收日符合/足項)": (element['finishedProductDateAcceptableEnough'] ? Number(element['finishedProductDateAcceptableEnough']) : null),
+            "I1.2成品(交期符合/允收日符合/缺項)": (element['finishedProductDateAcceptableNotEnough'] ? Number(element['finishedProductDateAcceptableNotEnough']) : null),
+            "I2成品(交期符合/至月底/足項)": (element['finishedProductEnoughBeforeEndOfMonth'] ? Number(element['finishedProductEnoughBeforeEndOfMonth']) : null),
+            "I3成品(交期不符/允收日符合)": (element['finishedProductDateNotMatch'] ? Number(element['finishedProductDateNotMatch']) : null),
+            "J1.1生產計劃(交期符合/允收日符合/足項)": (element['productPlanDateAcceptableEnough'] ? Number(element['productPlanDateAcceptableEnough']) : null),
+            "J1.2生產計劃(交期符合/允收日符合/缺項)": (element['productPlanDateAcceptableNotEnough'] ? Number(element['productPlanDateAcceptableNotEnough']) : null),
+            "J2生產計劃(交期符合/至月底/足項)": (element['productPlanEnoughBeforeEndOfMonth'] ? Number(element['productPlanEnoughBeforeEndOfMonth']) : null),
+            "J3生產計劃(交期不符/允收日符合)": (element['productPlanDateNotMatch'] ? Number(element['productPlanDateNotMatch']) : null)
           }
           exportData.push(obj);
         }
@@ -624,7 +624,7 @@ export class PPSR308Component implements OnInit {
   }
   
   exportPDF() {
-    const dataURI = 'https://drive.google.com/file/d/1yInal584Dbpw0pFQZSODl9lU-uZECo-t/view?usp=sharing';
+    const dataURI = 'https://walsinsmc.sharepoint.com/:b:/s/iSCM/Eaq3J7W6l9VMjprVz6GXnSsBO9Fa-r4IMiKrGBUMzvIWjQ?e=bmjIfO';
     saveAs(dataURI ,'出貨計畫表相關說明.pdf');
   }
 }

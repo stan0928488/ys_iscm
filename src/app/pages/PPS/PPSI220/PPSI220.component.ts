@@ -1229,24 +1229,25 @@ export class PPSI220Component implements AfterViewInit {
     var titleName = [];
     this.LoadingPage = true;
     this.isVisibleRun = false;
+    this.titleArray = [];
 		return new Promise((resolve, reject) => {
-      this.getPPSService.getFCP_EDITIONexist(data).subscribe(res => {
+      this.getPPSService.getFCP_EDITIONexist(data).subscribe(async res => {
         if(res[0].MSG === "Y") {
-          this.getPPSService.getTitleName().subscribe(res => {
-            this.titleArray = res;
-            for (let i=0; i< this.titleArray.length; i++) {
-              titleName.push(this.titleArray[i].COLUMN_COMMENT);
-            }
-            
-            this.getPPSService.getFCPResRepo(data).subscribe(res => {
-              let result:any = res ;
-              this.FCPResRepo = result;
-              const data = this.formatDataForExcel(this.FCPResRepo);
-              let fileName = `FCP結果表`;
-              this.excelService.exportAsExcelFile(data, fileName, titleName);
-              this.LoadingPage = false;
-              console.log("convertToExcel Done");
-            });
+          // 獲取該表中英文屬性名稱(key-value)
+          const excelTitleObservable$ =  this.getPPSService.getTitleName();
+          const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
+          // 擷取出英文的屬性名稱放到firstRow
+          const firstRow = _.values(excelTitleRes);
+      
+          
+          this.getPPSService.getFCPResRepo(data).subscribe(res => {
+            let result:any = res ;
+            this.FCPResRepo = result;
+            const data = this.formatDataForExcel(this.FCPResRepo);
+            let fileName = `FCP結果表`;
+            this.excelService.exportAsExcelFile(data, fileName, firstRow);
+            this.LoadingPage = false;
+            console.log("convertToExcel Done");
           });
         } else {
           this.message.create("error", `FCP版本：${data}，已逾時，不可轉出excel`);

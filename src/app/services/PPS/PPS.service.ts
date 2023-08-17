@@ -1633,8 +1633,8 @@ export class PPSService {
   }
 
   //获取版本号仅限当月，报表使用
-  getCurrentMonVerList() {
-    let queryUrl = this.APIURL + '/FCP/R302/VerList';
+  getCurrentMonVerList(param) {
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/VerList';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1654,27 +1654,27 @@ export class PPSService {
   }
 
   //获取交期总表数据
-  getR302DataList(_data) {
+  getR302DataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/queryDataList';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/queryDataList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //获取交期总表第一層数据
-  getR302FirstModalDataList(_data) {
+  getR302FirstModalDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getFirstModalData';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getFirstModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取延遲訂單信息
-  getR302DelayDataList(_data) {
+  getR302DelayDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getDelayDataList';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getDelayDataList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取訂單詳情 第二層modal
-  getR302OrderDataList(_data) {
+  getR302OrderDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getSecondModalData';
+    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getSecondModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // 取得mes以入庫量明細
@@ -1947,7 +1947,7 @@ export class PPSService {
   getTBPPSM107() {
     let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl).toPromise();
   }
 
   insertTBPPSM107(_type, _data) {
@@ -1995,6 +1995,20 @@ export class PPSService {
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
       this.APIURL + `/FCP/I112` + nonbarUrl + `/importExcelPPSI112`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getCondition() {
+    let querUrl = this.APIURL + `/FCP/I112/getCondition`;
+    return this.http.get(querUrl);
+  }
+
+  orderPPSI112(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/orderPPSI112`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -2088,14 +2102,14 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  getShipRepoEditionList(){
+  getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
     let queryUrl = this.APIURL + `/FCP/R311/getShipRepoEditionList`;
     console.log(`Api Service 獲取報表維護版次 url -> ${queryUrl}`);
     return this.http.get(queryUrl);
   }
 
-  getPPSR311Data(edition : string){
+  getPPSR311Data(edition: string) {
     console.log('Api Service 獲取訂單結轉資料');
     let queryUrl = `${this.APIURL}/FCP/R311/getPPSR311Data/${edition}`;
     console.log(`Api Service 獲取訂單節轉資料 url -> ${queryUrl}`);
@@ -2103,7 +2117,7 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  getPPSR312Data(edition : string){
+  getPPSR312Data(edition: string) {
     console.log('Api Service 獲取入庫儲區異動資料');
     const queryUrl = `${this.APIURL}/FCP/R312/getPPSR312Data/${edition}`;
     console.log(`Api Service 獲取入庫儲區異動資料 url -> ${queryUrl}`);
@@ -2192,4 +2206,9 @@ export class PPSService {
             );
   }
 
+  getR320Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R320/getPPSR320Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 }
