@@ -1,0 +1,88 @@
+
+#tab-1 {
+    width: 1000px;
+    height: 50;
+}
+
+#tab-1>ul {
+    display: block;
+    margin: 0;
+    list-style: none;
+}
+
+.tab-title1 {
+    list-style: none;
+}
+
+#tab-1>ul>li {
+    display: inline-block;
+    vertical-align: top;
+    font-family: '微軟正黑體';
+    margin: 0 -1px -1px 0;
+    border: 1px solid #BCBCBC;
+    height: 25px;
+    line-height: 25px;
+    background: #ffffff;
+    padding: 0 15px;
+    list-style: none;
+    box-sizing: border-box;
+    box-shadow: 0 1px;
+}
+
+#tab-1>ul>li a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+#tab-1>ul>li.active {
+    border-bottom: 1px solid #fff;
+    background: rgb(228, 227, 227);
+    font-weight: bold;
+}
+
+#tab-1>.tab-inner1 {
+    clear: both;
+    color: #000;
+    border: 1px #cbfcfc solid;
+}
+
+.tab-inner {
+    padding: 15px;
+    height: 50px;
+}
+
+// 对话框的高
+:host ::ng-deep .ant-modal-body {
+    height: 400px !important;
+    overflow-y: auto !important;
+}
+
+// 滚动条
+:host ::ng-deep .ant-modal-body::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 10px;
+    /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+}
+
+:host ::ng-deep .ant-modal-body::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #56abf2;
+}
+
+:host ::ng-deep .ant-modal-body::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #bee1eb;
+}
+
+:host ::ng-deep .ag-header-cell-label {
+    justify-content: center
+}
+
+:host ::ng-deep .ag-header-group-cell-label {
+    justify-content: center
+}
