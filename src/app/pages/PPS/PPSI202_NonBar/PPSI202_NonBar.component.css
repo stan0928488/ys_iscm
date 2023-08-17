@@ -1,0 +1,99 @@
+.headDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.headRightDiv{
+    margin-left: auto;
+}
+
+#fileupload{
+    width: 200px;
+}
+
+.bodyDiv{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.bodyLeftDiv{
+    width: 340px;
+    height: 1500px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 50px;
+}
+
+.bodyRightDiv{
+    flex : 1;
+}
+
+.buttonEnabled{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+}
+
+.buttonDisabled{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+    background-color: #bec4be; 
+    color: darkblue;
+}
+
+.FCPenable{
+    margin-left: 10px;
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+    background-color: 
+    #4CAF50;border:2px blue none;
+}
+
+.FCPdisable{
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+    background-color: #bec4be; 
+    color: darkblue; 
+    border:2px blue none;
+}
+  
+.custom-divider {
+    height: 1200px;
+    cursor: ew-resize;
+    border-width: 3px;
+    margin: 0 10px;
+}
+
+.custom-divider:hover {
+    border-left: 1px dashed skyblue;
+    border-width: 3px;
+}
+
+
+.equipCard {
+    display: flex; 
+    flex-direction: column;
+    width:100%;
+    margin-bottom: 10px;
+}
+
+.shutdownCalendarTag {
+    margin-top: 5px;
+}
+
+::ng-deep .ag-theme-PPSI202-NonBar-custom .ag-header-cell-label {
+    justify-content: center;
+}
+
+::ng-deep .ag-theme-PPSI202-NonBar-custom .ag-cell-value {
+    text-align: center;
+}
+
+::ng-deep .ag-theme-PPSI202-NonBar-custom .ag-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

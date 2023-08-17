@@ -1,8 +1,7 @@
-import { Component, AfterViewInit, NgZone,EventEmitter } from "@angular/core";
+import { Component, AfterViewInit, NgZone } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
-import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { registerLocaleData, DatePipe } from '@angular/common';
 
 import * as XLSX from 'xlsx';
@@ -10,7 +9,6 @@ import * as XLSX from 'xlsx';
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
-import {NzGridModule} from "ng-zorro-antd/grid"
 import {NzUploadModule} from "ng-zorro-antd/upload"
 
 
@@ -18,6 +16,7 @@ import { Router } from "@angular/router";
 import * as moment from 'moment';
 import * as _ from "lodash";
 import zh from '@angular/common/locales/zh';
+import { PPSI202DataTransferService } from "../PPSI202_TabMenu/PPSI202DataTransferService";
 registerLocaleData(zh);
 
 
@@ -98,7 +97,8 @@ export class PPSI202Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private upload : NzUploadModule
+    private upload : NzUploadModule,
+    private ppsI202DataTransferService : PPSI202DataTransferService
   ) {
 
     this.i18n.setLocale(zh_TW);
@@ -110,6 +110,9 @@ export class PPSI202Component implements AfterViewInit {
     this.getSHOP_CODEList();
     this.getCalendarList("1911-01", "　", "　");
     this.getRunFCPCount();
+    setTimeout(()=>{
+      this.ppsI202DataTransferService.setSelectedPage("i202");
+    },0);
   }
 
   // 補充定義
@@ -140,6 +143,7 @@ export class PPSI202Component implements AfterViewInit {
       }
       this.SHOP_CODEList = [...newres]; 
       this.SHOP_splitList =  _.chunk(newres, 5);    // list 6組 一分群
+      
       myObj.loading = false;
       myObj.LoadingPage = false;
     });
@@ -498,6 +502,7 @@ export class PPSI202Component implements AfterViewInit {
         USERCODE : this.USERNAME,
         DATETIME : this.datetime.format('YYYY-MM-DD HH:mm:ss')
 			})
+
       myObj.getPPSService.addCalendarData(obj).subscribe(res => {
         console.log(res[0].MSG)
         if(res[0].MSG === "Y") {

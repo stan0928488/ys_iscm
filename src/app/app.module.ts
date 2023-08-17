@@ -133,6 +133,14 @@ import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBa
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { ListShipRepoComponent } from './pages/PPS/list-ship-repo/list-ship-repo.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
+import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
+import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
+import { PPSI202_NonBarEditButtonRendererComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditButtonRendererComponent';
+import { PPSI202_NonBarEditStartTimeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditStartTimeCellEditorComponent';
+import { PPSI202_NonBarEditEndTimeCellEditorComponent  } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEndTimeeCellEditorComponent';
+import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShopCellEditorComponent';
+import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
+import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
 
 registerLocaleData(zh);
 
@@ -242,6 +250,14 @@ registerLocaleData(zh);
     PPSR311Component,
     ListShipRepoComponent,
     PPSR312Component,
+    PPSI202TabMenuComponent,
+    PPSI202NonBarComponent,
+    PPSI202_NonBarEditButtonRendererComponent,
+    PPSI202_NonBarEditStartTimeCellEditorComponent,
+    PPSI202_NonBarEditEndTimeCellEditorComponent,
+    PPSI202_NonBarEditShopCellEditorComponent,
+    PPSI202_NonBarEditEquipCellEditorComponent,
+    PPSI202_NonBarEditShutdownTypeCellEditorComponent
   ],
   imports: [
     BrowserModule,

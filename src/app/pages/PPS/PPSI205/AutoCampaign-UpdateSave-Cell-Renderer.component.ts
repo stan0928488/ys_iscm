@@ -40,7 +40,7 @@ export class  AutoCampaignUpdateSaveCellRenderer implements ICellRendererAngular
     
     // 使用ag-grid提供的api開啟整行進入編輯狀態
     // colKey設定進入編輯狀態後焦點要是哪個cloumn，
-    // 但一定要帶值，沒特別要求預設帶第一個欄位的值即可 
+    // 但一定要帶值，且帶的該欄位是要可編輯的
     this.params.api.startEditingCell({
       rowIndex : this.params.rowIndex,
       colKey : 'TC_FREQUENCE_LIFT' 

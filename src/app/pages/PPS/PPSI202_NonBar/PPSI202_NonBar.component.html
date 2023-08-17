@@ -1,0 +1,215 @@
+<nz-content style="margin:0 16px;">
+
+    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isLoading">
+
+        <div class="headDiv">
+            <div>
+                <button
+                    nz-button
+                    style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                    nzType="primary"
+                    [nzSize]="'large'"
+                    [class]="{buttonEnabled : isRunFCP, buttonDisabled : isRunFCP}"
+                    [disabled]="isRunFCP"
+                    (click)="onSubmit()">
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    確認
+                </button>
+                <label style="margin-left: 10px; font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+            </div>
+            <div class="headRightDiv">
+                <input 
+                    style="width:180px;" 
+                    type="file" 
+                    id="importExcelFile" 
+                    (change)="incomingFile($event)" 
+                    placeholder="Upload file" 
+                    accept=".xlsx, .xls, .csv">
+                <button
+                  nz-button
+                  [class]="{FCPdisable: isRunFCP, FCPenable: !isRunFCP}"
+                  nzType="primary"
+                  [disabled]="isRunFCP"
+                  (click)="handleImport()">
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                E X C E L 匯入
+                </button>
+                <button
+                  class="FCPenable"
+                  nz-button
+                  nzType="primary"
+                  (click)="convertMonthDataToExcel()">
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                下載當月資料
+                </button>
+            </div>
+        </div>
+
+        <div class="bodyDiv">
+
+            <div class="bodyLeftDiv">
+                <nz-card style="width:100%; margin-bottom: 10px;" nzTitle="站別">
+                    <ng-container *ngIf="shopList">
+                        <label 
+                            nz-checkbox 
+                            [(ngModel)]="checkedAllShop"
+                            [nzIndeterminate]="checkedAllShopIndeterminate"
+                            (ngModelChange)="onCheckedAllShop()">
+                        Check All
+                        </label>
+                    </ng-container>
+                    <nz-divider style="margin:5px auto;"></nz-divider>
+                    <tr *ngFor = "let shopChunk of shopCodeChunkList;">
+                        <td style="width: 80px;" *ngFor = "let shopItem of shopChunk;">
+                            <label 
+                            nz-checkbox
+                            (ngModelChange)="shopSingleChecked(shopItem)"
+                            [(ngModel)]="shopItem.checked" 
+                            [nzValue]="shopItem.value">
+                        {{ shopItem.value }}
+                        </label>
+                        </td>
+                    </tr>
+                </nz-card>
+                <nz-card class="equipCard" nzTitle="機台">
+                    <ng-container *ngIf="equipList">
+                        <label 
+                            nz-checkbox 
+                            [(ngModel)]="checkedAllEquip"
+                            [nzIndeterminate]="checkedAllEquipIndeterminate"
+                            (ngModelChange)="onCheckedAllEquip()">
+                        Check All
+                        </label>
+                        <nz-divider style="margin:5px auto;"></nz-divider>
+                    </ng-container>
+                    <tr *ngFor = "let equipChunk of equipChunkList;">
+                        <td style="width: 80px;" *ngFor = "let equipItem of equipChunk;">
+                            <label 
+                            nz-checkbox
+                            (ngModelChange)="equipSingleChecked()"
+                            [(ngModel)]="equipItem.checked" 
+                            [nzValue]="equipItem.equip">
+                        {{ equipItem.equip }}
+                        </label>
+                        </td>
+                    </tr>
+                </nz-card>
+
+                <nz-card style="width:100%; margin-bottom: 10px;" nzTitle="停機時間">
+                    <nz-time-picker 
+                            [(ngModel)]="holidayTimeStart" 
+                            nzPlaceHolder="停機時間(起)"
+                            [nzNowText]="'Now'"
+                            [nzOkText]="'確認'"
+                            (ngModelChange)="holidayTimeStartChange(null)"
+                            [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                        </nz-time-picker>
+
+                        <span>&nbsp;&nbsp;~&nbsp;&nbsp;</span>
+
+                        <nz-time-picker 
+                            nz-tooltip 
+                            [nzTooltipTitle]="holidayTimeEndTooltipTitle"
+                            [(ngModel)]="holidayTimeEnd" 
+                            nzPlaceHolder="停機時間(迄)"
+                            [nzNowText]="'Now'"
+                            [nzOkText]="'確認'"
+                            [nzDisabled]="disabledHolidayTimeEnd"
+                            [nzDisabledHours]="disabledHours(null)"
+                            [nzDisabledMinutes]="disabledMinutes(null)"
+                            [nzDisabledSeconds]="disabledSeconds(null)"
+                            [nzDefaultOpenValue]="timePickerDefaultOpenValue">
+                        </nz-time-picker>
+                </nz-card>
+
+                <nz-card style="width:100%; margin-bottom: 10px;" nzTitle="停機模式">
+                    <nz-radio-group [(ngModel)]="shutdownModelType" nzButtonStyle="solid">
+                        <label nz-radio-button nzValue="週保">週保</label>
+                        <label nz-radio-button nzValue="計畫性停機">計畫性停機</label>
+                        <label nz-radio-button nzValue="調機">調機</label>
+                        <label nz-radio-button nzValue="定修">定修</label>
+                      </nz-radio-group>
+                </nz-card>
+            </div>
+
+            <nz-divider nzType="vertical" class="custom-divider"></nz-divider>
+
+            <div class="bodyRightDiv">
+                <nz-card style="margin-bottom:10px; width:100%;" nzTitle="目前已挑選日期">
+                    <label 
+                        *ngFor="let item of pickDates; let _index = index;">
+                        <nz-tag 
+                            [nzColor]="'volcano'" 
+                            nzMode="closeable" 
+                            (nzOnClose)="unPickDates(_index)">
+                            {{item}}
+                        </nz-tag>
+                    </label>  
+                </nz-card>
+                <nz-card style="width:100%;">
+                    <nz-calendar 
+                        [nzFullscreen]="true"
+                        [(ngModel)]="calendarSelectedDate" 
+                        [(nzMode)]="calendarMode"
+                        (nzSelectChange)="calendarSelected($event)">
+                        <ul *nzDateCell="let date">
+                            <ng-container *ngIf="listShutdownMap.get(date.toLocaleDateString('en-CA')) !== undefined">
+                                
+                                <ng-container *ngFor="let key of listShutdownMapKeys(date.toLocaleDateString('en-CA'))">
+                                    <nz-tag 
+                                        class="shutdownCalendarTag"
+                                        nzMode="checkable"
+                                        [nzColor]="shutdownTypeBackgroundColorMap.get(key)"
+                                        (click)="selectedShutdownDayTag($event, date.toLocaleDateString('en-CA'), key)">
+                                        {{ key }}
+                                    </nz-tag>
+
+                                </ng-container>
+                               
+                            
+                            </ng-container>
+                        </ul>
+                    </nz-calendar>
+                </nz-card>
+            </div>
+
+        </div>
+
+    </nz-spin>
+
+</nz-content>
+
+
+<!-- 顯示每天設定的休息時段彈出框 -->
+<nz-modal
+    [(nzVisible)]="isVisibleShutdownPeriods"
+    [nzWidth]="1000" 
+    [nzTitle]="repareTitle" 
+    [nzContent]="content" 
+    [nzMaskClosable]="false"
+    [nzCancelText]="null"
+    [nzOkText]="'關閉'"
+    [nzOkLoading]="isOkLoading"
+    (nzOnOk)="cancelSuhtdownModalVisible()"
+    (nzOnCancel)="cancelSuhtdownModalVisible()">
+
+    <ng-template #repareTitle>{{ shutdownDateShowInModalTitle }}&nbsp;&nbsp;-&nbsp;&nbsp;停機時段列表</ng-template>
+    <ng-template #content>
+        <nz-spin style="z-index:9999;" nzTip="處理中..." [nzSize]="'large'" [nzSpinning] = "isEditLoading">
+            <ag-grid-angular
+                style="width: 100%; height:500px; overflow:scroll; padding-top:10px;"
+                class="ag-theme-alpine ag-theme-PPSI202-NonBar-custom"
+                [context]="agGridContext"
+                [columnDefs]="ppsinptb06ColumnDefs"
+                [gridOptions]="gridOptions"
+                [rowData]="ppsinptb06DataList"
+                [pagination]="true"
+                [animateRows]="true"
+                (cellDoubleClicked)="cellDoubleClickedHandler($event)"
+                (cellEditingStopped)="cellEditingStoppedHandler($event)"
+                editType="fullRow"
+                (gridReady)="onGridReady($event)">
+            </ag-grid-angular>
+        </nz-spin>
+    </ng-template>
+</nz-modal>
