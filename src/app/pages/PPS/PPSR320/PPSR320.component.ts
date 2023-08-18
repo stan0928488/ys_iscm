@@ -89,10 +89,59 @@ export class PPSR320Component implements OnInit {
         children: [
             { 
               columnGroupShow: 'closed',
-              groupId: 'A',
               headerName: '出貨目標',
               field: 'orderbalanceweight',
               width:120,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '期初庫存A',
+              field: 'orderbalanceweight',
+              width:120,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '當月入庫量B',
+              field: 'orderbalanceweight',
+              width:120,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              wrapHeaderText:true,
+              headerName: '本月最大出貨C=A+B',
+              field: 'orderbalanceweight',
+              width:140,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '出貨(已過帳)',
+              field: 'orderbalanceweight',
+              width:140,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '檢貨未過帳',
+              field: 'orderbalanceweight',
+              width:120,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '成品',
+              field: 'orderbalanceweight',
+              width:80,
+              openByDefault: false,
+            },
+            { 
+              columnGroupShow: 'open',
+              headerName: '待入庫',
+              field: 'orderbalanceweight',
+              width:100,
               openByDefault: false,
             }
         ]
@@ -103,15 +152,13 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'close',
-            groupId: 'A',
             headerName: 'W1目標',
             field: 'estimateWeight',
             width:100
           },
           { 
             openByDefault: false,
-            columnGroupShow: 'open',
-            groupId: 'A',
+            columnGroupShow: 'close',
             headerName: 'W1實績',
             field: 'estimateWeight',
             width:100
@@ -119,6 +166,27 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'open',
+            headerName: '成品(A)',
+            field: 'estimateWeight',
+            width:100
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '待入庫(B)',
+            field: 'estimateWeight',
+            width:120
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '假日出貨(C)',
+            field: 'estimateWeight',
+            width:140
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'close',
             groupId: 'A',
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
@@ -133,15 +201,13 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'close',
-            groupId: 'A',
             headerName: 'W2目標',
             field: 'estimateWeight',
             width:100
           },
           { 
             openByDefault: false,
-            columnGroupShow: 'open',
-            groupId: 'A',
+            columnGroupShow: 'close',
             headerName: 'W2實績',
             field: 'estimateWeight',
             width:100
@@ -149,7 +215,27 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'open',
-            groupId: 'A',
+            headerName: '成品(A)',
+            field: 'estimateWeight',
+            width:100
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '待入庫(B)',
+            field: 'estimateWeight',
+            width:120
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '假日出貨(C)',
+            field: 'estimateWeight',
+            width:140
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'close',
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
@@ -170,17 +256,36 @@ export class PPSR320Component implements OnInit {
           },
           { 
             openByDefault: false,
-            columnGroupShow: 'open',
-            groupId: 'A',
+            columnGroupShow: 'close',
             headerName: 'W3實績',
             field: 'estimateWeight',
             width:100
           },
           { 
-            wrapHeaderText:true,
             openByDefault: false,
             columnGroupShow: 'open',
-            groupId: 'A',
+            headerName: '成品(A)',
+            field: 'estimateWeight',
+            width:100
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '待入庫(B)',
+            field: 'estimateWeight',
+            width:120
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '假日出貨(C)',
+            field: 'estimateWeight',
+            width:140
+          },
+          { 
+            wrapHeaderText:true,
+            openByDefault: false,
+            columnGroupShow: 'close',
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
             width:140
@@ -193,15 +298,13 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'close',
-            groupId: 'A',
             headerName: 'W4目標',
             field: 'estimateWeight',
             width:100
           },
           { 
             openByDefault: false,
-            columnGroupShow: 'open',
-            groupId: 'A',
+            columnGroupShow: 'close',
             headerName: 'W4實績',
             field: 'estimateWeight',
             width:100
@@ -209,7 +312,27 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'open',
-            groupId: 'A',
+            headerName: '成品(A)',
+            field: 'estimateWeight',
+            width:100
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '待入庫(B)',
+            field: 'estimateWeight',
+            width:120
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '假日出貨(C)',
+            field: 'estimateWeight',
+            width:140
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'close',
             wrapHeaderText:true,
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
@@ -223,15 +346,13 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'close',
-            groupId: 'A',
             headerName: 'W5目標',
             field: 'estimateWeight',
             width:100
           },
           { 
             openByDefault: false,
-            columnGroupShow: 'open',
-            groupId: 'A',
+            columnGroupShow: 'close',
             headerName: 'W5實績',
             field: 'estimateWeight',
             width:100
@@ -239,8 +360,28 @@ export class PPSR320Component implements OnInit {
           { 
             openByDefault: false,
             columnGroupShow: 'open',
+            headerName: '成品(A)',
+            field: 'estimateWeight',
+            width:100
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '待入庫(B)',
+            field: 'estimateWeight',
+            width:120
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'open',
+            headerName: '假日出貨(C)',
+            field: 'estimateWeight',
+            width:140
+          },
+          { 
+            openByDefault: false,
+            columnGroupShow: 'close',
             wrapHeaderText:true,
-            groupId: 'A',
             headerName: '次週可出貨量D=(A)+(B)-(C)',
             field: 'estimateWeight',
             width:140
