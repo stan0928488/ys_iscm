@@ -93,7 +93,10 @@ import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
+import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
+import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+
 
 const routes: Routes = [
   {
@@ -208,8 +211,15 @@ const routes: Routes = [
   {
     path: 'PlanSet',
     children: [
-      { path: '', redirectTo: '/PlanSet/I202', pathMatch: 'full' },
-      { path: 'I202', component: PPSI202Component },
+      { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
+      { 
+        path: 'I202_TabMenu', 
+        component: PPSI202TabMenuComponent, 
+        children : [
+          { path: 'I202', component: PPSI202Component },
+          { path: 'I202_NonBar', component: PPSI202NonBarComponent }
+        ]
+      },
       { path: 'I205', component: PPSI205Component },
       { path: 'I205_100', component: PPSI205_100Component },
       { path: 'I205_401', component: PPSI205_401Component },

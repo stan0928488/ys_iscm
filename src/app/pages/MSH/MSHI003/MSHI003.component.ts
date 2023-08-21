@@ -719,8 +719,6 @@ export class MSHI003Component implements AfterViewInit {
     // 將jsonData轉成英文的key
     this.convertJsonToEnglishkey();
 
-    console.log('this.jsonExcelData==>', JSON.stringify(this.jsonExcelData));
-
     // 校驗Excel中的資料是否有重複
     if (this.checkExcelDataDuplicate(this.jsonExcelData)) {
       this.isSpinning = false;
