@@ -19,7 +19,7 @@ export class ConfigService {
     
     let APIBODY = "";       // 先連到舊的後台
     let APIBODY_OLD = "/pps/rest";       // 先連到舊的後台
-    let APIBODY_NEW = "/coil";       // 改連到新的後台
+    let APIBODY_NEW = "/ys-iscm";       // 改連到新的後台
 
 
     let hostName = window.location.hostname;
@@ -35,7 +35,7 @@ export class ConfigService {
         //  if(flag === "1") { 
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
         //  } else {
-        //    var urlHost = "ys-webapt1.walsin.com"
+        //    var urlHost = "ys-ppsapt01.walsin.corp"
         //    this.APIURL = `http://${urlHost}:8080${APIBODY}`;
         //  }
        
@@ -43,9 +43,6 @@ export class ConfigService {
       case "ys-pps.walsin.corp":
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
-      // case "ys-webapp.walsin.com":
-      //   this.APIURL = `https://${hostName}${APIBODY}`;
-      //   break;
       default:
         this.APIURL = `http://${hostName}:8080${APIBODY}`;        
     }
