@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit {
       password,
       env,
     };
-    this.router.navigateByUrl('/FCPBarData/P202');
+    this.router.navigateByUrl('/FCPBarRepo/R302');
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
     this.commonService.casLogin(username, password, env).subscribe(
@@ -124,7 +124,7 @@ export class LoginComponent implements OnInit {
           this.cookieService.setCookie('USERNAME', username, 2);
           this.cookieService.setCookie('plantCode', plantCode, 2);
           this.authService.emitAuthState();
-          this.router.navigateByUrl('/MSHPlan/P001');
+          this.router.navigateByUrl('/FCPBarRepo/R302');
           this.isLogining = false;
           // window.location.reload();
         } else {

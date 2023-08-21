@@ -19,7 +19,7 @@ export class ConfigService {
     
     let APIBODY = "";       // 先連到舊的後台
     let APIBODY_OLD = "/pps/rest";       // 先連到舊的後台
-    let APIBODY_NEW = "/ys-iscm";       // 改連到新的後台
+    let APIBODY_NEW = "/coil";       // 改連到新的後台
 
 
     let hostName = window.location.hostname;
