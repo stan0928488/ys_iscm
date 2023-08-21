@@ -18,6 +18,7 @@ import { PPSI202_NonBarEditEndTimeCellEditorComponent } from './PPSI202_NonBarEd
 import { PPSI202_NonBarEditShopCellEditorComponent } from './PPSI202_NonBarEditShopCellEditorComponent';
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './PPSI202_NonBarEditShutdownTypeCellEditorComponent';
+import { DisabledTimeConfig, DisabledTimeFn } from 'ng-zorro-antd/date-picker';
 
 @Component({
   selector: 'app-ppsi202-non-bar',
@@ -131,13 +132,13 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
   // 停機詳細資訊資料
   ppsinptb06DataList : any[] = [];
   // 緩存一份停機詳細資訊資料
-  ppsinptb06EditCacheList: { [index: string]: { data: any } } = {};
+  ppsinptb06EditCacheList: any[] = [];
   // 停機詳細資訊ag-grid欄位定義
   ppsinptb06ColumnDefs: ColDef[] = [
     { 
       headerName:'停機開始時間',
       field: 'startTime', 
-      width: 180,
+      width: 220,
       cellEditor : PPSI202_NonBarEditStartTimeCellEditorComponent,
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
@@ -146,7 +147,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
     { 
       headerName:'停機結束時間',
       field: 'endTime', 
-      width: 180,
+      width: 220,
       cellEditor : PPSI202_NonBarEditEndTimeCellEditorComponent,
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
@@ -333,19 +334,17 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       const resObservable$ = this.ppsService.getShutdownDataList(parms);
       const res = await firstValueFrom<any>(resObservable$);
      
+      const listShutdownMapTemp : Map<string, Map<string, any[]>> = new Map<string,  Map<string, any[]>>();
       if(_.isEmpty(res.data)){
-        this.sucessMSG(
-          '該月份無非直棒停機資料',
-          '該月份無非直棒停機資料'
-        );
+        this.listShutdownMap = listShutdownMapTemp;
+        return;
       }
       
-      const listShutdownMapTemp : Map<string, Map<string, any[]>> = new Map<string,  Map<string, any[]>>();
       _.keys(res.data).forEach(key => {
-        const subShutdownMap : Map<string, any[]> = new Map();
+        let subShutdownMap : Map<string, any[]> = new Map();
         _.keys(res.data[key]).forEach(subKey => {
           subShutdownMap.set(subKey, res.data[key][subKey]);
-        })
+        });
         listShutdownMapTemp.set(key, subShutdownMap);
       });
 
@@ -483,7 +482,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       this.dynamicChangeEquipCheckbox([shopItem]);
 
       // 獲取該被選擇的站別的停機資料
-      await this.getShutdownDataList();
+      //await this.getShutdownDataList();
 
     },0);
   }
@@ -622,11 +621,6 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       
   }
 
-  // 哪些站別被選取到
-  selectedShops(shopValues: string[]){
-
-  }
-
   // 所有機台被選取/不被選取
   async onCheckedAllEquip(){
 
@@ -715,7 +709,6 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
         endTime : moment(this.holidayTimeEnd).format('HH:mm:ss'),
         shopAndEquip :_shopAndEquip,
         shutdownModelType : this.shutdownModelType,
-        plant: '精整',
         userCreate : this.USERNAME
       };
 
@@ -922,13 +915,13 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
         }
       }
       // 當使用者編輯更新時，清空時間再設定日期會變成抓當天日期，需重新設定回原初選擇的日期
-      if(!_.isNil(params)){
+      /*if(!_.isNil(params)){
           const originalDate : string = params.data.shutdownDay;
           const updateSelectedholidayTimeStartHour = params.data.startTime.getHours().toString();
           const updateSelectedholidayTimeStartMinute = params.data.startTime.getMinutes().toString();
           const updateSelectedholidayTimeStartSecond = params.data.startTime.getSeconds().toString();
           params.data.startTime = new Date(`${originalDate} ${updateSelectedholidayTimeStartHour}:${updateSelectedholidayTimeStartMinute}:${updateSelectedholidayTimeStartSecond}`);          
-      }
+      }*/
 
     }else{
       if(_.isNil(params)){
@@ -944,7 +937,6 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
 
   // 限制使用者的休假結束時間不能小於休假開始時間
   disabledHours(params: ICellEditorParams){
-
     const _holidayTimeStart = _.isNil(params) ? this.holidayTimeStart : params.data.startTime;
 
     return () :  number[] => {
@@ -954,6 +946,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       else{
         params.data.endTime = null;
       }
+
       let disabledHoursNums : number[] = [];
       let selectedholidayTimeStartHour = _holidayTimeStart.getHours();
       const selectedholidayTimeStartMinute = _holidayTimeStart.getMinutes();
@@ -1040,16 +1033,58 @@ disabledSeconds(params: ICellEditorParams) {
   }
 }
 
+disabledDate(params: ICellEditorParams){
+
+  return (current: Date): boolean => {
+
+    const currentDate = moment(moment(current).format('YYYY-MM-DD'));
+    const startDate = moment(moment(params.data.startTime).format('YYYY-MM-DD'));
+
+    // 禁止選擇比停機開始時間還早的時間
+    const disabledBeforeStratTime = currentDate.isBefore(startDate, 'days');
+
+    // 禁止選擇比停機開始時間還晚超過一天時間
+    const disabledAfterMoreThanOneDayLaterStratTime = currentDate.diff(startDate, 'days') > 1;
+
+    return disabledBeforeStratTime || disabledAfterMoreThanOneDayLaterStratTime;
+  }
+}
+
+disabledEndTime(params: ICellEditorParams) {
+
+    return () : DisabledTimeConfig => (
+        {
+          nzDisabledHours:  this.disabledHours(params),
+          nzDisabledMinutes: this.disabledMinutes(params),
+          nzDisabledSeconds: this.disabledSeconds(params)
+        } 
+    );
+}
+
 holidayTimeEndChange(params: ICellEditorParams){
 
-  if(!_.isNil(params.data.endTime)) {
+      // 如果停機開始日期與停機結束日期相差一天
+      // 停機開始時間與停機結束時間調整為一樣
+      // 這樣才符合相差一天(不能跨天)
+
+      const startDate = moment(params.data.startTime);
+      const endDate = moment(params.data.endTime);
+      
+      if(Math.abs(startDate.diff(endDate)) > 86400000){
+        params.data.endTime = moment(`${endDate.year()}-${endDate.month()+1}-${endDate.date()} 00:00:00`).toDate();
+        this.nzMessageService.warning('停機時段不得跨天，停機結束時間自動調整為零點');
+      }
+      
+      
+
+  /*if(!_.isNil(params.data.endTime)) {
     // 當使用者編輯更新時，清空時間再設定日期會變成抓當天日期，需重新設定回原初選擇的日期
     const originalDate : string = params.data.shutdownDay;
     const updateSelectedholidayTimeEndHour = params.data.endTime.getHours().toString();
     const updateSelectedholidayTimeEndMinute = params.data.endTime.getMinutes().toString();
     const updateSelectedholidayTimeEndSecond = params.data.endTime.getSeconds().toString();
     params.data.endTime = new Date(`${originalDate} ${updateSelectedholidayTimeEndHour}:${updateSelectedholidayTimeEndMinute}:${updateSelectedholidayTimeEndSecond}`);
-   }
+   }*/
 }
 
   selectedShutdownDayTag(event : Event, shutdownDay : string, shutdownType){
@@ -1099,17 +1134,13 @@ holidayTimeEndChange(params: ICellEditorParams){
 
    // 深拷貝緩存一份停機詳細資訊
    setupUpdateEditCache(rowDataList:any[]): void {
-    rowDataList.forEach((item, index) => {
-      this.ppsinptb06EditCacheList[index] = {
-        data: _.cloneDeep(item),
-      };
-    });
+    this.ppsinptb06EditCacheList = _.cloneDeep(rowDataList);
   }
 
   editSave(params: ICellRendererParams<any, any>){
 
     // 取得緩存的原有資料
-    let oldData = this.ppsinptb06EditCacheList[params.node.rowIndex].data;
+    let oldData = this.ppsinptb06EditCacheList[params.node.rowIndex];
     // 清除儲存更新資料不必要的屬性
     const requsetData = _.omit(params.data, ['hasEdit', 'disabledShutdownEndtime', 'shutdownEndtimeTooltipTitle', 'isDisabledHourPlusOne', 'equipOptionList']) as any;
     // 清除儲存更新資料不必要的屬性
@@ -1188,14 +1219,14 @@ holidayTimeEndChange(params: ICellEditorParams){
     params.api.stopEditing(false);
 
     // 若有修改到其他停機模式，則從當前表格移除
-    if(this.ppsinptb06EditCacheList[params.node.rowIndex].data.shutdownModelType != params.data.shutdownModelType){
-      this.ppsinptb06DataList.splice(params.node.rowIndex, 1);
-    }
+    //if(this.ppsinptb06EditCacheList[params.node.rowIndex].data.shutdownModelType != params.data.shutdownModelType){
+     // this.ppsinptb06DataList.splice(params.node.rowIndex, 1);
+    //}
     // 一樣則更新緩存
-    else{
+    //else{
       // 更新用於當作更新條件、取消編輯顯示原資料的緩存資料
-      this.ppsinptb06EditCacheList[params.node.rowIndex].data = _.cloneDeep(params.data);
-    }
+      this.ppsinptb06EditCacheList[params.node.rowIndex] = _.cloneDeep(params.data);
+   // }
 
     // 重新渲染停機資訊
     this.gridApi.setRowData(this.ppsinptb06DataList);
@@ -1222,7 +1253,7 @@ holidayTimeEndChange(params: ICellEditorParams){
   cancalEditRow(params: ICellRendererParams<any, any>){
     params.api.stopEditing(false);
     this.ppsinptb06DataList[params.node.rowIndex] = _.cloneDeep(
-      this.ppsinptb06EditCacheList[params.node.rowIndex].data
+      this.ppsinptb06EditCacheList[params.node.rowIndex]
     );
     this.gridApi.setRowData(this.ppsinptb06DataList);
   }
@@ -1249,9 +1280,10 @@ holidayTimeEndChange(params: ICellEditorParams){
     try{
 
       this.isEditLoading = true;
-
+      
       // 取得緩存的原有資料
-      let oldData = this.ppsinptb06EditCacheList[params.node.rowIndex].data;
+      let oldData = this.ppsinptb06EditCacheList[params.node.rowIndex];
+
       // 剔除不需要的屬性
       oldData = _.omit(oldData, ['hasEdit', 'disabledShutdownEndtime', 'shutdownEndtimeTooltipTitle', 'isDisabledHourPlusOne', 'equipOptionList']) as any;
       oldData.startTime = moment(oldData.startTime).format('YYYY-MM-DD HH:mm:ss');
@@ -1297,7 +1329,7 @@ holidayTimeEndChange(params: ICellEditorParams){
     // 刪除前端中該筆資料
     this.ppsinptb06DataList.splice(params.node.rowIndex, 1);
     // 刪除該筆資料的緩存
-    this.ppsinptb06EditCacheList = _.omit(this.ppsinptb06EditCacheList, [params.node.rowIndex]);
+    this.ppsinptb06EditCacheList.splice(params.node.rowIndex, 1);
 
     // 重新要一份新的停機資訊
     await this.getShutdownDataList();
@@ -1318,7 +1350,7 @@ holidayTimeEndChange(params: ICellEditorParams){
   cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
     // 排除 "hasEdit" 屬性，不列入後續的資料比較
     const newValue = _.omit(event.data, ['hasEdit']);
-    const oldValue = _.omit(this.ppsinptb06EditCacheList[event.rowIndex].data, [
+    const oldValue = _.omit(this.ppsinptb06EditCacheList[event.rowIndex], [
       'hasEdit',
     ]);
 
@@ -1646,7 +1678,6 @@ holidayTimeEndChange(params: ICellEditorParams){
     // 添加屬性
     this.jsonExcelData.forEach(item => {
       item.userCreate = this.USERNAME;
-      item.plant = '精整'
     })
   }
 
@@ -1692,17 +1723,36 @@ holidayTimeEndChange(params: ICellEditorParams){
 
       }
 
-      // 以及停機開始時間不能晚於停機結束時間
+      // 停機開始時間不能晚於停機結束時間
+      // 停機開始時間與停機結束時間之間不能跨天
+      // 跨天只允許前一天的任意時間到隔天的00:00:00
+      // 例如 2023-08-18 06:00:00 到 2023-08-19 00:00:00
+      // 不允許其他時間的跨天 例如 2023-08-18 06:00:00 到 2023-08-19 01:00:00
+
       if(hasStartTime && hasEndTime){
 
         const startTime = moment(item[this.headerNameList[0]]);
         const endTime = moment(item[this.headerNameList[1]]);
 
-        // 停機開始時間晚於停機結束時間
-        if(startTime.isAfter(endTime)){
+        // 停機開始時間沒有早於停機結束時間
+        if(startTime.isSameOrAfter(endTime)){
           this.errorMSG(
             '匯入失敗',
             `第${rowNumberInExcel}行資料的「${this.headerNameList[0]}」必須早於「${this.headerNameList[1]}」，請修正。`
+          );
+          return false;
+        }
+
+        // 停機開始時間與停機結束有跨天(不能跨天)
+        const startTimeSpanningDay = moment(`${startTime.year()}-${startTime.month()+1}-${startTime.date()}`);
+        const endTimeSpanning = moment(`${endTime.year()}-${endTime.month()+1}-${endTime.date()}`);
+        const isMidnight = endTime.isSame(_.cloneDeep(endTime).startOf('day'));
+
+        // 如果日期差一天且結束時間不是零點
+        if(Math.abs(endTimeSpanning.diff(startTimeSpanningDay, 'days')) >=1 && !isMidnight){
+          this.errorMSG(
+            '匯入失敗',
+            `第${rowNumberInExcel}行資料的「${this.headerNameList[0]}」與「${this.headerNameList[1]}」不能跨天，請修正。`
           );
           return false;
         }

@@ -6,14 +6,14 @@ import * as _ from "lodash";
 @Component({
     selector: 'ppsi202-non-bar-edit-start-time-cell-editor-component',
     template: `
-        <nz-time-picker 
-            style="margin-left:10px; margin-right:10px;"
-            [(ngModel)]="params.data.startTime" 
-            nzPlaceHolder="停機時間(起)"
-            [nzNowText]="'Now'"
-            [nzOkText]="'確認'"
+        <nz-date-picker
+            style="margin-left:4px;"
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            [(ngModel)]="params.data.startTime"
+            nzPlaceHolder="停機開始時間"
             (ngModelChange)="componentParent.holidayTimeStartChange(params)">
-        </nz-time-picker>
+        </nz-date-picker>
     `,
      styles : [
         `

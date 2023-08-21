@@ -6,20 +6,19 @@ import { NzModalService } from "ng-zorro-antd/modal";
 @Component({
     selector: 'ppsi202-non-bar-edit-end-time-cell-editor-component',
     template: `
-       <nz-time-picker 
-            style="margin-left:10px; margin-right:10px;"
-            nz-tooltip 
+        <nz-date-picker
+            style="margin-left:4px;"
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            [(ngModel)]="params.data.endTime"
+            nzPlaceHolder="停機結束時間"
+            nz-tooltip
             [nzTooltipTitle]="params.data.shutdownEndtimeTooltipTitle"
-            [(ngModel)]="params.data.endTime" 
-            nzPlaceHolder="休假時間(迄)"
-            [nzNowText]="'Now'"
-            [nzOkText]="'確認'"
             [nzDisabled]="params.data.disabledShutdownEndtime"
-            [nzDisabledHours]="componentParent.disabledHours(params)"
-            [nzDisabledMinutes]="componentParent.disabledMinutes(params)"
-            [nzDisabledSeconds]="componentParent.disabledSeconds(params)"
+            [nzDisabledDate]="componentParent.disabledDate(params)"
+            [nzDisabledTime]="componentParent.disabledEndTime(params)"
             (ngModelChange)="componentParent.holidayTimeEndChange(params)">
-        </nz-time-picker>
+        </nz-date-picker>
     `,
      styles : [
         `

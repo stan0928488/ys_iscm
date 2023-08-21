@@ -152,7 +152,7 @@
                         [(ngModel)]="calendarSelectedDate" 
                         [(nzMode)]="calendarMode"
                         (nzSelectChange)="calendarSelected($event)">
-                        <ul *nzDateCell="let date">
+                        <ul style="padding: 0px;" *nzDateCell="let date">
                             <ng-container *ngIf="listShutdownMap.get(date.toLocaleDateString('en-CA')) !== undefined">
                                 
                                 <ng-container *ngFor="let key of listShutdownMapKeys(date.toLocaleDateString('en-CA'))">
