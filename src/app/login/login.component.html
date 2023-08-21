@@ -1,52 +1,63 @@
-<div class="loginContainer nz-row">
+<div class="all">
   <!-- Left -->
-  <div class="leftArea" nz-col nzSpan="8">
+  <div class="loginForm">
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="form">
-      <nz-input-group
-        [nzSuffix]="suffixTemplate"
-        nzPrefixIcon="anticon anticon-user"
-      >
-        <input
-          type="text"
-          nz-input
-          placeholder="輸入工號"
-          nzSize="large"
-          id="username"
-          name="username"
-          ngModel
-          #VendorID="ngModel"
-          required
-          (blur)="showPlantCode(f)"
-        />
-      </nz-input-group>
+      <span class="spanTitle">鹽水數位供應鏈管理系統(YS_iSCM)</span>
 
-      <!-- 密碼 -->
-      <nz-input-group
-        [nzSuffix]="suffixTemplate"
-        nzPrefixIcon="anticon anticon-lock"
-      >
-        <input
-          type="password"
-          nz-input
-          placeholder="輸入登入密碼"
-          nzSize="large"
-          id="password"
-          name="password"
-          ngModel
-          #password="ngModel"
-          required
-        />
-      </nz-input-group>
+      <div class="test">
+        <span class="spanInput">帳號</span
+        ><nz-input-group
+          [nzSuffix]="suffixTemplate"
+          nzPrefixIcon="anticon anticon-user"
+        >
+          <input
+            type="text"
+            nz-input
+            placeholder="輸入工號"
+            nzSize="large"
+            id="username"
+            name="username"
+            ngModel
+            #VendorID="ngModel"
+            required
+            (blur)="showPlantCode(f)"
+          />
+        </nz-input-group>
+      </div>
 
-      <div class="plantArea">
-        <nz-select [disabled]="noShow" [nzSize]="'large'" placeholder="廠區別" [(ngModel)]="PLANT_CODE">
+      <div class="test">
+        <span class="spanInput">密碼</span
+        ><nz-input-group
+          [nzSuffix]="suffixTemplate"
+          nzPrefixIcon="anticon anticon-lock"
+        >
+          <input
+            type="password"
+            nz-input
+            placeholder="輸入登入密碼"
+            nzSize="large"
+            id="password"
+            name="password"
+            ngModel
+            #password="ngModel"
+            required
+          />
+        </nz-input-group>
+      </div>
+
+      <!-- <div class="plantArea">
+        <nz-select
+          [disabled]="noShow"
+          [nzSize]="'large'"
+          placeholder="廠區別"
+          [(ngModel)]="PLANT_CODE"
+        >
           <nz-option nzValue="YS" nzLabel="鹽水廠"></nz-option>
           <nz-option nzValue="TC" nzLabel="台中廠"></nz-option>
           <nz-option nzValue="YT" nzLabel="煙台廠"></nz-option>
           <nz-option nzValue="AM" nzLabel="江陰廠"></nz-option>
         </nz-select>
-      </div>
-      
+      </div> -->
 
       <!-- 登入錯誤提示 -->
       <div class="Error" *ngIf="authFail">
@@ -70,8 +81,8 @@
   </div>
 
   <!-- Right -->
-  <div class="rightArea" nz-col nzSpan="16">
+  <!-- <div class="rightArea">
     <h5>華新麗華</h5>
     <h3>iSCM</h3>
-  </div>
+  </div> -->
 </div>
