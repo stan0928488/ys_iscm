@@ -69,6 +69,7 @@ export class PPSI112Component implements AfterViewInit {
   useFlag: string;
   dateUpdate: string;
   userUpdate: string;
+  userCreate: string;
   discumsumType;
 
   isErrorMsg = false;
@@ -134,6 +135,7 @@ export class PPSI112Component implements AfterViewInit {
     this.useFlag = '';
     this.dateUpdate = '';
     this.userUpdate = '';
+    this.userCreate = '';
 
     this.isVisibleYield = false;
     this.loading = false;
@@ -348,8 +350,8 @@ export class PPSI112Component implements AfterViewInit {
     } else if (this.useFlag === '') {
       this.message.create('error', '「是否使用」不可為空');
       return;
-    } else if (this.condition != '鋼種群組') {
-      this.message.create('error', '「條件」目前只能選 鋼種群組; ');
+    } else if (this.condition != '-' && this.condition != '鋼種群組') {
+      this.message.create('error', '「條件」目前只能選 - 或鋼種群組; ');
       return;
     } else {
       this.Modal.confirm({
@@ -382,6 +384,7 @@ export class PPSI112Component implements AfterViewInit {
         conditionValue: this.conditionValue,
         useFlag: this.useFlag,
         userUpdate: this.userName,
+        userCreate: this.userName,
       });
 
       this.PPSService.insertTBPPSM107('1', obj).subscribe(
@@ -440,8 +443,8 @@ export class PPSI112Component implements AfterViewInit {
     } else if (rowData.equipCode === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    } else if (rowData.condition != '鋼種群組') {
-      myObj.message.create('error', '「條件」目前只能選 鋼種群組');
+    } else if (rowData.condition != '鋼種群組' && rowData.condition != '-') {
+      myObj.message.create('error', '「條件」目前只能選 - 或鋼種群組');
       return;
     } else {
       this.Modal.confirm({
@@ -705,6 +708,7 @@ export class PPSI112Component implements AfterViewInit {
         let conditionValue = _data[i].條件值.toString();
         let useFlag = _data[i].是否使用.toString();
         let userUpdate = this.userName.toString();
+        let userCreate = this.userName.toString();
 
         this.importdata_new.push({
           sort: sort,
@@ -717,6 +721,7 @@ export class PPSI112Component implements AfterViewInit {
           conditionValue: conditionValue,
           useFlag: useFlag,
           userUpdate: userUpdate,
+          userCreate: userCreate,
         });
       }
 

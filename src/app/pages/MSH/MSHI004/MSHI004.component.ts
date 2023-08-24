@@ -95,6 +95,7 @@ export class MSHI004Component {
   MSHI004PendingDataList: MSHI004[] = [];
 
   payloadcache: MSHI004Payload;
+  rtmesPublishTime: boolean = false;
 
   preMes;
 
@@ -229,8 +230,14 @@ export class MSHI004Component {
           if (_.isEmpty(event.newValue)) {
             event.data.comment = null;
           }
-
-          this.dataTransferService.setData(event.node);
+          if (event.data.ppsControl == 'Y' && event.data.mesPublishTime <= 45) {
+            this.dataTransferService.setData(event.node);
+          } else if (event.data.ppsControl == 'N') {
+            this.dataTransferService.setData(event.node);
+          } else {
+            this.message.error('依PPS配置為Y時MES發佈天數不可超過45天');
+            this.rtmesPublishTime = true;
+          }
         },
       },
       { headerName: '工作站數', field: 'shopCode', width: 90 },
@@ -243,6 +250,7 @@ export class MSHI004Component {
         cellEditor: 'agSelectCellEditor',
         headerClass: 'header-editable-color',
         cellClass: 'cell-editable-color',
+        headerTooltip: '預設執行45天 發版限制45天',
         cellEditorParams: {
           values: ['Y', 'N'],
         },
@@ -639,7 +647,6 @@ export class MSHI004Component {
         // for (var i = 0; i < this.MSHI004PendingDataList.length; i++) {
         //   this.MSHI004PendingDataList[i].userCreate = this.USERNAME;
         // }
-
         new Promise<boolean>((resolve, reject) => {
           this.mshi004Service
             .batchInsertOrUpdateLDM(this.MSHI004PendingDataList)
