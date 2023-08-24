@@ -157,7 +157,7 @@ export class PPSR312Component implements OnInit {
       const resObservable$ = this.PPSService.getShipRepoEditionList();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取版次資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
@@ -180,7 +180,7 @@ export class PPSR312Component implements OnInit {
   async obtainData() : Promise<any> {
 
     const result = {
-      ppsr312DataList:[],
+      ppsc312DataList:[],
       insertDateTime : undefined,
       isObtainDataSuccess : false
     };
@@ -194,10 +194,10 @@ export class PPSR312Component implements OnInit {
         return result;
       }
 
-      const resObservable$ = this.PPSService.getPPSR312Data(this.edition);
+      const resObservable$ = this.PPSService.getPPSC312Data(this.edition);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取入庫儲區異動資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
@@ -205,11 +205,11 @@ export class PPSR312Component implements OnInit {
         return result;
       }
 
-      if(res.data.ppsr312DataList.length <= 0){
+      if(res.data.ppsc312DataList.length <= 0){
         this.nzMessageService.success('該版次無資料，請選擇其他版次');
         return result;
       }
-      result.ppsr312DataList = res.data.ppsr312DataList;
+      result.ppsc312DataList = res.data.ppsc312DataList;
       result.insertDateTime = res.data.insertDateTime
       result.isObtainDataSuccess = true;
     }
@@ -229,7 +229,7 @@ export class PPSR312Component implements OnInit {
   async search(){
     const result = await this.obtainData();
     if(result.isObtainDataSuccess){
-      this.r312DataList = result.ppsr312DataList;
+      this.r312DataList = result.ppsc312DataList;
       this.insertDateTime = result.insertDateTime;
     }
   }
@@ -246,7 +246,7 @@ export class PPSR312Component implements OnInit {
         return;
       }
 
-      const exportData = [this.englishChineseTitleMapping, ...result.ppsr312DataList];
+      const exportData = [this.englishChineseTitleMapping, ...result.ppsc312DataList];
 
       const workSheet = XLSX.utils.json_to_sheet(exportData, {
         header: this.fieldNameList,

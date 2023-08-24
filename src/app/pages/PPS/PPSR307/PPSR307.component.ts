@@ -113,9 +113,9 @@ export class PPSR307Component implements AfterViewInit {
   getR307EditionList(){
     let myObj = this ;
 
-    myObj.PPSService.getR307Editionist().subscribe(res =>{
+    myObj.PPSService.getShipRepoEditionList().subscribe(res =>{
 
-      let result : any = res;
+      let result : any = res['data'];
 
       if(this.edition == ''){
         this.edition = result[0];
@@ -147,7 +147,7 @@ export class PPSR307Component implements AfterViewInit {
     let comitParamete = {edition : this.edition} ;
     myObj.PPSService.getR307DataList(comitParamete).subscribe(res =>{
 
-      let result : any = res;
+      let result : any = res['data'];
 
       console.log(res);
 
