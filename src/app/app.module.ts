@@ -144,6 +144,7 @@ import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_N
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 
 
 registerLocaleData(zh);
@@ -264,6 +265,7 @@ registerLocaleData(zh);
     PPSI202_NonBarEditEquipCellEditorComponent,
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
     PPSR320Component,
+    PPSR321Component,
   ],
   imports: [
     BrowserModule,

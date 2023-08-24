@@ -96,6 +96,7 @@ import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
 import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 
 
 const routes: Routes = [
@@ -265,6 +266,15 @@ const routes: Routes = [
       { path: 'R310', component: PPSR310Component },
       { path: 'R311', component: PPSR311Component },
       { path: 'R312', component: PPSR312Component }
+    ],
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'FCPshiftRepo',
+    children: [
+      { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
+      { path: 'R321', component: PPSR321Component },
+      { path: 'R322', component: null },
     ],
     canActivate: [AuthGuard],
   },
