@@ -98,6 +98,12 @@ import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBa
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
+import { PPSR322Child1Component } from './pages/PPS/PPSR322/PPSR322-child1/PPSR322-child1.component';
+import { PPSR322Child2Component } from './pages/PPS/PPSR322/PPSR322-child2/PPSR322-child2.component';
+import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR322-child3.component';
+import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
+import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
+import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
 
 
 const routes: Routes = [
@@ -276,6 +282,13 @@ const routes: Routes = [
       { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
       { path: 'R321', component: PPSR321Component },
       { path: 'R322', component: PPSR322Component },
+      { path: 'R322_1', component: PPSR322Child1Component },
+      { path: 'R322_2', component: PPSR322Child2Component },
+      { path: 'R322_3', component: PPSR322Child3Component },
+      { path: 'R322_4', component: PPSR322Child4Component },
+      { path: 'R322_5', component: PPSR322Child5Component },
+      { path: 'R322_6', component: PPSR322Child6Component },
+
     ],
     canActivate: [AuthGuard],
   },
