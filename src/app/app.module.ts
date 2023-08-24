@@ -145,6 +145,13 @@ import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
+import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
+import { PPSR322Child1Component } from './pages/PPS/PPSR322/PPSR322-child1/PPSR322-child1.component';
+import { PPSR322Child2Component } from './pages/PPS/PPSR322/PPSR322-child2/PPSR322-child2.component';
+import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR322-child3.component';
+import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
+import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
+import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
 
 
 registerLocaleData(zh);
@@ -266,6 +273,13 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
     PPSR320Component,
     PPSR321Component,
+    PPSR322Component,
+    PPSR322Child1Component,
+    PPSR322Child2Component,
+    PPSR322Child3Component,
+    PPSR322Child4Component,
+    PPSR322Child5Component,
+    PPSR322Child6Component,
   ],
   imports: [
     BrowserModule,
