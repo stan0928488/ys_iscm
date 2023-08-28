@@ -1955,6 +1955,7 @@ this.handleSelectCarModal() ;
     console.log("數值：" + this.searchText);
     this.searchLoading = true ;
     let countTemp = 0 ;
+    let rowIndexToScrollTo = 0 ;
     this.rowData.forEach((item,index,array)=>{
       if(this.searchText === '') {
         this.rowData[index].COLORFLAG = "0" ;
@@ -1962,9 +1963,10 @@ this.handleSelectCarModal() ;
       } else {
       let searchTextArray = this.searchText.split(',') ;
       if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
-        console.log(JSON.stringify(this.rowData[index]))
+        rowIndexToScrollTo = rowIndexToScrollTo === 0 ? index : rowIndexToScrollTo ;
         this.rowData[index].COLORFLAG = "1" ;
         countTemp ++ ;
+       
       } else {
         this.rowData[index].COLORFLAG = "0" ;
       }
@@ -1972,6 +1974,9 @@ this.handleSelectCarModal() ;
      
     })
     this.searchCount = countTemp ;
+    if(countTemp >= 1) {
+      this.gridOptions.api.ensureIndexVisible(rowIndexToScrollTo, 'middle');
+    }
     this.gridOptions.api.setRowData(this.rowData);
     this.searchLoading = false ;
    }
