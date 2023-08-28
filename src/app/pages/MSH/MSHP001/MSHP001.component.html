@@ -65,7 +65,7 @@
           <span style="float: right;">
          <span style="margin-right:10px;" >
           <input style="width:200px;" nz-input [(ngModel)]="searchText" placeholder="請輸入MO或訂單"  />
-          <button nz-button nzType="primary"  (click)="handleSearchText()"><span nz-icon nzType="search"></span></button>
+          <button nz-button nzType="primary"  (click)="handleSearchText()"   [nzLoading] = "searchLoading"  ><span nz-icon nzType="search"></span></button>
          </span>
           
 

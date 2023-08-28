@@ -81,6 +81,8 @@ category = '' ;
   groupArray = [] ;
   //搜尋內容
   searchText: string = '';
+  //搜尋Loading
+  searchLoading = false ;
 
   //選擇版本號
   selectFcpVer = '';
@@ -1247,7 +1249,11 @@ this.handleSelectCarModal() ;
   initSelectShop(){
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
-    })[0] 
+    })[0]
+    //SETENDDATE
+    if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+      this.searchV0.endDate = shopCodeListTemp.setEndDate
+    }
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
   }
@@ -1263,11 +1269,18 @@ this.handleSelectCarModal() ;
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
     })[0] 
+     //SETENDDATE
+    
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
     if(this.selectShopCode !== '401' && this.selectShopCode !== '411' ){
       //日期重置 
-      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+        this.searchV0.endDate = shopCodeListTemp.setEndDate
+      } else {
+        this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      }
+      
     }
 
     this.originalData = [] ;
@@ -1663,10 +1676,14 @@ this.handleSelectCarModal() ;
           let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = arr[arr.length - 1]
         }
-       /*** else if( key === 'ID_NO') { // 如果是包含跳的時間
+       else if( key === 'ID_NO') { // MO逗號隔開
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           preGroupObject[key] =arr ;
-        } */
+        } 
+        else if( key === 'SALE_ORDER') { // MO逗號隔開
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          preGroupObject[key] =arr ;
+        } 
         else {
          // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
@@ -1927,30 +1944,23 @@ this.handleSelectCarModal() ;
     // this.gridOptions.api.refres(this.rowData) ;
     // 遍歷 SALE_ORDER
     console.log("數值：" + this.searchText);
-    this.isLoading = true ;
+    this.searchLoading = true ;
     this.rowData.forEach((item,index,array)=>{
       if(this.searchText === '') {
         this.rowData[index].COLORFLAG = "0" ;
       } else {
       let searchTextArray = this.searchText.split(',') ;
-      if(searchTextArray.some(element => item.ID_NO.includes(element)) ) {
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER.includes(element)) ) {
         console.log(JSON.stringify(this.rowData[index]))
         this.rowData[index].COLORFLAG = "1" ;
       } else {
-        if(searchTextArray.some(element => item.SALE_ORDER.includes(element))) {
-          console.log(JSON.stringify(this.rowData[index]))
-          this.rowData[index].COLORFLAG = "1" ;
-        } else{
-          this.rowData[index].COLORFLAG = "0" ;
-        }
+        this.rowData[index].COLORFLAG = "0" ;
       }
       }
-      this.gridOptions.api.setRowData(this.rowData);
-      this.isLoading = false ;
+     
     })
-
-
-    
+    this.gridOptions.api.setRowData(this.rowData);
+    this.searchLoading = false ;
    }
 
     /**EXCEL FUNCTION START parameter */
