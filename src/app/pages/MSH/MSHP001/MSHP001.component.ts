@@ -81,6 +81,8 @@ category = '' ;
   groupArray = [] ;
   //搜尋內容
   searchText: string = '';
+  //搜尋總數
+  searchCount = 0 ;
   //搜尋Loading
   searchLoading = false ;
 
@@ -1105,6 +1107,13 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine4);
        //数据类型
        this.columKeyType["BEST_MACHINE_ADD"] = 0 ;
+       // 訂單拼接  SALE_ORDER_ITEM_ADD
+       let SALE_ORDER_ITEM_ADD_index = {headerName:'搜索訂單',field:'SALE_ORDER_ITEM_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("搜索訂單")
+       this.columnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       this.outsideColumnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       //数据类型
+       this.columKeyType["SALE_ORDER_ITEM_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
@@ -1680,7 +1689,7 @@ this.handleSelectCarModal() ;
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           preGroupObject[key] =arr ;
         } 
-        else if( key === 'SALE_ORDER') { // MO逗號隔開
+        else if( key === 'SALE_ORDER_ITEM_ADD') { // MO逗號隔開
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           preGroupObject[key] =arr ;
         } 
@@ -1945,20 +1954,24 @@ this.handleSelectCarModal() ;
     // 遍歷 SALE_ORDER
     console.log("數值：" + this.searchText);
     this.searchLoading = true ;
+    let countTemp = 0 ;
     this.rowData.forEach((item,index,array)=>{
       if(this.searchText === '') {
         this.rowData[index].COLORFLAG = "0" ;
+        countTemp = 0;
       } else {
       let searchTextArray = this.searchText.split(',') ;
-      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER.includes(element)) ) {
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
         console.log(JSON.stringify(this.rowData[index]))
         this.rowData[index].COLORFLAG = "1" ;
+        countTemp ++ ;
       } else {
         this.rowData[index].COLORFLAG = "0" ;
       }
       }
      
     })
+    this.searchCount = countTemp ;
     this.gridOptions.api.setRowData(this.rowData);
     this.searchLoading = false ;
    }
