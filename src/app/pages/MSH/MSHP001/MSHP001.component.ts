@@ -502,15 +502,15 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
-        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") { // EPST修正
           if(params.data["COLORFLAG"].toString() === '1') {
-            return  { background: '#FF00FF' };
+            return  { background: '#FF00FF' }; // 搜索反顏色
           }
-          return { background: 'SandyBrown' };
+          return { background: 'SandyBrown' }; // EPST修正反橘色
         } else {
         //console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
-          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) { //低於 3900 淡紅色
             if(params.data["COLORFLAG"].toString() === '1') {
               return  { background: '#FF00FF' };
             }
@@ -527,13 +527,13 @@ this.handleSelectCarModal() ;
                 if(params.data["COLORFLAG"].toString() === '1') {
                   return  { background: '#FF00FF' };
                 }
-                return { background: 'powderblue' };
+                return { background: 'powderblue' };  //換擇業換車 淺藍色
               }
             } else {
               if(params.data["COLORFLAG"].toString() === '1') {
                 return  { background: '#FF00FF' };
               }
-              return { background: 'yellow' };
+              return { background: 'yellow' }; //換機台 黃色
             }
           }
         } else {
