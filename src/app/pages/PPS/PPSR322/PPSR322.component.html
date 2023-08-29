@@ -8,14 +8,54 @@
         <nz-breadcrumb-item>
             <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
                 <ul>
-                    <li class="active"><a href="#/FCPshiftRepo/R322_1"><label style="color:blue">預計入庫資訊</label></a></li>
-                    <li><a href="#/FCPshiftRepo/R322_2"><label>特殊鋼種量</label></a></li>
-                    <li><a href="#/FCPshiftRepo/R322_3"><label>頭份預計回廠日</label></a></li>
-                    <li><a href="#/FCPshiftRepo/R322_4"><label>退貨生產資訊</label></a></li>
-                    <li><a href="#/FCPshiftRepo/R322_5"><label>排程生產原則說明</label></a></li>
-                    <li><a href="#/FCPshiftRepo/R322_6"><label>各產線目標量</label></a></li>
+                    <li *ngIf="breadcrumbIndex == 0" class="active"><a href="#/FCPshiftRepo/R322_1" (click)="breadcrumbClick(0)"><label style="color:blue">預計入庫資訊</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 0"><a href="#/FCPshiftRepo/R322_1" (click)="breadcrumbClick(0)"><label>預計入庫資訊</label></a></li>
+
+                    <li *ngIf="breadcrumbIndex == 1" class="active"><a href="#/FCPshiftRepo/R322_2" (click)="breadcrumbClick(1)"><label style="color:blue">特殊鋼種量</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 1"><a href="#/FCPshiftRepo/R322_2" (click)="breadcrumbClick(1)"><label>特殊鋼種量</label></a></li>
+                    
+                    <li *ngIf="breadcrumbIndex == 2" class="active"><a href="#/FCPshiftRepo/R322_3" (click)="breadcrumbClick(2)"><label style="color:blue">頭份預計回廠日</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 2"><a href="#/FCPshiftRepo/R322_3" (click)="breadcrumbClick(2)"><label>頭份預計回廠日</label></a></li>
+                   
+                    <li *ngIf="breadcrumbIndex == 3" class="active"><a href="#/FCPshiftRepo/R322_4" (click)="breadcrumbClick(3)"><label style="color:blue">退貨生產資訊</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 3"><a href="#/FCPshiftRepo/R322_4" (click)="breadcrumbClick(3)"><label>退貨生產資訊</label></a></li>
+                   
+                    <li *ngIf="breadcrumbIndex == 4" class="active"><a href="#/FCPshiftRepo/R322_5" (click)="breadcrumbClick(4)"><label style="color:blue">排程生產原則說明</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 4"><a href="#/FCPshiftRepo/R322_5" (click)="breadcrumbClick(4)"><label>排程生產原則說明</label></a></li>
+                   
+                    <li *ngIf="breadcrumbIndex == 5" class="active"><a href="#/FCPshiftRepo/R322_6" (click)="breadcrumbClick(5)"><label style="color:blue">各產線目標量</label></a></li>
+                    <li *ngIf="breadcrumbIndex != 5"><a href="#/FCPshiftRepo/R322_6" (click)="breadcrumbClick(5)"><label>各產線目標量</label></a></li>
                 </ul>
             </tr>
         </nz-breadcrumb-item>
     </nz-breadcrumb>
+
+    <nz-collapse>
+        <nz-collapse-panel nzHeader="查詢條件">
+
+            <div nz-row>
+                <nz-select
+                    style="width: 220px; margin-left:50px;"
+                    [(ngModel)]="searchObj.fcpVer"
+                    nzPlaceHolder="對應FCP版本"
+                    >
+                    <nz-option [nzLabel]="'A001'" [nzValue]="'A001'"></nz-option>
+                    <nz-option [nzLabel]="'A002'" [nzValue]="'A002'"></nz-option>
+                </nz-select>
+                <nz-select
+                    style="width: 220px; margin-left:50px;"
+                    [(ngModel)]="searchObj.maintainVer"
+                    nzPlaceHolder="推移維護版本"
+                    >
+                    <nz-option [nzLabel]="'B001'" [nzValue]="'B001'"></nz-option>
+                    <nz-option [nzLabel]="'B002'" [nzValue]="'B002'"></nz-option>
+                </nz-select>
+                <button style="margin-left:20px ; margin-top: 8px;" (click)="notifyClick()" nz-button nzType="primary">
+                    <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+                </button>
+            </div>
+        </nz-collapse-panel>
+    </nz-collapse>
+    <br>
+
 </nz-content>

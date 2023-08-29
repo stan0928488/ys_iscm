@@ -281,7 +281,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
       { path: 'R321', component: PPSR321Component },
-      { path: 'R322', component: PPSR322Component },
+      { path: 'R322', component: PPSR322Child1Component },
       { path: 'R322_1', component: PPSR322Child1Component },
       { path: 'R322_2', component: PPSR322Child2Component },
       { path: 'R322_3', component: PPSR322Child3Component },
