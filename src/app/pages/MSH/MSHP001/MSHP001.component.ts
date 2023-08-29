@@ -1120,14 +1120,16 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 ,filter: true}
+            //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120,filter: true }
+           // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
