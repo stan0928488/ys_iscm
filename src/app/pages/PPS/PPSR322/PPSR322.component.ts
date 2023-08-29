@@ -1,28 +1,45 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild,AfterViewInit } from '@angular/core';
 import { PPSR322Child1Component } from './PPSR322-child1/PPSR322-child1.component';
 import { PPSR322Child2Component } from './PPSR322-child2/PPSR322-child2.component';
 import { PPSR322Child3Component } from './PPSR322-child3/PPSR322-child3.component';
 import { PPSR322Child4Component } from './PPSR322-child4/PPSR322-child4.component';
 import { PPSR322Child5Component } from './PPSR322-child5/PPSR322-child5.component';
 import { PPSR322Child6Component } from './PPSR322-child6/PPSR322-child6.component';
+import { Subject } from 'rxjs';
+import { PPSR322EvnetBusComponent } from './PPSR322-evnet-bus/PPSR322-evnet-bus.component';
 
 @Component({
   selector: 'app-PPSR322',
   templateUrl: './PPSR322.component.html',
   styleUrls: ['./PPSR322.component.css']
 })
-export class PPSR322Component implements OnInit {
+export class PPSR322Component implements OnInit,AfterViewInit {
 
-  @ViewChild(PPSR322Child1Component) ppsr322Child1:PPSR322Child1Component;
-  @ViewChild(PPSR322Child2Component) ppsr322Child2:PPSR322Child2Component;
-  @ViewChild(PPSR322Child3Component) ppsr322Child3:PPSR322Child3Component;
-  @ViewChild(PPSR322Child4Component) ppsr322Child4:PPSR322Child4Component;
-  @ViewChild(PPSR322Child5Component) ppsr322Child5:PPSR322Child5Component;
-  @ViewChild(PPSR322Child6Component) ppsr322Child6:PPSR322Child6Component;
+  breadcrumbIndex:number = 0;
+  clickSubject:Subject<any> = new Subject();
+  searchObj = {
+    fcpVer:String,
+    maintainVer:String,
+  };
 
-  constructor() { }
+  constructor(private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent) { }
 
-  ngOnInit(): void {
+  ngOnInit(){
+  }
+
+  ngAfterViewInit(){
+    this.breadcrumbIndex = this.ppsr322EvnetBusComponent.breadcrumbObj.index;
+    this.searchObj = this.ppsr322EvnetBusComponent.searchObj;
+  }
+
+  notifyClick() {
+    this.ppsr322EvnetBusComponent.emit({name:"ppsr322search",data:this.searchObj})
+  }
+
+  breadcrumbClick(index:number){
+    this.ppsr322EvnetBusComponent.addToInventory({
+      index:index
+    },this.searchObj)
   }
 
 }
