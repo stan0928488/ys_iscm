@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
+import { PPSService } from "src/app/services/PPS/PPS.service";
 
 @Component({
   selector: 'app-PPSR322-child1',
@@ -51,13 +52,23 @@ export class PPSR322Child1Component implements OnInit,OnDestroy {
     }
   ];
 
-  constructor(private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent) { }
+  constructor(
+    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
+    private PPSService: PPSService,
+  ) {}
 
   ngOnInit(){
     this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
       console.log(data.data.fcpVer);
       console.log(data.data.maintainVer);
     })
+
+    let postData = {};
+    postData['tab'] = 1
+    this.PPSService.getR322Data(postData).subscribe(res =>{
+      console.log(res);
+    });
+
   }
 
   ngOnDestroy(): void {
