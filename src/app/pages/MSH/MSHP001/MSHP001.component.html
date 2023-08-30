@@ -63,6 +63,13 @@
             </div>
           </nz-checkbox-wrapper>
           <span style="float: right;">
+         <span style="margin-right:10px;" >
+          <input style="width:200px;" nz-input [(ngModel)]="searchText" placeholder="請輸入MO或訂單"  />
+          <button nz-button nzType="primary"  (click)="handleSearchText()"   [nzLoading] = "searchLoading"  ><span nz-icon nzType="search"></span></button>
+          <nz-badge nzStandalone [nzCount]="searchCount" [nzStyle]="{background: '#FF00FF'}"></nz-badge>
+         </span>
+          
+
           <nz-input-number 
           [(ngModel)]="fcpNumber" 
           [nzMin]="0"
@@ -78,7 +85,7 @@
 
 
           <button  nz-button nzType="primary" style="margin-left:15px;" (click)="groupBtn()">數據分群</button>
-          <button  nz-button style="margin-left:15px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button>
+          <!-- <button  nz-button style="margin-left:15px;background-color: #d9534f; border-color: #d43f3a;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'" (click)="recoverDataBtn()">恢複數據</button> -->
           <button  nz-button style="margin-left:15px;background-color: #f0ad4e; border-color: #eea236;  color: #fff;"  nzType="default" *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1' " (click)="dataSortedModal()">微調確認</button>
           <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" (click)="saveSortedModal('1')"  [nzLoading]="saveLoading">確認</button>
           <button  nz-button style="margin-left:15px;background-color: #e24d42; border-color: #e24d42;  color: #fff;"   [nzLoading]="isConfirmLoading"  nzType="default" (click)="sendSortedDataToMES()">發送至MES</button>

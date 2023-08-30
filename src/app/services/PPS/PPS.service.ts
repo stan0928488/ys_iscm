@@ -25,8 +25,6 @@ export class PPSService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
-  getPPS;
-
   //Get getPPSINP13List
   getPPSINP13List() {
     console.log('api service getPPSINP13List');
@@ -2278,4 +2276,11 @@ export class PPSService {
     console.log(`Api Service 查詢「特殊鋼種量」資料 參數 -> ${shiftEdition}`);
     return this.http.get(queryUrl, { params: httpParams });
   }
+
+  getR322Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R322/getPPSR322Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 }

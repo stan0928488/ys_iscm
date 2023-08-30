@@ -79,6 +79,12 @@ category = '' ;
   groupColumList :any = [] ;
   //可以分群的數組
   groupArray = [] ;
+  //搜尋內容
+  searchText: string = '';
+  //搜尋總數
+  searchCount = 0 ;
+  //搜尋Loading
+  searchLoading = false ;
 
   //選擇版本號
   selectFcpVer = '';
@@ -496,29 +502,50 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
-        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
-          return { background: 'SandyBrown' };
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") { // EPST修正
+          if(params.data["COLORFLAG"].toString() === '1') {
+            return  { background: '#FF00FF' }; // 搜索反顏色
+          }
+          return { background: 'SandyBrown' }; // EPST修正反橘色
         } else {
-        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        //console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
-          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+          if(params.data["CAR_WEIGHT_ADD"] < 3900) { //低於 3900 淡紅色
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'lightcoral' };
           } else {
             if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
             &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
               if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'white' };
               } else {
-                return { background: 'powderblue' };
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
+                return { background: 'powderblue' };  //換擇業換車 淺藍色
               }
             } else {
-              return { background: 'yellow' };
+              if(params.data["COLORFLAG"].toString() === '1') {
+                return  { background: '#FF00FF' };
+              }
+              return { background: 'yellow' }; //換機台 黃色
             }
           }
         } else {
           if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'white' };
           } else {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'powderblue' };
           }
         }
@@ -1046,6 +1073,13 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(index12);
        //数据类型
        this.columKeyType["TIMEDIFFFLAG_ADD"] = 0 ;
+      //顏色標記 COLORFLAG
+      let indexColor = {headerName:'搜尋',field:'COLORFLAG',rowDrag: false,resizable:true,width:80,hide: true }
+      exportHeader.push("搜尋")
+      this.columnDefs.push(indexColor);
+      this.outsideColumnDefs.push(indexColor);
+      //数据类型
+      this.columKeyType["COLORFLAG"] = 0 ;
 
        //可替换机台 1 ，2， 3
        let indexMachine1 = {headerName:'替換機台1',field:'MACHINE1_ADD',rowDrag: false,resizable:true,width:80,hide: true }
@@ -1073,20 +1107,29 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine4);
        //数据类型
        this.columKeyType["BEST_MACHINE_ADD"] = 0 ;
+       // 訂單拼接  SALE_ORDER_ITEM_ADD
+       let SALE_ORDER_ITEM_ADD_index = {headerName:'搜索訂單',field:'SALE_ORDER_ITEM_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("搜索訂單")
+       this.columnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       this.outsideColumnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       //数据类型
+       this.columKeyType["SALE_ORDER_ITEM_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 ,filter: true}
+            //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120,filter: true }
+           // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
@@ -1217,7 +1260,11 @@ this.handleSelectCarModal() ;
   initSelectShop(){
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
-    })[0] 
+    })[0]
+    //SETENDDATE
+    if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+      this.searchV0.endDate = shopCodeListTemp.setEndDate
+    }
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
   }
@@ -1233,11 +1280,18 @@ this.handleSelectCarModal() ;
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
     })[0] 
+     //SETENDDATE
+    
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
     if(this.selectShopCode !== '401' && this.selectShopCode !== '411' ){
       //日期重置 
-      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+        this.searchV0.endDate = shopCodeListTemp.setEndDate
+      } else {
+        this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      }
+      
     }
 
     this.originalData = [] ;
@@ -1391,8 +1445,8 @@ this.handleSelectCarModal() ;
   }
 //排序分群
   formateGroupRow(){
-     console.log("原始數據:" + JSON.stringify(this.rowData))
-     console.log("分群數組:" + JSON.stringify(this.groupArray))
+    // console.log("原始數據:" + JSON.stringify(this.rowData))
+    // console.log("分群數組:" + JSON.stringify(this.groupArray))
     let rowDataTemp = [] ;
     //前一條數據
     let preGroupString = "" ;
@@ -1633,6 +1687,14 @@ this.handleSelectCarModal() ;
           let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = arr[arr.length - 1]
         }
+       else if( key === 'ID_NO') { // MO逗號隔開
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          preGroupObject[key] =arr ;
+        } 
+        else if( key === 'SALE_ORDER_ITEM_ADD') { // MO逗號隔開
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          preGroupObject[key] =arr ;
+        } 
         else {
          // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
@@ -1888,7 +1950,38 @@ this.handleSelectCarModal() ;
    handleShopStatusModal(){
     this.shopStatusModalVisiable = !this.shopStatusModalVisiable ;
    }
-
+   // 搜索
+   handleSearchText(){
+    // this.gridOptions.api.refres(this.rowData) ;
+    // 遍歷 SALE_ORDER
+    console.log("數值：" + this.searchText);
+    this.searchLoading = true ;
+    let countTemp = 0 ;
+    let rowIndexToScrollTo = 0 ;
+    this.rowData.forEach((item,index,array)=>{
+      if(this.searchText === '') {
+        this.rowData[index].COLORFLAG = "0" ;
+        countTemp = 0;
+      } else {
+      let searchTextArray = this.searchText.split(',') ;
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
+        rowIndexToScrollTo = rowIndexToScrollTo === 0 ? index : rowIndexToScrollTo ;
+        this.rowData[index].COLORFLAG = "1" ;
+        countTemp ++ ;
+       
+      } else {
+        this.rowData[index].COLORFLAG = "0" ;
+      }
+      }
+     
+    })
+    this.searchCount = countTemp ;
+    if(countTemp >= 1) {
+      this.gridOptions.api.ensureIndexVisible(rowIndexToScrollTo, 'middle');
+    }
+    this.gridOptions.api.setRowData(this.rowData);
+    this.searchLoading = false ;
+   }
 
     /**EXCEL FUNCTION START parameter */
 

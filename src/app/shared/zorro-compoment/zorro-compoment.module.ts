@@ -33,6 +33,7 @@ import { NzResultModule } from 'ng-zorro-antd/result';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 
 const zorroComponent :any = [
   NzButtonModule
@@ -68,6 +69,7 @@ const zorroComponent :any = [
  ,NzDrawerModule
  ,NzTagModule
  ,NzToolTipModule
+ ,NzBadgeModule
 ]
 @NgModule({
   imports: [

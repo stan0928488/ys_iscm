@@ -101,6 +101,13 @@ import { PPSR321Detail01Component } from './pages/PPS/PPSR321_Detail01/PPSR321-d
 import { PPSR321Detail02Component } from './pages/PPS/PPSR321_Detail02/PPSR321-detail02.component';
 import { PPSR321CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321.CanDeactivateGuard';
 import { PPSR321Detail01CanDeactivateGuard } from './pages/PPS/PPSR321_Detail01/PPSR321-detail01.CanDeactivateGuard';
+import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
+import { PPSR322Child1Component } from './pages/PPS/PPSR322/PPSR322-child1/PPSR322-child1.component';
+import { PPSR322Child2Component } from './pages/PPS/PPSR322/PPSR322-child2/PPSR322-child2.component';
+import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR322-child3.component';
+import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
+import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
+import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
 
 
 const routes: Routes = [
@@ -290,7 +297,13 @@ const routes: Routes = [
           { path: 'detail02', component: PPSR321Detail02Component }
         ]
        },
-      { path: 'R322', component: null },
+      { path: 'R322', component: PPSR322Child1Component },
+      { path: 'R322_1', component: PPSR322Child1Component },
+      { path: 'R322_2', component: PPSR322Child2Component },
+      { path: 'R322_3', component: PPSR322Child3Component },
+      { path: 'R322_4', component: PPSR322Child4Component },
+      { path: 'R322_5', component: PPSR322Child5Component },
+      { path: 'R322_6', component: PPSR322Child6Component },
     ],
     canActivate: [AuthGuard],
   },
