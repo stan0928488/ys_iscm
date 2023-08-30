@@ -1,0 +1,139 @@
+<nz-content>
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+       
+       
+        <div class="container">
+
+            <div class="btn">
+                <button
+                    nz-button 
+                    class="addBtn"
+                    nzType="primary" 
+                    (click)="add()">
+                    <span nz-icon nzType="file-add" nzTheme="outline"></span>
+                    新增
+                </button>
+            </div>
+
+            <nz-table
+                style="width:850px"
+                #tbppsrm011Detail02RowData
+                nzBordered  
+                nzOuterBordered
+                [nzData]="tbppsrm011Detail02List" 
+                nzHideOnSinglePage="true">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 100px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>產品分類</b></font>
+                        </th>
+                        <th rowspan="2" style="width: 200px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>鋼種</b></font>
+                        </th>
+                        <th colspan="2" style="width: 300px; padding:5px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>尺寸</b></font>
+                        </th>
+                        <th rowspan="2" style="width: 150px; padding:5px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>Action</b></font>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="padding:5px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>符號</b></font>
+                        </th>
+                        <th style="padding:5px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>範圍</b></font>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let rowData of tbppsrm011Detail02RowData.data;let i = index">
+                        <ng-container *ngIf="!editCacheListIsEmpty()">
+                            <ng-container *ngIf="!tbppsrm011Detail02EditCacheList[rowData.id].edit && !tbppsrm011Detail02EditCacheList[rowData.id].add; else addOrEditTemplate">
+                                <td style="text-align:center;"><font size="3">{{ rowData.kindType }}</font></td>
+                                <td style="text-align:center;"><font size="3">{{ rowData.gradeNo }}</font></td>
+                                <td style="text-align:center;"><font size="3">{{ operatorMap.get(rowData.operator) }}</font></td>
+                                <td style="text-align:center;"><font size="3">{{ diaRangeFormat(rowData.diaRange) }}</font></td>
+                                <td style="text-align:center;">
+                                    <a 
+                                        style="margin-right: 10px;" 
+                                        (click)="editRow(rowData.id)">
+                                        <span nz-icon nzType="edit" nzTheme="outline"></span>
+                                        <font size="3">修改</font>
+                                    </a>
+                                    <a 
+                                        nz-popconfirm 
+                                        [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                        nzPopconfirmTitle="確定刪除嗎?" 
+                                        (nzOnConfirm)="deleteRow(rowData.id)">
+                                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                                        <font size="3">刪除</font>
+                                    </a>
+                                </td>
+                            </ng-container>
+                            <ng-template #addOrEditTemplate>
+                                <td style="text-align:center;">
+                                    <nz-select 
+                                        style="width:100px;"
+                                        [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.kindType">
+                                        <nz-option nzValue="PL" nzLabel="PL"></nz-option>
+                                        <nz-option nzValue="B to B" nzLabel="B to B"></nz-option>
+                                        <nz-option nzValue="C to B" nzLabel="C to B"></nz-option>
+                                    </nz-select> 
+                                </td>
+                                <td style="text-align:center;">
+                                    <nz-select 
+                                        nzShowSearch 
+                                        nzPlaceHolder="請選擇鋼種" 
+                                        style="width: 150px;" 
+                                        [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.gradeNo"  
+                                        (nzOpenChange) = "findAllGrade()" >
+                                        <nz-option *ngFor="let gradeNo of gradeNolistOfOption" [nzLabel]="gradeNo" [nzValue]="gradeNo"></nz-option>
+                                        <nz-option *ngIf="gradeNolistOfOptionLoading" nzDisabled nzCustomContent>
+                                          <span nz-icon nzType="loading" class="loading-icon"></span>
+                                          鋼種清單載入中...
+                                      </nz-option>
+                                      </nz-select>
+                                </td>
+                                <td style="text-align:center;">
+                                    <nz-select 
+                                        style="width:100px;"
+                                        [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.operator"
+                                        (ngModelChange)="diaRangeDataChangeHandler(rowData.id)">
+                                        <nz-option *ngFor="let item of operatorMap | keyvalue:compareFn" [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
+                                    </nz-select> 
+                                </td>
+                                <td style="text-align:center;">
+                                    <ng-container *ngIf="tbppsrm011Detail02EditCacheList[rowData.id].data.operator != '-' else showAllTemplate">
+                                        <nz-input-number 
+                                            [nzMin]="0"
+                                            [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.diaRange" 
+                                            [nzStep]="1">
+                                        </nz-input-number>
+                                    </ng-container>
+                                    <ng-template #showAllTemplate>
+                                        ALL
+                                    </ng-template>
+                                </td>
+                                <td style="text-align:center;">
+                                    <a 
+                                        style="margin-right: 10px;"
+                                        nz-popconfirm
+                                        [nzPopconfirmTitle]="tbppsrm011Detail02EditCacheList[rowData.id].add ? '確定新增嗎?' : '確定修改嗎?'" 
+                                        (nzOnConfirm)="addOrUpdateConfirm(rowData.id)">
+                                        <span nz-icon nzType="check" nzTheme="outline"></span>
+                                        <font size="3">確定</font>
+                                    </a>
+                                    <a (click)="cancelAddOrUpdate(rowData.id)">
+                                        <span nz-icon nzType="close" nzTheme="outline"></span>
+                                        <font size="3">取消</font>
+                                    </a>
+                                </td>
+                            </ng-template>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </nz-spin>
+</nz-content>

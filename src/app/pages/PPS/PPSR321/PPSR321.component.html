@@ -1,1 +1,148 @@
-<p>ppsr321 works!aaaaaa</p>
+<nz-content style="margin:20px 20px;">
+    <nz-breadcrumb style="margin:16px 0;">
+        <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+        <nz-breadcrumb-item>月推移報表</nz-breadcrumb-item>
+        <nz-breadcrumb-item><font size="4">報表維護(PPSR321)</font></nz-breadcrumb-item>
+      </nz-breadcrumb>
+
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+        <button
+            nz-button 
+            class="addBtn"
+            nzType="primary" 
+            (click)="add()">
+            <span nz-icon nzType="file-add" nzTheme="outline"></span>
+            新增
+        </button>
+
+        <nz-table
+            style="margin-top: 20px;"
+            #tbppsrm011RowData
+            nzBordered  
+            nzOuterBordered
+            [nzData]="displayTbppsrm011List" 
+            [nzScroll]="{ x: '100px', y: '700px' }" 
+            cellpadding="10">
+            <thead>
+                <tr>
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>狀態</b></font>
+                    </th>
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>推移維護版本</b></font>
+                    </th>
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>推移生產月份</b></font>
+                    </th>
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>連結</b></font>
+                    </th>  
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>建立時間-工號</b></font>
+                    </th>  
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>修改時間-工號</b></font>
+                    </th>  
+
+                    <th style="text-align:center; background-color: #CED7DE; padding: 2px; height: 55px; width:50px">
+                        <font size="3.5"><b>Action</b></font>
+                    </th>  
+                <tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let rowData of tbppsrm011RowData.data;let i = index">
+                    <ng-container *ngIf="!rowData.hasNew; else addTemplate">
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ getActionStatus(rowData) }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.shiftEdition }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ formatProduceMonth(rowData) }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;">
+                            <a 
+                                [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                (click)="maintain(rowData)">
+                                <font size="3">維護</font>
+                            </a>
+                        </td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.dateCreate }} <br/> {{ rowData.userCreate }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.dateUpdate }} <br/> {{ rowData.userUpdate }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;">
+                            <a 
+                                style="margin-right: 10px;" 
+                                nz-popconfirm nzPopconfirmTitle="確定複製嗎?" 
+                                (nzOnConfirm)="clone(rowData)">
+                                <span nz-icon nzType="copy" nzTheme="outline"></span>
+                                <font size="3">複製</font>
+                            </a>
+                            <a 
+                                nz-popconfirm 
+                                [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                nzPopconfirmTitle="確定刪除嗎?" 
+                                (nzOnConfirm)="deleteRow(rowData.id)">
+                                <span nz-icon nzType="delete" nzTheme="outline"></span>
+                                <font size="3">刪除</font>
+                            </a>
+                        </td>
+                    </ng-container>
+
+                    <ng-template #addTemplate>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ getActionStatus(rowData) }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.shiftEdition }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;">
+                            <nz-date-picker 
+                                [(ngModel)]="produceMonth"
+                                nzMode="month" 
+                                [nzFormat]="monthFormat">
+                            </nz-date-picker>
+                        </td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.dateCcreate }} <br/> {{ rowData.userCreate }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;"><font size="3">{{ rowData.dateUupdate }} <br/> {{ rowData.userUpdate }}</font></td>
+                        <td style="text-align:center; padding: 10px 0px; height: 10px; width: 50px;">
+                            <a 
+                                style="margin-right: 10px;"
+                                nz-popconfirm
+                                nzPopconfirmTitle="確定新增嗎?" 
+                                (nzOnConfirm)="addConfirm(rowData)">
+                                <span nz-icon nzType="check" nzTheme="outline"></span>
+                                <font size="3">確定</font>
+                            </a>
+                            <a (click)="cancelAdd(rowData.id)">
+                                <span nz-icon nzType="close" nzTheme="outline"></span>
+                                <font size="3">取消</font>
+                            </a>
+                        </td>
+                    </ng-template>
+
+                </tr>
+            </tbody>
+
+        </nz-table>
+    </nz-spin>
+</nz-content>
+
+<nz-modal
+    [(nzVisible)]="isVisibleMaintain"
+    [nzWidth]="900" 
+    [nzTitle]="modalTitle" 
+    [nzContent]="modalContent" 
+    [nzMaskClosable]="false"
+    [nzCancelText]="null"
+    [nzOkText]="'關閉'"
+    (nzOnOk)="cancelMaintainModalVisible()"
+    (nzOnCancel)="cancelMaintainModalVisible()">
+
+    <ng-template #modalTitle>推移維護版本：{{ currentShiftEdition }}</ng-template>
+    <ng-template #modalContent>
+        <nz-spin style="z-index:9999;" nzTip="處理中..." [nzSize]="'large'" [nzSpinning] = "isMaintainLoading">
+
+            <app-ppsr321-detail-tab-menu></app-ppsr321-detail-tab-menu>
+
+        </nz-spin>
+    </ng-template>
+</nz-modal>

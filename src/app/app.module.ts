@@ -1,3 +1,4 @@
+import { NZ_I18N, zh_TW } from 'ng-zorro-antd/i18n';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ZorroCompomentModule } from './shared/zorro-compoment/zorro-compoment.module';
@@ -145,6 +146,9 @@ import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
+import { PPSR321DetailTabMenuComponent } from './pages/PPS/PPSR321_DetailTabMenu/PPSR321-detail-tab-menu.component';
+import { PPSR321Detail01Component } from './pages/PPS/PPSR321_Detail01/PPSR321-detail01.component';
+import { PPSR321Detail02Component } from './pages/PPS/PPSR321_Detail02/PPSR321-detail02.component';
 
 
 registerLocaleData(zh);
@@ -266,6 +270,9 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
     PPSR320Component,
     PPSR321Component,
+    PPSR321DetailTabMenuComponent,
+    PPSR321Detail01Component,
+    PPSR321Detail02Component,
   ],
   imports: [
     BrowserModule,
@@ -287,7 +294,9 @@ registerLocaleData(zh);
     }),
     ///////
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: NZ_I18N, useValue: zh_TW }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

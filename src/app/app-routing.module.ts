@@ -97,6 +97,10 @@ import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_Tab
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
 import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
+import { PPSR321Detail01Component } from './pages/PPS/PPSR321_Detail01/PPSR321-detail01.component';
+import { PPSR321Detail02Component } from './pages/PPS/PPSR321_Detail02/PPSR321-detail02.component';
+import { PPSR321CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321.CanDeactivateGuard';
+import { PPSR321Detail01CanDeactivateGuard } from './pages/PPS/PPSR321_Detail01/PPSR321-detail01.CanDeactivateGuard';
 
 
 const routes: Routes = [
@@ -273,7 +277,19 @@ const routes: Routes = [
     path: 'FCPshiftRepo',
     children: [
       { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
-      { path: 'R321', component: PPSR321Component },
+      { 
+        path: 'R321', 
+        component: PPSR321Component,
+        canDeactivate: [PPSR321CanDeactivateGuard],
+        children : [
+          { 
+            path: 'detail01', 
+            component: PPSR321Detail01Component,
+            canDeactivate: [PPSR321Detail01CanDeactivateGuard],
+          },
+          { path: 'detail02', component: PPSR321Detail02Component }
+        ]
+       },
       { path: 'R322', component: null },
     ],
     canActivate: [AuthGuard],
