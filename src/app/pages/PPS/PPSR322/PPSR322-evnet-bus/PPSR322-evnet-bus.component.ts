@@ -13,7 +13,7 @@ export class PPSR322EvnetBusComponent {
 
   searchObj = {
     fcpVer:String,
-    maintainVer:String,
+    shiftVer:String,
   };
 
   private subscription:Subscription;
