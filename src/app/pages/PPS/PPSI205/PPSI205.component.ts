@@ -310,7 +310,7 @@ export class PPSI205Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
-    this.getTbppsm102List();
+    // this.getTbppsm102List();
     this.forTbppsm100Date = moment(this.currentDate).format(
       'YYYY-MM-DD HH:mm:ss'
     );
@@ -444,15 +444,15 @@ export class PPSI205Component implements AfterViewInit {
     /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm101List();
-    } else */if (tab === 2) {
+    } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
-    } else if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
+    } else*/ if (tab === 3) {
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm113List();
     } else if (tab === 4) {
       this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1&innerSelect=0';
     } else if (tab === 5) {
       this.getTbppsm100List();
       window.location.href = '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';

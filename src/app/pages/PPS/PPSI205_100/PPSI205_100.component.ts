@@ -306,12 +306,12 @@ export class PPSI205_100Component implements AfterViewInit {
     console.log(tab);
     /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-    } else */if (tab === 2) {
+    } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-    } else if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
+    } else */if (tab === 3) {
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
     } else if (tab === 4) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1&innerSelect=0';
     } else if (tab === 5) {
       this.getppsfcptb16_ms_cust_sortList();
     }
