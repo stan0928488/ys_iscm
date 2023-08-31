@@ -2483,6 +2483,22 @@ this.handleSelectCarModal() ;
       console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
       this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
     }
+    // 空車 
+    selectEmptyCar(id:any,idNo:any){
+      const saveData = [{id:id,fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,idNo:idNo}]
+      this.mshService.saveChangeEmptyCar(saveData).subscribe(res=>{
+        this.handleOpCodeIsConfirmLoading = false
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.nzMessageService.success(result.message);
+          this.sameOpCodeChangeCarModal.isVisible = false ;
+          this.modalTableVisible = false ;
+          this.getTableData() ;
+        }
+      })
+    }
 
     selectSameOpCodeCarClick(id:any,opCode:any,oldCarId:any,newCarId:any) {
       this.selectCarTable.tbData = [] ;
