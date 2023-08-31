@@ -291,6 +291,7 @@ export class PPSI112Component implements AfterViewInit {
           this.data.push(this.temp[i].columnComment);
         }
         this.conditionList = this.data;
+        this.conditionList.push('-');
         this.data = [];
         this.temp = [];
         console.log(this.conditionList);
