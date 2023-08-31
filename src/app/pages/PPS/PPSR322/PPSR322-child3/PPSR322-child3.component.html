@@ -1,38 +1,44 @@
 <app-PPSR322></app-PPSR322>
-<nz-table #colSpanTable [nzData]="listOfData" nzBordered>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th colspan="2">Home phone</th>
-            <th>Address</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let data of colSpanTable.data; index as i">
-            <td>{{ data.name }}</td>
-            <ng-container [ngSwitch]="i">
-                <ng-container *ngSwitchCase="2">
-                    <td>{{ data.age }}</td>
-                    <td rowspan="2">{{ data.tel }}</td>
-                    <td>{{ data.phone }}</td>
-                    <td>{{ data.address }}</td>
+<nz-content style="margin:0 16px;">
+    <p>說明欄位：{{otherInfo.instructions}}</p>
+    <nz-table nzBordered nzSize="small" [nzFrontPagination]="'false'" [nzShowPagination]="'false'"
+        [nzScroll]="{y: '650px' }" #colSpanTable [nzData]="listOfData">
+        <thead>
+            <tr>
+                <th>回廠日期</th>
+                <th>交期</th>
+                <th>尺寸</th>
+                <th>鋼種</th>
+                <th>重量</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of colSpanTable.data; index as i">
+                <ng-container [ngSwitch]="data.rowspanSize">
+                    <ng-container *ngSwitchCase="1">
+                    </ng-container>
+                    <ng-container *ngSwitchCase="999">
+                        <td>{{data.rollDateStr}}</td>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <td *ngIf="data.steelType != '合計' " [rowSpan]="data.rowspanSize">{{data.rollDateStr}}</td>
+                        <td *ngIf="data.steelType == '合計' " 
+                        style="background-color: #00DB00;"
+                        [rowSpan]="data.rowspanSize" [colSpan]="4">{{ data.steelType }}</td>
+                    </ng-container>
                 </ng-container>
-                <ng-container *ngSwitchCase="3">
-                    <td>{{ data.age }}</td>
-                    <td>{{ data.phone }}</td>
-                    <td>{{ data.address }}</td>
+                <ng-container [ngSwitch]="data.steelType">
+                    <ng-container *ngSwitchCase="'合計'">
+                        <td style="background-color: #00DB00;">{{ data.weight }}</td>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <td>{{ data.dateDeliveryPpStr }}</td>
+                        <td>{{ data.inputDia }}</td>
+                        <td>{{ data.steelType }}</td>
+                        <td>{{ data.weight }}</td>
+                    </ng-container>
                 </ng-container>
-                <ng-container *ngSwitchCase="4">
-                    <td colspan="5">{{ data.age }}</td>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                    <td>{{ data.age }}</td>
-                    <td>{{ data.tel }}</td>
-                    <td>{{ data.phone }}</td>
-                    <td>{{ data.address }}</td>
-                </ng-container>
-            </ng-container>
-        </tr>
-    </tbody>
-</nz-table>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-content>>

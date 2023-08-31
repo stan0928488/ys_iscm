@@ -56,7 +56,7 @@ export class PPSR322Child6Component implements OnInit,OnDestroy,OnDestroy {
   ngOnInit(){
     this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
       console.log(data.data.fcpVer);
-      console.log(data.data.maintainVer);
+      console.log(data.data.shiftVer);
     })
   }
 
