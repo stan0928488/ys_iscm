@@ -571,28 +571,49 @@ this.handleSelectCarModal() ;
       rowDragManaged: true, 
       getRowStyle(params) {
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          if(params.data["COLORFLAG"].toString() === '1') {
+            return  { background: '#FF00FF' };
+          }
           return { background: 'SandyBrown' };
         } else {
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
           if(params.data["CAR_WEIGHT_ADD"] < 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'lightcoral' };
           } else {
             if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
             &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
               if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'white' };
               } else {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'powderblue' };
               }
             } else {
+              if(params.data["COLORFLAG"].toString() === '1') {
+                return  { background: '#FF00FF' };
+              }
               return { background: 'yellow' };
             }
           }
         } else {
           if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'white' };
           } else {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'powderblue' };
           }
         }
@@ -743,6 +764,20 @@ this.handleSelectCarModal() ;
       })
     })
     this.rowSelectData = rowTemp ;
+     //遍历子层
+     this.rowSelectData.forEach((item,index,array)=>{
+      if(this.searchText === '') {
+        this.rowSelectData[index].COLORFLAG = "0" ;
+      } else {
+      let searchTextArray = this.searchText.split(',') ;
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
+        this.rowSelectData[index].COLORFLAG = "1" ;
+       
+      } else {
+        this.rowSelectData[index].COLORFLAG = "0" ;
+      }
+      }
+    })
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
 
@@ -1958,6 +1993,7 @@ this.handleSelectCarModal() ;
     this.searchLoading = true ;
     let countTemp = 0 ;
     let rowIndexToScrollTo = 0 ;
+    // 遍历外层
     this.rowData.forEach((item,index,array)=>{
       if(this.searchText === '') {
         this.rowData[index].COLORFLAG = "0" ;
@@ -1975,6 +2011,8 @@ this.handleSelectCarModal() ;
       }
      
     })
+   
+
     this.searchCount = countTemp ;
     if(countTemp >= 1) {
       this.gridOptions.api.ensureIndexVisible(rowIndexToScrollTo, 'middle');
@@ -2444,6 +2482,22 @@ this.handleSelectCarModal() ;
       this.sameOpCodeChangeCarModal.table.tbData = sameOpCodeChangeCarModalTemp ;
       console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
       this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
+    }
+    // 空車 
+    selectEmptyCar(id:any,idNo:any){
+      const saveData = [{id:id,fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,idNo:idNo}]
+      this.mshService.saveChangeEmptyCar(saveData).subscribe(res=>{
+        this.handleOpCodeIsConfirmLoading = false
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.nzMessageService.success(result.message);
+          this.sameOpCodeChangeCarModal.isVisible = false ;
+          this.modalTableVisible = false ;
+          this.getTableData() ;
+        }
+      })
     }
 
     selectSameOpCodeCarClick(id:any,opCode:any,oldCarId:any,newCarId:any) {

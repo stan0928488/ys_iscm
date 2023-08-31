@@ -124,6 +124,11 @@ saveChangeOpCode(_param) {
   let queryUrl = this.APIURL + "/msh/MSHP001/saveChangeOpCode";
   return this.http.post(queryUrl,_param,this.httpOptions);
 }
+//获取當前版本最新批次的配車數據 msh/MSHP001/changeEmptyCar
+saveChangeEmptyCar(_param) {
+  let queryUrl = this.APIURL + "/msh/MSHP001/changeEmptyCar";
+  return this.http.post(queryUrl,_param,this.httpOptions);
+}
 
   // 搜尋EPST資料
   searchEpstData(_parms){

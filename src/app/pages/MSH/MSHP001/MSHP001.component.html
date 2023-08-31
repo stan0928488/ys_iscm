@@ -361,7 +361,10 @@ nzWidth="300"
           <ng-container *ngIf="data.NEW_CAR_ID !== ''"> <a nz-button (click)="handleClearCarID(data.ID)" nzType="text" >x</a> 
           </ng-container>
         </td>
-        <td><a (click)="selectSameOpCodeCarClick(data.ID,data.OP_CODE,data.OLD_CAR_ID, data.NEW_CAR_ID )">選車</a></td>
+        <td><a (click)="selectSameOpCodeCarClick(data.ID,data.OP_CODE,data.OLD_CAR_ID, data.NEW_CAR_ID )">選車</a> | 
+          <a (click)="selectEmptyCar(data.ID,data.ID_NO)">空車</a>
+        </td>
+
         <!-- <td>
         
           <a>保存</a>
