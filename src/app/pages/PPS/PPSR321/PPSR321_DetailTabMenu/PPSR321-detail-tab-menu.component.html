@@ -2,9 +2,7 @@
 
     <nz-tabset style="margin-bottom:5px;" nzLinkRouter [nzType]="'card'" >
         <nz-tab>
-            <a 
-                id="ppsr321_d1"
-                *nzTabLink 
+            <a *nzTabLink 
                 nz-tab-link 
                 routerLinkActive="active"
                 [routerLink]="['/FCPshiftRepo/R321/detail01']">
@@ -13,12 +11,19 @@
           </nz-tab>
 
           <nz-tab>
-            <a  id="ppsr321_d2"
-                *nzTabLink 
+            <a *nzTabLink 
                 nz-tab-link 
                 routerLinkActive="active"
                 [routerLink]="['/FCPshiftRepo/R321/detail02']">
               特殊鋼種量
+            </a>
+          </nz-tab>
+          <nz-tab>
+            <a *nzTabLink 
+                nz-tab-link 
+                routerLinkActive="active"
+                [routerLink]="['/FCPshiftRepo/R321/detail0301']">
+              頭份預計回廠日
             </a>
           </nz-tab>
     </nz-tabset>

@@ -10,10 +10,12 @@ import { Router } from '@angular/router';
 export class PPSR321DetailTabMenuComponent implements OnInit, AfterViewInit {
 
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+    this.router.navigateByUrl("/FCPshiftRepo/R321/detail01");
+   }
 
   ngAfterViewInit(): void {
-    this.router.navigateByUrl("/FCPshiftRepo/R321/detail01");
+    
   }
 
   ngOnInit(): void {

@@ -2277,10 +2277,47 @@ export class PPSService {
     return this.http.get(queryUrl, { params: httpParams });
   }
 
+  updateDetail02ByPk(rowData:any){
+    console.log('Api Service 更新「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail02ByPk`;
+    console.log(`Api Service 更新「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
+  deleteDetail02ByPk(rowData:any){
+    console.log('Api Service 刪除「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/deleteDetail02ByPk`;
+    console.log(`Api Service 刪除「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 刪除「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.delete(queryUrl, { headers:this.httpOptions.headers, body:rowData });
+  }
+
+  getDetail0301ByCondition(shiftEdition:string, masterType:string, detailType:string){
+    const httpParams = new HttpParams()
+    .set('shiftEdition', shiftEdition)
+    .set('masterType', masterType)
+    .set('detailType', detailType);
+    console.log('Api Service 獲取「頭份預計回廠日」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail0301ByCondition`;
+    console.log(`Api Service 獲取「頭份預計回廠日」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「頭份預計回廠日」資料 參數 -> ${shiftEdition},${masterType},${detailType}`);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
+  updateDetail0301ByPk(rowData:any){
+    console.log('Api Service 更新「頭份預計回廠日」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail0301ByPk`;
+    console.log(`Api Service 更新「頭份預計回廠日」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「頭份預計回廠日」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
   getR322Data(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APIURL + `/FCP/R322/getPPSR322Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+  
 
 }

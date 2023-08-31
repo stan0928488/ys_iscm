@@ -7,7 +7,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { PPSR321DataPassService } from '../PPSR321_DataPass/PPSR321-data-pass.service';
+import { PPSR321DataPassService } from './PPSR321_DataPass/PPSR321-data-pass.service';
 registerLocaleData(zh);
 
 
@@ -191,7 +191,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
     if(!_.isEmpty(this.ppsr321DataPassService.hasEdited)){
         new Promise<boolean>((resolve) => {
           this.Modal.confirm({
-            nzTitle: `${this.ppsr321DataPassService.hasEdited}編輯中，是否離開?`,
+            nzTitle: `${this.ppsr321DataPassService.hasEdited}，是否離開?`,
             nzOkText: '離開',
             nzCancelText: '取消',
             nzOnOk: () => {

@@ -24,7 +24,7 @@
                 nzHideOnSinglePage="true">
                 <thead>
                     <tr>
-                        <th rowspan="2" style="width: 100px; text-align:center; background-color: #CED7DE;">
+                        <th rowspan="2" style="width: 130px; text-align:center; background-color: #CED7DE;">
                             <font size="3.5"><b>產品分類</b></font>
                         </th>
                         <th rowspan="2" style="width: 200px; text-align:center; background-color: #CED7DE;">
@@ -33,7 +33,7 @@
                         <th colspan="2" style="width: 300px; padding:5px; text-align:center; background-color: #CED7DE;">
                             <font size="3.5"><b>尺寸</b></font>
                         </th>
-                        <th rowspan="2" style="width: 150px; padding:5px; text-align:center; background-color: #CED7DE;">
+                        <th rowspan="2" style="width: 160px; padding:5px; text-align:center; background-color: #CED7DE;">
                             <font size="3.5"><b>Action</b></font>
                         </th>
                     </tr>
@@ -65,7 +65,7 @@
                                         nz-popconfirm 
                                         [class]="{aDeleteDisabled : rowData.hasDeleted}"
                                         nzPopconfirmTitle="確定刪除嗎?" 
-                                        (nzOnConfirm)="deleteRow(rowData.id)">
+                                        (nzOnConfirm)="deleteRow(rowData)">
                                         <span nz-icon nzType="delete" nzTheme="outline"></span>
                                         <font size="3">刪除</font>
                                     </a>
@@ -73,8 +73,9 @@
                             </ng-container>
                             <ng-template #addOrEditTemplate>
                                 <td style="text-align:center;">
-                                    <nz-select 
-                                        style="width:100px;"
+                                    <nz-select
+                                        nzPlaceHolder="請選擇產品分類" 
+                                        style="width:130px;"
                                         [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.kindType">
                                         <nz-option nzValue="PL" nzLabel="PL"></nz-option>
                                         <nz-option nzValue="B to B" nzLabel="B to B"></nz-option>
@@ -97,7 +98,8 @@
                                 </td>
                                 <td style="text-align:center;">
                                     <nz-select 
-                                        style="width:100px;"
+                                        nzPlaceHolder="請選擇符號"
+                                        style="width:130px;"
                                         [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.operator"
                                         (ngModelChange)="diaRangeDataChangeHandler(rowData.id)">
                                         <nz-option *ngFor="let item of operatorMap | keyvalue:compareFn" [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
@@ -105,8 +107,11 @@
                                 </td>
                                 <td style="text-align:center;">
                                     <ng-container *ngIf="tbppsrm011Detail02EditCacheList[rowData.id].data.operator != '-' else showAllTemplate">
-                                        <nz-input-number 
+                                        <nz-input-number
+                                            style="width:130px;"
+                                            nzPlaceHolder="請選擇範圍"
                                             [nzMin]="0"
+                                            [nzMax]="9999"
                                             [(ngModel)]="tbppsrm011Detail02EditCacheList[rowData.id].data.diaRange" 
                                             [nzStep]="1">
                                         </nz-input-number>

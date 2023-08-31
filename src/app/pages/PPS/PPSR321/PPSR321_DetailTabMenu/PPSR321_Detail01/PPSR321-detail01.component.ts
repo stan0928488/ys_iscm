@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { PPSR321DataPassService } from '../PPSR321_DataPass/PPSR321-data-pass.service';
+import { PPSR321DataPassService } from '../../PPSR321_DataPass/PPSR321-data-pass.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -78,14 +78,16 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
                 private Modal: NzModalService,
                 private nzMessageService: NzMessageService,
                 private cookieService: CookieService) {
+      // 接收月推移主檔傳遞過來的資料
+      this.receivedData = this.ppsr321DataPassService.mainData;
+      this.displayProduceMonth = (this.receivedData.produceMonth as string).split('-')[1];
+      
       this.PLANT_CODE = this.cookieService.getCookie("plantCode");
       this.USER_NAME = this.cookieService.getCookie("USERNAME");
     }
 
   ngOnInit(): void {
-    // 接收月推移主檔傳遞過來的資料
-    this.receivedData = this.ppsr321DataPassService.mainData;
-    this.displayProduceMonth = (this.receivedData.produceMonth as string).split('-')[1];
+    
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -193,7 +195,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
 
   edit(): void {
     // 通知父元件(PPSR321DetailTabMenuComponent)當前子元件正在編輯中
-    this.ppsr321DataPassService.hasEdited = '預計入庫資訊';
+    this.ppsr321DataPassService.hasEdited = '預計入庫資訊正在編輯中';
     this.isEdit = true;
   }
 
