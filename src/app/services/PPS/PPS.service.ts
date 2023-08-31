@@ -2320,4 +2320,16 @@ export class PPSService {
   }
   
 
+  getR322VerList(_data){
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R322/getVerList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getR322OtherInfo(_data){
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APIURL + `/FCP/R322/getOtherInfo`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 }

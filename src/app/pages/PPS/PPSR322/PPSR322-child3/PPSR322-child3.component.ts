@@ -1,67 +1,117 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
+import { PPSService } from "src/app/services/PPS/PPS.service";
+import { NzMessageService } from 'ng-zorro-antd/message';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-PPSR322-child3',
   templateUrl: './PPSR322-child3.component.html',
-  styleUrls: ['./PPSR322-child3.component.css']
+  styleUrls: ['./PPSR322-child3.component.css'],
+  providers:[NzMessageService]
 })
 export class PPSR322Child3Component implements OnInit,OnDestroy {
 
-  listOfData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      tel: '0571-22098909',
-      phone: 18889898989,
-      address: 'New York No. 1 Lake Park'
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      tel: '0571-22098333',
-      phone: 18889898888,
-      age: 42,
-      address: 'London No. 1 Lake Park'
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Sidney No. 1 Lake Park'
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'London No. 2 Lake Park'
-    },
-    {
-      key: '5',
-      name: 'Jake White',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Dublin No. 2 Lake Park'
-    }
-  ];
+  listOfData: ItemData[] = [];
+  otherInfo = {
+    instructions:""
+  };
 
-  constructor(private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent) { }
+  constructor(
+    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
+    private PPSService: PPSService,
+    private message: NzMessageService
+  ) {}
 
   ngOnInit(){
+
     this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
-      console.log(data.data.fcpVer);
-      console.log(data.data.maintainVer);
+      
+      let postData = {
+        verList:{fcpVer:String,shiftVer:String},
+        tabType:Number
+      };
+      postData.verList.fcpVer = data.data.fcpVer
+      postData.verList.shiftVer = data.data.shiftVer
+      this.getR322Data(postData);
+      this.getR322OtherInfo(postData);
+      
     })
+
+    let postData = {};
+    this.getR322Data(postData);
+    this.getR322OtherInfo(postData);
+
   }
 
   ngOnDestroy(): void {
+
     this.ppsr322EvnetBusComponent.unsubscribe();
+
   }
 
+  getR322OtherInfo(postData){
+
+    postData['tabType'] = 3
+    this.PPSService.getR322OtherInfo(postData).subscribe(res =>{
+      let result: any = res;
+      this.otherInfo.instructions = result.instructions;
+    });
+
+  }
+
+  getR322Data(postData){
+
+    postData['tabType'] = 3
+    this.PPSService.getR322Data(postData).subscribe({
+      next: (res) => {
+        let result: any = res;
+
+        if(result[0]){
+
+          const data = [];
+          for (let i = 0; i < result.length ; i++) {
+            data.push({
+              rollDate: result[i].rollDate,
+              rollDateStr: result[i].rollDateStr,
+              dateDeliveryPp: result[i].dateDeliveryPp,
+              dateDeliveryPpStr: result[i].dateDeliveryPpStr,
+              inputDia: result[i].inputDia,
+              steelType: result[i].steelType,
+              weight: result[i].weight,
+              rowspanSize: result[i].rowspanSize
+            });
+          }
+          this.listOfData = data;
+
+          this.listOfData.map(element => {
+            element.dateDeliveryPpStr =  moment(element.dateDeliveryPp).format("YYYY-MM-DD")
+            element.rollDateStr =  moment(element.rollDate).format("YYYY-MM-DD")
+          });
+
+        }else{
+          const data = [];
+          this.listOfData = data;
+        }
+
+      },
+      error: (e) => {
+        this.message.error('網絡請求失敗');
+      },
+      complete: () => {}
+    });
+    
+  }
+
+}
+
+interface ItemData {
+  rollDate: Date;
+  rollDateStr: string;
+  dateDeliveryPp: Date;
+  dateDeliveryPpStr: string;
+  inputDia: number;
+  steelType: string;
+  weight: number;
+  rowspanSize:number;
 }

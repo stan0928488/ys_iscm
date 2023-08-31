@@ -243,7 +243,7 @@
     </nz-tab>
 
     <!-- 401站優先順序表 -->
-    <nz-tab nzTitle="401站優先順序表" (nzClick)="changeTab(2)">
+    <nz-tab *ngIf="isTabVisible" nzTitle="401站優先順序表" (nzClick)="changeTab(2)">
       <div>
         <tr>
           <td>
@@ -816,123 +816,122 @@
     </nz-tab>
 
    <!-- 401 Auto Campaign -->
-   <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
-    <label
-      style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
-      *ngIf="isRunFCP"
-    >
-      ※ 目前 FCP 執行中，不可異動資料！
-    </label>
-    <nz-tabset
-      nzLinkRouter
-      [nzTabPosition]="'top'"
-      [nzType]="'card'"
-      [(nzSelectedIndex)]="innerSelect"
-    >
-      <nz-tab
-        class="Tab5-a"
-        style="background-color: #ffffff; color: dodgerblue"
+    <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
+      <label style="text-align: right; font-weight:bold; font-size: large; color: rgb(214, 63, 63);"
+      *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可異動資料！ </label>
+      <br>
+      <nz-tabset
+        nzLinkRouter
+        [nzTabPosition]="'top'"
+        [nzType]="'card'"
+        [(nzSelectedIndex)]="innerSelect"
       >
-      <a
-        *nzTabLink
-        nz-tab-link
-        [routerLink]="['/PlanSet/I205']"
-        [queryParams]="{ selectedTabIndex: 2 }"
-      >
-      Auto campaign表
-      </a>
-      <div>
-        <tr>
-          <td style="width: 42%;">
-            <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #e6a3c2;
-                border: 2px blue none;
-              "
-              [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
-              nzType="primary"
-              [disabled]="isRunFCP"
-              (click)="importCompaign(2)"
-            >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
-              轉入 CAMPAIGN 表
-            </button>
-          </td>
-
-          <td style="text-align: right;">
-            &nbsp;&nbsp;
-            <input
-              type="file"
-              id="fileupload"
-              style="display: inline-block"
-              (change)="incomingfile($event)"
-              placeholder="Upload file"
-              accept=".xlsx, .xls, .csv"
-            />
-            <button
-              nz-button
-              [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
-              nzType="primary"
-              [disabled]="isRunFCP"
-              (click)="Upload('4')"
-              style="display: inline-block"
-            >
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
-              E X C E L 匯入
-            </button>
-            &nbsp;&nbsp;
-            <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #4caf50;
-                border: 2px blue none;
-              "
-              nzType="primary"
-              (click)="exportTbppsm102ListExcel()"
-            >
-              <span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-            </button>
-          </td>
-        </tr>
-        <br />
-        <ag-grid-angular
-          [columnDefs]="columnDefs"
-          [gridOptions]="gridOptions"
-          [headerHeight]="40"
-          [rowHeight]="40"
-          style="width: 100%; height: 500px;"
-          class="ag-theme-alpine"
-          [rowData]="rowData"
-          [context]="myContext"
-          [suppressRowClickSelection]="true"
-          (cellDoubleClicked)="cellDoubleClickedHandler($event)"
-          (cellEditingStopped)="cellEditingStoppedHandler($event)"
-          [groupSelectsChildren]="true"
-          [animateRows]="true"
-          [pagination]="true"
-          [animateRows]="true"
-          [editType]="editType"
-          (gridReady)="onGridReady($event)"
+        <nz-tab
+          class="Tab5-a"
+          style="background-color: #ffffff; color: dodgerblue"
         >
-        </ag-grid-angular>
-      </div>
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['/PlanSet/I205']"
+            [queryParams]="{ selectedTabIndex: 1, innerSelect: 0 }"
+          >
+          Auto campaign表
+          </a>
+          <div>
+            <tr>
+              <td style="width: 42%;">
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #e6a3c2;
+                    border: 2px blue none;
+                  "
+                  [ngClass]="{ FCPdisable: isRunFCP, FCPenableUpload: !isRunFCP }"
+                  nzType="primary"
+                  [disabled]="isRunFCP"
+                  (click)="importCompaign(2)"
+                >
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  轉入 CAMPAIGN 表
+                </button>
+              </td>
+
+              <td style="text-align: right;">
+                &nbsp;&nbsp;
+                <input
+                  type="file"
+                  id="fileupload"
+                  style="display: inline-block"
+                  (change)="incomingfile($event)"
+                  placeholder="Upload file"
+                  accept=".xlsx, .xls, .csv"
+                />
+                <button
+                  nz-button
+                  [ngClass]="{ FCPdisable: isRunFCP, FCPenable: !isRunFCP }"
+                  nzType="primary"
+                  [disabled]="isRunFCP"
+                  (click)="Upload('4')"
+                  style="display: inline-block"
+                >
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  E X C E L 匯入
+                </button>
+                &nbsp;&nbsp;
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #4caf50;
+                    border: 2px blue none;
+                  "
+                  nzType="primary"
+                  (click)="exportTbppsm102ListExcel()"
+                >
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                  E X C E L 匯出
+                </button>
+              </td>
+            </tr>
+            <br />
+            <ag-grid-angular
+              [columnDefs]="columnDefs"
+              [gridOptions]="gridOptions"
+              [headerHeight]="40"
+              [rowHeight]="40"
+              style="width: 100%; height: 500px;"
+              class="ag-theme-alpine"
+              [rowData]="rowData"
+              [context]="myContext"
+              [suppressRowClickSelection]="true"
+              (cellDoubleClicked)="cellDoubleClickedHandler($event)"
+              (cellEditingStopped)="cellEditingStoppedHandler($event)"
+              [groupSelectsChildren]="true"
+              [animateRows]="true"
+              [pagination]="true"
+              [animateRows]="true"
+              [editType]="editType"
+              (gridReady)="onGridReady($event)"
+            >
+            </ag-grid-angular>
+          </div>
+        </nz-tab>
+        <nz-tab class="Tab5-a" style="background-color: #fafafa">
+          <a
+            *nzTabLink
+            nz-tab-link
+            [routerLink]="['/PlanSet/I205_401']"
+            style="color: black"
+          >
+          彙整表資料
+          </a>
+        </nz-tab>
+      </nz-tabset>
     </nz-tab>
-    <nz-tab class="Tab5-a" style="background-color: #fafafa">
-      <a
-        *nzTabLink
-        nz-tab-link
-        [routerLink]="['/PlanSet/I205_401']"
-        style="color: black"
-      >
-        彙整表資料
-      </a>
-    </nz-tab>
-  </nz-tabset>
-</nz-tab>
+    
+
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)">
       <label
@@ -1273,5 +1272,6 @@
         </nz-tab>
       </nz-tabset>
     </nz-tab>
+
   </nz-tabset>
 </nz-content>
