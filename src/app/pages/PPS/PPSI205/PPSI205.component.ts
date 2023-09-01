@@ -321,10 +321,7 @@ export class PPSI205Component implements AfterViewInit {
 
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
-    let myObj = this;
     this.getPPSService.getRunFCPCount().subscribe((res: number) => {
-      console.log('getRunFCPCount success');
-      console.log(res);
       if (res > 0) this.isRunFCP = true;
     });
   }
@@ -373,7 +370,6 @@ export class PPSI205Component implements AfterViewInit {
       this.isSpinning = false;
       console.log('getTbppsm102ListAll success');
       this.tbppsm102ListAll = this.rowData;
-      console.log('Auto Campaign data --> ', this.tbppsm102ListAll);
     });
   }
 
@@ -493,8 +489,8 @@ export class PPSI205Component implements AfterViewInit {
         return;
       }
     } else if (_type === '4') {
-      if (this.tbppsm102ExportExcel.length > 0) {
-        data = this.formatDataForExcel(_type, this.tbppsm102ExportExcel);
+      if (this.tbppsm102ListAll.length > 0) {
+        data = this.formatDataForExcel(_type, this.tbppsm102ListAll);
         fileName = `Auto Campaign 主表`;
         titleArray = this.titleArray4;
       } else {
@@ -579,7 +575,7 @@ export class PPSI205Component implements AfterViewInit {
           EQUIP_CODE: _.get(item, 'EQUIP_CODE'),
           NEXT_SHOP_CODE: _.get(item, 'NEXT_SHOP_CODE').toString(),
           DAYS: _.get(item, 'DAYS'),
-          MAX_DATE: _.get(item, 'MAX_DATE'),
+          MAX_DATE: moment(_.get(item, 'MAX_DATE')).format('YYYY-MM'),
           STARTDATE: _.get(item, 'STARTDATE'),
           ENDDATE: _.get(item, 'ENDDATE'),
           TC_FREQUENCE_LIFT:
@@ -589,7 +585,6 @@ export class PPSI205Component implements AfterViewInit {
               ? '降冪'
               : '',
           COMPAIGN_ID: _.get(item, 'COMPAIGN_ID'),
-          EXPORTDATETIME: _.get(item, 'EXPORTDATETIME'),
         });
         excelData.push(obj);
       }
@@ -1913,26 +1908,6 @@ export class PPSI205Component implements AfterViewInit {
   ERR_Cancel() {
     this.errorTXT = [];
     this.isErrorMsg = false;
-  }
-
-  // tab4 export excel
-  exportTbppsm102ListExcel() {
-    this.loading = true;
-    let myObj = this;
-    let exportTableName = 'Auto Campaign主表';
-    this.getPPSService
-      .exportTbppsm102ListExcel(this.PLANT_CODE)
-      .subscribe((res) => {
-        console.log('exportTbppsm102ListExcel success');
-        this.tbppsm102ExportExcel = res;
-        console.log(this.tbppsm102ExportExcel);
-        this.excelService.exportAsExcelFile(
-          this.tbppsm102ExportExcel,
-          exportTableName,
-          this.titleArray4
-        );
-        myObj.loading = false;
-      });
   }
 
   cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>) {
