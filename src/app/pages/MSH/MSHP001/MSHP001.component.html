@@ -27,10 +27,13 @@
 
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="getExportDataByShopCode()">以站別匯出</button>
 
+
+
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="handleExcelBatchModelModal()"  *ngIf="selectShopCode === '453' ||selectShopCode === '452' " >批量Excel模式</button>
 
             <!-- <button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('3')">test</button> -->
           <!--<button style="margin-left: 20px;" nz-button nzType="primary"   (click)="handleTest('2')">自動下載</button> -->
+          <button style="margin-left:30px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" nz-button  (click)="handleStatisticBtn()">分群統計</button>
 
       </p>
         <!--站別機台選擇-->
@@ -143,6 +146,7 @@
     </ag-grid-angular>
   </div>
 </nz-spin>
+ <!---子層數據-->
   <nz-modal  [nzWidth]="modalWidth" [(nzVisible)]="modalTableVisible" nzTitle="數據詳情" 
   [nzBodyStyle]="modalBodyStyle"
   
@@ -177,10 +181,40 @@
       
       <button  nz-button style="margin-left:5px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default" [nzLoading]="saveLoading"  (click)="saveSortedModal('2')">確認</button>
 
-      <button nz-button nzType="default" (click)="handleChangeModal()">关闭</button>
+      <button nz-button nzType="default" (click)="handleChangeModal()">關閉</button>
       <!-- <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button> -->
     </div>
   </nz-modal>
+<!---子層數據結束-->
+
+<!-- 統計數據開始-->
+<nz-modal  [nzWidth]="modalWidth" [(nzVisible)]="statisticModalIsVisible" nzTitle="統計數據展示" 
+[nzBodyStyle]="modalBodyStyle"
+
+(nzOnCancel)="handleStatisticModal()">
+  <div *nzModalContent>
+    <div [ngStyle]="style" nz-row>
+      <ag-grid-angular
+      style="width: 100% ; height: 100%; overflow: scroll"
+      class="ag-theme-alpine"
+      [rowDragManaged]="true"
+      [gridOptions]="statisticGridOptionsModal"
+      [animateRows]="true"
+      [enableCellTextSelection]="true"
+      [rowData]="statisticRowData"
+      [columnDefs]="statisticHeaderColumnDefs">
+      </ag-grid-angular>
+    </div>
+  </div>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleStatisticModal()">關閉</button>
+  </div>
+</nz-modal>
+
+
+<!----統計數據結束-->
+
+
 
 
   <!--調整後的數據-->
@@ -205,7 +239,7 @@
     <div *nzModalFooter>
       <button  nz-button style="margin-left:15px;"  nzType="primary" (click)="exportRowSortedData()">匯出</button>
       <button  nz-button style="margin-left:15px;background-color: #f16608; border-color: #f16608;  color: #fff;"  nzType="default"  (click)="saveSortedModal('3')"   [nzLoading]="saveLoading">確認</button>
-      <button nz-button style="margin-left:15px;"  nzType="default" (click)="handleChangeRowDataModal()">关闭</button>
+      <button nz-button style="margin-left:15px;"  nzType="default" (click)="handleChangeRowDataModal()">關閉</button>
       <!-- <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">確認</button> -->
     </div>
   </nz-modal>
