@@ -112,6 +112,19 @@
             </div>
         </nz-tab>
 
+        <nz-tab>
+            <div *ngIf="breadcrumbIndex == 6">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: dodgerblue">
+                    目標量總量
+                </a>
+            </div>
+            <div *ngIf="breadcrumbIndex != 6">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: gray">
+                    目標量總量
+                </a>
+            </div>
+        </nz-tab>
+
     </nz-tabset>
     <router-outlet></router-outlet>
 </nz-content>

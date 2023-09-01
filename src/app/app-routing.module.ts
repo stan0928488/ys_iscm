@@ -104,6 +104,7 @@ import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR3
 import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
 import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
 import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
+import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 
 
 const routes: Routes = [
@@ -290,6 +291,7 @@ const routes: Routes = [
         { path: 'R322_4', component: PPSR322Child4Component },
         { path: 'R322_5', component: PPSR322Child5Component },
         { path: 'R322_6', component: PPSR322Child6Component },
+        { path: 'R322_7', component: PPSR322Child7Component },
       ]},
 
     ],

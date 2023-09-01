@@ -31,7 +31,7 @@ export class PPSR322Child2Component implements OnInit,OnDestroy {
 
     })
 
-    this.searchData = {} as SearchData;
+    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
     this.getR322Data(this.searchData);
 
   }
