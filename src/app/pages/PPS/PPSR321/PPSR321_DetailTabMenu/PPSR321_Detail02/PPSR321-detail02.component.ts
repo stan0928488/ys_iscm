@@ -471,7 +471,7 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
     if(this.isDataAddOrEdit()){
       return await new Promise<boolean>((resolve) => {
         this.Modal.confirm({
-          nzTitle: `尚有特殊鋼種量資料新增或編輯中，是否離開?`,
+          nzTitle: `特殊鋼種量資料正在新增或編輯中，是否離開?`,
           nzOkText: '離開',
           nzCancelText: '取消',
           nzOnOk: () => {

@@ -2293,24 +2293,69 @@ export class PPSService {
     return this.http.delete(queryUrl, { headers:this.httpOptions.headers, body:rowData });
   }
 
-  getDetail0301ByCondition(shiftEdition:string, masterType:string, detailType:string){
+  getDetail03ByCondition(shiftEdition:string, masterType:string){
     const httpParams = new HttpParams()
     .set('shiftEdition', shiftEdition)
-    .set('masterType', masterType)
-    .set('detailType', detailType);
-    console.log('Api Service 獲取「頭份預計回廠日」資料');
-    const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail0301ByCondition`;
-    console.log(`Api Service 獲取「頭份預計回廠日」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 獲取「頭份預計回廠日」資料 參數 -> ${shiftEdition},${masterType},${detailType}`);
+    .set('masterType', masterType);
+
+    let type = '';
+    if(masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(masterType === '2'){
+      type = '退火生產資訊'
+    }
+    else if(masterType === '3'){
+      type = '排程生產原則說明'
+    }
+
+    console.log(`Api Service 獲取「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail03ByCondition`;
+    console.log(`Api Service 獲取「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「${type}」資料 參數 -> ${shiftEdition},${masterType}`);
     return this.http.get(queryUrl, { params: httpParams });
   }
 
-  updateDetail0301ByPk(rowData:any){
-    console.log('Api Service 更新「頭份預計回廠日」資料');
-    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail0301ByPk`;
-    console.log(`Api Service 更新「頭份預計回廠日」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 更新「頭份預計回廠日」資料 參數 -> ${JSON.stringify(rowData)}`);
+  updateDetail03ByPk(rowData:any){
+
+    let type = '';
+    if(rowData.masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(rowData.masterType === '2'){
+      type = '退火生產資訊'
+    }
+
+    console.log(`Api Service 更新「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail03ByPk`;
+    console.log(`Api Service 更新「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「${type}」資料 參數 -> ${JSON.stringify(rowData)}`);
     return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
+  insertDetail03(rowData:any){
+    let type = '';
+    if(rowData.masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(rowData.masterType === '2'){
+      type = '退火生產資訊'
+    }
+
+    console.log(`Api Service 新增「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail03`;
+    console.log(`Api Service 新增「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增「${type}」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+
+  insertDetail0303Multiple(rowData:any[]){
+    console.log(`Api Service 新增「排程生產原則說明」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail0303Multiple`;
+    console.log(`Api Service 新增「排程生產原則說明」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增「排程生產原則說明」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
   }
 
   getR322Data(_data) {

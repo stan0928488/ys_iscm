@@ -156,7 +156,9 @@ import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR3
 import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
 import { PPSR321Detail01Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.component';
 import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321-detail02.component';
-import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321-detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
+import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PSR321_Detail0303/PPSR321-detail0303.component';
 
 registerLocaleData(zh);
 
@@ -288,6 +290,8 @@ registerLocaleData(zh);
     PPSR322Child5Component,
     PPSR322Child6Component,
     PPSR321Detail0301Component,
+    PPSR321Detail0302Component,
+    PPSR321Detail0303Component,
   ],
   imports: [
     BrowserModule,

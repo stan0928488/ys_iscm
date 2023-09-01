@@ -19,7 +19,7 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
   PLANT_CODE = '';
   USER_NAME = '';
 
-  // 固定的查詢參數
+  // 固定的查詢/新增參數
   masterType = '1';
   detailType =  null;
 
@@ -66,7 +66,7 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
     try{
       this.isLoading = true;
 
-      const resObservable$ = this.ppsService.getDetail0301ByCondition(this.receivedData.shiftEdition, this.masterType, this.detailType);
+      const resObservable$ = this.ppsService.getDetail03ByCondition(this.receivedData.shiftEdition, this.masterType);
       const res = await firstValueFrom<any>(resObservable$);
 
       if(res.code !== 200){
@@ -81,8 +81,8 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
       // 如果該版次有頭份預計回廠日說明
       // 則將回傳的資料設定給detail0301Obj
       // 否則什麼也不做，沿用在OnInit初始化instructions為空的那個物件
-      if(!_.isNil(res.data)){
-        this.detail0301Obj = res.data;
+      if(res.data.length > 0){
+        this.detail0301Obj = res.data[0];
       }
 
       this.detail0301ObjEditCache = _.cloneDeep(this.detail0301Obj);
@@ -121,6 +121,64 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
     // 進行新增
     else{
 
+      // 使用者未輸入任何說明文字
+      if(_.isEmpty(this.detail0301ObjEditCache.instructions)){
+        this.nzMessageService.warning('未輸入任何說明，無法新增');
+        return;
+      }
+
+      await this.insertDetail0301Data();
+
+    }
+
+  }
+
+  async insertDetail0301Data(){
+    try{
+      this.isLoading = true;
+
+      const payload = {
+        plantCode : this.PLANT_CODE,
+        plant : '直棒',
+        shiftEdition : this.receivedData.shiftEdition,
+        masterType : this.masterType,
+        detailType : this.detailType,
+        instructions : this.detail0301ObjEditCache.instructions,
+        userCreate : this.USER_NAME
+      }
+
+      const resObservable$ = this.ppsService.insertDetail03(payload);
+      const res = await firstValueFrom<any>(resObservable$);
+
+      if(res.code !== 200){
+        this.errorMSG(
+          '新增「頭份預計回廠日」資料失敗',
+          `請聯繫系統工程師。錯誤訊息 : ${res.message}`
+        );
+        this.isLoading = false;
+        return;
+      }
+
+      // 離開編輯狀態
+      this.cancel();
+
+      await this.getDetail0301ByCondition();
+
+      // 通知主檔頁面更新資料並渲染畫面
+      this.ppsr321DataPassService.setRefresh(true);
+
+      this.sucessMSG(
+        '新增「頭份預計回廠日」資料成功',
+        `新增「頭份預計回廠日」資料成功`
+      );
+    }
+    catch (error) {
+      this.errorMSG(
+        '新增「頭份預計回廠日」資料失敗',
+        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.isLoading = false;
     }
 
   }
@@ -129,7 +187,7 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
     try{
       this.isLoading = true;
 
-      const resObservable$ = this.ppsService.updateDetail0301ByPk(this.detail0301ObjEditCache);
+      const resObservable$ = this.ppsService.updateDetail03ByPk(this.detail0301ObjEditCache);
       const res = await firstValueFrom<any>(resObservable$);
 
       if(res.code !== 200){
@@ -169,6 +227,29 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
     // 通知父元件(PPSR321DetailTabMenuComponent)當前子元件取消編輯
     this.ppsr321DataPassService.hasEdited = '';
     this.isEdit = false;
+  }
+
+   // 使用者離開當前頁面時，如果處於編輯狀態给於是否離開的提示
+   async canDeactivate() : Promise<boolean> {
+
+    if(this.isEdit){
+      return await new Promise<boolean>((resolve) => {
+        this.Modal.confirm({
+          nzTitle: `頭份預計回廠日說明正在編輯中，是否離開?`,
+          nzOkText: '離開',
+          nzCancelText: '取消',
+          nzOnOk: () => {
+            // 切換至其他頁面，重置新增或編輯狀態，任何子元件都沒有在新增或編輯
+            this.ppsr321DataPassService.hasEdited = ''; 
+            resolve(true);
+          },
+          nzOnCancel: () => {
+            resolve(false);
+          }
+        }); 
+      });
+    }
+    return Promise.resolve(true);
   }
 
   sucessMSG(_title, _plan): void {

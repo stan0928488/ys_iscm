@@ -109,7 +109,11 @@ import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR3
 import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
 import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
 import { PPSR321Detail02CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321Detail02CanDeactivateGuard';
-import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321-detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0301CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
+import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PSR321_Detail0303/PPSR321-detail0303.component';
 
 
 const routes: Routes = [
@@ -304,6 +308,17 @@ const routes: Routes = [
           { 
             path: 'detail0301', 
             component: PPSR321Detail0301Component,
+            canDeactivate:[PPSR321Detail0301CanDeactivateGuard]
+          },
+          { 
+            path: 'detail0302', 
+            component: PPSR321Detail0302Component,
+            canDeactivate:[PPSR321Detail0302CanDeactivateGuard]
+          },
+          { 
+            path: 'detail0303', 
+            component: PPSR321Detail0303Component,
+
           }
         ]
        },

@@ -1,0 +1,135 @@
+<nz-content>
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+
+        <div class="container">
+            <div class="headButton">
+                <button
+                    *ngIf="!isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    (click)="edit()">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    編輯
+                </button>
+                <button
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary"
+                    nz-popconfirm
+                    nzPopconfirmTitle="確定修改嗎?" 
+                    (nzOnConfirm)="confirm()">
+                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                    確認
+                </button>
+                <button
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    nz-popconfirm
+                    nzPopconfirmTitle="放棄編輯嗎?" 
+                    (nzOnConfirm)="cancel()">
+                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                    取消
+                </button>
+            </div>
+
+            <div class="peel" style="width:100%; margin-bottom: 30px;">
+                <h2 style="font-weight: bold;">削皮股：</h2>
+                <nz-card
+                    *ngIf="!isEdit"
+                    style="width:100%;">
+                    <div *ngIf="peelData.instructions === ''">無資料</div>
+                    <div 
+                        style="white-space: pre-wrap;"
+                        *ngIf="peelData.instructions !== ''">
+                        {{ peelData.instructions }}
+                    </div>
+                </nz-card>
+
+                <textarea 
+                    style="width:100%; padding:25px; box-sizing:border-box;"
+                    *ngIf="isEdit"
+                    nz-input 
+                    placeholder="請輸入說明" 
+                    nzAutosize
+                    [(ngModel)]="peelDataEditCache.instructions">
+                </textarea>
+            </div>
+
+            <div style="width:100%; margin-bottom: 30px;">
+                <h2 style="font-weight: bold;">冷抽一股：</h2>
+                <nz-card
+                    *ngIf="!isEdit"
+                    style="width:100%;">
+                    <div *ngIf="cold01Data.instructions === ''">無資料</div>
+                    <div 
+                        style="white-space: pre-wrap;"
+                        *ngIf="cold01Data.instructions !== ''">
+                        {{ cold01Data.instructions }}
+                    </div>
+                </nz-card>
+
+                <textarea 
+                    style="width:100%; padding:25px; box-sizing:border-box;"
+                    *ngIf="isEdit"
+                    nz-input 
+                    placeholder="請輸入說明" 
+                    nzAutosize
+                    [(ngModel)]="cold01DataEditCache.instructions">
+                </textarea>
+            </div>
+
+            <div style="width:100%; margin-bottom: 30px;">
+                <h2 style="font-weight: bold;">冷抽二股：</h2>
+                <nz-card
+                    *ngIf="!isEdit"
+                    style="width:100%;">
+                    <div *ngIf="cold02Data.instructions === ''">無資料</div>
+                    <div 
+                        style="white-space: pre-wrap;"
+                        *ngIf="cold02Data.instructions !== ''">
+                        {{ cold02Data.instructions }}
+                    </div>
+                </nz-card>
+
+                <textarea 
+                    style="width:100%; padding:25px; box-sizing:border-box;"
+                    *ngIf="isEdit"
+                    nz-input 
+                    placeholder="請輸入說明" 
+                    nzAutosize
+                    [(ngModel)]="cold02DataEditCache.instructions">
+                </textarea>
+            </div>
+
+            <div style="width:100%; margin-bottom: 30px;">
+                <h2 style="font-weight: bold;">研磨股：</h2>
+                <nz-card
+                    *ngIf="!isEdit"
+                    style="width:100%;">
+                    <div *ngIf="grindData.instructions === ''">無資料</div>
+                    <div 
+                        style="white-space: pre-wrap;"
+                        *ngIf="grindData.instructions !== ''">
+                        {{ grindData.instructions }}
+                    </div>
+                </nz-card>
+
+                <textarea 
+                    style="width:100%; padding:25px; box-sizing:border-box;"
+                    *ngIf="isEdit"
+                    nz-input 
+                    placeholder="請輸入說明" 
+                    nzAutosize
+                    [(ngModel)]="grindDataEditCache.instructions">
+                </textarea>
+            </div>
+
+
+        </div>
+
+    </nz-spin>
+</nz-content>

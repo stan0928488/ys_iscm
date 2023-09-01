@@ -39,11 +39,11 @@
             <nz-card
                 *ngIf="!isEdit"
                 style="width:100%;">
-                <div *ngIf="detail0301Obj.instructions === ''">請輸入說明</div>
+                <div *ngIf="detail0302Obj.instructions === ''">無資料</div>
                 <div 
                     style="white-space: pre-wrap;"
-                    *ngIf="detail0301Obj.instructions !== ''">
-                    {{ detail0301Obj.instructions }}
+                    *ngIf="detail0302Obj.instructions !== ''">
+                    {{ detail0302Obj.instructions }}
                 </div>
             </nz-card>
 
@@ -53,7 +53,7 @@
                 nz-input 
                 placeholder="請輸入說明" 
                 nzAutosize
-                [(ngModel)]="detail0301ObjEditCache.instructions">
+                [(ngModel)]="detail0302ObjEditCache.instructions">
             </textarea>
 
         </div>
