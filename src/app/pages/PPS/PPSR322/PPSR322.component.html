@@ -36,12 +36,12 @@
     <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'" [(nzSelectedIndex)]="breadcrumbIndex">
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 0">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_1" (click)="breadcrumbClick(0)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_1" (click)="breadcrumbClick(0)" style="color: dodgerblue">
                     預計入庫資訊
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 0">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_1" (click)="breadcrumbClick(0)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_1" (click)="breadcrumbClick(0)" style="color: gray">
                     預計入庫資訊
                 </a>
             </div>
@@ -49,12 +49,12 @@
 
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 1">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_2" (click)="breadcrumbClick(1)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_2" (click)="breadcrumbClick(1)" style="color: dodgerblue">
                     特殊鋼種量
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 1">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_2" (click)="breadcrumbClick(1)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_2" (click)="breadcrumbClick(1)" style="color: gray">
                     特殊鋼種量
                 </a>
             </div>
@@ -62,12 +62,12 @@
 
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 2">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_3" (click)="breadcrumbClick(2)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_3" (click)="breadcrumbClick(2)" style="color: dodgerblue">
                     頭份預計回廠日
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 2">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_3" (click)="breadcrumbClick(2)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_3" (click)="breadcrumbClick(2)" style="color: gray">
                     頭份預計回廠日
                 </a>
             </div>
@@ -75,12 +75,12 @@
 
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 3">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_4" (click)="breadcrumbClick(3)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_4" (click)="breadcrumbClick(3)" style="color: dodgerblue">
                     退貨生產資訊
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 3">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_4" (click)="breadcrumbClick(3)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_4" (click)="breadcrumbClick(3)" style="color: gray">
                     退貨生產資訊
                 </a>
             </div>
@@ -88,12 +88,12 @@
 
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 4">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_5" (click)="breadcrumbClick(4)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_5" (click)="breadcrumbClick(4)" style="color: dodgerblue">
                     排程生產原則說明
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 4">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_5" (click)="breadcrumbClick(4)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_5" (click)="breadcrumbClick(4)" style="color: gray">
                     排程生產原則說明
                 </a>
             </div>
@@ -101,17 +101,30 @@
 
         <nz-tab>
             <div *ngIf="breadcrumbIndex == 5">
-                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_6" (click)="breadcrumbClick(5)" style="color: dodgerblue">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_6" (click)="breadcrumbClick(5)" style="color: dodgerblue">
                     各產線目標量
                 </a>
             </div>
             <div *ngIf="breadcrumbIndex != 5">
-                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322_6" (click)="breadcrumbClick(5)" style="color: gray">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_6" (click)="breadcrumbClick(5)" style="color: gray">
                     各產線目標量
                 </a>
             </div>
         </nz-tab>
 
-    </nz-tabset>
+        <nz-tab>
+            <div *ngIf="breadcrumbIndex == 6">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: dodgerblue">
+                    目標量總量
+                </a>
+            </div>
+            <div *ngIf="breadcrumbIndex != 6">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: gray">
+                    目標量總量
+                </a>
+            </div>
+        </nz-tab>
 
+    </nz-tabset>
+    <router-outlet></router-outlet>
 </nz-content>

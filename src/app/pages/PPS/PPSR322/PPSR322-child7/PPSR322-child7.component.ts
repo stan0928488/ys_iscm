@@ -1,27 +1,27 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PPSService } from "src/app/services/PPS/PPS.service";
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
+import { PPSService } from "src/app/services/PPS/PPS.service";
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
-  selector: 'app-PPSR322-child5',
-  templateUrl: './PPSR322-child5.component.html',
-  styleUrls: ['./PPSR322-child5.component.css'],
+  selector: 'app-PPSR322-child7',
+  templateUrl: './PPSR322-child7.component.html',
+  styleUrls: ['./PPSR322-child7.component.css'],
   providers:[NzMessageService]
 })
-export class PPSR322Child5Component implements OnInit, OnDestroy {
+export class PPSR322Child7Component implements OnInit {
 
   listOfData: ItemData[] = [];
   searchData = {} as SearchData;
 
   constructor(
-    private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
+    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
     private PPSService: PPSService,
     private message: NzMessageService
-  ) { }
+  ) {}
 
-  ngOnInit() {
-
+  ngOnInit(){
+    
     this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
 
       if (data.data) {
@@ -41,8 +41,7 @@ export class PPSR322Child5Component implements OnInit, OnDestroy {
   }
 
   getR322Data(postData){
-
-    postData['tabType'] = 5
+    postData['tabType'] = 7
     this.PPSService.getR322Data(postData).subscribe({
       next: (res) => {
         let result: any = res;
@@ -52,7 +51,6 @@ export class PPSR322Child5Component implements OnInit, OnDestroy {
         }else{
           this.listOfData = [];
         }
-
       },
       error: (e) => {
         this.message.error('網絡請求失敗');
@@ -65,7 +63,11 @@ export class PPSR322Child5Component implements OnInit, OnDestroy {
 }
 
 interface ItemData {
-  instructions: string;
+  seq:number;
+  kindType:string;
+  process:string;
+  planWeightI:number;
+  rowspanSize: number;
 }
 
 interface SearchData {

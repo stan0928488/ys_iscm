@@ -114,6 +114,7 @@ import { PPSR321Detail0301CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321
 import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
 import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321Detail0301CanDeactivateGuard';
 import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PSR321_Detail0303/PPSR321-detail0303.component';
+import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 
 
 const routes: Routes = [
@@ -295,6 +296,7 @@ const routes: Routes = [
         component: PPSR321Component,
         canDeactivate: [PPSR321CanDeactivateGuard],
         children : [
+          { path: '', redirectTo: '/FCPshiftRepo/R321/detail01', pathMatch: 'full' },
           { 
             path: 'detail01', 
             component: PPSR321Detail01Component,
@@ -322,13 +324,17 @@ const routes: Routes = [
           }
         ]
        },
-      { path: 'R322', component: PPSR322Child1Component },
-      { path: 'R322_1', component: PPSR322Child1Component },
-      { path: 'R322_2', component: PPSR322Child2Component },
-      { path: 'R322_3', component: PPSR322Child3Component },
-      { path: 'R322_4', component: PPSR322Child4Component },
-      { path: 'R322_5', component: PPSR322Child5Component },
-      { path: 'R322_6', component: PPSR322Child6Component },
+      { path: 'R322', component: PPSR322Component ,
+      children: [
+        { path: '', redirectTo: 'R322_1' },
+        { path: 'R322_1', component: PPSR322Child1Component },
+        { path: 'R322_2', component: PPSR322Child2Component },
+        { path: 'R322_3', component: PPSR322Child3Component },
+        { path: 'R322_4', component: PPSR322Child4Component },
+        { path: 'R322_5', component: PPSR322Child5Component },
+        { path: 'R322_6', component: PPSR322Child6Component },
+        { path: 'R322_7', component: PPSR322Child7Component },
+      ]},
     ],
     canActivate: [AuthGuard],
   },

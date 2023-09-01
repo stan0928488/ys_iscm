@@ -12,6 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class PPSR322Child2Component implements OnInit,OnDestroy {
 
   listOfData: ItemData[] = [];
+  searchData = {} as SearchData;
 
   constructor(
     private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
@@ -21,18 +22,17 @@ export class PPSR322Child2Component implements OnInit,OnDestroy {
 
   ngOnInit(){
     
-    this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
-      let postData = {
-        verList:{fcpVer:String,shiftVer:String},
-        tabType:Number
-      };
-      postData.verList.fcpVer = data.data.fcpVer
-      postData.verList.shiftVer = data.data.shiftVer
-      this.getR322Data(postData);
+    this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
+
+      if (data.data) {
+        this.searchData.verList = data.data;
+      }
+      this.getR322Data(this.searchData);
+
     })
-    
-    let postData = {};
-    this.getR322Data(postData);
+
+    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
+    this.getR322Data(this.searchData);
 
   }
 
@@ -47,24 +47,10 @@ export class PPSR322Child2Component implements OnInit,OnDestroy {
         let result: any = res;
 
         if(result[0]){
-
-          const data = [];
-          for (let i = 0; i < result.length ; i++) {
-            data.push({
-              kindType: result[i].kindType,
-              diaRange: result[i].diaRange,
-              gradeNo: result[i].gradeNo,
-              passMachineWeight: result[i].passMachineWeight,
-              passMachineWeightNow: result[i].passMachineWeightNow
-            });
-          }
-          this.listOfData = data;
-
+          this.listOfData = result.map((itemData)=> itemData as ItemData) as ItemData[]
         }else{
-          const data = [];
-          this.listOfData = data;
+          this.listOfData = [];
         }
-
       },
       error: (e) => {
         this.message.error('網絡請求失敗');
@@ -82,4 +68,12 @@ interface ItemData {
   gradeNo: string;
   passMachineWeight: number;
   passMachineWeightNow: number;
+}
+
+interface SearchData {
+  tabType: Number;
+  verList: {
+    fcpVer: String,
+    shiftVer: String
+  };
 }

@@ -12,27 +12,31 @@ import { ExcelService } from "src/app/services/common/excel.service";
 
 
 
-interface ItemData2 {
+interface ItemData {
   id: string;
-  tab2ID: number;
-  SHOP_CODE_2: string;
-  EQUIP_GROUP_2: string;
-  EQUIP_CODE_2: string;
-  PROCESS_CODE_2: string;
-  GRADE_GROUP_2: string;
-  SHAPE_TYPE_2: string;
-  INPUT_DIA_MAX_2: number;
-  CAPABILITY_DIA_MIN_2: number;
-  CAPABILITY_DIA_MAX_2: number;
-  CAPABILITY_LENGTH_MIN_2: number;
-  CAPABILITY_LENGTH_MAX_2: number;
-  OPTIMAL_DIA_MIN_2: number;
-  OPTIMAL_DIA_MAX_2: number;
-  OPTIMAL_LENGTH_MIN_2: number;
-  OPTIMAL_LENGTH_MAX_2: number;
-  OPTION_EQUIP_1_2: string;
-  OPTION_EQUIP_2_2: string;
-  OPTION_EQUIP_3_2: string;
+  tabID: number;
+  SHOP_CODE: string;
+  EQUIP_GROUP: string;
+  EQUIP_CODE: string;
+  PROCESS_CODE: string;
+  GRADE_GROUP: string;
+  SHAPE_TYPE: string;
+  INPUT_DIA_MAX: number;
+  CAPABILITY_DIA_MIN: number;
+  CAPABILITY_DIA_MAX: number;
+  CAPABILITY_LENGTH_MIN: number;
+  CAPABILITY_LENGTH_MAX: number;
+  OPTIMAL_DIA_MIN: number;
+  OPTIMAL_DIA_MAX: number;
+  OPTIMAL_LENGTH_MIN: number;
+  OPTIMAL_LENGTH_MAX: number;
+  OPTION_EQUIP_1: string;
+  OPTION_EQUIP_2: string;
+  OPTION_EQUIP_3: string;
+  OPTION_EQUIP_4: string;
+  OPTION_EQUIP_5: string;
+  OPTION_EQUIP_6: string;
+  OPTION_EQUIP_7: string;
 }
 
 
@@ -49,53 +53,62 @@ export class PPSI103Component implements AfterViewInit {
   USERNAME;
   PLANT_CODE;
 
-
-
   // 設備能力
-  SHOP_CODE_2;
-  EQUIP_GROUP_2;
-  EQUIP_CODE_2;
-  PROCESS_CODE_2;
-  GRADE_GROUP_2;
-  SHAPE_TYPE_2;
-  INPUT_DIA_MAX_2;
-  CAPABILITY_DIA_MIN_2;
-  CAPABILITY_DIA_MAX_2;
-  CAPABILITY_LENGTH_MIN_2;
-  CAPABILITY_LENGTH_MAX_2;
-  OPTIMAL_DIA_MIN_2;
-  OPTIMAL_DIA_MAX_2;
-  OPTIMAL_LENGTH_MIN_2;
-  OPTIMAL_LENGTH_MAX_2;
-  OPTION_EQUIP_1_2;
-  OPTION_EQUIP_2_2;
-  OPTION_EQUIP_3_2;
+  SHOP_CODE = "";
+  EQUIP_GROUP = "";
+  EQUIP_CODE = "";
+  PROCESS_CODE = "";
+  GRADE_GROUP = "";
+  SHAPE_TYPE = "";
+  INPUT_DIA_MAX = 0;
+  CAPABILITY_DIA_MIN = 0;
+  CAPABILITY_DIA_MAX = 0;
+  CAPABILITY_LENGTH_MIN = 0;
+  CAPABILITY_LENGTH_MAX = 0;
+  OPTIMAL_DIA_MIN = 0;
+  OPTIMAL_DIA_MAX = 0;
+  OPTIMAL_LENGTH_MIN = 0;
+  OPTIMAL_LENGTH_MAX = 0;
+  OPTION_EQUIP_1 = "";
+  OPTION_EQUIP_2 = "";
+  OPTION_EQUIP_3 = "";
+  OPTION_EQUIP_4 = "";
+  OPTION_EQUIP_5 = "";
+  OPTION_EQUIP_6 = "";
+  OPTION_EQUIP_7 = "";
   isVisibleCapability = false;
-  searchShopCode2Value = '';
-  searchEquipGroup2Value = '';
-  searchEquipCode2Value = '';
-  searchProcessCode2Value = '';
-  searchGradeGroup2Value = '';
-  searchShapeType2Value = '';
-  searchInputDiaMax2Value = '';
-  searchCapabilityDiaMin2Value = '';
-  searchCapabilityDiaMax2Value = '';
-  searchCapabilityLengthMin2Value = '';
-  searchCapabilityLengthMax2Value = '';
-  searchOptimalDiaMin2Value = '';
-  searchOptimalDiaMax2Value = '';
-  searchOptimalLengthMin2Value = '';
-  searchOptimalLengthMax2Value = '';
-  searchoptionEquip1_2Value = '';
-  searchoptionEquip2_2Value = '';
-  searchoptionEquip3_2Value = '';
+  searchShopCodeValue = '';
+  searchEquipGroupValue = '';
+  searchEquipCodeValue = '';
+  searchProcessCodeValue = '';
+  searchGradeGroupValue = '';
+  searchShapeTypeValue = '';
+  searchInputDiaMaxValue = '';
+  searchCapabilityDiaMinValue = '';
+  searchCapabilityDiaMaxValue = '';
+  searchCapabilityLengthMinValue = '';
+  searchCapabilityLengthMaxValue = '';
+  searchOptimalDiaMinValue = '';
+  searchOptimalDiaMaxValue = '';
+  searchOptimalLengthMinValue = '';
+  searchOptimalLengthMaxValue = '';
+  searchoptionEquip1Value = '';
+  searchoptionEquip2Value = '';
+  searchoptionEquip3Value = '';
+  searchoptionEquip4Value = '';
+  searchoptionEquip5Value = '';
+  searchoptionEquip6Value = '';
+  searchoptionEquip7Value = '';
+
+  importdata = [];  
+  importdata_repeat = [];
 
   file:File;
   inputFileUseInUpload;
   arrayBuffer:any;
-  importdata = [];
-  titleArray = ["站別","機台群組","機台","製程碼","鋼種類別","形狀","投入尺寸上限","設備能力最小尺寸","設備能力最大尺寸","設備能力最小長度","設備能力最大長度","最佳能力最小尺寸","最佳能力最大尺寸","最佳能力最小長度","最佳能力最大長度","替代機台順位1","替代機台順位2","替代機台順位3"];
-  importdata_repeat = [];
+  titleArray = ["站別","機台群組","機台","製程碼","鋼種類別","形狀","投入尺寸上限","設備能力最小尺寸","設備能力最大尺寸","設備能力最小長度","設備能力最大長度","最佳能力最小尺寸","最佳能力最大尺寸","最佳能力最小長度","最佳能力最大長度","替代機台順位1","替代機台順位2","替代機台順位3","替代機台順位4","替代機台順位5","替代機台順位6","替代機台順位7"];
+
+  
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -114,11 +127,37 @@ export class PPSI103Component implements AfterViewInit {
     this.getPPSINP02List();
   }
   
-  
+  onInit() {
+    this.SHOP_CODE = "";
+    this.EQUIP_GROUP = "";
+    this.EQUIP_CODE = "";
+    this.PROCESS_CODE = "";
+    this.GRADE_GROUP = "";
+    this.SHAPE_TYPE = "";
+    this.INPUT_DIA_MAX = 0;
+    this.CAPABILITY_DIA_MIN = 0;
+    this.CAPABILITY_DIA_MAX = 0;
+    this.CAPABILITY_LENGTH_MIN = 0;
+    this.CAPABILITY_LENGTH_MAX = 0;
+    this.OPTIMAL_DIA_MIN = 0;
+    this.OPTIMAL_DIA_MAX = 0;
+    this.OPTIMAL_LENGTH_MIN = 0;
+    this.OPTIMAL_LENGTH_MAX = 0;
+    this.OPTION_EQUIP_1 = "";
+    this.OPTION_EQUIP_2 = "";
+    this.OPTION_EQUIP_3 = "";
+    this.OPTION_EQUIP_4 = "";
+    this.OPTION_EQUIP_5 = "";
+    this.OPTION_EQUIP_6 = "";
+    this.OPTION_EQUIP_7 = "";
+    this.importdata = [];  
+    this.importdata_repeat = [];
+  }
+
   PPSINP02List_tmp;
-  editCache2: { [key: string]: { edit: boolean; data: ItemData2 } } = {};
-  PPSINP02List: ItemData2[] = [];
-  displayPPSINP02List: ItemData2[] = [];
+  editCache2: { [key: string]: { edit: boolean; data: ItemData } } = {};
+  PPSINP02List: ItemData[] = [];
+  displayPPSINP02List: ItemData[] = [];
 
   getPPSINP02List() {
     this.loading = true;
@@ -131,25 +170,29 @@ export class PPSI103Component implements AfterViewInit {
       for (let i = 0; i < this.PPSINP02List_tmp.length ; i++) {
         data.push({
           id: `${i}`,
-          tab2ID: this.PPSINP02List_tmp[i].ID,
-          SHOP_CODE_2: this.PPSINP02List_tmp[i].SHOP_CODE,
-          EQUIP_GROUP_2: this.PPSINP02List_tmp[i].EQUIP_GROUP,
-          EQUIP_CODE_2: this.PPSINP02List_tmp[i].EQUIP_CODE,
-          PROCESS_CODE_2: this.PPSINP02List_tmp[i].PROCESS_CODE,
-          GRADE_GROUP_2: this.PPSINP02List_tmp[i].GRADE_GROUP,
-          SHAPE_TYPE_2: this.PPSINP02List_tmp[i].SHAPE_TYPE,
-          INPUT_DIA_MAX_2: this.PPSINP02List_tmp[i].INPUT_DIA_MAX,
-          CAPABILITY_DIA_MIN_2: this.PPSINP02List_tmp[i].CAPABILITY_DIA_MIN,
-          CAPABILITY_DIA_MAX_2: this.PPSINP02List_tmp[i].CAPABILITY_DIA_MAX,
-          CAPABILITY_LENGTH_MIN_2: this.PPSINP02List_tmp[i].CAPABILITY_LENGTH_MIN,
-          CAPABILITY_LENGTH_MAX_2: this.PPSINP02List_tmp[i].CAPABILITY_LENGTH_MAX,
-          OPTIMAL_DIA_MIN_2: this.PPSINP02List_tmp[i].OPTIMAL_DIA_MIN,
-          OPTIMAL_DIA_MAX_2: this.PPSINP02List_tmp[i].OPTIMAL_DIA_MAX,
-          OPTIMAL_LENGTH_MIN_2: this.PPSINP02List_tmp[i].OPTIMAL_LENGTH_MIN,
-          OPTIMAL_LENGTH_MAX_2: this.PPSINP02List_tmp[i].OPTIMAL_LENGTH_MAX,
-          OPTION_EQUIP_1_2: this.PPSINP02List_tmp[i].OPTION_EQUIP_1,
-          OPTION_EQUIP_2_2: this.PPSINP02List_tmp[i].OPTION_EQUIP_2,
-          OPTION_EQUIP_3_2: this.PPSINP02List_tmp[i].OPTION_EQUIP_3,
+          tabID: this.PPSINP02List_tmp[i].ID,
+          SHOP_CODE: this.PPSINP02List_tmp[i].SHOP_CODE,
+          EQUIP_GROUP: this.PPSINP02List_tmp[i].EQUIP_GROUP,
+          EQUIP_CODE: this.PPSINP02List_tmp[i].EQUIP_CODE,
+          PROCESS_CODE: this.PPSINP02List_tmp[i].PROCESS_CODE,
+          GRADE_GROUP: this.PPSINP02List_tmp[i].GRADE_GROUP,
+          SHAPE_TYPE: this.PPSINP02List_tmp[i].SHAPE_TYPE,
+          INPUT_DIA_MAX: this.PPSINP02List_tmp[i].INPUT_DIA_MAX,
+          CAPABILITY_DIA_MIN: this.PPSINP02List_tmp[i].CAPABILITY_DIA_MIN,
+          CAPABILITY_DIA_MAX: this.PPSINP02List_tmp[i].CAPABILITY_DIA_MAX,
+          CAPABILITY_LENGTH_MIN: this.PPSINP02List_tmp[i].CAPABILITY_LENGTH_MIN,
+          CAPABILITY_LENGTH_MAX: this.PPSINP02List_tmp[i].CAPABILITY_LENGTH_MAX,
+          OPTIMAL_DIA_MIN: this.PPSINP02List_tmp[i].OPTIMAL_DIA_MIN,
+          OPTIMAL_DIA_MAX: this.PPSINP02List_tmp[i].OPTIMAL_DIA_MAX,
+          OPTIMAL_LENGTH_MIN: this.PPSINP02List_tmp[i].OPTIMAL_LENGTH_MIN,
+          OPTIMAL_LENGTH_MAX: this.PPSINP02List_tmp[i].OPTIMAL_LENGTH_MAX,
+          OPTION_EQUIP_1: this.PPSINP02List_tmp[i].OPTION_EQUIP_1,
+          OPTION_EQUIP_2: this.PPSINP02List_tmp[i].OPTION_EQUIP_2,
+          OPTION_EQUIP_3: this.PPSINP02List_tmp[i].OPTION_EQUIP_3,
+          OPTION_EQUIP_4: this.PPSINP02List_tmp[i].OPTION_EQUIP_4,
+          OPTION_EQUIP_5: this.PPSINP02List_tmp[i].OPTION_EQUIP_5,
+          OPTION_EQUIP_6: this.PPSINP02List_tmp[i].OPTION_EQUIP_6,
+          OPTION_EQUIP_7: this.PPSINP02List_tmp[i].OPTION_EQUIP_7,
         });
       }
       this.PPSINP02List = data;
@@ -165,43 +208,51 @@ export class PPSI103Component implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.SHOP_CODE_2 === undefined) {
+    if (this.SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.EQUIP_GROUP_2 === undefined) {
-      myObj.message.create("error", "「機台群組」不可為空")
-    } else if (this.EQUIP_CODE_2 === undefined) {
-      myObj.message.create("error", "「機台」不可為空")
-    } else if (this.PROCESS_CODE_2 === undefined) {
-      myObj.message.create("error", "「製程碼」不可為空")
-    } else if (this.GRADE_GROUP_2 === undefined) {
-      myObj.message.create("error", "「鋼種類別」不可為空")
-    } else if (this.SHAPE_TYPE_2 === undefined) {
-      myObj.message.create("error", "「形狀」不可為空")
-    } else if (this.INPUT_DIA_MAX_2 === undefined) {
-      myObj.message.create("error", "「投入尺寸上限」不可為空")
-    } else if (this.CAPABILITY_DIA_MIN_2 === undefined) {
-      myObj.message.create("error", "「設備能力最小尺寸」不可為空")
-    } else if (this.CAPABILITY_DIA_MAX_2 === undefined) {
-      myObj.message.create("error", "「設備能力最大尺寸」不可為空")
-    } else if (this.CAPABILITY_LENGTH_MIN_2 === undefined) {
-      myObj.message.create("error", "「設備能力最小長度」不可為空")
-    } else if (this.CAPABILITY_LENGTH_MAX_2 === undefined) {
-      myObj.message.create("error", "「設備能力最大長度」不可為空")
-    } else if (this.OPTIMAL_DIA_MIN_2 === undefined) {
-      myObj.message.create("error", "「最佳能力最小尺寸」不可為空")
-    } else if (this.OPTIMAL_DIA_MAX_2 === undefined) {
-      myObj.message.create("error", "「最佳能力最大尺寸」不可為空")
-    } else if (this.OPTIMAL_LENGTH_MIN_2 === undefined) {
-      myObj.message.create("error", "「最佳能力最小長度」不可為空")
-    } else if (this.OPTIMAL_LENGTH_MAX_2 === undefined) {
-      myObj.message.create("error", "「最佳能力最大長度」不可為空")
-    } else if (this.OPTION_EQUIP_1_2 === undefined) {
-      myObj.message.create("error", "「替代機台順位1」不可為空")
-    } else if (this.OPTION_EQUIP_2_2 === undefined) {
-      myObj.message.create("error", "「替代機台順位2」不可為空")
-    } else if (this.OPTION_EQUIP_3_2 === undefined) {
-      myObj.message.create("error", "「替代機台順位3」不可為空")
+    } else if (this.EQUIP_GROUP === undefined) {
+      myObj.message.create("error", "「機台群組」不可為空");
+      return;
+    } else if (this.EQUIP_CODE === undefined) {
+      myObj.message.create("error", "「機台」不可為空");
+      return;
+    } else if (this.PROCESS_CODE === undefined) {
+      myObj.message.create("error", "「製程碼」不可為空");
+      return;
+    } else if (this.GRADE_GROUP === undefined) {
+      myObj.message.create("error", "「鋼種類別」不可為空");
+      return;
+    } else if (this.SHAPE_TYPE === undefined) {
+      myObj.message.create("error", "「形狀」不可為空");
+      return;
+    } else if (this.INPUT_DIA_MAX === undefined) {
+      myObj.message.create("error", "「投入尺寸上限」不可為空");
+      return;
+    } else if (this.CAPABILITY_DIA_MIN === undefined) {
+      myObj.message.create("error", "「設備能力最小尺寸」不可為空");
+      return;
+    } else if (this.CAPABILITY_DIA_MAX === undefined) {
+      myObj.message.create("error", "「設備能力最大尺寸」不可為空");
+      return;
+    } else if (this.CAPABILITY_LENGTH_MIN === undefined) {
+      myObj.message.create("error", "「設備能力最小長度」不可為空");
+      return;
+    } else if (this.CAPABILITY_LENGTH_MAX === undefined) {
+      myObj.message.create("error", "「設備能力最大長度」不可為空");
+      return;
+    } else if (this.OPTIMAL_DIA_MIN === undefined) {
+      myObj.message.create("error", "「最佳能力最小尺寸」不可為空");
+      return;
+    } else if (this.OPTIMAL_DIA_MAX === undefined) {
+      myObj.message.create("error", "「最佳能力最大尺寸」不可為空");
+      return;
+    } else if (this.OPTIMAL_LENGTH_MIN === undefined) {
+      myObj.message.create("error", "「最佳能力最小長度」不可為空");
+      return;
+    } else if (this.OPTIMAL_LENGTH_MAX === undefined) {
+      myObj.message.create("error", "「最佳能力最大長度」不可為空");
+      return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
@@ -245,62 +296,52 @@ export class PPSI103Component implements AfterViewInit {
     console.log(this.editCache2[id])
 
     let myObj = this;
-    if (this.editCache2[id].data.SHOP_CODE_2 === undefined || "" === this.editCache2[id].data.SHOP_CODE_2) {
+    if (this.editCache2[id].data.SHOP_CODE === undefined || "" === this.editCache2[id].data.SHOP_CODE) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache2[id].data.EQUIP_GROUP_2 === undefined || "" === this.editCache2[id].data.EQUIP_GROUP_2) {
+    } else if (this.editCache2[id].data.EQUIP_GROUP === undefined || "" === this.editCache2[id].data.EQUIP_GROUP) {
       myObj.message.create("error", "「機台群組」不可為空");
       return;
-    } else if (this.editCache2[id].data.EQUIP_CODE_2 === undefined || "" === this.editCache2[id].data.EQUIP_CODE_2) {
+    } else if (this.editCache2[id].data.EQUIP_CODE === undefined || "" === this.editCache2[id].data.EQUIP_CODE) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache2[id].data.PROCESS_CODE_2 === undefined || "" === this.editCache2[id].data.PROCESS_CODE_2) {
+    } else if (this.editCache2[id].data.PROCESS_CODE === undefined || "" === this.editCache2[id].data.PROCESS_CODE) {
       myObj.message.create("error", "「製程碼」不可為空");
       return;
-    } else if (this.editCache2[id].data.GRADE_GROUP_2 === undefined || "" === this.editCache2[id].data.GRADE_GROUP_2) {
+    } else if (this.editCache2[id].data.GRADE_GROUP === undefined || "" === this.editCache2[id].data.GRADE_GROUP) {
       myObj.message.create("error", "「鋼種類別」不可為空");
       return;
-    } else if (this.editCache2[id].data.SHAPE_TYPE_2 === undefined || "" === this.editCache2[id].data.SHAPE_TYPE_2) {
+    } else if (this.editCache2[id].data.SHAPE_TYPE === undefined || "" === this.editCache2[id].data.SHAPE_TYPE) {
       myObj.message.create("error", "「形狀」不可為空");
       return;
-    } else if (this.editCache2[id].data.INPUT_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.INPUT_DIA_MAX_2.toString()) {
+    } else if (this.editCache2[id].data.INPUT_DIA_MAX === undefined || "" === this.editCache2[id].data.INPUT_DIA_MAX.toString()) {
       myObj.message.create("error", "「投入尺寸上限」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_DIA_MIN_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MIN_2.toString()) {
+    } else if (this.editCache2[id].data.CAPABILITY_DIA_MIN === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MIN.toString()) {
       myObj.message.create("error", "「設備能力最小尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MAX_2.toString()) {
+    } else if (this.editCache2[id].data.CAPABILITY_DIA_MAX === undefined || "" === this.editCache2[id].data.CAPABILITY_DIA_MAX.toString()) {
       myObj.message.create("error", "「設備能力最大尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MIN_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MIN_2.toString()) {
+    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MIN === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MIN.toString()) {
       myObj.message.create("error", "「設備能力最小長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MAX_2 === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MAX_2.toString()) {
+    } else if (this.editCache2[id].data.CAPABILITY_LENGTH_MAX === undefined || "" === this.editCache2[id].data.CAPABILITY_LENGTH_MAX.toString()) {
       myObj.message.create("error", "「設備能力最大長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_DIA_MIN_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MIN_2.toString()) {
+    } else if (this.editCache2[id].data.OPTIMAL_DIA_MIN === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MIN.toString()) {
       myObj.message.create("error", "「最佳能力最小尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_DIA_MAX_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MAX_2.toString()) {
+    } else if (this.editCache2[id].data.OPTIMAL_DIA_MAX === undefined || "" === this.editCache2[id].data.OPTIMAL_DIA_MAX.toString()) {
       myObj.message.create("error", "「最佳能力最大尺寸」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MIN_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MIN_2.toString()) {
+    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MIN === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MIN.toString()) {
       myObj.message.create("error", "「最佳能力最小長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MAX_2 === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MAX_2.toString())  {
+    } else if (this.editCache2[id].data.OPTIMAL_LENGTH_MAX === undefined || "" === this.editCache2[id].data.OPTIMAL_LENGTH_MAX.toString())  {
       myObj.message.create("error", "「上最佳能力最大長度」不可為空");
       return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_1_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_1_2.toString()) {
-      myObj.message.create("error", "「替代機台順位1」不可為空");
-      return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_2_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_2_2.toString()) {
-      myObj.message.create("error", "「替代機台順位2」不可為空");
-      return;
-    } else if (this.editCache2[id].data.OPTION_EQUIP_3_2 === undefined || "" === this.editCache2[id].data.OPTION_EQUIP_3_2.toString()) {
-      myObj.message.create("error", "「替代機台順位3」不可為空");
-      return;
-    } 
-    else {
+    } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
@@ -333,24 +374,28 @@ export class PPSI103Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        SHOP_CODE: this.SHOP_CODE_2,
-        EQUIP_GROUP: this.EQUIP_GROUP_2,
-        EQUIP_CODE: this.EQUIP_CODE_2,
-        PROCESS_CODE: this.PROCESS_CODE_2,
-        GRADE_GROUP: this.GRADE_GROUP_2,
-        SHAPE_TYPE: this.SHAPE_TYPE_2,
-        INPUT_DIA_MAX: this.INPUT_DIA_MAX_2,
-        CAPABILITY_DIA_MIN: this.CAPABILITY_DIA_MIN_2,
-        CAPABILITY_DIA_MAX: this.CAPABILITY_DIA_MAX_2,
-        CAPABILITY_LENGTH_MIN: this.CAPABILITY_LENGTH_MIN_2,
-        CAPABILITY_LENGTH_MAX: this.CAPABILITY_LENGTH_MAX_2,
-        OPTIMAL_DIA_MIN: this.OPTIMAL_DIA_MIN_2,
-        OPTIMAL_DIA_MAX: this.OPTIMAL_DIA_MAX_2,
-        OPTIMAL_LENGTH_MIN: this.OPTIMAL_LENGTH_MIN_2,
-        OPTIMAL_LENGTH_MAX: this.OPTIMAL_LENGTH_MAX_2,
-        OPTION_EQUIP_1: this.OPTION_EQUIP_1_2,
-        OPTION_EQUIP_2: this.OPTION_EQUIP_2_2,
-        OPTION_EQUIP_3: this.OPTION_EQUIP_3_2,
+        SHOP_CODE: this.SHOP_CODE,
+        EQUIP_GROUP: this.EQUIP_GROUP,
+        EQUIP_CODE: this.EQUIP_CODE,
+        PROCESS_CODE: this.PROCESS_CODE,
+        GRADE_GROUP: this.GRADE_GROUP,
+        SHAPE_TYPE: this.SHAPE_TYPE,
+        INPUT_DIA_MAX: this.INPUT_DIA_MAX,
+        CAPABILITY_DIA_MIN: this.CAPABILITY_DIA_MIN,
+        CAPABILITY_DIA_MAX: this.CAPABILITY_DIA_MAX,
+        CAPABILITY_LENGTH_MIN: this.CAPABILITY_LENGTH_MIN,
+        CAPABILITY_LENGTH_MAX: this.CAPABILITY_LENGTH_MAX,
+        OPTIMAL_DIA_MIN: this.OPTIMAL_DIA_MIN,
+        OPTIMAL_DIA_MAX: this.OPTIMAL_DIA_MAX,
+        OPTIMAL_LENGTH_MIN: this.OPTIMAL_LENGTH_MIN,
+        OPTIMAL_LENGTH_MAX: this.OPTIMAL_LENGTH_MAX,
+        OPTION_EQUIP_1: this.OPTION_EQUIP_1,
+        OPTION_EQUIP_2: this.OPTION_EQUIP_2,
+        OPTION_EQUIP_3: this.OPTION_EQUIP_3,
+        OPTION_EQUIP_4: this.OPTION_EQUIP_4,
+        OPTION_EQUIP_5: this.OPTION_EQUIP_5,
+        OPTION_EQUIP_6: this.OPTION_EQUIP_6,
+        OPTION_EQUIP_7: this.OPTION_EQUIP_7,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
@@ -359,24 +404,7 @@ export class PPSI103Component implements AfterViewInit {
 
         console.log(res)
         if(res[0].MSG === "Y") {
-          this.SHOP_CODE_2 = undefined;
-          this.EQUIP_GROUP_2 = undefined;
-          this.EQUIP_CODE_2 = undefined;
-          this.PROCESS_CODE_2 = undefined;
-          this.GRADE_GROUP_2 = undefined;
-          this.SHAPE_TYPE_2 = undefined;
-          this.INPUT_DIA_MAX_2 = undefined;
-          this.CAPABILITY_DIA_MIN_2 = undefined;
-          this.CAPABILITY_DIA_MAX_2 = undefined;
-          this.CAPABILITY_LENGTH_MIN_2 = undefined;
-          this.CAPABILITY_LENGTH_MAX_2 = undefined;
-          this.OPTIMAL_DIA_MIN_2 = undefined;
-          this.OPTIMAL_DIA_MAX_2 = undefined;
-          this.OPTIMAL_LENGTH_MIN_2 = undefined;
-          this.OPTIMAL_LENGTH_MAX_2 = undefined;
-          this.OPTION_EQUIP_1_2 = undefined;
-          this.OPTION_EQUIP_2_2 = undefined;
-          this.OPTION_EQUIP_3_2 = undefined;
+          this.onInit();
           this.getPPSINP02List();
           this.sucessMSG("新增成功", ``);
           this.isVisibleCapability = false;
@@ -399,46 +427,36 @@ export class PPSI103Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache2[_id].data.tab2ID,
-        SHOP_CODE : this.editCache2[_id].data.SHOP_CODE_2,
-        EQUIP_CROUP : this.editCache2[_id].data.EQUIP_GROUP_2,
-        EQUIP_CODE : this.editCache2[_id].data.EQUIP_CODE_2,
-        PROCESS_CODE : this.editCache2[_id].data.PROCESS_CODE_2,
-        GRADE_GROUP : this.editCache2[_id].data.GRADE_GROUP_2,
-        SHAPE_TYPE : this.editCache2[_id].data.SHAPE_TYPE_2,
-        INPUT_DIA_MAX : this.editCache2[_id].data.INPUT_DIA_MAX_2,
-        CAPABILITY_DIA_MIN : this.editCache2[_id].data.CAPABILITY_DIA_MIN_2,
-        CAPABILITY_DIA_MAX : this.editCache2[_id].data.CAPABILITY_DIA_MAX_2,
-        CAPABILITY_LENGTH_MIN : this.editCache2[_id].data.CAPABILITY_LENGTH_MIN_2,
-        CAPABILITY_LENGTH_MAX : this.editCache2[_id].data.CAPABILITY_LENGTH_MAX_2,
-        OPTIMAL_DIA_MIN : this.editCache2[_id].data.OPTIMAL_DIA_MIN_2,
-        OPTIMAL_DIA_MAX : this.editCache2[_id].data.OPTIMAL_DIA_MAX_2,
-        OPTIMAL_LENGTH_MIN : this.editCache2[_id].data.OPTIMAL_LENGTH_MIN_2,
-        OPTIMAL_LENGTH_MAX : this.editCache2[_id].data.OPTIMAL_LENGTH_MAX_2,
-        OPTION_EQUIP_1 : this.editCache2[_id].data.OPTION_EQUIP_1_2,
-        OPTION_EQUIP_2 : this.editCache2[_id].data.OPTION_EQUIP_2_2,
-        OPTION_EQUIP_3 : this.editCache2[_id].data.OPTION_EQUIP_3_2,
+        ID : this.editCache2[_id].data.tabID,
+        SHOP_CODE : this.editCache2[_id].data.SHOP_CODE,
+        EQUIP_GROUP : this.editCache2[_id].data.EQUIP_GROUP,
+        EQUIP_CODE : this.editCache2[_id].data.EQUIP_CODE,
+        PROCESS_CODE : this.editCache2[_id].data.PROCESS_CODE,
+        GRADE_GROUP : this.editCache2[_id].data.GRADE_GROUP,
+        SHAPE_TYPE : this.editCache2[_id].data.SHAPE_TYPE,
+        INPUT_DIA_MAX : this.editCache2[_id].data.INPUT_DIA_MAX,
+        CAPABILITY_DIA_MIN : this.editCache2[_id].data.CAPABILITY_DIA_MIN,
+        CAPABILITY_DIA_MAX : this.editCache2[_id].data.CAPABILITY_DIA_MAX,
+        CAPABILITY_LENGTH_MIN : this.editCache2[_id].data.CAPABILITY_LENGTH_MIN,
+        CAPABILITY_LENGTH_MAX : this.editCache2[_id].data.CAPABILITY_LENGTH_MAX,
+        OPTIMAL_DIA_MIN : this.editCache2[_id].data.OPTIMAL_DIA_MIN,
+        OPTIMAL_DIA_MAX : this.editCache2[_id].data.OPTIMAL_DIA_MAX,
+        OPTIMAL_LENGTH_MIN : this.editCache2[_id].data.OPTIMAL_LENGTH_MIN,
+        OPTIMAL_LENGTH_MAX : this.editCache2[_id].data.OPTIMAL_LENGTH_MAX,
+        OPTION_EQUIP_1 : this.editCache2[_id].data.OPTION_EQUIP_1,
+        OPTION_EQUIP_2 : this.editCache2[_id].data.OPTION_EQUIP_2,
+        OPTION_EQUIP_3 : this.editCache2[_id].data.OPTION_EQUIP_3,
+        OPTION_EQUIP_4 : this.editCache2[_id].data.OPTION_EQUIP_4,
+        OPTION_EQUIP_5 : this.editCache2[_id].data.OPTION_EQUIP_5,
+        OPTION_EQUIP_6 : this.editCache2[_id].data.OPTION_EQUIP_6,
+        OPTION_EQUIP_7 : this.editCache2[_id].data.OPTION_EQUIP_7,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
       console.log(obj)
       myObj.PPSService.updateI102Tab1Save('1', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.SHOP_CODE_2 = undefined;
-          this.EQUIP_GROUP_2 = undefined;
-          this.EQUIP_CODE_2 = undefined;
-          this.PROCESS_CODE_2 = undefined;
-          this.GRADE_GROUP_2 = undefined;
-          this.SHAPE_TYPE_2 = undefined;
-          this.INPUT_DIA_MAX_2 = undefined;
-          this.CAPABILITY_DIA_MIN_2 = undefined;
-          this.CAPABILITY_DIA_MAX_2 = undefined;
-          this.CAPABILITY_LENGTH_MIN_2 = undefined;
-          this.CAPABILITY_LENGTH_MAX_2 = undefined;
-          this.OPTION_EQUIP_1_2 = undefined;
-          this.OPTION_EQUIP_2_2 = undefined;
-          this.OPTION_EQUIP_3_2 = undefined;
-
+          this.onInit();
           this.sucessMSG("修改成功", ``);
 
           const index = this.PPSINP02List.findIndex(item => item.id === _id);
@@ -460,24 +478,9 @@ export class PPSI103Component implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache2[_id].data.tab2ID;
+      let _ID = this.editCache2[_id].data.tabID;
       myObj.PPSService.delI102Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
-          this.SHOP_CODE_2 = undefined;
-          this.EQUIP_GROUP_2 = undefined;
-          this.EQUIP_CODE_2 = undefined;
-          this.PROCESS_CODE_2 = undefined;
-          this.GRADE_GROUP_2 = undefined;
-          this.SHAPE_TYPE_2 = undefined;
-          this.INPUT_DIA_MAX_2 = undefined;
-          this.CAPABILITY_DIA_MIN_2 = undefined;
-          this.CAPABILITY_DIA_MAX_2 = undefined;
-          this.CAPABILITY_LENGTH_MIN_2 = undefined;
-          this.CAPABILITY_LENGTH_MAX_2 = undefined;
-          this.OPTION_EQUIP_1_2 = undefined;
-          this.OPTION_EQUIP_2_2 = undefined;
-          this.OPTION_EQUIP_3_2 = undefined;
-
           this.sucessMSG("刪除成功", ``);
           this.getPPSINP02List();
         }
@@ -532,169 +535,205 @@ export class PPSI103Component implements AfterViewInit {
   }
 
   // 資料過濾---設備能力 --> 站別
-  searchByShopCode2() : void{
-    this.ppsInp02ListFilter("SHOP_CODE_2", this.searchShopCode2Value);
+  searchByShopCode() : void{
+    this.ppsInp02ListFilter("SHOP_CODE", this.searchShopCodeValue);
   } 
-  resetByShopCode2() : void{
-    this.searchShopCode2Value = '';
-    this.ppsInp02ListFilter("SHOP_CODE_2", this.searchShopCode2Value);
+  resetByShopCode() : void{
+    this.searchShopCodeValue = '';
+    this.ppsInp02ListFilter("SHOP_CODE", this.searchShopCodeValue);
   }
 
   // 資料過濾---設備能力 --> 機台群組
-  searchByEquipGroup2() : void{
-    this.ppsInp02ListFilter("EQUIP_GROUP_2", this.searchEquipGroup2Value);
+  searchByEquipGroup() : void{
+    this.ppsInp02ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
   } 
-  resetByEquipGroup2() : void{
-    this.searchEquipGroup2Value = '';
-    this.ppsInp02ListFilter("EQUIP_GROUP_2", this.searchEquipGroup2Value);
+  resetByEquipGroup() : void{
+    this.searchEquipGroupValue = '';
+    this.ppsInp02ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
   }
 
   // 資料過濾---設備能力 --> 機台
-  searchByEquipCode2() : void{
-    this.ppsInp02ListFilter("EQUIP_CODE_2", this.searchEquipCode2Value);
+  searchByEquipCode() : void{
+    this.ppsInp02ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
   } 
-  resetByEquipCode2() : void{
-    this.searchEquipCode2Value = '';
-    this.ppsInp02ListFilter("EQUIP_CODE_2", this.searchEquipCode2Value);
+  resetByEquipCode() : void{
+    this.searchEquipCodeValue = '';
+    this.ppsInp02ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
   }
   
   // 資料過濾---設備能力 --> 製程碼
-  searchByProcessCode2() : void{
-    this.ppsInp02ListFilter("PROCESS_CODE_2", this.searchProcessCode2Value);
+  searchByProcessCode() : void{
+    this.ppsInp02ListFilter("PROCESS_CODE", this.searchProcessCodeValue);
   } 
-  resetByProcessCode2() : void{
-    this.searchProcessCode2Value = '';
-    this.ppsInp02ListFilter("PROCESS_CODE_2", this.searchProcessCode2Value);
+  resetByProcessCode() : void{
+    this.searchProcessCodeValue = '';
+    this.ppsInp02ListFilter("PROCESS_CODE", this.searchProcessCodeValue);
   }
 
   // 資料過濾---設備能力 --> 鋼種類別
-  searchByGradeGroup2() : void{
-    this.ppsInp02ListFilter("GRADE_GROUP_2", this.searchGradeGroup2Value);
+  searchByGradeGroup() : void{
+    this.ppsInp02ListFilter("GRADE_GROUP", this.searchGradeGroupValue);
   } 
-  resetByGradeGroup2() : void{
-    this.searchGradeGroup2Value = '';
-    this.ppsInp02ListFilter("GRADE_GROUP_2", this.searchGradeGroup2Value);
+  resetByGradeGroup() : void{
+    this.searchGradeGroupValue = '';
+    this.ppsInp02ListFilter("GRADE_GROUP", this.searchGradeGroupValue);
   }
 
   // 資料過濾---設備能力 --> 形狀
-  searchByShapeType2() : void{
-    this.ppsInp02ListFilter("SHAPE_TYPE_2", this.searchShapeType2Value);
+  searchByShapeType() : void{
+    this.ppsInp02ListFilter("SHAPE_TYPE", this.searchShapeTypeValue);
   } 
-  resetByShapeType2() : void{
-    this.searchShapeType2Value = '';
-    this.ppsInp02ListFilter("SHAPE_TYPE_2", this.searchShapeType2Value);
+  resetByShapeType() : void{
+    this.searchShapeTypeValue = '';
+    this.ppsInp02ListFilter("SHAPE_TYPE", this.searchShapeTypeValue);
   }
   
   // 資料過濾---設備能力 --> 投入尺寸上限
-  searchByInputDiaMax2() : void{
-    this.ppsInp02ListFilter("INPUT_DIA_MAX_2", this.searchInputDiaMax2Value);
+  searchByInputDiaMax() : void{
+    this.ppsInp02ListFilter("INPUT_DIA_MAX", this.searchInputDiaMaxValue);
   } 
-  resetByInputDiaMax2() : void{
-    this.searchInputDiaMax2Value = '';
-    this.ppsInp02ListFilter("INPUT_DIA_MAX_2", this.searchInputDiaMax2Value);
+  resetByInputDiaMax() : void{
+    this.searchInputDiaMaxValue = '';
+    this.ppsInp02ListFilter("INPUT_DIA_MAX", this.searchInputDiaMaxValue);
   }
   
   // 資料過濾---設備能力 --> 設備能力最小尺寸
-  searchByCapabilityDiaMin2() : void{
-    this.ppsInp02ListFilter("CAPABILITY_DIA_MIN_2", this.searchCapabilityDiaMin2Value);
+  searchByCapabilityDiaMin() : void{
+    this.ppsInp02ListFilter("CAPABILITY_DIA_MIN", this.searchCapabilityDiaMinValue);
   } 
-  resetByCapabilityDiaMin2() : void{
-    this.searchCapabilityDiaMin2Value = '';
-    this.ppsInp02ListFilter("CAPABILITY_DIA_MIN_2", this.searchCapabilityDiaMin2Value);
+  resetByCapabilityDiaMin() : void{
+    this.searchCapabilityDiaMinValue = '';
+    this.ppsInp02ListFilter("CAPABILITY_DIA_MIN", this.searchCapabilityDiaMinValue);
   }
   
   // 資料過濾---設備能力 --> 設備能力最大尺寸
-  searchByCapabilityDiaMax2() : void{
-    this.ppsInp02ListFilter("CAPABILITY_DIA_MAX_2", this.searchCapabilityDiaMax2Value);
+  searchByCapabilityDiaMax() : void{
+    this.ppsInp02ListFilter("CAPABILITY_DIA_MAX", this.searchCapabilityDiaMaxValue);
   } 
-  resetByCapabilityDiaMax2() : void{
-    this.searchCapabilityDiaMax2Value = '';
-    this.ppsInp02ListFilter("CAPABILITY_DIA_MAX_2", this.searchCapabilityDiaMax2Value);
+  resetByCapabilityDiaMax() : void{
+    this.searchCapabilityDiaMaxValue = '';
+    this.ppsInp02ListFilter("CAPABILITY_DIA_MAX", this.searchCapabilityDiaMaxValue);
   }
 
   // 資料過濾---設備能力 --> 設備能力最小長度
-  searchByCapabilityLengthMin2() : void{
-    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MIN_2", this.searchCapabilityLengthMin2Value);
+  searchByCapabilityLengthMin() : void{
+    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MIN", this.searchCapabilityLengthMinValue);
   } 
-  resetByCapabilityLengthMin2() : void{
-    this.searchCapabilityLengthMin2Value = '';
-    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MIN_2", this.searchCapabilityLengthMin2Value);
+  resetByCapabilityLengthMin() : void{
+    this.searchCapabilityLengthMinValue = '';
+    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MIN", this.searchCapabilityLengthMinValue);
   }
 
   // 資料過濾---設備能力 --> 設備能力最大長度
-  searchByCapabilityLengthMax2() : void{
-    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MAX_2", this.searchCapabilityLengthMax2Value);
+  searchByCapabilityLengthMax() : void{
+    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MAX", this.searchCapabilityLengthMaxValue);
   } 
-  resetByCapabilityLengthMax2() : void{
-    this.searchCapabilityLengthMax2Value = '';
-    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MAX_2", this.searchCapabilityLengthMax2Value);
+  resetByCapabilityLengthMax() : void{
+    this.searchCapabilityLengthMaxValue = '';
+    this.ppsInp02ListFilter("CAPABILITY_LENGTH_MAX", this.searchCapabilityLengthMaxValue);
   }
 
   // 資料過濾---設備能力 --> 最佳能力最小尺寸
-   searchByOptimalDiaMin2() : void{
-    this.ppsInp02ListFilter("OPTIMAL_DIA_MIN_2", this.searchOptimalDiaMin2Value);
+   searchByOptimalDiaMin() : void{
+    this.ppsInp02ListFilter("OPTIMAL_DIA_MIN", this.searchOptimalDiaMinValue);
   } 
-  resetByOptimalDiaMin2() : void{
-    this.searchOptimalDiaMin2Value = '';
-    this.ppsInp02ListFilter("OPTIMAL_DIA_MIN_2", this.searchOptimalDiaMin2Value);
+  resetByOptimalDiaMin() : void{
+    this.searchOptimalDiaMinValue = '';
+    this.ppsInp02ListFilter("OPTIMAL_DIA_MIN", this.searchOptimalDiaMinValue);
   }
 
   // 資料過濾---設備能力 --> 最佳能力最大尺寸
-   searchByOptimalDiaMax2() : void{
-    this.ppsInp02ListFilter("OPTIMAL_DIA_MAX_2", this.searchOptimalDiaMax2Value);
+   searchByOptimalDiaMax() : void{
+    this.ppsInp02ListFilter("OPTIMAL_DIA_MAX", this.searchOptimalDiaMaxValue);
   } 
-  resetByOptimalDiaMax2() : void{
-    this.searchOptimalDiaMax2Value = '';
-    this.ppsInp02ListFilter("OPTIMAL_DIA_MAX_2", this.searchOptimalDiaMax2Value);
+  resetByOptimalDiaMax() : void{
+    this.searchOptimalDiaMaxValue = '';
+    this.ppsInp02ListFilter("OPTIMAL_DIA_MAX", this.searchOptimalDiaMaxValue);
   }
 
   // 資料過濾---設備能力 --> 最佳能力最小長度
-  searchByOptimalLengthMin2() : void{
-    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MIN_2", this.searchOptimalLengthMin2Value);
+  searchByOptimalLengthMin() : void{
+    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MIN", this.searchOptimalLengthMinValue);
   } 
-  resetByOptimalLengthMin2() : void{
-    this.searchOptimalLengthMin2Value = '';
-    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MIN_2", this.searchOptimalLengthMin2Value);
+  resetByOptimalLengthMin() : void{
+    this.searchOptimalLengthMinValue = '';
+    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MIN", this.searchOptimalLengthMinValue);
   }
 
   // 資料過濾---設備能力 --> 最佳能力最大長度
-  searchByOptimalLengthMax2() : void{
-    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MAX_2", this.searchOptimalLengthMax2Value);
+  searchByOptimalLengthMax() : void{
+    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MAX", this.searchOptimalLengthMaxValue);
   } 
-  resetByOptimalLengthMax2() : void{
-    this.searchOptimalLengthMax2Value = '';
-    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MAX_2", this.searchOptimalLengthMax2Value);
+  resetByOptimalLengthMax() : void{
+    this.searchOptimalLengthMaxValue = '';
+    this.ppsInp02ListFilter("OPTIMAL_LENGTH_MAX", this.searchOptimalLengthMaxValue);
   }
 
   // 資料過濾---設備能力 --> 替代機台順位1
-  searchByoptionEquip1_2() : void{
-    this.ppsInp02ListFilter("OPTION_EQUIP_1_2", this.searchoptionEquip1_2Value);
+  searchByoptionEquip1() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_1", this.searchoptionEquip1Value);
   } 
-  resetByoptionEquip1_2() : void{
-    this.searchoptionEquip1_2Value = '';
-    this.ppsInp02ListFilter("OPTION_EQUIP_1_2", this.searchoptionEquip1_2Value);
+  resetByoptionEquip1() : void{
+    this.searchoptionEquip1Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_1", this.searchoptionEquip1Value);
   }
 
   // 資料過濾---設備能力 --> 替代機台順位2
-  searchByoptionEquip2_2() : void{
-    this.ppsInp02ListFilter("OPTION_EQUIP_2_2", this.searchoptionEquip2_2Value);
+  searchByoptionEquip2() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_2", this.searchoptionEquip2Value);
   } 
-  resetByoptionEquip2_2() : void{
-    this.searchoptionEquip2_2Value = '';
-    this.ppsInp02ListFilter("OPTION_EQUIP_2_2", this.searchoptionEquip2_2Value);
+  resetByoptionEquip2() : void{
+    this.searchoptionEquip2Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_2", this.searchoptionEquip2Value);
   }
 
   // 資料過濾---設備能力 --> 替代機台順位3
-  searchByoptionEquip3_2() : void{
-    this.ppsInp02ListFilter("OPTION_EQUIP_3_2", this.searchoptionEquip3_2Value);
+  searchByoptionEquip3() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_3", this.searchoptionEquip3Value);
   } 
-  resetByoptionEquip3_2() : void{
-    this.searchoptionEquip3_2Value = '';
-    this.ppsInp02ListFilter("OPTION_EQUIP_3_2", this.searchoptionEquip3_2Value);
+  resetByoptionEquip3() : void{
+    this.searchoptionEquip3Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_3", this.searchoptionEquip3Value);
   }
 
-   // excel檔名
-   incomingfile(event) {
+  // 資料過濾---設備能力 --> 替代機台順位4
+  searchByoptionEquip4() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_4", this.searchoptionEquip4Value);
+  } 
+  resetByoptionEquip4() : void{
+    this.searchoptionEquip4Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_3", this.searchoptionEquip4Value);
+  }
+  
+  // 資料過濾---設備能力 --> 替代機台順位5
+  searchByoptionEquip5() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_5", this.searchoptionEquip5Value);
+  } 
+  resetByoptionEquip5() : void{
+    this.searchoptionEquip5Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_5", this.searchoptionEquip5Value);
+  }
+
+  // 資料過濾---設備能力 --> 替代機台順位6
+  searchByoptionEquip6() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_6", this.searchoptionEquip6Value);
+  } 
+  resetByoptionEquip6() : void{
+    this.searchoptionEquip6Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_6", this.searchoptionEquip6Value);
+  }
+  
+  // 資料過濾---設備能力 --> 替代機台順位7
+  searchByoptionEquip7() : void{
+    this.ppsInp02ListFilter("OPTION_EQUIP_7", this.searchoptionEquip7Value);
+  } 
+  resetByoptionEquip7() : void{
+    this.searchoptionEquip3Value = '';
+    this.ppsInp02ListFilter("OPTION_EQUIP_7", this.searchoptionEquip7Value);
+  }
+  
+  // excel檔名
+  incomingfile(event) {
     this.file = event.target.files[0]; 
     console.log("incomingfile e : " + this.file);
     let lastname = this.file.name.split('.').pop();
@@ -763,7 +802,11 @@ export class PPSI103Component implements AfterViewInit {
         OPTIMAL_LENGTH_MAX: _data[i]['最佳能力最大長度'],
         OPTION_EQUIP_1: _data[i]['替代機台順位1'] === undefined ? null : _data[i]['替代機台順位1'],
         OPTION_EQUIP_2: _data[i]['替代機台順位2'] === undefined ? null : _data[i]['替代機台順位2'],
-        OPTION_EQUIP_3: _data[i]['替代機台順位3'] === undefined ? null : _data[i]['替代機台順位3']
+        OPTION_EQUIP_3: _data[i]['替代機台順位3'] === undefined ? null : _data[i]['替代機台順位3'],
+        OPTION_EQUIP_4: _data[i]['替代機台順位4'] === undefined ? null : _data[i]['替代機台順位4'],
+        OPTION_EQUIP_5: _data[i]['替代機台順位5'] === undefined ? null : _data[i]['替代機台順位5'],
+        OPTION_EQUIP_6: _data[i]['替代機台順位6'] === undefined ? null : _data[i]['替代機台順位6'],
+        OPTION_EQUIP_7: _data[i]['替代機台順位7'] === undefined ? null : _data[i]['替代機台順位7']
       })
     }
     
@@ -807,24 +850,28 @@ export class PPSI103Component implements AfterViewInit {
     let arr = [];
     for(let i=0 ; i < this.displayPPSINP02List.length ; i++){
       var ppsInp02 = {
-        SHOP_CODE : this.displayPPSINP02List[i].SHOP_CODE_2,
-        EQUIP_GROUP: this.displayPPSINP02List[i].EQUIP_GROUP_2,
-        EQUIP_CODE : this.displayPPSINP02List[i].EQUIP_CODE_2,
-        PROCESS_CODE : this.displayPPSINP02List[i].PROCESS_CODE_2,
-        GRADE_GROUP : this.displayPPSINP02List[i].GRADE_GROUP_2,
-        SHAPE_TYPE : this.displayPPSINP02List[i].SHAPE_TYPE_2,
-        INPUT_DIA_MAX : this.displayPPSINP02List[i].INPUT_DIA_MAX_2,
-        CAPABILITY_DIA_MIN: this.displayPPSINP02List[i].CAPABILITY_DIA_MIN_2,
-        CAPABILITY_DIA_MAX : this.displayPPSINP02List[i].CAPABILITY_DIA_MAX_2,
-        CAPABILITY_LENGTH_MIN : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MIN_2,
-        CAPABILITY_LENGTH_MAX : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MAX_2,
-        OPTIMAL_DIA_MIN : this.displayPPSINP02List[i].OPTIMAL_DIA_MIN_2,
-        OPTIMAL_DIA_MAX : this.displayPPSINP02List[i].OPTIMAL_DIA_MAX_2,
-        OPTIMAL_LENGTH_MIN : this.displayPPSINP02List[i].OPTIMAL_LENGTH_MIN_2,
-        OPTIMAL_LENGTH_MAX: this.displayPPSINP02List[i].OPTIMAL_LENGTH_MAX_2,
-        OPTION_EQUIP_1 : this.displayPPSINP02List[i].OPTION_EQUIP_1_2,
-        OPTION_EQUIP_2 : this.displayPPSINP02List[i].OPTION_EQUIP_2_2,
-        OPTION_EQUIP_3 : this.displayPPSINP02List[i].OPTION_EQUIP_3_2
+        SHOP_CODE : this.displayPPSINP02List[i].SHOP_CODE,
+        EQUIP_GROUP: this.displayPPSINP02List[i].EQUIP_GROUP,
+        EQUIP_CODE : this.displayPPSINP02List[i].EQUIP_CODE,
+        PROCESS_CODE : this.displayPPSINP02List[i].PROCESS_CODE,
+        GRADE_GROUP : this.displayPPSINP02List[i].GRADE_GROUP,
+        SHAPE_TYPE : this.displayPPSINP02List[i].SHAPE_TYPE,
+        INPUT_DIA_MAX : this.displayPPSINP02List[i].INPUT_DIA_MAX,
+        CAPABILITY_DIA_MIN: this.displayPPSINP02List[i].CAPABILITY_DIA_MIN,
+        CAPABILITY_DIA_MAX : this.displayPPSINP02List[i].CAPABILITY_DIA_MAX,
+        CAPABILITY_LENGTH_MIN : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MIN,
+        CAPABILITY_LENGTH_MAX : this.displayPPSINP02List[i].CAPABILITY_LENGTH_MAX,
+        OPTIMAL_DIA_MIN : this.displayPPSINP02List[i].OPTIMAL_DIA_MIN,
+        OPTIMAL_DIA_MAX : this.displayPPSINP02List[i].OPTIMAL_DIA_MAX,
+        OPTIMAL_LENGTH_MIN : this.displayPPSINP02List[i].OPTIMAL_LENGTH_MIN,
+        OPTIMAL_LENGTH_MAX: this.displayPPSINP02List[i].OPTIMAL_LENGTH_MAX,
+        OPTION_EQUIP_1 : this.displayPPSINP02List[i].OPTION_EQUIP_1,
+        OPTION_EQUIP_2 : this.displayPPSINP02List[i].OPTION_EQUIP_2,
+        OPTION_EQUIP_3 : this.displayPPSINP02List[i].OPTION_EQUIP_3,
+        OPTION_EQUIP_4 : this.displayPPSINP02List[i].OPTION_EQUIP_4,
+        OPTION_EQUIP_5 : this.displayPPSINP02List[i].OPTION_EQUIP_5,
+        OPTION_EQUIP_6 : this.displayPPSINP02List[i].OPTION_EQUIP_6,
+        OPTION_EQUIP_7 : this.displayPPSINP02List[i].OPTION_EQUIP_7
       }
       arr.push(ppsInp02);
     }
