@@ -8,39 +8,35 @@ import * as moment from 'moment';
   selector: 'app-PPSR322-child4',
   templateUrl: './PPSR322-child4.component.html',
   styleUrls: ['./PPSR322-child4.component.css'],
-  providers:[NzMessageService]
+  providers: [NzMessageService]
 })
-export class PPSR322Child4Component implements OnInit,OnDestroy {
+export class PPSR322Child4Component implements OnInit, OnDestroy {
 
   listOfData: ItemData[] = [];
-  otherInfo = {
-    instructions:""
-  };
+  otherInfo = {} as OtherInfo;
+  searchData = {} as SearchData;
 
   constructor(
-    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
+    private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private PPSService: PPSService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
-  ngOnInit(){
+  ngOnInit() {
 
-    this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
-      let postData = {
-        verList:{fcpVer:"",shiftVer:""},
-        tabType:Number
-      };
-      postData.verList.fcpVer = data.data.fcpVer
-      // postData.verList.fcpVer = "F20230825223499" //測試代碼
-      postData.verList.shiftVer = data.data.shiftVer
-      // postData.verList.shiftVer = "E20230825006" //測試代碼
-      this.getR322Data(postData);
-      this.getR322OtherInfo(postData);
+    this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
+
+      if (data.data) {
+        this.searchData.verList = data.data;
+      }
+      this.getR322Data(this.searchData);
+      this.getR322OtherInfo(this.searchData);
+
     })
 
-    let postData = {};
-    this.getR322Data(postData);
-    this.getR322OtherInfo(postData);
+    this.searchData = {} as SearchData;
+    this.getR322Data(this.searchData);
+    this.getR322OtherInfo(this.searchData);
 
   }
 
@@ -48,56 +44,45 @@ export class PPSR322Child4Component implements OnInit,OnDestroy {
     this.ppsr322EvnetBusComponent.unsubscribe();
   }
 
-  getR322OtherInfo(postData){
+  getR322OtherInfo(postData) {
 
     postData['tabType'] = 4
-    this.PPSService.getR322OtherInfo(postData).subscribe(res =>{
+    this.PPSService.getR322OtherInfo(postData).subscribe(res => {
       let result: any = res;
-      this.otherInfo.instructions = result.instructions;
+      if (result) {
+        this.otherInfo = result as OtherInfo;
+      } else {
+        this.otherInfo = {} as OtherInfo;
+      }
     });
 
   }
 
-  getR322Data(postData){
+  getR322Data(postData) {
 
     postData['tabType'] = 4
     this.PPSService.getR322Data(postData).subscribe({
       next: (res) => {
         let result: any = res;
 
-        if(result[0]){
+        if (result[0]) {
 
-          const data = [];
-          for (let i = 0; i < result.length ; i++) {
-            data.push({
-              schShopCode: result[i].schShopCode,
-              pstMachine: result[i].pstMachine,
-              pst: result[i].pst,
-              pstStr: result[i].pstStr,
-              gradeGroup: result[i].gradeGroup,
-              aWeight: result[i].aWeight,
-              bWeight: result[i].bWeight,
-              rowspanSize: result[i].rowspanSize
-            });
-          }
-          this.listOfData = data;
-
+          this.listOfData = result.map((itemData) => itemData as ItemData) as ItemData[]
           this.listOfData.map(element => {
-            element.pstStr =  moment(element.pst).format("YYYY-MM-DD")
+            element.pstStr = moment(element.pst).format("YYYY-MM-DD")
           });
 
-        }else{
-          const data = [];
-          this.listOfData = data;
+        } else {
+          this.listOfData = [];
         }
 
       },
       error: (e) => {
         this.message.error('網絡請求失敗');
       },
-      complete: () => {}
+      complete: () => { }
     });
-    
+
   }
 
 }
@@ -110,5 +95,17 @@ interface ItemData {
   gradeGroup: string;
   aWeight: number;
   bWeight: number;
-  rowspanSize:number;
+  rowspanSize: number;
+}
+
+interface OtherInfo {
+  instructions: string;
+}
+
+interface SearchData {
+  tabType: Number;
+  verList: {
+    fcpVer: String,
+    shiftVer: String
+  };
 }
