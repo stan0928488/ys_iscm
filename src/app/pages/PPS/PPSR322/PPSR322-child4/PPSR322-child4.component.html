@@ -1,51 +1,48 @@
-<app-PPSR322></app-PPSR322>
-<nz-content style="margin:0 16px;">
-    <p>說明欄位：{{otherInfo.instructions}}</p>
-    <nz-table nzBordered nzSize="small" [nzFrontPagination]="'false'" [nzShowPagination]="'false'"
-        [nzScroll]="{y: '650px' }" #colSpanTable [nzData]="listOfData">
-        <thead>
-            <tr>
-                <th>站別</th>
-                <th>機台</th>
-                <th>當月訂單生產結束時間</th>
-                <th>鋼種族群</th>
-                <th>總退火量</th>
-                <th>次月交期退火量</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let data of colSpanTable.data; index as i">
-                
-                <ng-container *ngIf=" data.pstMachine.indexOf('合計') != -1">
-                    <td [colSpan]="4" style="background-color: #00DB00;">{{ data.pstMachine }}</td>
-                </ng-container>
-                <ng-container *ngIf=" data.pstMachine.indexOf('合計') == -1">
-                    <td>{{ data.schShopCode }}</td>
-                    <td>{{ data.pstMachine }}</td>
-                </ng-container>
-                
-                <ng-container [ngSwitch]="data.rowspanSize">
-                    <ng-container *ngSwitchCase="1">
-                    </ng-container>
-                    <ng-container *ngSwitchCase="999">
-                        <td>{{data.pstStr}}</td>
-                    </ng-container>
-                    <ng-container *ngSwitchDefault>
-                        <td *ngIf="data.pstMachine.indexOf('合計') == -1" [rowSpan]="data.rowspanSize">{{data.pstStr}}</td>
-                    </ng-container>
-                </ng-container>
+<p>說明欄位：{{otherInfo.instructions}}</p>
+<nz-table nzBordered nzSize="small" [nzFrontPagination]="'false'" [nzShowPagination]="'false'"
+    [nzScroll]="{y: '650px' }" #colSpanTable [nzData]="listOfData">
+    <thead>
+        <tr>
+            <th>站別</th>
+            <th>機台</th>
+            <th>當月訂單生產結束時間</th>
+            <th>鋼種族群</th>
+            <th>總退火量</th>
+            <th>次月交期退火量</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of colSpanTable.data; index as i">
 
-                <ng-container *ngIf=" data.pstMachine.indexOf('合計') != -1">
-                    <td style="background-color: #00DB00;">{{ data.aWeight }}</td>
-                    <td style="background-color: #00DB00;">{{ data.bWeight }}</td>
+            <ng-container *ngIf=" data.pstMachine.indexOf('合計') != -1">
+                <td [colSpan]="4" style="background-color: #00DB00;">{{ data.pstMachine }}</td>
+            </ng-container>
+            <ng-container *ngIf=" data.pstMachine.indexOf('合計') == -1">
+                <td>{{ data.schShopCode }}</td>
+                <td>{{ data.pstMachine }}</td>
+            </ng-container>
+
+            <ng-container [ngSwitch]="data.rowspanSize">
+                <ng-container *ngSwitchCase="1">
                 </ng-container>
-                <ng-container *ngIf=" data.pstMachine.indexOf('合計') == -1">
-                    <td>{{ data.gradeGroup }}</td>
-                    <td>{{ data.aWeight }}</td>
-                    <td>{{ data.bWeight }}</td>
+                <ng-container *ngSwitchCase="999">
+                    <td>{{data.pstStr}}</td>
                 </ng-container>
-                
-            </tr>
-        </tbody>
-    </nz-table>
-</nz-content>
+                <ng-container *ngSwitchDefault>
+                    <td *ngIf="data.pstMachine.indexOf('合計') == -1" [rowSpan]="data.rowspanSize">{{data.pstStr}}</td>
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf=" data.pstMachine.indexOf('合計') != -1">
+                <td style="background-color: #00DB00;">{{ data.aWeight }}</td>
+                <td style="background-color: #00DB00;">{{ data.bWeight }}</td>
+            </ng-container>
+            <ng-container *ngIf=" data.pstMachine.indexOf('合計') == -1">
+                <td>{{ data.gradeGroup }}</td>
+                <td>{{ data.aWeight }}</td>
+                <td>{{ data.bWeight }}</td>
+            </ng-container>
+
+        </tr>
+    </tbody>
+</nz-table>
