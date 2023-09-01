@@ -281,13 +281,16 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
       { path: 'R321', component: PPSR321Component },
-      { path: 'R322', component: PPSR322Child1Component },
-      { path: 'R322_1', component: PPSR322Child1Component },
-      { path: 'R322_2', component: PPSR322Child2Component },
-      { path: 'R322_3', component: PPSR322Child3Component },
-      { path: 'R322_4', component: PPSR322Child4Component },
-      { path: 'R322_5', component: PPSR322Child5Component },
-      { path: 'R322_6', component: PPSR322Child6Component },
+      { path: 'R322', component: PPSR322Component ,
+      children: [
+        { path: '', redirectTo: 'R322_1' },
+        { path: 'R322_1', component: PPSR322Child1Component },
+        { path: 'R322_2', component: PPSR322Child2Component },
+        { path: 'R322_3', component: PPSR322Child3Component },
+        { path: 'R322_4', component: PPSR322Child4Component },
+        { path: 'R322_5', component: PPSR322Child5Component },
+        { path: 'R322_6', component: PPSR322Child6Component },
+      ]},
 
     ],
     canActivate: [AuthGuard],
