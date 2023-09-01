@@ -1,19 +1,16 @@
-<app-PPSR322></app-PPSR322>
-<nz-content style="margin:0 16px;">
-    <nz-table nzSize="small" [nzScroll]="{y: '650px' }">
-        <thead>
-            <tr>
-                <th>分類</th>
-                <th>目標量(MT)</th>
-                <th>預計入庫量(MT)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let data of listOfData">
-                <td>{{ data.kindType }}</td>
-                <td>{{ data.goalWeight }}</td>
-                <td>{{ data.weight }}</td>
-            </tr>
-        </tbody>
-    </nz-table>
-</nz-content>
+<nz-table nzSize="small" [nzScroll]="{y: '650px' }">
+    <thead>
+        <tr>
+            <th>分類</th>
+            <th>目標量(MT)</th>
+            <th>預計入庫量(MT)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of listOfData">
+            <td>{{ data.kindType }}</td>
+            <td>{{ data.goalWeight }}</td>
+            <td>{{ data.weight }}</td>
+        </tr>
+    </tbody>
+</nz-table>

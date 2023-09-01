@@ -8,39 +8,35 @@ import * as moment from 'moment';
   selector: 'app-PPSR322-child3',
   templateUrl: './PPSR322-child3.component.html',
   styleUrls: ['./PPSR322-child3.component.css'],
-  providers:[NzMessageService]
+  providers: [NzMessageService]
 })
-export class PPSR322Child3Component implements OnInit,OnDestroy {
+export class PPSR322Child3Component implements OnInit, OnDestroy {
 
   listOfData: ItemData[] = [];
-  otherInfo = {
-    instructions:""
-  };
+  otherInfo = {} as OtherInfo;
+  searchData = {} as SearchData;
 
   constructor(
-    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
+    private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private PPSService: PPSService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
-  ngOnInit(){
+  ngOnInit() {
 
-    this.ppsr322EvnetBusComponent.on("ppsr322search",(data:any) => {
-      
-      let postData = {
-        verList:{fcpVer:String,shiftVer:String},
-        tabType:Number
-      };
-      postData.verList.fcpVer = data.data.fcpVer
-      postData.verList.shiftVer = data.data.shiftVer
-      this.getR322Data(postData);
-      this.getR322OtherInfo(postData);
-      
+    this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
+
+      if (data.data) {
+        this.searchData.verList = data.data;
+      }
+      this.getR322Data(this.searchData);
+      this.getR322OtherInfo(this.searchData);
+
     })
 
-    let postData = {};
-    this.getR322Data(postData);
-    this.getR322OtherInfo(postData);
+    this.searchData = {} as SearchData;
+    this.getR322Data(this.searchData);
+    this.getR322OtherInfo(this.searchData);
 
   }
 
@@ -50,57 +46,46 @@ export class PPSR322Child3Component implements OnInit,OnDestroy {
 
   }
 
-  getR322OtherInfo(postData){
+  getR322OtherInfo(postData) {
 
     postData['tabType'] = 3
-    this.PPSService.getR322OtherInfo(postData).subscribe(res =>{
+    this.PPSService.getR322OtherInfo(postData).subscribe(res => {
       let result: any = res;
-      this.otherInfo.instructions = result.instructions;
+      if (result) {
+        this.otherInfo = result as OtherInfo;
+      } else {
+        this.otherInfo = {} as OtherInfo;
+      }
     });
 
   }
 
-  getR322Data(postData){
+  getR322Data(postData) {
 
     postData['tabType'] = 3
     this.PPSService.getR322Data(postData).subscribe({
       next: (res) => {
         let result: any = res;
 
-        if(result[0]){
-
-          const data = [];
-          for (let i = 0; i < result.length ; i++) {
-            data.push({
-              rollDate: result[i].rollDate,
-              rollDateStr: result[i].rollDateStr,
-              dateDeliveryPp: result[i].dateDeliveryPp,
-              dateDeliveryPpStr: result[i].dateDeliveryPpStr,
-              inputDia: result[i].inputDia,
-              steelType: result[i].steelType,
-              weight: result[i].weight,
-              rowspanSize: result[i].rowspanSize
-            });
-          }
-          this.listOfData = data;
-
+        if (result[0]) {
+          
+          this.listOfData = result.map((itemData) => itemData as ItemData) as ItemData[]
           this.listOfData.map(element => {
-            element.dateDeliveryPpStr =  moment(element.dateDeliveryPp).format("YYYY-MM-DD")
-            element.rollDateStr =  moment(element.rollDate).format("YYYY-MM-DD")
+            element.dateDeliveryPpStr = moment(element.dateDeliveryPp).format("YYYY-MM-DD")
+            element.rollDateStr = moment(element.rollDate).format("YYYY-MM-DD")
           });
 
-        }else{
-          const data = [];
-          this.listOfData = data;
+        } else {
+          this.listOfData = [];
         }
 
       },
       error: (e) => {
         this.message.error('網絡請求失敗');
       },
-      complete: () => {}
+      complete: () => { }
     });
-    
+
   }
 
 }
@@ -113,5 +98,17 @@ interface ItemData {
   inputDia: number;
   steelType: string;
   weight: number;
-  rowspanSize:number;
+  rowspanSize: number;
+}
+
+interface OtherInfo {
+  instructions: string;
+}
+
+interface SearchData {
+  tabType: Number;
+  verList: {
+    fcpVer: String,
+    shiftVer: String
+  };
 }
