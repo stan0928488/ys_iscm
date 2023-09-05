@@ -197,8 +197,17 @@ style: any = {
   height: `calc(${this.modalBodyHeight} - ${this.modalBodyPadding} - ${this.modalBodyPadding})`,
   flex: '1 1 auto',
 };
+//統計頭
+statisticHeaderColumnDefs: ColDef[] = [] ;
+statisticRowData = [] ;
+statisticModalIsVisible = false ;
+//統計欄
+public statisticGridOptionsModal: GridOptions;
 
-
+//統計 Modal 
+handleStatisticModal(){
+  this.statisticModalIsVisible = !this.statisticModalIsVisible ;
+}
 
  handleOpCodeModal(){
   this.changeCarFlag = '1' ;
@@ -890,6 +899,126 @@ this.handleSelectCarModal() ;
       }
      
     })
+  }
+  //統計表
+  handleStatisticBtn(){
+    this.statisticModalIsVisible  = true ;
+    this.statisticRowData = [] ;
+    //組合頭部
+    console.log("groupArray : " + JSON.stringify(this.groupArray))
+    console.log("groupColumList : " + JSON.stringify(this.groupColumList))
+    let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+    let statisticHeaderColumnDefsTemp = [] ;
+    let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:120,hide: false }
+    let header2 = {headerName:"投产機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:120,hide: false }
+    statisticHeaderColumnDefsTemp.push(header1) ;
+    statisticHeaderColumnDefsTemp.push(header2) ;
+    
+    this.groupColumList.forEach((item1,index,arry)=>{
+      let key1 = item1.columValue ;
+      let value1 = item1.columLabel ;
+      if(this.groupArray.includes(key1)) {
+        console.log("find key key :" + key1) 
+        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:120,hide: false ,filter: true }
+        statisticHeaderColumnDefsTemp.push(header) ;
+      }
+    })
+    console.log("statisticHeaderColumnDefsTemp: " + JSON.stringify(statisticHeaderColumnDefsTemp)) ;
+    // 拼接統計數據 [精整A] [精整P] [其他] [委外] [直棒已到] [直棒未到] 
+    // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE
+    let header3 = {headerName:"精整A",field:"COLA",rowDrag: false,resizable:true,width:120,hide: false }
+    let header4 = {headerName:"精整P",field:"COLB",rowDrag: false,resizable:true,width:120,hide: false }
+    let header5 = {headerName:"其他",field:"COLC",rowDrag: false,resizable:true,width:120,hide: false }
+    let header6 = {headerName:"委外",field:"COLD",rowDrag: false,resizable:true,width:120,hide: false }
+    let header7 = {headerName:"直棒已到",field:"COLE",rowDrag: false,resizable:true,width:120,hide: false }
+    let header8 = {headerName:"直棒未到",field:"COLF",rowDrag: false,resizable:true,width:120,hide: false }
+    let header9 = {headerName:"總重",field:"COLG",rowDrag: false,resizable:true,width:120,hide: true }
+    statisticHeaderColumnDefsTemp.push(header3) ;
+    statisticHeaderColumnDefsTemp.push(header4) ;
+    statisticHeaderColumnDefsTemp.push(header5) ;
+    statisticHeaderColumnDefsTemp.push(header6) ;
+    statisticHeaderColumnDefsTemp.push(header7) ;
+    statisticHeaderColumnDefsTemp.push(header8) ;
+    statisticHeaderColumnDefsTemp.push(header9) ;
+    this.statisticHeaderColumnDefs = statisticHeaderColumnDefsTemp ;
+
+    this.rowData.forEach((item,index,array)=>{
+      let obj = {} ;
+      obj["SCH_SHOP_CODE"] = this.selectShopCode ;
+      obj["PST_MACHINE"] = this.selectEquipCode ;
+      this.groupArray.forEach((val,index,array)=>{
+        obj[val] = item[val] ;
+      }) ;
+
+        let ids = item.sortId.split(',')
+        // 精整A  COLA 
+        let COLANUM = 0 ; 
+        let COLAARRAY = ["205","301","302"]
+        // 精整P
+        let COLBNUM = 0 ; 
+        let COLBARRAY = ["304","305","306","314","315","324","350","351","352"]
+        // 其他
+        let COLCNUM = 0 ; 
+        let COLCCRRAY = ["206","310"]
+        // 委外
+        let COLDNUM = 0 ; 
+
+        // 直棒已到
+        let COLENUM = 0 ; 
+        // 直棒未到
+        let COLFNUM = 0 ; 
+        // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE 
+        let TOTAL_WEIGHT = 0 ;
+       
+        ids.forEach((val)=>{
+          let SFC_SHOP_CODE_TEMP = this.originalData[val-1].SFC_SHOP_CODE ;
+          let PLAN_WEIGHT_I_TEMP = this.originalData[val-1].PLAN_WEIGHT_I ;
+          let SCH_SHOP_CODE_TEMP = this.originalData[val-1].SCH_SHOP_CODE ;
+          let SORT_GROUP_TEMP = this.originalData[val-1].SORT_GROUP ;
+          TOTAL_WEIGHT = TOTAL_WEIGHT + PLAN_WEIGHT_I_TEMP ;
+          if(COLAARRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLANUM = COLANUM + PLAN_WEIGHT_I_TEMP
+          } else if(COLBARRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLBNUM = COLBNUM + PLAN_WEIGHT_I_TEMP
+          }else if(COLCCRRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLCNUM = COLCNUM + PLAN_WEIGHT_I_TEMP
+          } else if(SFC_SHOP_CODE_TEMP === "000") {
+            COLDNUM = COLDNUM + PLAN_WEIGHT_I_TEMP
+          } else if(SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP === '1') {
+            COLENUM = COLENUM + PLAN_WEIGHT_I_TEMP
+          } else if((SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP !== '1') || SFC_SHOP_CODE_TEMP !== SCH_SHOP_CODE_TEMP) {
+            COLFNUM = COLFNUM +PLAN_WEIGHT_I_TEMP
+          }
+
+        // this.statisticRowData.push(this.originalData[val-1]) 
+      })
+      obj["COLA"] = COLANUM ;
+      obj["COLB"] = COLBNUM ;
+      obj["COLC"] = COLCNUM ;
+      obj["COLD"] = COLDNUM ;
+      obj["COLE"] = COLENUM ;
+      obj["COLF"] = COLFNUM ;
+      obj["COLG"] = TOTAL_WEIGHT ;
+      this.statisticRowData.push(obj) ;
+
+    })
+  
+
+
+   // console.log("rowData : " + JSON.stringify(this.rowData)) 
+    // this.originalData = JSON.parse(localStorage.getItem("originalData"))
+   // console.log("originalData : " + JSON.stringify(JSON.parse(localStorage.getItem("originalData"))))
+    
+    //原始數據調取
+    //this.originalData = JSON.parse(localStorage.getItem("originalData"))
+    //遍歷分群數據
+    //this.rowData.forEach((item,index,array)=>{
+    //  let ids = item.sortId.split(',')
+    //  ids.forEach((val)=>{
+    //    this.rowSortedData.push(this.originalData[val-1]) 
+    //  })
+   // })
+
   }
 
   exportDataByShopCode(exportData,exportHeader){
