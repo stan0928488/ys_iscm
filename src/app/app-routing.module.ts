@@ -113,8 +113,9 @@ import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTa
 import { PPSR321Detail0301CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321Detail0301CanDeactivateGuard';
 import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
 import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321Detail0301CanDeactivateGuard';
-import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PSR321_Detail0303/PPSR321-detail0303.component';
+import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
 import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
+import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321Detail0301CanDeactivateGuard';
 
 
 const routes: Routes = [
@@ -296,7 +297,6 @@ const routes: Routes = [
         component: PPSR321Component,
         canDeactivate: [PPSR321CanDeactivateGuard],
         children : [
-          { path: '', redirectTo: '/FCPshiftRepo/R321/detail01', pathMatch: 'full' },
           { 
             path: 'detail01', 
             component: PPSR321Detail01Component,
@@ -320,7 +320,7 @@ const routes: Routes = [
           { 
             path: 'detail0303', 
             component: PPSR321Detail0303Component,
-
+            //canDeactivate:[PPSR321Detail0303CanDeactivateGuard]
           }
         ]
        },

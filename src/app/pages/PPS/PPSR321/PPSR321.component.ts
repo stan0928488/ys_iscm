@@ -8,6 +8,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { PPSR321DataPassService } from './PPSR321_DataPass/PPSR321-data-pass.service';
+import { Router } from '@angular/router';
 registerLocaleData(zh);
 
 
@@ -38,7 +39,8 @@ export class PPSR321Component implements OnInit, AfterViewInit {
   constructor(private ppsService: PPSService,
               private Modal: NzModalService,
               private nzMessageService: NzMessageService,
-              private ppsr321DataPassService: PPSR321DataPassService) { 
+              private ppsr321DataPassService: PPSR321DataPassService,
+              private router: Router) { 
 
       this.ppsr321DataPassService.getRefresh().subscribe(async toRefresh => {
           await this.findAllShiftData();
@@ -197,6 +199,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
             nzOnOk: () => {
               // 關閉彈跳視窗，重置編輯狀態，任何子元件都沒有在編輯的
               this.ppsr321DataPassService.hasEdited = '';
+              this.router.navigateByUrl('/FCPshiftRepo/R321');
               resolve(true);
             },
             nzOnCancel: () => {
@@ -210,6 +213,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
         });
     }
     else{
+      this.router.navigateByUrl('/FCPshiftRepo/R321');
       this.isVisibleMaintain = false;
     }
   }
