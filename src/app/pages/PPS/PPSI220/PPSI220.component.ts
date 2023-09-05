@@ -1521,8 +1521,28 @@ export class PPSI220Component implements AfterViewInit {
         FROZAN_GROUP: _.get(item, "FROZAN_GROUP"),
         FCP_USE_FLAG: _.get(item, "FCP_USE_FLAG"),
         SALE_ORDER_DIA: _.get(item, "SALE_ORDER_DIA"),
-        SFC_PROCESS: _.get(item, "SFC_PROCESS")
-    
+        SFC_PROCESS: _.get(item, "SFC_PROCESS"),
+        LEFT_PROCESS: _.get(item, "LEFT_PROCESS"),
+        SFC_ROUTING_COUNT: _.get(item, "SFC_ROUTING_COUNT"),
+        MACHINE4: _.get(item, "MACHINE4"),
+        STATUS4: _.get(item, "STATUS4"),
+        WORK_HOURS4: _.get(item, "WORK_HOURS4"),
+        TRANSFER_TIME4: _.get(item, "TRANSFER_TIME4"),
+        MACHINE5: _.get(item, "MACHINE5"),
+        STATUS5: _.get(item, "STATUS5"),
+        WORK_HOURS5: _.get(item, "WORK_HOURS5"),
+        TRANSFER_TIME5: _.get(item, "TRANSFER_TIME5"),
+        MACHINE6: _.get(item, "MACHINE6"),
+        STATUS6: _.get(item, "STATUS6"),
+        WORK_HOURS6: _.get(item, "WORK_HOURS6"),
+        TRANSFER_TIME6: _.get(item, "TRANSFER_TIME6"),
+        MACHINE7: _.get(item, "MACHINE7"),
+        STATUS7: _.get(item, "STATUS7"),
+        WORK_HOURS7: _.get(item, "WORK_HOURS7"),
+        TRANSFER_TIME7: _.get(item, "TRANSFER_TIME7"),
+        URGENCY_ORDER_DESC: _.get(item, "URGENCY_ORDER_DESC"),
+        URGENCY_DATE: _.get(item, "URGENCY_DATE")
+        
       });
       excelData.push(obj);
     }
