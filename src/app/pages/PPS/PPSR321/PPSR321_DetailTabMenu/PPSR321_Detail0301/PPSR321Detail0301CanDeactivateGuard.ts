@@ -12,7 +12,8 @@ export class PPSR321Detail0301CanDeactivateGuard implements CanDeactivate<PPSR32
         currentRoute: ActivatedRouteSnapshot, 
         currentState: RouterStateSnapshot, 
         nextState?: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-          return component.canDeactivate();  
+            if(component === null || component === undefined) return true; 
+            return component.canDeactivate();  
     }
     
 }
