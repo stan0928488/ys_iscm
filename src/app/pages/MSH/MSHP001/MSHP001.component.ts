@@ -905,15 +905,18 @@ this.handleSelectCarModal() ;
     this.statisticModalIsVisible  = true ;
     this.statisticRowData = [] ;
     //組合頭部
-    console.log("groupArray : " + JSON.stringify(this.groupArray))
-    console.log("groupColumList : " + JSON.stringify(this.groupColumList))
-    let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+    // console.log("groupArray : " + JSON.stringify(this.groupArray))
+    // console.log("groupColumList : " + JSON.stringify(this.groupColumList))
+    // let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
     let statisticHeaderColumnDefsTemp = [] ;
-    let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:120,hide: false }
-    let header2 = {headerName:"投产機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:120,hide: false }
+    let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header2 = {headerName:"投产機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
+    let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
     statisticHeaderColumnDefsTemp.push(header1) ;
     statisticHeaderColumnDefsTemp.push(header2) ;
-    
+    statisticHeaderColumnDefsTemp.push(header11) ;
+    statisticHeaderColumnDefsTemp.push(header12) ;
     this.groupColumList.forEach((item1,index,arry)=>{
       let key1 = item1.columValue ;
       let value1 = item1.columLabel ;
@@ -923,7 +926,7 @@ this.handleSelectCarModal() ;
         statisticHeaderColumnDefsTemp.push(header) ;
       }
     })
-    console.log("statisticHeaderColumnDefsTemp: " + JSON.stringify(statisticHeaderColumnDefsTemp)) ;
+    // console.log("statisticHeaderColumnDefsTemp: " + JSON.stringify(statisticHeaderColumnDefsTemp)) ;
     // 拼接統計數據 [精整A] [精整P] [其他] [委外] [直棒已到] [直棒未到] 
     // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE
     let header3 = {headerName:"精整A",field:"COLA",rowDrag: false,resizable:true,width:120,hide: false }
@@ -946,6 +949,8 @@ this.handleSelectCarModal() ;
       let obj = {} ;
       obj["SCH_SHOP_CODE"] = this.selectShopCode ;
       obj["PST_MACHINE"] = this.selectEquipCode ;
+      obj["START_DATE_C"] = item.START_DATE_C ;
+      obj["END_DATE_C"] = item.END_DATE_C ;
       this.groupArray.forEach((val,index,array)=>{
         obj[val] = item[val] ;
       }) ;
@@ -969,12 +974,12 @@ this.handleSelectCarModal() ;
         let COLFNUM = 0 ; 
         // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE 
         let TOTAL_WEIGHT = 0 ;
-       
         ids.forEach((val)=>{
           let SFC_SHOP_CODE_TEMP = this.originalData[val-1].SFC_SHOP_CODE ;
           let PLAN_WEIGHT_I_TEMP = this.originalData[val-1].PLAN_WEIGHT_I ;
           let SCH_SHOP_CODE_TEMP = this.originalData[val-1].SCH_SHOP_CODE ;
           let SORT_GROUP_TEMP = this.originalData[val-1].SORT_GROUP ;
+          let NEXT_SCH_SHOP_CODE_TEMP = this.originalData[val-1].NEXT_SCH_SHOP_CODE ;
           TOTAL_WEIGHT = TOTAL_WEIGHT + PLAN_WEIGHT_I_TEMP ;
           if(COLAARRAY.includes(SFC_SHOP_CODE_TEMP)) {
             COLANUM = COLANUM + PLAN_WEIGHT_I_TEMP
@@ -984,7 +989,7 @@ this.handleSelectCarModal() ;
             COLCNUM = COLCNUM + PLAN_WEIGHT_I_TEMP
           } else if(SFC_SHOP_CODE_TEMP === "000") {
             COLDNUM = COLDNUM + PLAN_WEIGHT_I_TEMP
-          } else if(SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP === '1') {
+          } else if((SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP === '1') || (SFC_SHOP_CODE_TEMP ==='400' && NEXT_SCH_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP && SORT_GROUP_TEMP === '1' )) {
             COLENUM = COLENUM + PLAN_WEIGHT_I_TEMP
           } else if((SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP !== '1') || SFC_SHOP_CODE_TEMP !== SCH_SHOP_CODE_TEMP) {
             COLFNUM = COLFNUM +PLAN_WEIGHT_I_TEMP
@@ -1258,12 +1263,41 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine2);
        //数据类型
        this.columKeyType["MACHINE2_ADD"] = 0 ;
+       /***Machine3 start  */
        let indexMachine3 = {headerName:'替換機台1',field:'MACHINE3_ADD',rowDrag: false,resizable:true,width:80,hide: true }
        exportHeader.push("替換機台3")
        this.columnDefs.push(indexMachine3);
        this.outsideColumnDefs.push(indexMachine3);
-       //数据类型
        this.columKeyType["MACHINE3_ADD"] = 0 ;
+      /***Machine3 end */
+       /***Machine4 start */
+      let indexMachineADD4 = {headerName:'替換機台ADD4',field:'MACHINE4_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台ADD4")
+       this.columnDefs.push(indexMachineADD4);
+       this.outsideColumnDefs.push(indexMachineADD4);
+       this.columKeyType["MACHINE4_ADD"] = 0 ;
+      /***Machine4 end */
+        /***Machine5 start */
+        let indexMachineADD5 = {headerName:'替換機台ADD5',field:'MACHINE5_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+        exportHeader.push("替換機台ADD5")
+        this.columnDefs.push(indexMachineADD5);
+        this.outsideColumnDefs.push(indexMachineADD5);
+        this.columKeyType["MACHINE5_ADD"] = 0 ;
+       /***Machine5 end */
+         /***Machine6 start */
+      let indexMachineADD6 = {headerName:'替換機台ADD6',field:'MACHINE6_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+      exportHeader.push("替換機台ADD4")
+      this.columnDefs.push(indexMachineADD6);
+      this.outsideColumnDefs.push(indexMachineADD6);
+      this.columKeyType["MACHINE6_ADD"] = 0 ;
+     /***Machine6 end */
+       /***Machine7 start */
+       let indexMachineADD7 = {headerName:'替換機台ADD7',field:'MACHINE7_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台ADD7")
+       this.columnDefs.push(indexMachineADD7);
+       this.outsideColumnDefs.push(indexMachineADD7);
+       this.columKeyType["MACHINE7_ADD"] = 0 ;
+      /***Machine7 end */
 
        let indexMachine4 = {headerName:'最佳機台',field:'BEST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
        exportHeader.push("最佳機台")
@@ -2185,7 +2219,10 @@ this.handleSelectCarModal() ;
           return ;
         }
         if(item.ACT_PST_MACHINE_ADD !== item.PST_MACHINE_ADD  ) {
-          if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD ) {
+          if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && 
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD &&
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE4_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE5_ADD && 
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE6_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE7_ADD) {
             this.nzMessageService.error("替換機台時，提換機台必須在允許替換的機台中")
             return ;
           }
@@ -2218,7 +2255,39 @@ this.handleSelectCarModal() ;
        } else {
         MACHINE3_ADD_Temp = item.MACHINE3_ADD
        }
-       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD,fcpUseFlag:item.FCP_USE_FLAG} ;
+       let MACHINE4_ADD_Temp = ""
+       if(item.MACHINE4_ADD === undefined || item.MACHINE4_ADD === null) {
+        MACHINE4_ADD_Temp = null
+       } else {
+        MACHINE4_ADD_Temp = item.MACHINE4_ADD
+       }
+       let MACHINE5_ADD_Temp = ""
+       if(item.MACHINE5_ADD === undefined || item.MACHINE5_ADD === null) {
+        MACHINE5_ADD_Temp = null
+       } else {
+        MACHINE5_ADD_Temp = item.MACHINE5_ADD
+       }
+       let MACHINE6_ADD_Temp = ""
+       if(item.MACHINE6_ADD === undefined || item.MACHINE6_ADD === null) {
+        MACHINE6_ADD_Temp = null
+       } else {
+        MACHINE6_ADD_Temp = item.MACHINE6_ADD
+       }
+       let MACHINE7_ADD_Temp = ""
+       if(item.MACHINE7_ADD === undefined || item.MACHINE7_ADD === null) {
+        MACHINE7_ADD_Temp = null
+       } else {
+        MACHINE7_ADD_Temp = item.MACHINE7_ADD
+       }
+
+
+       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,
+        totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,
+        machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,
+        machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD,machine4:MACHINE4_ADD_Temp,workHours4:item.WORK_HOURS4_ADD,
+        machine5:MACHINE5_ADD_Temp,workHours5:item.WORK_HOURS5_ADD,machine6:MACHINE6_ADD_Temp,workHours6:item.WORK_HOURS6_ADD,
+        machine7:MACHINE7_ADD_Temp,workHours7:item.WORK_HOURS7_ADD,
+        fcpUseFlag:item.FCP_USE_FLAG} ;
        comitData.push(obj) ;
       })
       //console.log(JSON.stringify(comitData)) ;
@@ -2429,6 +2498,22 @@ this.handleSelectCarModal() ;
         if(item.MACHINE3_ADD !== null && item.MACHINE3_ADD !== '' && item.MACHINE3_ADD !== undefined){
           childChangeMachineList.push({"label":item.MACHINE3_ADD,"value":item.MACHINE3_ADD})
           childChangeMachineListTotal.push(item.MACHINE3_ADD)
+        }
+        if(item.MACHINE4_ADD !== null && item.MACHINE4_ADD !== '' && item.MACHINE4_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE4_ADD,"value":item.MACHINE4_ADD})
+          childChangeMachineListTotal.push(item.MACHINE4_ADD)
+        }
+        if(item.MACHINE5_ADD !== null && item.MACHINE5_ADD !== '' && item.MACHINE5_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE5_ADD,"value":item.MACHINE5_ADD})
+          childChangeMachineListTotal.push(item.MACHINE5_ADD)
+        }
+        if(item.MACHINE6_ADD !== null && item.MACHINE6_ADD !== '' && item.MACHINE6_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE6_ADD,"value":item.MACHINE6_ADD})
+          childChangeMachineListTotal.push(item.MACHINE6_ADD)
+        }
+        if(item.MACHINE7_ADD !== null && item.MACHINE7_ADD !== '' && item.MACHINE7_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE7_ADD,"value":item.MACHINE7_ADD})
+          childChangeMachineListTotal.push(item.MACHINE7_ADD)
         }
         if(item.BEST_MACHINE_ADD !== null && item.BEST_MACHINE_ADD !== '' && item.BEST_MACHINE_ADD !== undefined){
           childChangeMachineList.push({"label":item.BEST_MACHINE_ADD,"value":item.BEST_MACHINE_ADD})
