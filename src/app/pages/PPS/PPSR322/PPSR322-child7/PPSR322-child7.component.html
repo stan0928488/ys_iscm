@@ -10,7 +10,7 @@
         <tr *ngFor="let data of listOfData">
             <ng-container *ngIf=" data.kindType.indexOf('小計') != -1">
                 <td [colSpan]="2" style="background-color: #00DB00;">{{ data.kindType }}</td>
-                <td>{{ data.planWeightI }}</td>
+                <td style="background-color: #00DB00;">{{ data.planWeightI }}</td>
             </ng-container>
             <ng-container *ngIf=" data.kindType.indexOf('小計') == -1">
                 <ng-container [ngSwitch]="data.rowspanSize">
