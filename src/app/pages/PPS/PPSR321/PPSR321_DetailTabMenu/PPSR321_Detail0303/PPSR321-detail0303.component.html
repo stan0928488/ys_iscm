@@ -10,7 +10,7 @@
                     nzType="primary" 
                     (click)="edit()">
                     <span nz-icon nzType="edit" nzTheme="outline"></span>
-                    編輯
+                    修改
                 </button>
                 <button
                     *ngIf="isEdit"
@@ -41,12 +41,12 @@
                 <nz-card
                     *ngIf="!isEdit"
                     style="width:100%;">
-                    <div *ngIf="peelData.instructions === ''">無資料</div>
-                    <div 
+                    <p style="color: grey;" *ngIf="peelData.instructions === ''">無資料</p>
+                    <p 
                         style="white-space: pre-wrap;"
                         *ngIf="peelData.instructions !== ''">
                         {{ peelData.instructions }}
-                    </div>
+                    </p>
                 </nz-card>
 
                 <textarea 
@@ -64,12 +64,12 @@
                 <nz-card
                     *ngIf="!isEdit"
                     style="width:100%;">
-                    <div *ngIf="cold01Data.instructions === ''">無資料</div>
-                    <div 
+                    <p style="color: grey;" *ngIf="cold01Data.instructions === ''">無資料</p>
+                    <p 
                         style="white-space: pre-wrap;"
                         *ngIf="cold01Data.instructions !== ''">
                         {{ cold01Data.instructions }}
-                    </div>
+                    </p>
                 </nz-card>
 
                 <textarea 
@@ -87,12 +87,12 @@
                 <nz-card
                     *ngIf="!isEdit"
                     style="width:100%;">
-                    <div *ngIf="cold02Data.instructions === ''">無資料</div>
-                    <div 
+                    <p style="color: grey;" *ngIf="cold02Data.instructions === ''">無資料</p>
+                    <p 
                         style="white-space: pre-wrap;"
                         *ngIf="cold02Data.instructions !== ''">
                         {{ cold02Data.instructions }}
-                    </div>
+                    </p>
                 </nz-card>
 
                 <textarea 
@@ -110,12 +110,12 @@
                 <nz-card
                     *ngIf="!isEdit"
                     style="width:100%;">
-                    <div *ngIf="grindData.instructions === ''">無資料</div>
-                    <div 
+                    <p style="color: grey;" *ngIf="grindData.instructions === ''">無資料</p>
+                    <p 
                         style="white-space: pre-wrap;"
                         *ngIf="grindData.instructions !== ''">
                         {{ grindData.instructions }}
-                    </div>
+                    </p>
                 </nz-card>
 
                 <textarea 

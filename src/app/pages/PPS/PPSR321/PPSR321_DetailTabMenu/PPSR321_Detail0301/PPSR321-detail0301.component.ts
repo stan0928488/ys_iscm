@@ -192,7 +192,7 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
 
       if(res.code !== 200){
         this.errorMSG(
-          '更新「頭份預計回廠日」資料失敗',
+          '修改「頭份預計回廠日」資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
         );
         this.isLoading = false;
@@ -208,13 +208,13 @@ export class PPSR321Detail0301Component implements OnInit, AfterViewInit {
       this.ppsr321DataPassService.setRefresh(true);
 
       this.sucessMSG(
-        '更新「頭份預計回廠日」資料成功',
-        `更新「頭份預計回廠日」資料成功`
+        '修改「頭份預計回廠日」資料成功',
+        `修改「頭份預計回廠日」資料成功`
       );
     }
     catch (error) {
       this.errorMSG(
-        '更新「頭份預計回廠日」資料失敗',
+        '修改「頭份預計回廠日」資料失敗',
         `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
       );
     } finally {

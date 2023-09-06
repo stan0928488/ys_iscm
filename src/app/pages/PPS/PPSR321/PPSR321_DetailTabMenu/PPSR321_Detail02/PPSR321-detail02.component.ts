@@ -128,9 +128,9 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
       // 那些處於新增狀態的rowData，要添加回從後端抓取的資料之中
       this.tbppsrm011Detail02List.reverse().forEach(item => {
         if(item.id.startsWith('new')){
-          responseData.unshift(item)
+          responseData.unshift(item);
         }
-      })
+      });
       
       this.tbppsrm011Detail02List = responseData;
       this.setupUpdateEditCache();
@@ -294,7 +294,7 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
 
       if(res.code !== 200){
         this.errorMSG(
-          '更新「特殊鋼種量」資料失敗',
+          '修改「特殊鋼種量」資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
         );
         this.isLoading = false;
@@ -312,13 +312,13 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
     }
 
       this.sucessMSG(
-        '更新「特殊鋼種量」資料成功',
-        `更新「特殊鋼種量」資料成功`
+        '修改「特殊鋼種量」資料成功',
+        `修改「特殊鋼種量」資料成功`
       );
     }
     catch (error) {
       this.errorMSG(
-        '更新「特殊鋼種量」資料失敗',
+        '修改「特殊鋼種量」資料失敗',
         `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
       );
     } finally {

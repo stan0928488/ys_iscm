@@ -220,7 +220,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
 
       if(res.code !== 200){
         this.errorMSG(
-          '新增或更新「預計入庫資訊」資料失敗',
+          '修改「預計入庫資訊」資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
         );
         this.isLoading = false;
@@ -238,10 +238,15 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
       
       // 通知主檔頁面更新資料並渲染畫面
       this.ppsr321DataPassService.setRefresh(true);
+
+      this.sucessMSG(
+        '修改「預計入庫資訊」資料成功',
+        `修改「預計入庫資訊」資料成功`
+      );
     }
     catch (error) {
       this.errorMSG(
-        '新增或更新「預計入庫資訊」資料失敗',
+        '修改「預計入庫資訊」資料失敗',
         `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
       );
     } finally {

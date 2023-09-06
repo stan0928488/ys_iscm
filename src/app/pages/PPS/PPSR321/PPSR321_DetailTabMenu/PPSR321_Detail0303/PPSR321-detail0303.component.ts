@@ -56,7 +56,8 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
       masterType : this.masterType,
       detailType : '削皮股',
       instructions : '',
-      userCreate : this.USER_NAME
+      userCreate : this.USER_NAME,
+      userUpdate : this.USER_NAME
     }
 
     this.cold01Data = {
@@ -66,7 +67,8 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
       masterType : this.masterType,
       detailType : '冷抽一股',
       instructions : '',
-      userCreate : this.USER_NAME
+      userCreate : this.USER_NAME,
+      userUpdate : this.USER_NAME
     }
 
     this.cold02Data = {
@@ -76,7 +78,8 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
       masterType : this.masterType,
       detailType : '冷抽二股',
       instructions : '',
-      userCreate : this.USER_NAME
+      userCreate : this.USER_NAME,
+      userUpdate : this.USER_NAME
     }
 
     this.grindData = {
@@ -86,7 +89,8 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
       masterType : this.masterType,
       detailType : '研磨股',
       instructions : '',
-      userCreate : this.USER_NAME
+      userCreate : this.USER_NAME,
+      userUpdate : this.USER_NAME
     }
 
     this.cancel();             
@@ -119,24 +123,20 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
         return;
       }
 
-      for (const elem of res.data) {
+      res.data.forEach(elem => {
         if(elem.detailType === '削皮股'){
           this.peelData = elem;
-          continue;
         }
-        if(elem.detailType === '冷抽一股'){
+        else if(elem.detailType === '冷抽一股'){
           this.cold01Data = elem;
-          continue;
         }
-        if(elem.detailType === '冷抽二股'){
+        else if(elem.detailType === '冷抽二股'){
           this.cold02Data = elem;
-          continue;
         }
-        if(elem.detailType === '研磨股'){
+        else if(elem.detailType === '研磨股'){
           this.grindData = elem;
-          continue;
         }
-      }
+      });
 
       // clone一份到編輯緩存用的陣列之中
       this.cancel();
@@ -170,18 +170,25 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
       newDatas.push(this.peelDataEditCache, this.cold01DataEditCache, this.cold02DataEditCache, this.grindDataEditCache);
       
       // 準備新增的資料
-       const insertDatas : any[] = [];
+      const insertDatas : any[] = [];
       // 準備更新的資料
       const updateDatas : any[] = [];
 
       for(let i=0; i<oldDatas.length; i++){
-        if(_.isNil(newDatas[i].id)){
+        if(_.isNil(newDatas[i].id) && !_.isEmpty(newDatas[i].instructions)){
           insertDatas.push(newDatas[i]);
         }
         // 編輯的新資料與原資料不同表示需要更新
         else if(!_.isEqual(oldDatas[i], newDatas[i])){
           updateDatas.push(newDatas[i]);
         }
+      }
+
+      // 該批資料更新中為空，新增中也為空
+      // 表示無資料需要新增以及資料都為更新但與原資料都相同，不給予更新
+      if(_.isEmpty(updateDatas) && _.isEmpty(insertDatas)){
+        this.nzMessageService.warning('未修改任何資料，無法更新');
+        return;
       }
 
       let isInsert = false;
@@ -202,21 +209,29 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
         isInsert = true;
       }
 
-      // 該批資料更新中為空，新增中也為空
-      // 表示資料都為更新但與原資料都相同，不給予更新
-      if(_.isEmpty(updateDatas) && _.isEmpty(insertDatas)){
-          this.nzMessageService.warning('未修改任何資料，無法更新');
+      
+      if(!_.isEmpty(updateDatas)){
+        const updateResObservable$ = this.ppsService.updateDetail0303Multiple(updateDatas);
+        const updateRes = await firstValueFrom<any>(updateResObservable$);
+         
+        if(updateRes.code !== 200){
+          this.errorMSG(
+            '修改「排程生產原則說明」資料失敗',
+            `請聯繫系統工程師。錯誤訊息 : ${updateRes.message}`
+          );
+          this.isLoading = false;
           return;
-      }
-      else if(!_.isEmpty(updateDatas)){
-          
-          
+        }
           isUpdate = true;
       }
         
       // 只要有新增或更新就重新拿取資料
       if(isInsert || isUpdate){
         await this.findAllDetail0303DataList();
+        this.sucessMSG(
+          '修改「排程生產原則說明」資料成功',
+          `修改「排程生產原則說明」資料成功`
+        );
       }
 
     }
@@ -239,6 +254,29 @@ export class PPSR321Detail0303Component implements OnInit, AfterViewInit {
     // 通知父元件(PPSR321DetailTabMenuComponent)當前子元件取消編輯
     this.ppsr321DataPassService.hasEdited = '';
     this.isEdit = false;
+  }
+
+  // 使用者離開當前頁面時，如果處於編輯狀態给於是否離開的提示
+  async canDeactivate() : Promise<boolean> {
+
+    if(this.isEdit){
+      return await new Promise<boolean>((resolve) => {
+        this.Modal.confirm({
+          nzTitle: `排程生產原則說明正在編輯中，是否離開?`,
+          nzOkText: '離開',
+          nzCancelText: '取消',
+          nzOnOk: () => {
+            // 切換至其他頁面，重置新增或編輯狀態，任何子元件都沒有在新增或編輯
+            this.ppsr321DataPassService.hasEdited = ''; 
+            resolve(true);
+          },
+          nzOnCancel: () => {
+            resolve(false);
+          }
+        }); 
+      });
+    }
+    return Promise.resolve(true);
   }
 
   sucessMSG(_title, _plan): void {

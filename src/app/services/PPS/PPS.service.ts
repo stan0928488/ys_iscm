@@ -2208,12 +2208,30 @@ export class PPSService {
   }
 
   addShiftData(shiftData : any){
-    console.log('Api Service 新增月推移報表維護資料料');
+    console.log('Api Service 新增月推移報表維護資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/addShiftData`;
     console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(shiftData)}`);
     return this.http.post(queryUrl,  shiftData, this.httpOptions);
 
+  }
+
+  deleteShiftData(shiftEdition : string){
+    console.log('Api Service 刪除「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/deleteShiftData`;
+    const httpParams = new HttpParams()
+      .set('shiftEdition', shiftEdition);
+    console.log(`Api Service 刪除「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 刪除「月推移報表」資料 參數 -> ${shiftEdition}`);
+    return this.http.delete(queryUrl, { headers:this.httpOptions.headers,  params:httpParams });
+  }
+
+  cloneShiftData(rowData : any){
+    console.log('Api Service 複製「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/cloneShiftData`;
+    console.log(`Api Service 複製「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 複製「月推移報表」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
   }
 
   findAllShiftData(){
@@ -2348,6 +2366,14 @@ export class PPSService {
     console.log(`Api Service 新增「排程生產原則說明」資料 url -> ${queryUrl}`);
     console.log(`Api Service 新增「排程生產原則說明」資料 參數 -> ${JSON.stringify(rowData)}`);
     return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+  updateDetail0303Multiple(rowData:any[]){
+    console.log('Api Service 更新「排程生產原則說明」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail0303Multiple`;
+    console.log(`Api Service 更新「排程生產原則說明」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「排程生產原則說明」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
   }
 
   getR322Data(_data) {

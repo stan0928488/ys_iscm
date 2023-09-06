@@ -10,7 +10,7 @@
                     nzType="primary" 
                     (click)="edit()">
                     <span nz-icon nzType="edit" nzTheme="outline"></span>
-                    編輯
+                    修改
                 </button>
                 <button
                     *ngIf="isEdit"
@@ -39,12 +39,12 @@
             <nz-card
                 *ngIf="!isEdit"
                 style="width:100%;">
-                <div *ngIf="detail0301Obj.instructions === ''">無資料</div>
-                <div 
+                <p style="color: grey;" *ngIf="detail0301Obj.instructions === ''">無資料</p>
+                <p 
                     style="white-space: pre-wrap;"
                     *ngIf="detail0301Obj.instructions !== ''">
                     {{ detail0301Obj.instructions }}
-                </div>
+                </p>
             </nz-card>
 
             <textarea 
