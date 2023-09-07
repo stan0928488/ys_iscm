@@ -17,38 +17,39 @@
         </button>
 
         <nz-table
-            style="margin-top: 20px; margin-bottom: 150px;"
-            #tbppsrm011RowData
+            style="margin-top: 20px; margin-bottom: 150px; width:940px"
             nzBordered  
             nzOuterBordered
-            [nzData]="displayTbppsrm011List">
+            [nzData]="displayTbppsrm011List"
+            [nzPageSize]="20" 
+            [nzScroll]="{ y: '340px' }">
             <thead>
                 <tr>
-                    <th style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='100px' style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>狀態</b></font>
                     </th>
 
-                    <th style="height:55px; width:140px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='140px' style="height:55px; width:140px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>推移維護版本</b></font>
                     </th>
 
-                    <th style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='140px' style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>推移生產月份</b></font>
                     </th>
 
-                    <th style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='80px' style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>連結</b></font>
                     </th>  
 
-                    <th style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='180px' style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>建立時間-工號</b></font>
                     </th>  
 
-                    <th style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='180px' style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>修改時間-工號</b></font>
                     </th>  
 
-                    <th style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                    <th nzWidth='120px' style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
                         <font size="3.5"><b>Action</b></font>
                     </th>  
                 <tr>

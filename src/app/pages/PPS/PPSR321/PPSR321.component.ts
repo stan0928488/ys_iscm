@@ -1,6 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
-import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import * as _ from "lodash";
 import * as moment from 'moment';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -10,6 +10,7 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { PPSR321DataPassService } from './PPSR321_DataPass/PPSR321-data-pass.service';
 import { Router } from '@angular/router';
 import { isTemplateRef } from 'ng-zorro-antd/core/util';
+import { NzTableComponent } from 'ng-zorro-antd/table';
 registerLocaleData(zh);
 
 
@@ -37,23 +38,35 @@ export class PPSR321Component implements OnInit, AfterViewInit {
   // 當前點擊維護的月推移版本
   currentShiftEdition = '';
 
+  firstVisibleRowIndex = 0;
+  tbppsrm011Table : any;
+
   constructor(private ppsService: PPSService,
               private Modal: NzModalService,
               private nzMessageService: NzMessageService,
               private ppsr321DataPassService: PPSR321DataPassService,
-              private router: Router) { 
-
+              private router: Router,
+              private elementRef:ElementRef) { 
       this.ppsr321DataPassService.getRefresh().subscribe(async toRefresh => {
           await this.findAllShiftData();
       });
   }
 
   async ngAfterViewInit(): Promise<void> {
+    this.tbppsrm011Table = this.elementRef.nativeElement.querySelector('.ant-table-body') as any;
+    this.tbppsrm011Table.addEventListener('scroll', this.onTableScroll);
     await this.findAllShiftData();
   }
 
   ngOnInit(): void {
 
+  }
+
+  onTableScroll = (event: any) : void => {
+    const scrollInfo = event.target;
+    // 每個row的行高
+    const rowHeight = 71;
+    this.firstVisibleRowIndex = Math.ceil(scrollInfo.scrollTop / rowHeight); 
   }
 
   // 新增月推移資料
@@ -70,7 +83,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
       hasNew:1
     };
     const cloneDeepDataList = _.cloneDeep(this.displayTbppsrm011List);
-    cloneDeepDataList.unshift(newData);
+    cloneDeepDataList.splice(this.firstVisibleRowIndex, 0, newData);
     this.displayTbppsrm011List = cloneDeepDataList;
     this.addIndex++;
   }
@@ -200,6 +213,10 @@ export class PPSR321Component implements OnInit, AfterViewInit {
   }
 
   clone(rowData : any) : void{
+
+    // 獲取被複製的元素在陣列中的索引
+    const sourceItemIndex = this.displayTbppsrm011List.indexOf(rowData);
+
     const newData = {
       id:this.addIndex,
       shiftEdition:rowData.shiftEdition,
@@ -212,7 +229,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
       hasNew:2
     };
     const cloneDeepDataList = _.cloneDeep(this.displayTbppsrm011List);
-    cloneDeepDataList.unshift(newData);
+    cloneDeepDataList.splice(sourceItemIndex+1, 0, newData);
     this.displayTbppsrm011List = cloneDeepDataList;
     this.addIndex++;
   }
