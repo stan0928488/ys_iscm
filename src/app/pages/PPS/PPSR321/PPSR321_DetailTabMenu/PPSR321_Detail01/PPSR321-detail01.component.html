@@ -3,16 +3,6 @@
 
         <div class="container">
 
-            <div class="produceMonth">
-                <span>
-                    <font size="3.5">
-                        <b>
-                        推移生產月份：{{ displayProduceMonth }}
-                        </b>
-                    </font>
-                </span>
-            </div>
-   
             <div class="headButton">
                 <button
                     *ngIf="!isEdit"
@@ -24,6 +14,7 @@
                     修改
                 </button>
                 <button
+                    style="margin-right:10px;"
                     *ngIf="isEdit"
                     nz-button 
                     class="btn"
@@ -47,8 +38,18 @@
                 </button>
             </div>
 
+            <div class="produceMonth">
+                <span>
+                    <font size="3.5">
+                        <b>
+                        推移生產月份：{{ displayProduceMonth }}
+                        </b>
+                    </font>
+                </span>
+            </div>
+
             <nz-table
-                style="margin-top: 20px; width:300px"
+                style="width:300px"
                 #tbppsrm011Detail01RowData
                 nzBordered  
                 nzOuterBordered
@@ -85,6 +86,7 @@
                                         <nz-input-number 
                                             [(ngModel)]="rowData.goalWeight" 
                                             [nzStep]="1"
+                                            [nzMin]="0"
                                             (ngModelChange)="sumTotal(rowData.displayKindType)">
                                         </nz-input-number>
                                     </td>
