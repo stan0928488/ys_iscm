@@ -1,11 +1,11 @@
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import * as _ from "lodash";
 import * as moment from 'moment';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, takeUntil } from 'rxjs';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { PPSR321DataPassService } from './PPSR321_DataPass/PPSR321-data-pass.service';
 import { Router } from '@angular/router';
@@ -13,6 +13,10 @@ import { isTemplateRef } from 'ng-zorro-antd/core/util';
 import { NzTableComponent } from 'ng-zorro-antd/table';
 registerLocaleData(zh);
 
+
+export interface VirtualDataInterface {
+  id: number;
+}
 
 @Component({
   selector: 'app-ppsr321',
@@ -38,14 +42,16 @@ export class PPSR321Component implements OnInit, AfterViewInit {
   // 當前點擊維護的月推移版本
   currentShiftEdition = '';
 
-  firstVisibleRowIndex = 0;
+  tablePageSize = 10;
+  tablePageIndex = 1;
+  tbppsrm011TableScroll : any;
   tbppsrm011Table : any;
-
+  
   constructor(private ppsService: PPSService,
               private Modal: NzModalService,
               private nzMessageService: NzMessageService,
               private ppsr321DataPassService: PPSR321DataPassService,
-              private router: Router,
+              private changeDetectorRef: ChangeDetectorRef,
               private elementRef:ElementRef) { 
       this.ppsr321DataPassService.getRefresh().subscribe(async toRefresh => {
           await this.findAllShiftData();
@@ -53,8 +59,9 @@ export class PPSR321Component implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    this.tbppsrm011Table = this.elementRef.nativeElement.querySelector('.ant-table-body') as any;
-    this.tbppsrm011Table.addEventListener('scroll', this.onTableScroll);
+    this.tbppsrm011TableScroll = this.elementRef.nativeElement.querySelector('.ant-table-body') as any;
+    this.tbppsrm011Table = this.elementRef.nativeElement.querySelector('#tableId') as any;
+    //this.tbppsrm011Table.addEventListener('scroll', this.onTableScroll);
     await this.findAllShiftData();
   }
 
@@ -62,15 +69,18 @@ export class PPSR321Component implements OnInit, AfterViewInit {
 
   }
 
-  onTableScroll = (event: any) : void => {
-    const scrollInfo = event.target;
-    // 每個row的行高
-    const rowHeight = 71;
-    this.firstVisibleRowIndex = Math.ceil(scrollInfo.scrollTop / rowHeight); 
-  }
+  // onTableScroll = (event: any) : void => {
+  //   const scrollInfo = event.target;
+  //   // 每個row的行高
+  //   const rowHeight = 71;
+  //   this.insertRowIndex = Math.ceil(scrollInfo.scrollTop / rowHeight); 
+  // }
 
   // 新增月推移資料
   add() : void {
+
+    this.isLoading = true;
+
     const newData = {
       id:this.addIndex,
       shiftEdition:'',
@@ -83,9 +93,18 @@ export class PPSR321Component implements OnInit, AfterViewInit {
       hasNew:1
     };
     const cloneDeepDataList = _.cloneDeep(this.displayTbppsrm011List);
-    cloneDeepDataList.splice(this.firstVisibleRowIndex, 0, newData);
+    cloneDeepDataList.unshift(newData)
+    this.tablePageIndex = 1;
     this.displayTbppsrm011List = cloneDeepDataList;
     this.addIndex++;
+
+    // 將scrollY捲到最上面顯示複製的此筆選項
+    const rect = this.tbppsrm011Table.getBoundingClientRect();
+    if(rect.top < 0){
+      window.scrollTo(0,0);
+    }
+    this.tbppsrm011TableScroll.scrollTop = 0;
+    this.isLoading = false;
   }
 
   // 獲取「月推移報表」資料
@@ -129,6 +148,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
 
       // 渲染表格
       this.displayTbppsrm011List = res.data;
+      this.tbppsrm011TableScroll.scrollTop = 0;
 
     }
     catch (error) {
@@ -214,8 +234,7 @@ export class PPSR321Component implements OnInit, AfterViewInit {
 
   clone(rowData : any) : void{
 
-    // 獲取被複製的元素在陣列中的索引
-    const sourceItemIndex = this.displayTbppsrm011List.indexOf(rowData);
+    this.isLoading = true;
 
     const newData = {
       id:this.addIndex,
@@ -229,9 +248,19 @@ export class PPSR321Component implements OnInit, AfterViewInit {
       hasNew:2
     };
     const cloneDeepDataList = _.cloneDeep(this.displayTbppsrm011List);
-    cloneDeepDataList.splice(sourceItemIndex+1, 0, newData);
+    cloneDeepDataList.unshift(newData);
+
+    this.tablePageIndex = 1;
     this.displayTbppsrm011List = cloneDeepDataList;
     this.addIndex++;
+
+    // 將scrollY捲到最上面顯示複製的此筆選項
+    const rect = this.tbppsrm011Table.getBoundingClientRect();
+    if(rect.top < 0){
+      window.scrollTo(0,0);
+    }
+    this.tbppsrm011TableScroll.scrollTop = 0;
+    this.isLoading = false;
   }
 
   async cloneConfirm(rowData : any) : Promise<void> {
@@ -319,9 +348,11 @@ export class PPSR321Component implements OnInit, AfterViewInit {
     
 
   cancelAdd(id:number) : void {
+    this.isLoading = true;
     this.displayTbppsrm011List = _.filter(this.displayTbppsrm011List, item => {
         return item.id != id;
     });
+    this.isLoading = false;
   }
 
   // 維護彈跳視窗關閉

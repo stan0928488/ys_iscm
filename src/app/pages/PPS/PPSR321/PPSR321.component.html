@@ -1,4 +1,4 @@
-<nz-content style="margin:20px 20px;">
+<nz-content style="margin:20px 50px;">
     <nz-breadcrumb style="margin:16px 0;">
         <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
         <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
@@ -17,13 +17,15 @@
         </button>
 
         <nz-table
+            id="tableId"
             style="margin-top: 20px; margin-bottom: 150px; width:940px"
             nzBordered  
             nzOuterBordered
             #tbppsrm011RowData
             [nzData]="displayTbppsrm011List"
-            [nzPageSize]="20" 
-            [nzScroll]="{ y: '340px' }">
+            [(nzPageSize)]="tablePageSize"
+            [(nzPageIndex)]="tablePageIndex"
+            [nzScroll]="{ y: '400px' }">
             <thead>
                 <tr>
                     <th nzWidth='100px' style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">

@@ -31,6 +31,9 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
   // 鋼種選項拿取載入中
   gradeNolistOfOptionLoading = false;
 
+  tablePageSize = 5;
+  tablePageIndex = 1;
+
   // 表格數據
   tbppsrm011Detail02List : any[] = [
 
@@ -189,6 +192,7 @@ export class PPSR321Detail02Component implements OnInit, AfterViewInit {
 
     const cloneDeepDataList = _.cloneDeep(this.tbppsrm011Detail02List);
     cloneDeepDataList.unshift(newRowData);
+    this.tablePageIndex = 1;
     this.tbppsrm011Detail02List = cloneDeepDataList;
 
     // 通知父元件(PPSR321DetailTabMenuComponent)當前子元件正在新增或編輯中
