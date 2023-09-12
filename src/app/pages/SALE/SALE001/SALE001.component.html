@@ -1,0 +1,111 @@
+<nz-content style="margin:0 16px;">
+    <nz-breadcrumb style="margin:16px 0;">
+        <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
+        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+        <nz-breadcrumb-item>
+            <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
+                <ul>
+                    <li class="active"><a href="#/SaleView/R001"><label style="color:blue">出貨追蹤管理報表</label></a></li>
+                </ul>
+            </tr>
+        </nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <nz-spin [nzSize]="'large'" [nzSpinning]="isSpinning">
+
+        <nz-collapse>
+            <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
+                <div nz-row>
+                    <nz-select [(ngModel)]="searchData.selectedVer_default" style="width: 220px; margin-left:50px;"
+                        nzPlaceHolder="請選擇版本號" (ngModelChange)="getDataList()">
+                        <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label"
+                            [nzValue]="abbr.value"></nz-option>
+                    </nz-select>
+                    <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
+                        <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+                    </button>
+                </div>
+            </nz-collapse-panel>
+        </nz-collapse>
+
+        <nz-table nzSize="small" [nzScroll]="{y: '650px',x:'1000px'}">
+            <thead nzWidth="2000px">
+                <tr>
+                    <th rowSpan="2">產品</th>
+                    <th rowSpan="2">區域</th>
+                    <th [colSpan]="hiddenSwitch ? 1 : 8">
+                        {{titleData[0].title}}
+                        <span *ngIf="hiddenSwitch" nz-icon nzType="right" nzTheme="outline"
+                        (click)="hiddenSwitch = !hiddenSwitch"
+                        ></span>
+                        <span *ngIf="!hiddenSwitch" nz-icon nzType="left" nzTheme="outline"
+                        (click)="hiddenSwitch = !hiddenSwitch"
+                        ></span>
+                    </th>
+                    <th *ngFor="let data of titleData  | slice:1; index as i"
+                    [colSpan]="data.hidden ? 3 : 6">
+                        {{titleData[1].title}}
+                        <span *ngIf="data.hidden" nz-icon nzType="right" nzTheme="outline"
+                        (click)="data.hidden = !data.hidden"
+                        ></span>
+                        <span *ngIf="!data.hidden" nz-icon nzType="left" nzTheme="outline"
+                        (click)="data.hidden = !data.hidden"
+                        ></span>
+                    </th>
+                    <th rowSpan="2">累計出貨量</th>
+                    <th rowSpan="2">月差異實績VS目標</th>
+                </tr>
+                <tr>
+                    <th>出貨目標</th>
+                    <th [hidden]="hiddenSwitch">期初庫存A</th>
+                    <th [hidden]="hiddenSwitch">當月入庫量B</th>
+                    <th [hidden]="hiddenSwitch">本月最大出貨C=A+B</th>
+                    <th [hidden]="hiddenSwitch">出貨(已過帳)</th>
+                    <th [hidden]="hiddenSwitch">檢貨未過帳</th>
+                    <th [hidden]="hiddenSwitch">成品</th>
+                    <th [hidden]="hiddenSwitch">待入庫</th>
+
+                    <ng-container *ngFor="let data of titleData | slice:1; index as i">
+                        <th>{{data.title2}}目標</th>
+                        <th>{{data.title2}}實績</th>
+                        <th [hidden]="data.hidden">成品(A)</th>
+                        <th [hidden]="data.hidden">待入庫(C)</th>
+                        <th [hidden]="data.hidden">假日出貨(C)</th>
+                        <th>次週可出貨量D=(A)+(B)-(C)</th>
+                    </ng-container>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of rowData; index as i">
+                    
+                    <td>{{ data.estimateWeight }}</td>
+                    <td>{{ data.estimateWeight }}</td>
+                    <td>{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+
+                    <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
+                        <td>{{ data.estimateWeight }}</td>
+                        <td>{{ data.estimateWeight }}</td>
+                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
+                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
+                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
+                        <td>{{ data.estimateWeight }}</td>
+                    </ng-container>
+
+                    <td>{{ data.estimateWeight }}</td>
+                    <td>{{ data.estimateWeight }}</td>
+
+                </tr>
+            </tbody>
+        </nz-table>
+
+    </nz-spin>
+
+</nz-content>

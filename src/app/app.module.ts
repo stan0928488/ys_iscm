@@ -144,7 +144,7 @@ import { PPSI202_NonBarEditEndTimeCellEditorComponent  } from './pages/PPS/PPSI2
 import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShopCellEditorComponent';
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
-import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+import { SALE001Component } from './pages/SALE/SALE001/SALE001.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 import { PPSR321DetailTabMenuComponent } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321-detail-tab-menu.component';
 import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
@@ -278,7 +278,7 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShopCellEditorComponent,
     PPSI202_NonBarEditEquipCellEditorComponent,
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
-    PPSR320Component,
+    SALE001Component,
     PPSR321Component,
     PPSR321DetailTabMenuComponent,
     PPSR321Detail01Component,

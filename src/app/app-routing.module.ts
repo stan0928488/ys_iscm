@@ -95,7 +95,7 @@ import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
 import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
-import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+import { SALE001Component } from './pages/SALE/SALE001/SALE001.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 import { PPSR321Detail01Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.component';
 import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321-detail02.component';
@@ -394,7 +394,7 @@ const routes: Routes = [
     path: 'SaleView',
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
-      { path: 'R001', component: PPSR320Component },
+      { path: 'R001', component: SALE001Component },
     ],
     canActivate: [AuthGuard],
   },
