@@ -1927,7 +1927,7 @@ export class PPSService {
 
   getR308VerListData(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getVerList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2203,7 +2203,7 @@ export class PPSService {
 
   getR320Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R320/getPPSR320Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R320/getPPSR320Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
