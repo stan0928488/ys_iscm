@@ -5,7 +5,7 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 //import { zh_TW, NzI18nService, NzMessageService, NzModalService  } from "ng-zorro-antd";
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -205,6 +205,13 @@ export class PPSI210Component implements AfterViewInit {
         }); 
         return formatValue;
       }
+    },
+    { 
+      headerName:'平移日期',
+      field:'OFFLOAD_DATE',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'Action',
@@ -514,7 +521,11 @@ export class PPSI210Component implements AfterViewInit {
         INTERVAL: `0`,
         REQUIREMENT: `　`,
         ISCOMBINE: `Y`,
-        COMBINE_RANGE: `3`
+        COMBINE_RANGE: `3`,
+        MO_SORT : '',
+        OFFLOAD_DATE : null,
+        isOffloadDateDisabled : false, // 平移日期選取器是否禁用
+        offloadDateDisabledTooltip : '' // 平移日期選取器被禁用的說明訊息
       },
     ];
     this.i++;
@@ -1036,6 +1047,10 @@ export class PPSI210Component implements AfterViewInit {
         const ISCOMBINE = this.pickerShopList[i].ISCOMBINE;
         const COMBINE_RANGE = this.pickerShopList[i].COMBINE_RANGE;
         const MO_SORT = this.pickerShopList[i].MO_SORT === undefined ? 'null_string' : this.pickerShopList[i].MO_SORT;
+        this.moSortSelectChange(MO_SORT, this.pickerShopList[i]);
+        const OFFLOAD_DATE = _.isNil(this.pickerShopList[i].OFFLOAD_DATE) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE, 'YYYY-MM-DD').toDate();
+        const isOffloadDateDisabled =  this.pickerShopList[i].isOffloadDateDisabled;
+        const offloadDateDisabledTooltip = this.pickerShopList[i].offloadDateDisabledTooltip;
 
         if (REQUIREMENT === undefined) {
           REQUIREMENT = `　`;
@@ -1048,7 +1063,10 @@ export class PPSI210Component implements AfterViewInit {
           REQUIREMENT,
           ISCOMBINE,
           COMBINE_RANGE,
-          MO_SORT 
+          MO_SORT,
+          OFFLOAD_DATE,
+          isOffloadDateDisabled,
+          offloadDateDisabledTooltip
         });
       }
       this.listOfData = initdata;
@@ -1201,81 +1219,98 @@ export class PPSI210Component implements AfterViewInit {
       myObj.message.create('error', '請選擇「Cell處理順序」');
       return;
     }
-    if (this.nextshopValue === undefined) {
-      myObj.message.create('error', '請選擇「相臨站別平衡策略」');
-      return;
-    }
-    if (this.machineValue === undefined) {
-      myObj.message.create('error', '請選擇「機台平衡策略」');
-      return;
-    }
+    // if (this.nextshopValue === undefined) {
+    //   myObj.message.create('error', '請選擇「相臨站別平衡策略」');
+    //   return;
+    // }
+    // if (this.machineValue === undefined) {
+    //   myObj.message.create('error', '請選擇「機台平衡策略」');
+    //   return;
+    // }
     if (this.FROZAN_GROUP === undefined) {
       myObj.message.create('error', '請輸入「FCP下站合併天數」');
       return;
     }
 
+    const listOfData_cloneDeep = _.cloneDeep(this.listOfData);
+
     // 檢查list 是否有空值
-    for (let i = 0; i < this.listOfData.length; i++) {
-      if (this.listOfData[i].SHOP_CODE === '　') {
+    for (let i = 0; i < listOfData_cloneDeep.length; i++) {
+      if (listOfData_cloneDeep[i].SHOP_CODE === '　') {
         myObj.message.create(
           'error',
-          '「站別策略設定」，第 ' + this.listOfData[i].id + ' 列未設定完整'
+          '「站別策略設定」，第 ' + listOfData_cloneDeep[i].id + ' 列未設定完整'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].SORTING === ''
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].SORTING === ''
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+          listOfData_cloneDeep[i].id +
             ' 列未設定排序，請檢查！'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].INTERVAL != 0 &&
-        (this.listOfData[i].REQUIREMENT === '' ||
-          this.listOfData[i].REQUIREMENT === '　' ||
-          this.listOfData[i].REQUIREMENT === undefined)
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].INTERVAL != 0 &&
+        (listOfData_cloneDeep[i].REQUIREMENT === '' ||
+        listOfData_cloneDeep[i].REQUIREMENT === '　' ||
+        listOfData_cloneDeep[i].REQUIREMENT === undefined)
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+          listOfData_cloneDeep[i].id +
             ' 列有集批天數，卻未設定「集批條件」，請檢查！'
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].ISCOMBINE === 'Y' &&
-        this.listOfData[i].COMBINE_RANGE === 0
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
+        listOfData_cloneDeep[i].COMBINE_RANGE === 0
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+          listOfData_cloneDeep[i].id +
             " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
         );
         return;
       }
       if (
-        this.listOfData[i].SHOP_CODE !== '　' &&
-        this.listOfData[i].ISCOMBINE === 'N' &&
-        this.listOfData[i].COMBINE_RANGE !== 0
+        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+        listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
+        listOfData_cloneDeep[i].COMBINE_RANGE !== 0
       ) {
         myObj.message.create(
           'error',
           '「站別策略設定」，第 ' +
-            this.listOfData[i].id +
+          listOfData_cloneDeep[i].id +
             " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
         );
         return;
       }
+
+      // 平衡設定選擇 offload-psuh 必須選擇平移日期
+      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
+         _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)){
+          myObj.message.create(
+            'error',
+            `
+            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+            平衡設定選擇「offload-psuh」必須選擇平移日期，請檢查！ 
+            `
+          );
+          return;
+      }
+      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
+      listOfData_cloneDeep[i].OFFLOAD_DATE = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE).format('YYYY-MM-DD');
     }
 
     /*
@@ -1329,7 +1364,7 @@ export class PPSI210Component implements AfterViewInit {
         nextshopValue: this.nextshopValue,
         machineValue: this.machineValue,
         FROZAN_GROUP: this.FROZAN_GROUP,
-        listOfData: this.listOfData,
+        listOfData: listOfData_cloneDeep,
         listOfData_dtl: this.listOfData_dtl,
         usercode: this.USERNAME,
         datetime: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
@@ -1496,8 +1531,21 @@ export class PPSI210Component implements AfterViewInit {
         );
         return;
       }
+      // 平衡設定選擇 offload-psuh 必須選擇平移日期
+      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
+      _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)){
+        myObj.message.create(
+          'error',
+          `
+          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+          平衡設定選擇「offload-psuh」必須選擇平移日期，請檢查！ 
+          `
+        );
+        return;
+      }
 
       listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
+      listOfData_cloneDeep[i].OFFLOAD_DATE = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE).format('YYYY-MM-DD');
 
     }
 
@@ -1551,6 +1599,10 @@ export class PPSI210Component implements AfterViewInit {
                   REQUIREMENT: `　`,
                   ISCOMBINE: `Y`,
                   COMBINE_RANGE: `3`,
+                  MO_SORT : '',
+                  OFFLOAD_DATE : null,
+                  isOffloadDateDisabled : false, // 平移日期選取器是否禁用
+                  offloadDateDisabledTooltip : '' // 平移日期選取器被禁用的說明訊息
                 },
               ]);
             this.listOfData_dtl = [
@@ -1651,6 +1703,29 @@ export class PPSI210Component implements AfterViewInit {
       this.moSortListOfOptionLoading = false;
     }
   }
+
+  moSortSelectChange(value, data){
+
+    // 當選擇為「策略預設」則不可選擇平移日期
+    if(_.isEqual(value, 'null_string')){
+      data.OFFLOAD_DATE = null;
+      data.isOffloadDateDisabled = true;
+      data.offloadDateDisabledTooltip = '選擇「策略預設」不可選擇平移日期';
+    }
+    else{
+      data.isOffloadDateDisabled = false;
+      data.offloadDateDisabledTooltip = '';
+    }
+  }
+
+  // 平移日期不能選擇當前日期之前的日期
+  disabledDate = (datePick: Date): boolean => {
+    // 日期選擇器的日期在當前日期之前不能選擇
+    // 例如:(2023-09-11).isBefore(2023-09-12) => true
+    // 2023-09-11此日期無法被使用者選擇
+    return moment(moment(datePick).format('YYYY-MM-DD')).isBefore(moment(new Date()).format('YYYY-MM-DD'));
+  }
+
   
   // 首次渲染資料完畢後被調用
   onFirstDataRendered(event : FirstDataRenderedEvent<any>){

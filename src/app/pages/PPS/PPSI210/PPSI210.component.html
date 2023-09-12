@@ -199,6 +199,7 @@
             <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
             <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
             <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">指定平衡設定</th>
+            <th nzWidth="15%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">平移日期</th>
             <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台規劃<br>優先順序</th>
             <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
           </tr>
@@ -219,7 +220,7 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-select style="width: 270px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder="選擇優先順序" [nzNotFoundContent]="'請選擇順序'" (click)="provinceChange('1', data.SHOP_CODE, '　', i)" [(ngModel)]="data.SORTING" (blur)="stopEdit('')">
+                  <nz-select style="width: 200px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder="選擇優先順序" [nzNotFoundContent]="'請選擇順序'" (click)="provinceChange('1', data.SHOP_CODE, '　', i)" [(ngModel)]="data.SORTING" (blur)="stopEdit('')">
                     <nz-option *ngFor="let s of SortList" [nzValue]="s" [nzLabel]="s"></nz-option>
                   </nz-select>
                 </div>
@@ -241,7 +242,7 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-radio-group style="width: 110px;" [(ngModel)]="data.ISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('1', i, data.ISCOMBINE)">
+                  <nz-radio-group style="width: 90px;" [(ngModel)]="data.ISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('1', i, data.ISCOMBINE)">
                     <label nz-radio-button nzValue="Y">Y</label>
                     <label nz-radio-button nzValue="N">N</label>
                   </nz-radio-group>
@@ -256,7 +257,15 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-select nzPlaceHolder="平衡設定" style="max-width: 150px; width: 100%;" [(ngModel)]="data.MO_SORT" nzShowSearch nzAllowClear (nzOpenChange) = "getMoSortList()" (blur)="stopEdit('')">
+                  <nz-select 
+                    nzPlaceHolder="平衡設定" 
+                    style="max-width: 150px; width: 100%;" 
+                    [(ngModel)]="data.MO_SORT" 
+                    nzShowSearch 
+                    nzAllowClear 
+                    (nzOpenChange)="getMoSortList()"
+                    (ngModelChange)="moSortSelectChange($event, data)"
+                    (blur)="stopEdit('')">
                     <nz-option *ngFor="let moSort of moSortListOfOption" [nzValue]="moSort.method" [nzLabel]="moSort.notesChinese" ></nz-option>
                     <nz-option *ngIf="moSortListOfOptionLoading" nzDisabled nzCustomContent>
                       <span nz-icon nzType="loading" class="loading-icon"></span>
@@ -264,6 +273,16 @@
                   </nz-option>
                   </nz-select>
                 </div>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <nz-date-picker 
+                  [(ngModel)]="data.OFFLOAD_DATE"
+                  [nzDisabled]="data.isOffloadDateDisabled"
+                  nz-tooltip
+                  [nzTooltipTitle]="data.offloadDateDisabledTooltip"
+                  [nzDisabledDate]="disabledDate">
+                </nz-date-picker>
               </td>
 
               <td style="text-align:center; padding: 5px; height: 60px;">
