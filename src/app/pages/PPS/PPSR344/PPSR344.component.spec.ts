@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SALE001Component } from './SALE001.component';
+import { PPSR344Component } from './PPSR344.component';
 
-describe('SALE001Component', () => {
-  let component: SALE001Component;
-  let fixture: ComponentFixture<SALE001Component>;
+describe('PPSR344Component', () => {
+  let component: PPSR344Component;
+  let fixture: ComponentFixture<PPSR344Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SALE001Component ]
+      declarations: [ PPSR344Component ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SALE001Component);
+    fixture = TestBed.createComponent(PPSR344Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

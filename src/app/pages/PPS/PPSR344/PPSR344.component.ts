@@ -11,12 +11,12 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-SALE001',
-  templateUrl: './SALE001.component.html',
-  styleUrls: ['./SALE001.component.scss'],
+  selector: 'app-PPSR344',
+  templateUrl: './PPSR344.component.html',
+  styleUrls: ['./PPSR344.component.scss'],
   providers:[NzMessageService]
 })
-export class SALE001Component implements OnInit {
+export class PPSR344Component implements OnInit {
 
   hiddenSwitch;
   USERNAME;
