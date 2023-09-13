@@ -68,7 +68,8 @@ export class PPSR306Component implements AfterViewInit {
     { headerName:'過帳否',field: 'typeIssue' , filter: false,width: 120 },
     { headerName:'重量',field: 'weight' , filter: false,width: 100 },
     { headerName:'MIC',field: 'mic' , filter: false,width: 130 },
-    { headerName:'尺寸',field: 'dia' , filter: false,width: 100 }
+    { headerName:'尺寸',field: 'dia' , filter: false,width: 100 },
+    { headerName:'營業交期', field: 'dateDeliverySales', filter:false, width: 120 }
  ];
 
   constructor(
