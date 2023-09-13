@@ -16,11 +16,7 @@
         <nz-collapse>
             <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
                 <div nz-row>
-                    <nz-select [(ngModel)]="searchData.selectedVer_default" style="width: 220px; margin-left:50px;"
-                        nzPlaceHolder="請選擇版本號" (ngModelChange)="getDataList()">
-                        <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label"
-                            [nzValue]="abbr.value"></nz-option>
-                    </nz-select>
+                    <nz-date-picker nzMode="month" [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-date-picker>
                     <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
                         <span nz-icon nzType="search" nzTheme="outline"></span>查詢
                     </button>
@@ -33,7 +29,7 @@
                 <tr>
                     <th nzWidth="100px" rowSpan="2">產品</th>
                     <th nzWidth="100px" rowSpan="2">區域</th>
-                    <th [colSpan]="hiddenSwitch ? 1 : 8">
+                    <th style = "background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
                         {{titleData[0].title}}
                         <span *ngIf="hiddenSwitch" nz-icon nzType="right" nzTheme="outline"
                         (click)="hiddenSwitch = !hiddenSwitch"
@@ -42,9 +38,9 @@
                         (click)="hiddenSwitch = !hiddenSwitch"
                         ></span>
                     </th>
-                    <th *ngFor="let data of titleData  | slice:1; index as i"
+                    <th style = "background-color:#BDD7EE;" *ngFor="let data of titleData | slice:1; index as i"
                     [colSpan]="data.hidden ? 3 : 6">
-                        {{titleData[1].title}}
+                        {{data.title}}
                         <span *ngIf="data.hidden" nz-icon nzType="right" nzTheme="outline"
                         (click)="data.hidden = !data.hidden"
                         ></span>
@@ -52,26 +48,26 @@
                         (click)="data.hidden = !data.hidden"
                         ></span>
                     </th>
-                    <th nzWidth="100px" rowSpan="2">累計出貨量</th>
-                    <th nzWidth="100px" rowSpan="2">月差異實績VS目標</th>
+                    <th style = "background-color:#BDD7EE;" nzWidth="100px" rowSpan="2">累計出貨量</th>
+                    <th style = "background-color:#BDD7EE;" nzWidth="100px" rowSpan="2">月差異實績VS目標</th>
                 </tr>
                 <tr>
-                    <th nzWidth="100px" >出貨目標</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">期初庫存A</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">當月入庫量B</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨C=A+B</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">出貨(已過帳)</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">檢貨未過帳</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
-                    <th nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" >出貨目標</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存A</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月入庫量B</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨C=A+B</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨(已過帳)</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">檢貨未過帳</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
 
                     <ng-container *ngFor="let data of titleData | slice:1; index as i">
-                        <th nzWidth="100px">{{data.title2}}目標</th>
-                        <th nzWidth="100px">{{data.title2}}實績</th>
-                        <th nzWidth="100px" [hidden]="data.hidden">成品(A)</th>
-                        <th nzWidth="100px" [hidden]="data.hidden">待入庫(C)</th>
-                        <th nzWidth="100px" [hidden]="data.hidden">假日出貨(C)</th>
-                        <th nzWidth="200px">次週可出貨量D=(A)+(B)-(C)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}目標</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}實績</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">成品(A)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">待入庫(C)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">假日出貨(C)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="180px">次週可出貨量D=(A)+(B)-(C)</th>
                     </ng-container>
 
                 </tr>

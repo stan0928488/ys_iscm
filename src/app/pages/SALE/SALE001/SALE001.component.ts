@@ -21,6 +21,7 @@ export class SALE001Component implements OnInit {
   hiddenSwitch;
   USERNAME;
   PLANT_CODE;
+  date = null;
 
   constructor(
     private PPSService: PPSService,
@@ -35,6 +36,7 @@ export class SALE001Component implements OnInit {
   }
 
   ngOnInit(): void {
+    this.date = new Date();
     this.hiddenSwitch = true;
     this.getDataList();
     this.getVerListData();
@@ -48,6 +50,10 @@ export class SALE001Component implements OnInit {
 
   searchData = {
     selectedVer_default:null,
+  }
+
+  onChange(result: Date): void {
+    console.log('onChange: ', result);
   }
 
   getDataList(){
