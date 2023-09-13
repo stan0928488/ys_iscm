@@ -95,7 +95,7 @@ import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
 import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
-import { SALE001Component } from './pages/SALE/SALE001/SALE001.component';
+import { PPSR344Component } from './pages/PPS/PPSR344/PPSR344.component';
 import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
 import { PPSR321Detail01Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.component';
 import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321-detail02.component';
@@ -116,6 +116,7 @@ import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321
 import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
 import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 
 
 const routes: Routes = [
@@ -394,7 +395,8 @@ const routes: Routes = [
     path: 'SaleView',
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
-      { path: 'R001', component: SALE001Component },
+      { path: 'R001', component: PPSR344Component },
+      { path: 'R002', component: PPSR343Component },
     ],
     canActivate: [AuthGuard],
   },
