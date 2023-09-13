@@ -1297,14 +1297,28 @@ export class PPSI210Component implements AfterViewInit {
         return;
       }
 
+      if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
+        myObj.message.create(
+          'error',
+          `
+          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+          必須選擇指定平衡設定，請檢查！ 
+          `
+        );
+        return;
+      }
+
       // 平衡設定選擇 offload-psuh 必須選擇平移日期
       if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
          _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)){
+
+          const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
+
           myObj.message.create(
             'error',
             `
             「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-            平衡設定選擇「offload-psuh」必須選擇平移日期，請檢查！ 
+            平衡設定選擇「${moSortLabel}」必須選擇平移日期，請檢查！ 
             `
           );
           return;
@@ -1531,14 +1545,28 @@ export class PPSI210Component implements AfterViewInit {
         );
         return;
       }
-      // 平衡設定選擇 offload-psuh 必須選擇平移日期
-      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
-      _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)){
+      
+      if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
         myObj.message.create(
           'error',
           `
           「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-          平衡設定選擇「offload-psuh」必須選擇平移日期，請檢查！ 
+          必須選擇指定平衡設定，請檢查！ 
+          `
+        );
+        return;
+      }
+
+      // 平衡設定選擇 offload-psuh 必須選擇平移日期
+      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
+         _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)) {
+
+        const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
+        myObj.message.create(
+          'error',
+          `
+          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+          平衡設定選擇「${moSortLabel}」必須選擇平移日期，請檢查！ 
           `
         );
         return;
@@ -1706,11 +1734,13 @@ export class PPSI210Component implements AfterViewInit {
 
   moSortSelectChange(value, data){
 
-    // 當選擇為「策略預設」則不可選擇平移日期
-    if(_.isEqual(value, 'null_string')){
+    // 當選擇為「策略預設(null_string)」以及「push(C)」則不可選擇平移日期
+    if(_.includes(['null_string', 'C'], value)){
       data.OFFLOAD_DATE = null;
       data.isOffloadDateDisabled = true;
-      data.offloadDateDisabledTooltip = '選擇「策略預設」不可選擇平移日期';
+      // 取出該選擇的value對應的label
+      const disabledTooltip = this.moSortListOfOption.filter(item => _.isEqual(item.method, value))[0].notesChinese;
+      data.offloadDateDisabledTooltip = `選擇「${disabledTooltip}」不可選擇平移日期`;
     }
     else{
       data.isOffloadDateDisabled = false;
