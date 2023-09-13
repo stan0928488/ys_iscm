@@ -386,7 +386,6 @@ const routes: Routes = [
       { path: '', redirectTo: '/SaleInput/I001', pathMatch: 'full' },
       { path: 'I001', component: ErrorPageComponent },
       { path: 'I002', component: ErrorPageComponent },
-      { path: 'I003', component: ErrorPageComponent },
     ],
     canActivate: [AuthGuard],
   },
