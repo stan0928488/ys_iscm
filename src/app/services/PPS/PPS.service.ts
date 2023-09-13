@@ -2201,9 +2201,9 @@ export class PPSService {
             );
   }
 
-  getR320Data(_data) {
+  getR344Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APINEWURL + `/FCP/R320/getPPSR320Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 

@@ -39,7 +39,6 @@ export class PPSR344Component implements OnInit {
     this.date = new Date();
     this.hiddenSwitch = true;
     this.getDataList();
-    this.getVerListData();
   }
 
   rowData: data[] = [];
@@ -61,7 +60,7 @@ export class PPSR344Component implements OnInit {
     this.isSpinning = true;
     let postData = this.searchData;
     postData['mo_EDITION'] = this.searchData.selectedVer_default;
-    this.PPSService.getR320Data(postData).subscribe(res =>{
+    this.PPSService.getR344Data(postData).subscribe(res =>{
       let result:any = res ;
       if(result && result.datalist.length > 0) {
         console.log(result);
@@ -73,25 +72,6 @@ export class PPSR344Component implements OnInit {
       this.isSpinning = false;
     },err => {
       this.isSpinning = false;
-      this.message.error('網絡請求失敗');
-    })
-
-  }
-
-  getVerListData(){
-
-    let postData = {};
-    this.PPSService.getR308VerListData(postData).subscribe(res =>{
-      let result:any = res ;
-      if(result.length > 0) {
-        for(let i = 0 ; i<result.length ; i++) {
-          this.selectedVer.push({label:result[i].mo_EDITION, value:result[i].mo_EDITION})
-        }
-      } else {
-        this.message.error('無資料');
-        return;
-      }
-    },err => {
       this.message.error('網絡請求失敗');
     })
 
