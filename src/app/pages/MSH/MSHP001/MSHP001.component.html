@@ -172,6 +172,7 @@
     <div *nzModalFooter>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="handleOpCodeModal()">更換作業代碼</button>
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'RF'"  (click)="openSameOpCodeChangeCarModal()">同作業換車</button>
+      <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'BA1'"  (click)="ChangeCarModalBA1()">換車</button>
 
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && (selectEquipCode !== 'RF')"  (click)="handleChangeMachineModal()">更換機台</button>
 
@@ -428,7 +429,7 @@ nzWidth="300"
 <ng-template #selectCarModalTitle>請選擇車輛</ng-template>
 
 <ng-template #selectCarModalContent>
-  <nz-table #basicTable  [nzData]="selectCarTable.tbData" [nzFrontPagination]="false"  >
+  <nz-table style="height:500px;overflow: scroll" #basicTable  [nzData]="selectCarTable.tbData" [nzFrontPagination]="false"  >
     <thead>
       <tr>
         <th>選擇車次</th>
