@@ -1636,7 +1636,7 @@ export class PPSService {
 
   // 取得區域別，報表使用
   getAreaGroup() {
-    let queryUrl = this.APIURL + '/FCP/R302/getAreaGroup';
+    let queryUrl = this.APINEWURL + '/FCP/R302/getAreaGroup';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1821,13 +1821,13 @@ export class PPSService {
 
   convertR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/converData`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/converData`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getPPSR308Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   /////////////////////////////////////////////////////////////
@@ -1915,13 +1915,13 @@ export class PPSService {
 
   getR309Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR309List`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getPPSR309List`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR310Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R310/getPPSR310Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R310/getPPSR310Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 

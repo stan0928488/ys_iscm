@@ -347,12 +347,14 @@ changeCarFlag = '1' ;
  }
  // 確認保存
  comitHandleOpCodeModal(){
-  if(this.changeCarFlag === '1') {
+  if(this.changeCarFlag === '1') { // 換作業代碼換車
     this.saveChangeOpCodeAndCar();
-  } else if(this.changeCarFlag === '2') {
+  } else if(this.changeCarFlag === '2') { // 同作業換車
     this.saveChangeSameOpCodeCar() ;
   }
-  
+  else if(this.changeCarFlag === '3') { // BA1換車
+    this.saveChangeSameOpCodeCar() ;
+  }
   
  }
  //保存修改作業代碼及配車 
@@ -456,7 +458,17 @@ if(this.changeCarFlag === '1') {
 
     }
   })
-  console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+ // console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+}else if(this.changeCarFlag === '3') {
+  this.sameOpCodeChangeCarModal.table.tbData.forEach((item,index,array)=>{
+    if(item.ID === this.selectNewID) {
+      console.log("index: " + index)
+      console.log("selectCarIdTemp: " + selectCarIdTemp)
+      this.sameOpCodeChangeCarModal.table.tbData[index].NEW_CAR_ID = selectCarIdTemp
+
+    }
+  })
+ // console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
 }
  
 this.handleSelectCarModal() ;
@@ -910,7 +922,7 @@ this.handleSelectCarModal() ;
     // let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
     let statisticHeaderColumnDefsTemp = [] ;
     let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:100,hide: false }
-    let header2 = {headerName:"投产機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header2 = {headerName:"投產機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
     let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
     let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
     statisticHeaderColumnDefsTemp.push(header1) ;
@@ -2697,6 +2709,20 @@ this.handleSelectCarModal() ;
       console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
       this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
     }
+    /***BA1換車 */
+    ChangeCarModalBA1(){
+      this.changeCarFlag = '3'
+      this.sameOpCodeChangeCarModal.table.tbData = [] ;
+      this.handleOpCodeIsConfirmLoading = false;
+      let sameOpCodeChangeCarModalTemp = [] ;
+      this.rowSelectData.forEach((item,index,array)=>{
+        let objTemp = {ID:item.ID,ID_NO: item.ID_NO, OP_CODE:item.OP_CODE,OLD_CAR_ID:item.CAR_ID_ADD,CAR_WEIGHT_ADD:item.CAR_WEIGHT_ADD,NEW_CAR_ID:""} ;
+        sameOpCodeChangeCarModalTemp.push(objTemp);
+      }) ;
+      this.sameOpCodeChangeCarModal.table.tbData = sameOpCodeChangeCarModalTemp ;
+      console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+      this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
+    }
     // 空車 
     selectEmptyCar(id:any,idNo:any){
       const saveData = [{id:id,fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,idNo:idNo}]
@@ -2716,7 +2742,16 @@ this.handleSelectCarModal() ;
 
     selectSameOpCodeCarClick(id:any,opCode:any,oldCarId:any,newCarId:any) {
       this.selectCarTable.tbData = [] ;
-      let para = "id="+id +"&opCode="+opCode ;
+      let para = "" ;
+      if(this.selectEquipCode === 'RF') {
+        para = "id="+id +"&opCode="+opCode ;
+      } else if(this.selectEquipCode === 'BA1'){
+        opCode = 'AAAAA' ;
+        para = "id="+id +"&opCode="+opCode ;
+      } else {
+        para = "id="+id +"&opCode="+opCode ;  
+      }
+      
       this.mshService.getFcpCarInfo(para).subscribe(res=>{
         let result:any = res ;
         if(result.code !== 200) {

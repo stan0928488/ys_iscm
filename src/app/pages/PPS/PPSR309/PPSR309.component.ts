@@ -7,6 +7,7 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import * as moment from "moment";
 
 @Component({
   selector: 'app-PPSR309',
@@ -111,6 +112,22 @@ export class PPSR309Component implements OnInit {
       let result:any = res ;
       if(result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
+        this.rowData.forEach((element) => {
+          var temp = element['dateDeliveryPp'] as string;
+          element['dateDeliveryPp'] = moment(temp).format('YYYY-MM-DD');
+
+          temp = element['pst'] as string;
+          if(temp){
+            element['pst'] = moment(temp).format('YYYY-MM-DD');
+          }
+
+          temp = element['dateAcceptable'] as string;
+          element['dateAcceptable'] = moment(temp).format('YYYY-MM-DD');
+
+          temp = element['datePlanInStorage'] as string;
+          element['datePlanInStorage'] = moment(temp).format('YYYY-MM-DD');
+
+        });
       } else {
         this.message.error("版次:"+this.selectedVer_default+"無資料");
       }
@@ -127,7 +144,7 @@ export class PPSR309Component implements OnInit {
     let postData = {};
     postData['mo_EDITION'] = this.selectedVer_default;
     this.PPSService.convertR308Data(postData).subscribe(res =>{
-      if(res['code'] == 1){
+      if(res['code'] == 200){
         this.message.info('結轉成功');
         this.getDataList();
         this.getVerListData();
