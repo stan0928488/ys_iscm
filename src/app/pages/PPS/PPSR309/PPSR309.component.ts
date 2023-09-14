@@ -144,7 +144,7 @@ export class PPSR309Component implements OnInit {
     let postData = {};
     postData['mo_EDITION'] = this.selectedVer_default;
     this.PPSService.convertR308Data(postData).subscribe(res =>{
-      if(res['code'] == 1){
+      if(res['code'] == 200){
         this.message.info('結轉成功');
         this.getDataList();
         this.getVerListData();
