@@ -922,7 +922,7 @@ this.handleSelectCarModal() ;
     // let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
     let statisticHeaderColumnDefsTemp = [] ;
     let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:100,hide: false }
-    let header2 = {headerName:"投产機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header2 = {headerName:"投產機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
     let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
     let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
     statisticHeaderColumnDefsTemp.push(header1) ;
