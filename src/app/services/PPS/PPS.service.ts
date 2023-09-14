@@ -2395,4 +2395,20 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  findLatestPPSR340DataList(){
+    console.log('Api Service 獲取「訂單交期回覆」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/R340/findLatestPPSR340DataList`;
+    console.log(`Api Service 獲取「訂單交期回覆」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「訂單交期回覆」資料 參數 -> 無參數`);
+    return this.http.get(queryUrl);
+  }
+
+  findLatestPPSR341DataList(){
+    console.log('Api Service 獲取「成品庫存現況」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/R341/findLatestPPSR341DataList`;
+    console.log(`Api Service 獲取「成品庫存現況」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「成品庫存現況」資料 參數 -> 無參數`);
+    return this.http.get(queryUrl);
+  }
+
 }
