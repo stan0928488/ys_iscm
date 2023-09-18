@@ -80,5 +80,7 @@ export class PPSR344Component implements OnInit {
 }
 
 interface data {
-  estimateWeight:Number;
+  saleAreaGroup:String
+  chiDesc:String
+  rowspanSize:number
 }

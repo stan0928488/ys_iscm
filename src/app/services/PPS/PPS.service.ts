@@ -2207,6 +2207,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getR343Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R343/getPPSR343Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   addShiftData(shiftData : any){
     console.log('Api Service 新增月推移報表維護資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/addShiftData`;
