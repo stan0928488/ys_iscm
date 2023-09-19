@@ -1815,7 +1815,7 @@ export class PPSService {
 
   getR307DataList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R307/getPPSC307List';
+    let queryUrl = `${this.APINEWURL}/FCP/R307/getPPSC307List`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2099,14 +2099,14 @@ export class PPSService {
 
   getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
-    const queryUrl = `${this.APIURL}/FCP/R311/getShipRepoEditionList`;
+    const queryUrl = `${this.APINEWURL}/FCP/R311/getShipRepoEditionList`;
     console.log(`Api Service 獲取報表維護版次 url -> ${queryUrl}`);
     return this.http.get(queryUrl);
   }
 
   getPPSC311DataList(edition: string) {
     console.log('Api Service 獲取訂單結轉資料');
-    const queryUrl = `${this.APIURL}/FCP/R311/getPPSC311Data/${edition}`;
+    const queryUrl = `${this.APINEWURL}/FCP/R311/getPPSC311Data/${edition}`;
     console.log(`Api Service 獲取訂單節轉資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取訂單節轉資料 參數 -> ${edition}`);
     return this.http.get(queryUrl);
@@ -2114,7 +2114,7 @@ export class PPSService {
 
   getPPSC312Data(edition: string) {
     console.log('Api Service 獲取入庫儲區異動資料');
-    const queryUrl = `${this.APIURL}/FCP/R312/getPPSC312Data/${edition}`;
+    const queryUrl = `${this.APINEWURL}/FCP/R312/getPPSC312Data/${edition}`;
     console.log(`Api Service 獲取入庫儲區異動資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取入庫儲區異動資料 參數 -> ${edition}`);
     return this.http.get(queryUrl);
