@@ -177,6 +177,13 @@ export class PPSI220Component implements AfterViewInit {
       }
     },
     { 
+      headerName:'平移日期',
+      field:'OFFLOAD_DATE',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text',
+    },
+    { 
       headerName:'Action',
       field:'action',
       width:95,
@@ -1179,7 +1186,23 @@ export class PPSI220Component implements AfterViewInit {
 
         // 根據版次獲取該表的資料
         const fcpResObservable$ = this.getPPSService.getFCPResRepoDynamic(fcpEdition);
-        const fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        let fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        const decoder = new TextDecoder('utf-8');
+        fcpRes = decoder.decode(fcpRes);
+
+        let regex = /\r\n/g;
+        fcpRes = fcpRes.replace(regex, '');
+
+        regex = /\[|\]/g;
+        fcpRes = fcpRes.replace(regex, '');
+
+        regex = /\}\{/g;
+        fcpRes = fcpRes.replace(regex, '},{');
+
+        fcpRes = `[${fcpRes}]`;
+
+        fcpRes = JSON.parse(fcpRes);
+
         if(fcpRes.length <= 0){
           this.message.create("error", `該FCP版本：${fcpEdition}，無資料，不可轉出excel`);
           this.LoadingPage = false;
@@ -1191,10 +1214,10 @@ export class PPSI220Component implements AfterViewInit {
         const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
 
         // 擷取出英文的屬性名稱放到firstRow
-        const firstRow = _.keys(excelTitleRes);
+        const firstRow = _.keys(excelTitleRes.data);
 
         // 哪個英文title名稱要轉成哪個中文的title
-        const firstRowDisplay = excelTitleRes;
+        const firstRowDisplay = excelTitleRes.data;
 
         const exportData = [firstRowDisplay, ...fcpRes];
         const workSheet = XLSX.utils.json_to_sheet(exportData, {
@@ -1237,12 +1260,12 @@ export class PPSI220Component implements AfterViewInit {
           const excelTitleObservable$ =  this.getPPSService.getTitleName();
           const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
           // 擷取出英文的屬性名稱放到firstRow
-          const firstRow = _.values(excelTitleRes);
-      
-          
+          const firstRow = _.values(excelTitleRes.data);
+
           this.getPPSService.getFCPResRepo(data).subscribe(res => {
             let result:any = res ;
             this.FCPResRepo = result;
+
             const data = this.formatDataForExcel(this.FCPResRepo);
             let fileName = `FCP結果表`;
             this.excelService.exportAsExcelFile(data, fileName, firstRow);
@@ -1521,8 +1544,28 @@ export class PPSI220Component implements AfterViewInit {
         FROZAN_GROUP: _.get(item, "FROZAN_GROUP"),
         FCP_USE_FLAG: _.get(item, "FCP_USE_FLAG"),
         SALE_ORDER_DIA: _.get(item, "SALE_ORDER_DIA"),
-        SFC_PROCESS: _.get(item, "SFC_PROCESS")
-    
+        SFC_PROCESS: _.get(item, "SFC_PROCESS"),
+        LEFT_PROCESS: _.get(item, "LEFT_PROCESS"),
+        SFC_ROUTING_COUNT: _.get(item, "SFC_ROUTING_COUNT"),
+        MACHINE4: _.get(item, "MACHINE4"),
+        STATUS4: _.get(item, "STATUS4"),
+        WORK_HOURS4: _.get(item, "WORK_HOURS4"),
+        TRANSFER_TIME4: _.get(item, "TRANSFER_TIME4"),
+        MACHINE5: _.get(item, "MACHINE5"),
+        STATUS5: _.get(item, "STATUS5"),
+        WORK_HOURS5: _.get(item, "WORK_HOURS5"),
+        TRANSFER_TIME5: _.get(item, "TRANSFER_TIME5"),
+        MACHINE6: _.get(item, "MACHINE6"),
+        STATUS6: _.get(item, "STATUS6"),
+        WORK_HOURS6: _.get(item, "WORK_HOURS6"),
+        TRANSFER_TIME6: _.get(item, "TRANSFER_TIME6"),
+        MACHINE7: _.get(item, "MACHINE7"),
+        STATUS7: _.get(item, "STATUS7"),
+        WORK_HOURS7: _.get(item, "WORK_HOURS7"),
+        TRANSFER_TIME7: _.get(item, "TRANSFER_TIME7"),
+        URGENCY_ORDER_DESC: _.get(item, "URGENCY_ORDER_DESC"),
+        URGENCY_DATE: _.get(item, "URGENCY_DATE")
+        
       });
       excelData.push(obj);
     }

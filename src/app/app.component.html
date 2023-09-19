@@ -305,6 +305,17 @@
                   </li>
                 </ul>
               </li>
+
+              <li nz-submenu nzTitle="月推移報表">
+                <ul>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/FCPshiftRepo/R321']"> 報表維護 </a>
+                  </li>
+                  <li nz-menu-item>
+                    <a [routerLink]="['/FCPshiftRepo/R322']"> 報表檢視 </a>
+                  </li>
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>
@@ -376,13 +387,10 @@
           <li nz-submenu nzTitle="報表維護" nzIcon="file-text">
             <ul>
               <li nz-menu-item>
-                <a [routerLink]="['/SaleInput/I001']">出貨移轉統計表 </a>
+                <a [routerLink]="['/SaleInput/I001']">訂單交期回覆 </a>
               </li>
               <li nz-menu-item>
-                <a [routerLink]="['/SaleInput/I002']">訂單交期回覆 </a>
-              </li>
-              <li nz-menu-item>
-                <a [routerLink]="['/SaleInput/I003']">成品半成品庫存現況 </a>
+                <a [routerLink]="['/SaleInput/I002']">成品庫存現況 </a>
               </li>
             </ul>
           </li>
@@ -391,6 +399,9 @@
             <ul>
               <li nz-menu-item>
                 <a [routerLink]="['/SaleView/R001']"> 出貨追蹤管理報表​ </a>
+              </li>
+              <li nz-menu-item>
+                <a [routerLink]="['/SaleView/R002']"> 預估週入庫計畫 </a>
               </li>
             </ul>
           </li>

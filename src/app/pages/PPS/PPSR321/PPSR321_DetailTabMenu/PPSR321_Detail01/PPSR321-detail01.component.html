@@ -1,0 +1,103 @@
+<nz-content>
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+
+        <div class="container">
+
+            <div class="headButton">
+                <button
+                    *ngIf="!isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    (click)="edit()">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    修改
+                </button>
+                <button
+                    style="margin-right:10px;"
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary"
+                    nz-popconfirm
+                    nzPopconfirmTitle="確定修改嗎?" 
+                    (nzOnConfirm)="confirm()">
+                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                    確認
+                </button>
+                <button
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    nz-popconfirm
+                    nzPopconfirmTitle="放棄編輯嗎?" 
+                    (nzOnConfirm)="cancel()">
+                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                    取消
+                </button>
+            </div>
+
+            <div class="produceMonth">
+                <span>
+                    <font size="3.5">
+                        <b>
+                        推移生產月份：{{ displayProduceMonth }}
+                        </b>
+                    </font>
+                </span>
+            </div>
+
+            <nz-table
+                style="width:300px"
+                #tbppsrm011Detail01RowData
+                nzBordered  
+                nzOuterBordered
+                [nzData]="tbppsrm011Detail01List" 
+                nzHideOnSinglePage="true">
+                <thead>
+                    <tr>
+                        <th style="text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>產品分類</b></font>
+                        </th>
+                        <th style="text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>目標量</b></font>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let rowData of tbppsrm011Detail01RowData.data;let i = index">
+                        <ng-container [ngSwitch]="isEdit">
+
+                            <ng-container *ngSwitchCase="false">
+                                <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.displayKindType }}</font></td>
+                                <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.goalWeight }}</font></td>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="true">
+                                <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.displayKindType }}</font></td>
+
+                                <ng-container *ngIf="rowData.displayKindType === '合計'; else editTemplate">
+                                    <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.goalWeight }}</font></td>
+                                </ng-container>
+
+                                <ng-template #editTemplate>
+                                    <td style="text-align:center; padding: 10px 0px;">
+                                        <nz-input-number 
+                                            [(ngModel)]="rowData.goalWeight" 
+                                            [nzStep]="1"
+                                            [nzMin]="0"
+                                            (ngModelChange)="sumTotal(rowData.displayKindType)">
+                                        </nz-input-number>
+                                    </td>
+                                </ng-template>
+
+                            </ng-container>
+
+                        </ng-container>
+                    </tr>
+                <tbody>
+            </nz-table>
+        </div>
+    </nz-spin>
+</nz-content>

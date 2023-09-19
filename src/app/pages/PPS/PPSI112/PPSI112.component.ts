@@ -25,14 +25,11 @@ import { GridOptions } from 'ag-grid-community';
 
 interface ItemData {
   id: number;
-  sort: number;
   schShopCode: string;
   equipCode: string;
   cumsumType: string;
   accumulation: number;
   dateLimit: number;
-  condition: string;
-  conditionValue: string;
   useFlag: string;
   dateUpdate: string;
   userUpdate: string;
@@ -58,14 +55,11 @@ export class PPSI112Component implements AfterViewInit {
 
   preEquip;
 
-  sort: number;
   schShopCode: string;
   equipCode: string;
   cumsumType: string;
   accumulation: number;
   dateLimit: number;
-  condition: string;
-  conditionValue: string;
   useFlag: string;
   dateUpdate: string;
   userUpdate: string;
@@ -150,11 +144,6 @@ export class PPSI112Component implements AfterViewInit {
   aaa() {
     this.columnDefs = [
       {
-        headerName: '順序',
-        field: 'sort',
-        width: 65,
-      },
-      {
         headerName: '站別',
         field: 'schShopCode',
         width: 65,
@@ -163,7 +152,7 @@ export class PPSI112Component implements AfterViewInit {
       {
         headerName: '機台',
         field: 'equipCode',
-        width: 65,
+        width: 75,
         editable: false,
       },
       {
@@ -186,20 +175,6 @@ export class PPSI112Component implements AfterViewInit {
         headerName: '強制投產',
         field: 'dateLimit',
         width: 90,
-      },
-      {
-        headerName: '條件',
-        field: 'condition',
-        width: 100,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: this.conditionList,
-        },
-      },
-      {
-        headerName: '條件值',
-        field: 'conditionValue',
-        width: 100,
       },
       {
         headerName: '是否使用',
@@ -250,19 +225,16 @@ export class PPSI112Component implements AfterViewInit {
   displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   async getTBPPSM107() {
-    await this.PPSService.getTBPPSM107().then(async (res) => {
+    await this.PPSService.getTBPPSM107().then((res) => {
       this.myDataList = res;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
           id: this.myDataList[i].id,
-          sort: this.myDataList[i].sort,
           schShopCode: this.myDataList[i].schShopCode,
           equipCode: this.myDataList[i].equipCode,
           cumsumType: this.myDataList[i].cumsumType,
           accumulation: this.myDataList[i].accumulation,
           dateLimit: this.myDataList[i].dateLimit,
-          condition: this.myDataList[i].condition,
-          conditionValue: this.myDataList[i].conditionValue,
           useFlag: this.myDataList[i].useFlag,
           dateUpdate: this.myDataList[i].dateUpdate,
           userUpdate: this.myDataList[i].userUpdate,
@@ -271,30 +243,9 @@ export class PPSI112Component implements AfterViewInit {
       this.displayDataList = this.tbppsm107;
       this.tbppsm107 = [];
       this.myDataList = {};
-      await this.getCondition();
       this.loading = false;
       this.updateEditCache();
     });
-  }
-
-  temp;
-  data = [];
-  async getCondition() {
-    await this.PPSService.getCondition()
-      .toPromise()
-      .then((res: Array<string>) => {
-        // this.conditionList = data.map((item) => item.columnComment);
-        // this.conditionList = res;
-        this.cdRef.detectChanges();
-        this.temp = res;
-        for (let i = 0; i < this.temp.length; i++) {
-          this.data.push(this.temp[i].columnComment);
-        }
-        this.conditionList = this.data;
-        this.data = [];
-        this.temp = [];
-        console.log(this.conditionList);
-      });
   }
 
   changeDisplay() {
@@ -350,15 +301,11 @@ export class PPSI112Component implements AfterViewInit {
     } else if (this.useFlag === '') {
       this.message.create('error', '「是否使用」不可為空');
       return;
-    } else if (this.condition != '-' && this.condition != '鋼種群組') {
-      this.message.create('error', '「條件」目前只能選 - 或鋼種群組; ');
-      return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定新增',
         nzOnOk: () => {
           this.insertSave();
-          this.onInit();
         },
         nzOnCancel: () => {
           console.log('cancel');
@@ -374,14 +321,11 @@ export class PPSI112Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        sort: this.sort,
         schShopCode: this.schShopCode,
         equipCode: this.equipCode,
         cumsumType: this.cumsumType,
         accumulation: this.accumulation,
         dateLimit: this.dateLimit,
-        condition: this.condition,
-        conditionValue: this.conditionValue,
         useFlag: this.useFlag,
         userUpdate: this.userName,
         userCreate: this.userName,
@@ -393,8 +337,10 @@ export class PPSI112Component implements AfterViewInit {
             this.onInit();
             this.getTBPPSM107();
             this.sucessMSG('新增成功', ``);
+            this.loading = false;
           } else {
             this.errorMSG('新增失敗', res[0].MSG);
+            this.loading = false;
           }
         },
         (err) => {
@@ -443,9 +389,6 @@ export class PPSI112Component implements AfterViewInit {
     } else if (rowData.equipCode === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    } else if (rowData.condition != '鋼種群組' && rowData.condition != '-') {
-      myObj.message.create('error', '「條件」目前只能選 - 或鋼種群組');
-      return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
@@ -477,14 +420,11 @@ export class PPSI112Component implements AfterViewInit {
       let obj = {};
       _.extend(obj, {
         id: rowData.id,
-        sort: rowData.sort,
         schShopCode: rowData.schShopCode,
         equipCode: rowData.equipCode,
         cumsumType: rowData.cumsumType,
         accumulation: rowData.accumulation,
         dateLimit: rowData.dateLimit,
-        condition: rowData.condition,
-        conditionValue: rowData.conditionValue,
         useFlag: rowData.useFlag,
         userUpdate: this.userName,
       });
@@ -544,14 +484,11 @@ export class PPSI112Component implements AfterViewInit {
       data = this.formatDataForExcel(this.displayDataList);
       fileName = `直棒累計生產`;
       titleArray = [
-        '順序',
         '站別',
         '機台',
         '累積單位',
         '累積值',
         '強制投產',
-        '條件',
-        '條件值',
         '是否使用',
       ];
     } else {
@@ -567,14 +504,11 @@ export class PPSI112Component implements AfterViewInit {
     for (let item of _displayData) {
       let obj = {};
       _.extend(obj, {
-        sort: _.get(item, 'sort'),
         schShopCode: _.get(item, 'schShopCode'),
         equipCode: _.get(item, 'equipCode'),
         cumsumType: _.get(item, 'cumsumType'),
         accumulation: _.get(item, 'accumulation'),
         dateLimit: _.get(item, 'dateLimit'),
-        condition: _.get(item, 'condition'),
-        conditionValue: _.get(item, 'conditionValue'),
         useFlag: _.get(item, 'useFlag'),
       });
       excelData.push(obj);
@@ -643,24 +577,18 @@ export class PPSI112Component implements AfterViewInit {
       worksheet.C1 === undefined ||
       worksheet.D1 === undefined ||
       worksheet.E1 === undefined ||
-      worksheet.F1 === undefined ||
-      worksheet.G1 === undefined ||
-      worksheet.H1 === undefined ||
-      worksheet.I1 === undefined
+      worksheet.F1 === undefined
     ) {
       this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
       this.clearFile();
       return;
     } else if (
-      worksheet.A1.v !== '順序' ||
-      worksheet.B1.v !== '站別' ||
-      worksheet.C1.v !== '機台' ||
-      worksheet.D1.v !== '累積單位' ||
-      worksheet.E1.v !== '累積值' ||
-      worksheet.F1.v !== '強制投產' ||
-      worksheet.G1.v !== '條件' ||
-      worksheet.H1.v !== '條件值' ||
-      worksheet.I1.v !== '是否使用'
+      worksheet.A1.v !== '站別' ||
+      worksheet.B1.v !== '機台' ||
+      worksheet.C1.v !== '累積單位' ||
+      worksheet.D1.v !== '累積值' ||
+      worksheet.E1.v !== '強制投產' ||
+      worksheet.F1.v !== '是否使用'
     ) {
       this.errorMSG(
         '檔案樣板欄位表頭錯誤',
@@ -676,7 +604,6 @@ export class PPSI112Component implements AfterViewInit {
   // EXCEL 資料上傳 (ppsinptb02_nonbar)
   importExcel(_data) {
     for (let i = 0; i < _data.length; i++) {
-      let sort = _data[i].順序;
       let schShopCode = _data[i].站別;
       let equipCode = _data[i].機台;
       let cumsumType = _data[i].累積單位;
@@ -698,27 +625,21 @@ export class PPSI112Component implements AfterViewInit {
       this.errorMSG('匯入錯誤', this.errorTXT);
     } else {
       for (let i = 0; i < _data.length; i++) {
-        let sort = _data[i].順序.toString();
         let schShopCode = _data[i].站別.toString();
         let equipCode = _data[i].機台.toString();
         let cumsumType = _data[i].累積單位.toString();
         let accumulation = _data[i].累積值.toString();
         let dateLimit = _data[i].強制投產.toString();
-        let condition = _data[i].條件.toString();
-        let conditionValue = _data[i].條件值.toString();
         let useFlag = _data[i].是否使用.toString();
         let userUpdate = this.userName.toString();
         let userCreate = this.userName.toString();
 
         this.importdata_new.push({
-          sort: sort,
           schShopCode: schShopCode,
           equipCode: equipCode,
           cumsumType: cumsumType,
           accumulation: accumulation,
           dateLimit: dateLimit,
-          condition: condition,
-          conditionValue: conditionValue,
           useFlag: useFlag,
           userUpdate: userUpdate,
           userCreate: userCreate,
@@ -732,6 +653,7 @@ export class PPSI112Component implements AfterViewInit {
         obj = {
           EXCELDATA: this.importdata_new,
         };
+        console.log(obj);
         myObj.PPSService.importTBPPSM107Excel('1', obj).subscribe(
           async (res) => {
             if (res[0].MSG === 'Y') {
@@ -794,7 +716,6 @@ export class PPSI112Component implements AfterViewInit {
   }
 
   onBtnClick1(e) {
-    this.getCondition();
     console.log(this.conditionList);
     e.params.api.setFocusedCell(e.params.node.rowIndex, 'accumulation');
     e.params.api.startEditingCell({

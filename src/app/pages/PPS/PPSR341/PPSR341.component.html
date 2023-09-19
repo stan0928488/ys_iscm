@@ -1,0 +1,34 @@
+<nz-content style="margin:20px;">
+
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+        <app-list-sale-input
+            [childrenTabName]="thisTabName">
+        </app-list-sale-input>
+
+        <div style="display:flex;">
+            <button
+                nz-button
+                style="margin-top:20px; margin-left:10px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+                nzType="primary"
+                (click)="exportToExcel()">
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                E X C E L 匯出
+            </button>
+
+            <h3 style ="margin-top:20px; margin-left: auto">
+                結轉時間 : {{ insertDateTime }} 
+            </h3>
+        </div>
+
+        <ag-grid-angular
+            style="width: 100%; height:500px; padding-top:20px;"
+            class="ag-theme-alpine"
+            [columnDefs]="r341ColumnDefs"
+            [gridOptions]="gridOptions"
+            [rowData]="r341RowDataList"
+            [pagination]="true"
+            [animateRows]="true">
+        </ag-grid-angular>
+    </nz-spin>
+
+</nz-content>

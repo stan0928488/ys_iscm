@@ -70,7 +70,8 @@ export class PPSR307Component implements AfterViewInit {
 	  { headerName:'產品ID',field: 'idNo' , filter: false,width: 120 },
 	  { headerName: '形狀' ,field: 'shape' , filter: false,width: 100 },
 	  { headerName:'尺寸',field: 'dia' , filter: false,width: 100 },
-	  { headerName: '凍結部門' ,field: 'frozenDeptName'  ,filter: false,width: 150 }
+	  { headerName: '凍結部門' ,field: 'frozenDeptName'  ,filter: false,width: 150 },
+    { headerName:'營業交期', field: 'dateDeliverySales', filter:false, width: 120 }
  ];
 
   constructor(

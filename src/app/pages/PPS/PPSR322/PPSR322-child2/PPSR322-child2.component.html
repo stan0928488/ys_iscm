@@ -1,0 +1,21 @@
+<nz-table nzSize="small" [nzScroll]="{y: '650px' }">
+    <thead>
+        <tr>
+            <th>產品分類</th>
+            <th>鋼種</th>
+            <th>尺寸(MM)</th>
+            <th>過機量</th>
+            <th>本月過機量</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of listOfData">
+            <td>{{ data.kindType }}</td>
+            <td>{{ data.gradeNo }}</td>
+            <td>{{ data.diaRange }}</td>
+            <td>{{ data.passMachineWeightNow }}</td>
+            <td>{{ data.passMachineWeight }}</td>
+        </tr>
+    </tbody>
+</nz-table>

@@ -79,6 +79,12 @@ category = '' ;
   groupColumList :any = [] ;
   //可以分群的數組
   groupArray = [] ;
+  //搜尋內容
+  searchText: string = '';
+  //搜尋總數
+  searchCount = 0 ;
+  //搜尋Loading
+  searchLoading = false ;
 
   //選擇版本號
   selectFcpVer = '';
@@ -191,8 +197,17 @@ style: any = {
   height: `calc(${this.modalBodyHeight} - ${this.modalBodyPadding} - ${this.modalBodyPadding})`,
   flex: '1 1 auto',
 };
+//統計頭
+statisticHeaderColumnDefs: ColDef[] = [] ;
+statisticRowData = [] ;
+statisticModalIsVisible = false ;
+//統計欄
+public statisticGridOptionsModal: GridOptions;
 
-
+//統計 Modal 
+handleStatisticModal(){
+  this.statisticModalIsVisible = !this.statisticModalIsVisible ;
+}
 
  handleOpCodeModal(){
   this.changeCarFlag = '1' ;
@@ -332,12 +347,14 @@ changeCarFlag = '1' ;
  }
  // 確認保存
  comitHandleOpCodeModal(){
-  if(this.changeCarFlag === '1') {
+  if(this.changeCarFlag === '1') { // 換作業代碼換車
     this.saveChangeOpCodeAndCar();
-  } else if(this.changeCarFlag === '2') {
+  } else if(this.changeCarFlag === '2') { // 同作業換車
     this.saveChangeSameOpCodeCar() ;
   }
-  
+  else if(this.changeCarFlag === '3') { // BA1換車
+    this.saveChangeSameOpCodeCar() ;
+  }
   
  }
  //保存修改作業代碼及配車 
@@ -441,7 +458,17 @@ if(this.changeCarFlag === '1') {
 
     }
   })
-  console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+ // console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+}else if(this.changeCarFlag === '3') {
+  this.sameOpCodeChangeCarModal.table.tbData.forEach((item,index,array)=>{
+    if(item.ID === this.selectNewID) {
+      console.log("index: " + index)
+      console.log("selectCarIdTemp: " + selectCarIdTemp)
+      this.sameOpCodeChangeCarModal.table.tbData[index].NEW_CAR_ID = selectCarIdTemp
+
+    }
+  })
+ // console.log("this.sameOpCodeChangeCarModal.table.tbData:" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
 }
  
 this.handleSelectCarModal() ;
@@ -496,29 +523,50 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
-        if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
-          return { background: 'SandyBrown' };
+        if(params.data["TIMEDIFFFLAG_ADD"] === "1") { // EPST修正
+          if(params.data["COLORFLAG"].toString() === '1') {
+            return  { background: '#FF00FF' }; // 搜索反顏色
+          }
+          return { background: 'SandyBrown' }; // EPST修正反橘色
         } else {
-        console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
+        //console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
-          if(params.data["CAR_WEIGHT_ADD"] < 3900) {
+          if((params.data["PST_MACHINE_ADD"] === 'RF' && params.data["CAR_WEIGHT_ADD"] < 3900) || (params.data["PST_MACHINE_ADD"] === 'BA1' && params.data["CAR_WEIGHT_ADD"] < 3000)) { //低於 3900 淡紅色
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'lightcoral' };
           } else {
             if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
             &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
               if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'white' };
               } else {
-                return { background: 'powderblue' };
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
+                return { background: 'powderblue' };  //換擇業換車 淺藍色
               }
             } else {
-              return { background: 'yellow' };
+              if(params.data["COLORFLAG"].toString() === '1') {
+                return  { background: '#FF00FF' };
+              }
+              return { background: 'yellow' }; //換機台 黃色
             }
           }
         } else {
           if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'white' };
           } else {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'powderblue' };
           }
         }
@@ -544,28 +592,49 @@ this.handleSelectCarModal() ;
       rowDragManaged: true, 
       getRowStyle(params) {
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") {
+          if(params.data["COLORFLAG"].toString() === '1') {
+            return  { background: '#FF00FF' };
+          }
           return { background: 'SandyBrown' };
         } else {
         console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
           if(params.data["CAR_WEIGHT_ADD"] < 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'lightcoral' };
           } else {
             if ((params.data["ORIGINAL_OP_CODE_ADD"] === null || params.data["ORIGINAL_OP_CODE_ADD"] === 'null' || params.data["ORIGINAL_OP_CODE_ADD"] ===undefined  || params.data["ORIGINAL_OP_CODE_ADD"] === "" || params.data["ORIGINAL_OP_CODE_ADD"] === 0)
             &&(params.data["ORIGINAL_CAR_ID_ADD"] === null || params.data["ORIGINAL_CAR_ID_ADD"] === 'null' || params.data["ORIGINAL_CAR_ID_ADD"] ===undefined  || params.data["ORIGINAL_CAR_ID_ADD"] === "" || params.data["ORIGINAL_CAR_ID_ADD"] === 0)) {
               if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'white' };
               } else {
+                if(params.data["COLORFLAG"].toString() === '1') {
+                  return  { background: '#FF00FF' };
+                }
                 return { background: 'powderblue' };
               }
             } else {
+              if(params.data["COLORFLAG"].toString() === '1') {
+                return  { background: '#FF00FF' };
+              }
               return { background: 'yellow' };
             }
           }
         } else {
           if (params.data["ORIGINAL_PST_MACHINE_ADD"] === null || params.data["ORIGINAL_PST_MACHINE_ADD"] === 'null' || params.data["ORIGINAL_PST_MACHINE_ADD"] ===undefined  || params.data["ORIGINAL_PST_MACHINE_ADD"] === "" || params.data["ORIGINAL_PST_MACHINE_ADD"] === 0) {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'white' };
           } else {
+            if(params.data["COLORFLAG"].toString() === '1') {
+              return  { background: '#FF00FF' };
+            }
             return { background: 'powderblue' };
           }
         }
@@ -716,6 +785,20 @@ this.handleSelectCarModal() ;
       })
     })
     this.rowSelectData = rowTemp ;
+     //遍历子层
+     this.rowSelectData.forEach((item,index,array)=>{
+      if(this.searchText === '') {
+        this.rowSelectData[index].COLORFLAG = "0" ;
+      } else {
+      let searchTextArray = this.searchText.split(',') ;
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
+        this.rowSelectData[index].COLORFLAG = "1" ;
+       
+      } else {
+        this.rowSelectData[index].COLORFLAG = "0" ;
+      }
+      }
+    })
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
 
@@ -828,6 +911,131 @@ this.handleSelectCarModal() ;
       }
      
     })
+  }
+  //統計表
+  handleStatisticBtn(){
+    this.statisticModalIsVisible  = true ;
+    this.statisticRowData = [] ;
+    //組合頭部
+    // console.log("groupArray : " + JSON.stringify(this.groupArray))
+    // console.log("groupColumList : " + JSON.stringify(this.groupColumList))
+    // let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+    let statisticHeaderColumnDefsTemp = [] ;
+    let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header2 = {headerName:"投產機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
+    let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
+    let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
+    statisticHeaderColumnDefsTemp.push(header1) ;
+    statisticHeaderColumnDefsTemp.push(header2) ;
+    statisticHeaderColumnDefsTemp.push(header11) ;
+    statisticHeaderColumnDefsTemp.push(header12) ;
+    this.groupColumList.forEach((item1,index,arry)=>{
+      let key1 = item1.columValue ;
+      let value1 = item1.columLabel ;
+      if(this.groupArray.includes(key1)) {
+        console.log("find key key :" + key1) 
+        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:120,hide: false ,filter: true }
+        statisticHeaderColumnDefsTemp.push(header) ;
+      }
+    })
+    // console.log("statisticHeaderColumnDefsTemp: " + JSON.stringify(statisticHeaderColumnDefsTemp)) ;
+    // 拼接統計數據 [精整A] [精整P] [其他] [委外] [直棒已到] [直棒未到] 
+    // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE
+    let header3 = {headerName:"精整A",field:"COLA",rowDrag: false,resizable:true,width:120,hide: false }
+    let header4 = {headerName:"精整P",field:"COLB",rowDrag: false,resizable:true,width:120,hide: false }
+    let header5 = {headerName:"其他",field:"COLC",rowDrag: false,resizable:true,width:120,hide: false }
+    let header6 = {headerName:"委外",field:"COLD",rowDrag: false,resizable:true,width:120,hide: false }
+    let header7 = {headerName:"直棒已到",field:"COLE",rowDrag: false,resizable:true,width:120,hide: false }
+    let header8 = {headerName:"直棒未到",field:"COLF",rowDrag: false,resizable:true,width:120,hide: false }
+    let header9 = {headerName:"總重",field:"COLG",rowDrag: false,resizable:true,width:120,hide: true }
+    statisticHeaderColumnDefsTemp.push(header3) ;
+    statisticHeaderColumnDefsTemp.push(header4) ;
+    statisticHeaderColumnDefsTemp.push(header5) ;
+    statisticHeaderColumnDefsTemp.push(header6) ;
+    statisticHeaderColumnDefsTemp.push(header7) ;
+    statisticHeaderColumnDefsTemp.push(header8) ;
+    statisticHeaderColumnDefsTemp.push(header9) ;
+    this.statisticHeaderColumnDefs = statisticHeaderColumnDefsTemp ;
+
+    this.rowData.forEach((item,index,array)=>{
+      let obj = {} ;
+      obj["SCH_SHOP_CODE"] = this.selectShopCode ;
+      obj["PST_MACHINE"] = this.selectEquipCode ;
+      obj["START_DATE_C"] = item.START_DATE_C ;
+      obj["END_DATE_C"] = item.END_DATE_C ;
+      this.groupArray.forEach((val,index,array)=>{
+        obj[val] = item[val] ;
+      }) ;
+
+        let ids = item.sortId.split(',')
+        // 精整A  COLA 
+        let COLANUM = 0 ; 
+        let COLAARRAY = ["205","301","302"]
+        // 精整P
+        let COLBNUM = 0 ; 
+        let COLBARRAY = ["304","305","306","314","315","324","350","351","352"]
+        // 其他
+        let COLCNUM = 0 ; 
+        let COLCCRRAY = ["206","310"]
+        // 委外
+        let COLDNUM = 0 ; 
+
+        // 直棒已到
+        let COLENUM = 0 ; 
+        // 直棒未到
+        let COLFNUM = 0 ; 
+        // 現況站別 SFC_SHOP_CODE 計劃重量 PLAN_WEIGHT_I 排程站别  站別  SCH_SHOP_CODE 
+        let TOTAL_WEIGHT = 0 ;
+        ids.forEach((val)=>{
+          let SFC_SHOP_CODE_TEMP = this.originalData[val-1].SFC_SHOP_CODE ;
+          let PLAN_WEIGHT_I_TEMP = this.originalData[val-1].PLAN_WEIGHT_I ;
+          let SCH_SHOP_CODE_TEMP = this.originalData[val-1].SCH_SHOP_CODE ;
+          let SORT_GROUP_TEMP = this.originalData[val-1].SORT_GROUP ;
+          let NEXT_SCH_SHOP_CODE_TEMP = this.originalData[val-1].NEXT_SCH_SHOP_CODE ;
+          TOTAL_WEIGHT = TOTAL_WEIGHT + PLAN_WEIGHT_I_TEMP ;
+          if(COLAARRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLANUM = COLANUM + PLAN_WEIGHT_I_TEMP
+          } else if(COLBARRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLBNUM = COLBNUM + PLAN_WEIGHT_I_TEMP
+          }else if(COLCCRRAY.includes(SFC_SHOP_CODE_TEMP)) {
+            COLCNUM = COLCNUM + PLAN_WEIGHT_I_TEMP
+          } else if(SFC_SHOP_CODE_TEMP === "000") {
+            COLDNUM = COLDNUM + PLAN_WEIGHT_I_TEMP
+          } else if((SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP === '1') || (SFC_SHOP_CODE_TEMP ==='400' && NEXT_SCH_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP && SORT_GROUP_TEMP === '1' )) {
+            COLENUM = COLENUM + PLAN_WEIGHT_I_TEMP
+          } else if((SFC_SHOP_CODE_TEMP === SCH_SHOP_CODE_TEMP &&  SORT_GROUP_TEMP !== '1') || SFC_SHOP_CODE_TEMP !== SCH_SHOP_CODE_TEMP) {
+            COLFNUM = COLFNUM +PLAN_WEIGHT_I_TEMP
+          }
+
+        // this.statisticRowData.push(this.originalData[val-1]) 
+      })
+      obj["COLA"] = COLANUM ;
+      obj["COLB"] = COLBNUM ;
+      obj["COLC"] = COLCNUM ;
+      obj["COLD"] = COLDNUM ;
+      obj["COLE"] = COLENUM ;
+      obj["COLF"] = COLFNUM ;
+      obj["COLG"] = TOTAL_WEIGHT ;
+      this.statisticRowData.push(obj) ;
+
+    })
+  
+
+
+   // console.log("rowData : " + JSON.stringify(this.rowData)) 
+    // this.originalData = JSON.parse(localStorage.getItem("originalData"))
+   // console.log("originalData : " + JSON.stringify(JSON.parse(localStorage.getItem("originalData"))))
+    
+    //原始數據調取
+    //this.originalData = JSON.parse(localStorage.getItem("originalData"))
+    //遍歷分群數據
+    //this.rowData.forEach((item,index,array)=>{
+    //  let ids = item.sortId.split(',')
+    //  ids.forEach((val)=>{
+    //    this.rowSortedData.push(this.originalData[val-1]) 
+    //  })
+   // })
+
   }
 
   exportDataByShopCode(exportData,exportHeader){
@@ -1046,6 +1254,13 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(index12);
        //数据类型
        this.columKeyType["TIMEDIFFFLAG_ADD"] = 0 ;
+      //顏色標記 COLORFLAG
+      let indexColor = {headerName:'搜尋',field:'COLORFLAG',rowDrag: false,resizable:true,width:80,hide: true }
+      exportHeader.push("搜尋")
+      this.columnDefs.push(indexColor);
+      this.outsideColumnDefs.push(indexColor);
+      //数据类型
+      this.columKeyType["COLORFLAG"] = 0 ;
 
        //可替换机台 1 ，2， 3
        let indexMachine1 = {headerName:'替換機台1',field:'MACHINE1_ADD',rowDrag: false,resizable:true,width:80,hide: true }
@@ -1060,12 +1275,41 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine2);
        //数据类型
        this.columKeyType["MACHINE2_ADD"] = 0 ;
+       /***Machine3 start  */
        let indexMachine3 = {headerName:'替換機台1',field:'MACHINE3_ADD',rowDrag: false,resizable:true,width:80,hide: true }
        exportHeader.push("替換機台3")
        this.columnDefs.push(indexMachine3);
        this.outsideColumnDefs.push(indexMachine3);
-       //数据类型
        this.columKeyType["MACHINE3_ADD"] = 0 ;
+      /***Machine3 end */
+       /***Machine4 start */
+      let indexMachineADD4 = {headerName:'替換機台ADD4',field:'MACHINE4_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台ADD4")
+       this.columnDefs.push(indexMachineADD4);
+       this.outsideColumnDefs.push(indexMachineADD4);
+       this.columKeyType["MACHINE4_ADD"] = 0 ;
+      /***Machine4 end */
+        /***Machine5 start */
+        let indexMachineADD5 = {headerName:'替換機台ADD5',field:'MACHINE5_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+        exportHeader.push("替換機台ADD5")
+        this.columnDefs.push(indexMachineADD5);
+        this.outsideColumnDefs.push(indexMachineADD5);
+        this.columKeyType["MACHINE5_ADD"] = 0 ;
+       /***Machine5 end */
+         /***Machine6 start */
+      let indexMachineADD6 = {headerName:'替換機台ADD6',field:'MACHINE6_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+      exportHeader.push("替換機台ADD4")
+      this.columnDefs.push(indexMachineADD6);
+      this.outsideColumnDefs.push(indexMachineADD6);
+      this.columKeyType["MACHINE6_ADD"] = 0 ;
+     /***Machine6 end */
+       /***Machine7 start */
+       let indexMachineADD7 = {headerName:'替換機台ADD7',field:'MACHINE7_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("替換機台ADD7")
+       this.columnDefs.push(indexMachineADD7);
+       this.outsideColumnDefs.push(indexMachineADD7);
+       this.columKeyType["MACHINE7_ADD"] = 0 ;
+      /***Machine7 end */
 
        let indexMachine4 = {headerName:'最佳機台',field:'BEST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
        exportHeader.push("最佳機台")
@@ -1073,20 +1317,29 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(indexMachine4);
        //数据类型
        this.columKeyType["BEST_MACHINE_ADD"] = 0 ;
+       // 訂單拼接  SALE_ORDER_ITEM_ADD
+       let SALE_ORDER_ITEM_ADD_index = {headerName:'搜索訂單',field:'SALE_ORDER_ITEM_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       exportHeader.push("搜索訂單")
+       this.columnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       this.outsideColumnDefs.push(SALE_ORDER_ITEM_ADD_index);
+       //数据类型
+       this.columKeyType["SALE_ORDER_ITEM_ADD"] = 0 ;
 
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 ,filter: true}
+            //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120,filter: true }
+           // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
               this.outsideColumnDefs.push(itemTemp);
@@ -1217,7 +1470,11 @@ this.handleSelectCarModal() ;
   initSelectShop(){
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
-    })[0] 
+    })[0]
+    //SETENDDATE
+    if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+      this.searchV0.endDate = shopCodeListTemp.setEndDate
+    }
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
   }
@@ -1233,11 +1490,18 @@ this.handleSelectCarModal() ;
     let shopCodeListTemp =  this.shopCodeList.filter((item)=>{
       return item.value === this.selectShopCode
     })[0] 
+     //SETENDDATE
+    
     this.equipCodeList = shopCodeListTemp.child ;
     this.selectEquipCode = this.equipCodeList[0].value ;
     if(this.selectShopCode !== '401' && this.selectShopCode !== '411' ){
       //日期重置 
-      this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      if(shopCodeListTemp.setEndDate !== null  && shopCodeListTemp.setEndDate !== '' && shopCodeListTemp.setEndDate !== undefined ) {
+        this.searchV0.endDate = shopCodeListTemp.setEndDate
+      } else {
+        this.searchV0.endDate = moment(new Date()).add(14, "days").format(this.mdateFormat) ;
+      }
+      
     }
 
     this.originalData = [] ;
@@ -1391,8 +1655,8 @@ this.handleSelectCarModal() ;
   }
 //排序分群
   formateGroupRow(){
-     console.log("原始數據:" + JSON.stringify(this.rowData))
-     console.log("分群數組:" + JSON.stringify(this.groupArray))
+    // console.log("原始數據:" + JSON.stringify(this.rowData))
+    // console.log("分群數組:" + JSON.stringify(this.groupArray))
     let rowDataTemp = [] ;
     //前一條數據
     let preGroupString = "" ;
@@ -1633,6 +1897,14 @@ this.handleSelectCarModal() ;
           let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
           preGroupObject[key] = arr[arr.length - 1]
         }
+       else if( key === 'ID_NO') { // MO逗號隔開
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          preGroupObject[key] =arr ;
+        } 
+        else if( key === 'SALE_ORDER_ITEM_ADD') { // MO逗號隔開
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          preGroupObject[key] =arr ;
+        } 
         else {
          // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
@@ -1888,7 +2160,41 @@ this.handleSelectCarModal() ;
    handleShopStatusModal(){
     this.shopStatusModalVisiable = !this.shopStatusModalVisiable ;
    }
+   // 搜索
+   handleSearchText(){
+    // this.gridOptions.api.refres(this.rowData) ;
+    // 遍歷 SALE_ORDER
+    console.log("數值：" + this.searchText);
+    this.searchLoading = true ;
+    let countTemp = 0 ;
+    let rowIndexToScrollTo = 0 ;
+    // 遍历外层
+    this.rowData.forEach((item,index,array)=>{
+      if(this.searchText === '') {
+        this.rowData[index].COLORFLAG = "0" ;
+        countTemp = 0;
+      } else {
+      let searchTextArray = this.searchText.split(',') ;
+      if(searchTextArray.some(element => item.ID_NO.includes(element)) || searchTextArray.some(element => item.SALE_ORDER_ITEM_ADD.includes(element)) ) {
+        rowIndexToScrollTo = rowIndexToScrollTo === 0 ? index : rowIndexToScrollTo ;
+        this.rowData[index].COLORFLAG = "1" ;
+        countTemp ++ ;
+       
+      } else {
+        this.rowData[index].COLORFLAG = "0" ;
+      }
+      }
+     
+    })
+   
 
+    this.searchCount = countTemp ;
+    if(countTemp >= 1) {
+      this.gridOptions.api.ensureIndexVisible(rowIndexToScrollTo, 'middle');
+    }
+    this.gridOptions.api.setRowData(this.rowData);
+    this.searchLoading = false ;
+   }
 
     /**EXCEL FUNCTION START parameter */
 
@@ -1925,7 +2231,10 @@ this.handleSelectCarModal() ;
           return ;
         }
         if(item.ACT_PST_MACHINE_ADD !== item.PST_MACHINE_ADD  ) {
-          if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD ) {
+          if(item.ACT_PST_MACHINE_ADD !== item.BEST_MACHINE_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE1_ADD && 
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE2_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE3_ADD &&
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE4_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE5_ADD && 
+            item.ACT_PST_MACHINE_ADD !== item.MACHINE6_ADD && item.ACT_PST_MACHINE_ADD !== item.MACHINE7_ADD) {
             this.nzMessageService.error("替換機台時，提換機台必須在允許替換的機台中")
             return ;
           }
@@ -1958,7 +2267,39 @@ this.handleSelectCarModal() ;
        } else {
         MACHINE3_ADD_Temp = item.MACHINE3_ADD
        }
-       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD,fcpUseFlag:item.FCP_USE_FLAG} ;
+       let MACHINE4_ADD_Temp = ""
+       if(item.MACHINE4_ADD === undefined || item.MACHINE4_ADD === null) {
+        MACHINE4_ADD_Temp = null
+       } else {
+        MACHINE4_ADD_Temp = item.MACHINE4_ADD
+       }
+       let MACHINE5_ADD_Temp = ""
+       if(item.MACHINE5_ADD === undefined || item.MACHINE5_ADD === null) {
+        MACHINE5_ADD_Temp = null
+       } else {
+        MACHINE5_ADD_Temp = item.MACHINE5_ADD
+       }
+       let MACHINE6_ADD_Temp = ""
+       if(item.MACHINE6_ADD === undefined || item.MACHINE6_ADD === null) {
+        MACHINE6_ADD_Temp = null
+       } else {
+        MACHINE6_ADD_Temp = item.MACHINE6_ADD
+       }
+       let MACHINE7_ADD_Temp = ""
+       if(item.MACHINE7_ADD === undefined || item.MACHINE7_ADD === null) {
+        MACHINE7_ADD_Temp = null
+       } else {
+        MACHINE7_ADD_Temp = item.MACHINE7_ADD
+       }
+
+
+       let obj = {id:item.ID,sort:item.sort,actPstMachine:item.ACT_PST_MACHINE_ADD,pstMachine:item.PST_MACHINE_ADD,
+        totalWorkTime:item.TOTAL_WORK_TIME_ADD,bestMachine:BEST_MACHINE_ADD_Temp,workHours:item.WORK_HOURS_ADD,
+        machine1:MACHINE1_ADD_Temp,workHours1:item.WORK_HOURS1_ADD,machine2:MACHINE2_ADD_Temp,workHours2:item.WORK_HOURS2_ADD,
+        machine3:MACHINE3_ADD_Temp,workHours3:item.WORK_HOURS3_ADD,machine4:MACHINE4_ADD_Temp,workHours4:item.WORK_HOURS4_ADD,
+        machine5:MACHINE5_ADD_Temp,workHours5:item.WORK_HOURS5_ADD,machine6:MACHINE6_ADD_Temp,workHours6:item.WORK_HOURS6_ADD,
+        machine7:MACHINE7_ADD_Temp,workHours7:item.WORK_HOURS7_ADD,
+        fcpUseFlag:item.FCP_USE_FLAG} ;
        comitData.push(obj) ;
       })
       //console.log(JSON.stringify(comitData)) ;
@@ -2170,6 +2511,22 @@ this.handleSelectCarModal() ;
           childChangeMachineList.push({"label":item.MACHINE3_ADD,"value":item.MACHINE3_ADD})
           childChangeMachineListTotal.push(item.MACHINE3_ADD)
         }
+        if(item.MACHINE4_ADD !== null && item.MACHINE4_ADD !== '' && item.MACHINE4_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE4_ADD,"value":item.MACHINE4_ADD})
+          childChangeMachineListTotal.push(item.MACHINE4_ADD)
+        }
+        if(item.MACHINE5_ADD !== null && item.MACHINE5_ADD !== '' && item.MACHINE5_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE5_ADD,"value":item.MACHINE5_ADD})
+          childChangeMachineListTotal.push(item.MACHINE5_ADD)
+        }
+        if(item.MACHINE6_ADD !== null && item.MACHINE6_ADD !== '' && item.MACHINE6_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE6_ADD,"value":item.MACHINE6_ADD})
+          childChangeMachineListTotal.push(item.MACHINE6_ADD)
+        }
+        if(item.MACHINE7_ADD !== null && item.MACHINE7_ADD !== '' && item.MACHINE7_ADD !== undefined){
+          childChangeMachineList.push({"label":item.MACHINE7_ADD,"value":item.MACHINE7_ADD})
+          childChangeMachineListTotal.push(item.MACHINE7_ADD)
+        }
         if(item.BEST_MACHINE_ADD !== null && item.BEST_MACHINE_ADD !== '' && item.BEST_MACHINE_ADD !== undefined){
           childChangeMachineList.push({"label":item.BEST_MACHINE_ADD,"value":item.BEST_MACHINE_ADD})
           childChangeMachineListTotal.push(item.BEST_MACHINE_ADD)
@@ -2352,10 +2709,49 @@ this.handleSelectCarModal() ;
       console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
       this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
     }
+    /***BA1換車 */
+    ChangeCarModalBA1(){
+      this.changeCarFlag = '3'
+      this.sameOpCodeChangeCarModal.table.tbData = [] ;
+      this.handleOpCodeIsConfirmLoading = false;
+      let sameOpCodeChangeCarModalTemp = [] ;
+      this.rowSelectData.forEach((item,index,array)=>{
+        let objTemp = {ID:item.ID,ID_NO: item.ID_NO, OP_CODE:item.OP_CODE,OLD_CAR_ID:item.CAR_ID_ADD,CAR_WEIGHT_ADD:item.CAR_WEIGHT_ADD,NEW_CAR_ID:""} ;
+        sameOpCodeChangeCarModalTemp.push(objTemp);
+      }) ;
+      this.sameOpCodeChangeCarModal.table.tbData = sameOpCodeChangeCarModalTemp ;
+      console.log("待換車：" + JSON.stringify(this.sameOpCodeChangeCarModal.table.tbData))
+      this.sameOpCodeChangeCarModal.isVisible = !this.sameOpCodeChangeCarModal.isVisible ;
+    }
+    // 空車 
+    selectEmptyCar(id:any,idNo:any){
+      const saveData = [{id:id,fcpVer:this.selectFcpVer,shopCode:this.selectShopCode,idNo:idNo}]
+      this.mshService.saveChangeEmptyCar(saveData).subscribe(res=>{
+        this.handleOpCodeIsConfirmLoading = false
+        let result:any = res ;
+        if(result.code !== 200) {
+          this.nzMessageService.error(result.message) ;
+        } else {
+          this.nzMessageService.success(result.message);
+          this.sameOpCodeChangeCarModal.isVisible = false ;
+          this.modalTableVisible = false ;
+          this.getTableData() ;
+        }
+      })
+    }
 
     selectSameOpCodeCarClick(id:any,opCode:any,oldCarId:any,newCarId:any) {
       this.selectCarTable.tbData = [] ;
-      let para = "id="+id +"&opCode="+opCode ;
+      let para = "" ;
+      if(this.selectEquipCode === 'RF') {
+        para = "id="+id +"&opCode="+opCode ;
+      } else if(this.selectEquipCode === 'BA1'){
+        opCode = 'AAAAA' ;
+        para = "id="+id +"&opCode="+opCode ;
+      } else {
+        para = "id="+id +"&opCode="+opCode ;  
+      }
+      
       this.mshService.getFcpCarInfo(para).subscribe(res=>{
         let result:any = res ;
         if(result.code !== 200) {

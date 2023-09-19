@@ -143,6 +143,13 @@ export class PPSI230Component implements AfterViewInit {
       }
     },
     { 
+      headerName:'平移日期',
+      field:'OFFLOAD_DATE',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text',
+    },
+    { 
       headerName:'Action',
       field:'action',
       width:95,

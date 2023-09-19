@@ -1,0 +1,182 @@
+<nz-content style="margin:20px 50px;">
+    <nz-breadcrumb style="margin:16px 0;">
+        <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+        <nz-breadcrumb-item>月推移報表</nz-breadcrumb-item>
+        <nz-breadcrumb-item><font size="4">報表維護(PPSR321)</font></nz-breadcrumb-item>
+      </nz-breadcrumb>
+
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+        <button
+            nz-button 
+            class="addBtn"
+            nzType="primary" 
+            (click)="add()">
+            <span nz-icon nzType="file-add" nzTheme="outline"></span>
+            新增
+        </button>
+
+        <nz-table
+            id="tableId"
+            style="margin-top: 20px; margin-bottom: 150px; width:940px"
+            nzBordered  
+            nzOuterBordered
+            #tbppsrm011RowData
+            [nzData]="displayTbppsrm011List"
+            [(nzPageSize)]="tablePageSize"
+            [(nzPageIndex)]="tablePageIndex"
+            [nzScroll]="{ y: '400px' }">
+            <thead>
+                <tr>
+                    <th nzWidth='100px' style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>狀態</b></font>
+                    </th>
+
+                    <th nzWidth='140px' style="height:55px; width:140px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>推移維護版本</b></font>
+                    </th>
+
+                    <th nzWidth='140px' style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>推移生產月份</b></font>
+                    </th>
+
+                    <th nzWidth='80px' style="height:55px; width:80px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>連結</b></font>
+                    </th>  
+
+                    <th nzWidth='180px' style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>建立時間-工號</b></font>
+                    </th>  
+
+                    <th nzWidth='180px' style="height:55px; width:180px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>修改時間-工號</b></font>
+                    </th>  
+
+                    <th nzWidth='120px' style="height:55px; width:120px; text-align:center; background-color: #CED7DE; padding: 2px;">
+                        <font size="3.5"><b>Action</b></font>
+                    </th>  
+                <tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let rowData of tbppsrm011RowData.data;let i = index">
+                    <ng-container [ngSwitch]="rowData.hasNew">
+                        <ng-container *ngSwitchCase="1">
+                            <td style="height:55px; text-align:center; padding: 10px 0px;"><font size="3">{{ getActionStatus(rowData) }}</font></td>
+                            <td style="height:55px; text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.shiftEdition }}</font></td>
+                            <td style="height:55px; width: 140px; text-align:center; padding: 10px 0px;">
+                                <nz-date-picker
+                                    style="width: 120px"
+                                    [(ngModel)]="rowData.produceMonth"
+                                    nzMode="month" 
+                                    [nzFormat]="monthFormat">
+                                </nz-date-picker>
+                            </td>
+                            <td style="height:55px; text-align:center; padding: 10px 0px;"></td>
+                            <td style="height:55px; text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateCreate }} <br/> {{ rowData.userCreate }}</font></td>
+                            <td style="height:55px; text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateUpdate }} <br/> {{ rowData.userUpdate }}</font></td>
+                            <td style="height:55px; text-align:center; padding: 10px 0px;">
+                                <a 
+                                    style="margin-right: 10px;"
+                                    nz-popconfirm
+                                    nzPopconfirmTitle="確定新增嗎?" 
+                                    (nzOnConfirm)="addConfirm(rowData)">
+                                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                                    <font size="3">確定</font>
+                                </a>
+                                <a (click)="cancelAdd(rowData.id)">
+                                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                                    <font size="3">取消</font>
+                                </a>
+                            </td>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="2">
+                            <td style="height:55px; width: 220px; text-align:center; padding: 10px 0px;"><font size="3">{{ getActionStatus(rowData) }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3"></font></td>
+                            <td style="width:140px; text-align:center; padding: 10px 0px;">
+                                <nz-date-picker
+                                    style="width: 120px"
+                                    [(ngModel)]="rowData.produceMonth"
+                                    nzMode="month" 
+                                    [nzFormat]="monthFormat">
+                                </nz-date-picker>
+                            </td>
+                            <td style="text-align:center; padding: 10px 0px;"></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateCreate }} <br/> {{ rowData.userCreate }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateUpdate }} <br/> {{ rowData.userUpdate }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;">
+                                <a 
+                                    style="margin-right: 10px;"
+                                    nz-popconfirm
+                                    nzPopconfirmTitle="確定複製嗎?" 
+                                    (nzOnConfirm)="cloneConfirm(rowData)">
+                                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                                    <font size="3">確定</font>
+                                </a>
+                                <a (click)="cancelAdd(rowData.id)">
+                                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                                    <font size="3">取消</font>
+                                </a>
+                            </td>
+                        </ng-container>
+
+                        <ng-container *ngSwitchDefault>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ getActionStatus(rowData) }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.shiftEdition }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ formatProduceMonth(rowData) }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;">
+                                <a 
+                                    [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                    (click)="maintain(rowData)">
+                                    <font size="3">維護</font>
+                                </a>
+                            </td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateCreate }} <br/> {{ rowData.userCreate }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;"><font size="3">{{ rowData.dateUpdate }} <br/> {{ rowData.userUpdate }}</font></td>
+                            <td style="text-align:center; padding: 10px 0px;">
+                                <a 
+                                    style="margin-right: 10px;" 
+                                    (click)="clone(rowData)">
+                                    <span nz-icon nzType="copy" nzTheme="outline"></span>
+                                    <font size="3">複製</font>
+                                </a>
+                                <a 
+                                    nz-popconfirm 
+                                    [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                    nzPopconfirmTitle="確定刪除嗎?" 
+                                    (nzOnConfirm)="deleteRow(rowData)">
+                                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                                    <font size="3">刪除</font>
+                                </a>
+                            </td>
+                        </ng-container>
+                        
+                    </ng-container>
+                </tr>
+            </tbody>
+
+        </nz-table>
+    </nz-spin>
+</nz-content>
+
+<nz-modal
+    [(nzVisible)]="isVisibleMaintain"
+    [nzWidth]="930" 
+    [nzTitle]="modalTitle" 
+    [nzContent]="modalContent" 
+    [nzMaskClosable]="false"
+    [nzCancelText]="null"
+    [nzOkText]="'關閉'"
+    (nzOnOk)="cancelMaintainModalVisible()"
+    (nzOnCancel)="cancelMaintainModalVisible()">
+
+    <ng-template #modalTitle>推移維護版本：{{ currentShiftEdition }}</ng-template>
+    <ng-template #modalContent>
+        <nz-spin style="z-index:9999;" nzTip="處理中..." [nzSize]="'large'" [nzSpinning] = "isMaintainLoading">
+
+            <app-ppsr321-detail-tab-menu></app-ppsr321-detail-tab-menu>
+
+        </nz-spin>
+    </ng-template>
+</nz-modal>

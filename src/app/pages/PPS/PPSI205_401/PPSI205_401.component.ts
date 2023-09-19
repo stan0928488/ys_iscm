@@ -31,29 +31,6 @@ interface data {
 export class PPSI205_401Component implements AfterViewInit {
   isConvert = false ; 
 
-  titleArray1 = [
-    '月份',
-    '站別',
-    '機台',
-    '產出型態',
-    '產出尺寸',
-    '現況尺寸',
-    '最終製程',
-    '鋼種群組',
-    '製程碼',
-  ];
-  titleArray2 = [
-    '站別',
-    '機台',
-    '下一站站別',
-    '天數',
-    '最大值的EPST或LPST',
-    '生產開始日',
-    '生產結束日',
-    'TC頻率升降冪',
-    'COMPAIGN_ID',
-  ];
-  titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
   titleArray4 = [
     'MO版本',
     '轉入COMPAIGN限制表時間',
@@ -77,7 +54,6 @@ export class PPSI205_401Component implements AfterViewInit {
   DAY = this.inputDate_val;
 
   isLoading = false;
-  isRunFCP = false; // 如為true則不可異動
   file:File;
   importdata = [];
   importdata_new = [];
@@ -251,19 +227,18 @@ export class PPSI205_401Component implements AfterViewInit {
    /* if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       // this.getTbppsm101List();
-    } else */if (tab === 2) {
+    } elseif (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       // this.getTbppsm102List();
-    } else if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1';
+    } else  */if (tab === 3) {
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       // this.getTbppsm113List();
     } else if (tab === 4) {
       // this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=2';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=1&innerSelect=0';
     } else if (tab === 5) {
       // this.getTbppsm100List();
-      window.location.href =
-        '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
+      window.location.href = '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
     }
   }
 

@@ -1,0 +1,33 @@
+<nz-table nzSize="small" [nzScroll]="{y: '650px' }">
+    <thead>
+        <tr>
+            <th>產品別</th>
+            <th>製程</th>
+            <th>入庫量</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of listOfData">
+            <ng-container *ngIf=" data.kindType.indexOf('小計') != -1">
+                <td [colSpan]="2" style="background-color: #00DB00;">{{ data.kindType }}</td>
+                <td style="background-color: #00DB00;">{{ data.planWeightI }}</td>
+            </ng-container>
+            <ng-container *ngIf=" data.kindType.indexOf('小計') == -1">
+                <ng-container [ngSwitch]="data.rowspanSize">
+                    <ng-container *ngSwitchCase="1">
+                        <td>{{ data.process }}</td>
+                        <td>{{ data.planWeightI }}</td>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="999">
+                        <td>{{ data.kindType }}</td>
+                        <td>{{ data.process }}</td>
+                        <td>{{ data.planWeightI }}</td>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <td [rowSpan]="data.rowspanSize">{{ data.kindType }}</td>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </tr>
+    </tbody>
+</nz-table>

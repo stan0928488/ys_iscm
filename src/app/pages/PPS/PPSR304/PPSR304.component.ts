@@ -233,9 +233,25 @@ public autoGroupColumnDef: ColDef = {
         this.importdata_repeat.push(allData);
         let planInStorage = _data[i]['允收截止日'];
         let deliveryPp = _data[i]['可接受交期'];
-
+        let deliveryDateBasis = _data[i]['交期依據'];
+    
         let datePlanInStorage = null;
         let dateDeliveryPp = null;
+
+        // 交期依據不可為空且值只能是「生計」或「營業」
+        if(_.isNil(deliveryDateBasis)){
+          this.errorMSG('輸入錯誤', `Excel中第 ${i+2} 行資料之交期依據不可為空，請檢查。`);
+          this.clearFile();
+          return;
+        }
+        else{
+          deliveryDateBasis = deliveryDateBasis.toString().trim();
+          if(!_.includes(['生計', '營業'], deliveryDateBasis)){
+            this.errorMSG('輸入錯誤', `Excel中第 ${i+2} 行資料之交期依據只能為「生計」或「營業」，請檢查。`);
+            this.clearFile();
+            return;
+          }
+        }
 
         if (planInStorage == undefined) {
           datePlanInStorage = null;
@@ -268,13 +284,12 @@ public autoGroupColumnDef: ColDef = {
           bigStickGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['大棒目標']),
           datePlanInStorage : datePlanInStorage,
           dateAcceptTable :dateDeliveryPp,
-          deliveryDateBasis : !_.isNil(_data[i]['交期依據']) ? _data[i]['交期依據'] : null,
+          deliveryDateBasis : deliveryDateBasis,
           date : moment().format('YYYY-MM-DD HH:mm:ss'),
           user : this.USERNAME
         })
       }
     }
-    
 
     return new Promise((resolve, reject) => {
       console.log("匯入開始");

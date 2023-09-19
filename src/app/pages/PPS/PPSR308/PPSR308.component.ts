@@ -612,7 +612,7 @@ export class PPSR308Component implements OnInit {
     let myObj = this;
     this.PPSService.getAreaGroup().subscribe(res => {
       let result:any = res ;
-      if(result.code === 1) {
+      if(result.code === 200) {
         let areaGroup:any = result.data;
         areaGroup.forEach(e => {
           this.areaGroup.push({label: e.saleAreaGroup, value: e.saleAreaGroup});

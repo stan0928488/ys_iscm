@@ -1,0 +1,40 @@
+<nz-table nzBordered nzSize="small" [nzScroll]="{y: '650px' }">
+    <thead>
+        <tr>
+            <th>產品別</th>
+            <th>機台</th>
+            <th>尺寸(起)</th>
+            <th>尺寸(迄)</th>
+            <th>過機量</th>
+            <th>型態</th>
+            <th>過機日均</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of listOfData">
+            <td [rowSpan]="data.kindTypeRowspanSize" *ngIf="data.kindTypeRowspanSize > 0" >{{data.kindType}}</td>
+            <td [rowSpan]="data.schShopCodeRowspanSize" *ngIf="data.schShopCodeRowspanSize > 0" >{{data.pstMachine}}</td>
+            <ng-container *ngIf="data.kindTypeColSpanSize > 0">
+                <ng-container *ngIf="data.kindType.indexOf('合計') == -1">
+                    <td style="background-color: #92D050;" [colSpan]="data.kindTypeColSpanSize" *ngIf="data.kindTypeColSpanSize != 0" >{{data.kindType}}</td>
+                    <td style="background-color: #92D050;">{{data.passWeight}}</td>
+                    <td style="background-color: #92D050;">{{data.outputShape}}</td>
+                    <td style="background-color: #92D050;">{{data.avgPassWeight}}</td>
+                </ng-container>
+                <ng-container *ngIf="data.kindType.indexOf('合計') != -1">
+                    <td style="background-color: #FFC000;" [colSpan]="data.kindTypeColSpanSize" *ngIf="data.kindTypeColSpanSize != 0" >{{data.kindType}}</td>
+                    <td style="background-color: #FFC000;">{{data.passWeight}}</td>
+                    <td style="background-color: #FFC000;">{{data.outputShape}}</td>
+                    <td style="background-color: #FFC000;">{{data.avgPassWeight}}</td>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="data.kindTypeColSpanSize <= 0">
+                <td>{{data.optimalDiaMin}}</td>
+                <td>{{data.optimalDiaMax}}</td>
+                <td>{{data.passWeight}}</td>
+                <td>{{data.outputShape}}</td>
+                <td>{{data.avgPassWeight}}</td>
+            </ng-container>
+        </tr>
+    </tbody>
+</nz-table>

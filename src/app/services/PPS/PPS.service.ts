@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ConfigService } from '../config/config.service';
 
 import * as _ from 'lodash';
+import { CookieService } from '../config/cookie.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,16 +12,18 @@ export class PPSService {
   APIURL: string = '';
   APINEWURL: string = '';
   httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    headers: new HttpHeaders(
+        { 'Content-Type': 'application/json',
+        'accept-user': this.cookieService.getCookie("USERNAME") }),
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
-    //this.APIURL = this.configService.getAPIURL();
-    this.APIURL = this.configService.getAPIURL('1');
+  constructor(private http: HttpClient, 
+              private configService: ConfigService,
+              private cookieService: CookieService) {
+    this.APIURL = this.configService.getAPIURL();
+    this.APINEWURL = this.configService.getAPIURL('1');
   }
-
-  getPPS;
 
   //Get getPPSINP13List
   getPPSINP13List() {
@@ -1086,14 +1089,6 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  // exportTbppsm102ListExcel 匯出 Excel
-  exportTbppsm102ListExcel(_plantCode) {
-    let queryUrl =
-      this.APIURL + `/FCP/I205/exportTbppsm102ListExcel/${_plantCode}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
-  }
-
   // MO I205_401 MO Edition
   getTbppsm119VerList(_data) {
     const body = JSON.stringify(_data);
@@ -1373,7 +1368,7 @@ export class PPSService {
   //getTitleName 取得excel匯出表頭
   getTitleName() {
     console.log('api service getTitleName');
-    let queryUrl = this.APIURL + `/FCP/I220/getTitleName`;
+    let queryUrl = this.APINEWURL + `/FCP/I220/getTitleName`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1388,10 +1383,10 @@ export class PPSService {
 
   // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
   getFCPResRepoDynamic(_data) {
-    console.log('api service getFCPResRepoDynamic');
-    let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepoDynamic/${_data}`;
+    console.log('api service exportExcelFcp16');
+    let queryUrl = this.APINEWURL + `/FCP/I220/exportExcelFcp16/${_data}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
   //StartFullRunPlan 啟動規劃案--->Full Run
@@ -1641,7 +1636,7 @@ export class PPSService {
 
   // 取得區域別，報表使用
   getAreaGroup() {
-    let queryUrl = this.APIURL + '/FCP/R302/getAreaGroup';
+    let queryUrl = this.APINEWURL + '/FCP/R302/getAreaGroup';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1826,13 +1821,13 @@ export class PPSService {
 
   convertR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/converData`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/converData`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR308Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR308Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getPPSR308Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   /////////////////////////////////////////////////////////////
@@ -1920,19 +1915,19 @@ export class PPSService {
 
   getR309Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getPPSR309List`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getPPSR309List`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR310Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R310/getPPSR310Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R310/getPPSR310Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR308VerListData(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R308/getVerList`;
+    let queryUrl = this.APINEWURL + `/FCP/R308/getVerList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2206,9 +2201,220 @@ export class PPSService {
             );
   }
 
-  getR320Data(_data) {
+  getR344Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/R320/getPPSR320Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
+
+  getR343Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R343/getPPSR343Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  addShiftData(shiftData : any){
+    console.log('Api Service 新增月推移報表維護資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/addShiftData`;
+    console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(shiftData)}`);
+    return this.http.post(queryUrl,  shiftData, this.httpOptions);
+
+  }
+
+  deleteShiftData(shiftEdition : string){
+    console.log('Api Service 刪除「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/deleteShiftData`;
+    const httpParams = new HttpParams()
+      .set('shiftEdition', shiftEdition);
+    console.log(`Api Service 刪除「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 刪除「月推移報表」資料 參數 -> ${shiftEdition}`);
+    return this.http.delete(queryUrl, { headers:this.httpOptions.headers,  params:httpParams });
+  }
+
+  cloneShiftData(rowData : any){
+    console.log('Api Service 複製「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/cloneShiftData`;
+    console.log(`Api Service 複製「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 複製「月推移報表」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+  findAllShiftData(){
+    console.log('Api Service 獲取「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/findAllShiftData`;
+    console.log(`Api Service 獲取「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「月推移報表」資料 參數 -> 無`);
+    return this.http.get(queryUrl);
+  }
+
+  getDetail01ByShiftEdition(shiftEdition : string){
+    const httpParams = new HttpParams()
+      .set('shiftEdition', shiftEdition);
+    console.log('Api Service 獲取「月推移報表」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail01ByShiftEdition`;
+    console.log(`Api Service 獲取「月推移報表」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「月推移報表」資料 參數 -> 無`);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
+  insertOrUpdateDetail01(ppsc321Detail01List : any[]){
+    console.log('Api Service 新增或更新「預計入庫資訊」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertOrUpdateDetail01`;
+    console.log(`Api Service 新增或更新「預計入庫資訊」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增或更新「預計入庫資訊」資料 參數 -> ${JSON.stringify(ppsc321Detail01List)}`);
+    return this.http.post(queryUrl,  ppsc321Detail01List, this.httpOptions);
+
+  }
+
+  findAllGrade(){
+    console.log('Api Service 獲取「鋼種」清單');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/findAllGrade`;
+    console.log(`Api Service 獲取「鋼種」清單 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「鋼種」清單 參數 -> 無`);
+    return this.http.get(queryUrl);
+  }
+
+  insertDetail02(rowData:any){
+    console.log('Api Service 新增「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail02`;
+    console.log(`Api Service 新增「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+  findAllDetail02(shiftEdition:string){
+    const httpParams = new HttpParams()
+    .set('shiftEdition', shiftEdition);
+    console.log('Api Service 查詢「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/findAllDetail02`;
+    console.log(`Api Service 查詢「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 查詢「特殊鋼種量」資料 參數 -> ${shiftEdition}`);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
+  updateDetail02ByPk(rowData:any){
+    console.log('Api Service 更新「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail02ByPk`;
+    console.log(`Api Service 更新「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
+  deleteDetail02ByPk(rowData:any){
+    console.log('Api Service 刪除「特殊鋼種量」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/deleteDetail02ByPk`;
+    console.log(`Api Service 刪除「特殊鋼種量」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 刪除「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.delete(queryUrl, { headers:this.httpOptions.headers, body:rowData });
+  }
+
+  getDetail03ByCondition(shiftEdition:string, masterType:string){
+    const httpParams = new HttpParams()
+    .set('shiftEdition', shiftEdition)
+    .set('masterType', masterType);
+
+    let type = '';
+    if(masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(masterType === '2'){
+      type = '退火生產資訊'
+    }
+    else if(masterType === '3'){
+      type = '排程生產原則說明'
+    }
+
+    console.log(`Api Service 獲取「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail03ByCondition`;
+    console.log(`Api Service 獲取「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「${type}」資料 參數 -> ${shiftEdition},${masterType}`);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
+  updateDetail03ByPk(rowData:any){
+
+    let type = '';
+    if(rowData.masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(rowData.masterType === '2'){
+      type = '退火生產資訊'
+    }
+
+    console.log(`Api Service 更新「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail03ByPk`;
+    console.log(`Api Service 更新「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「${type}」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
+  insertDetail03(rowData:any){
+    let type = '';
+    if(rowData.masterType === '1'){
+        type = '頭份預計回廠日'
+    }
+    else if(rowData.masterType === '2'){
+      type = '退火生產資訊'
+    }
+
+    console.log(`Api Service 新增「${type}」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail03`;
+    console.log(`Api Service 新增「${type}」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增「${type}」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+
+  insertDetail0303Multiple(rowData:any[]){
+    console.log(`Api Service 新增「排程生產原則說明」資料`);
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail0303Multiple`;
+    console.log(`Api Service 新增「排程生產原則說明」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 新增「排程生產原則說明」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl,  rowData, this.httpOptions);
+  }
+
+  updateDetail0303Multiple(rowData:any[]){
+    console.log('Api Service 更新「排程生產原則說明」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail0303Multiple`;
+    console.log(`Api Service 更新「排程生產原則說明」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 更新「排程生產原則說明」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl,  rowData, this.httpOptions);
+  }
+
+  getR322Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R322/getPPSR322Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  
+
+  getR322VerList(_data){
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R322/getVerList`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getR322OtherInfo(_data){
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R322/getOtherInfo`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  findLatestPPSR340DataList(){
+    console.log('Api Service 獲取「訂單交期回覆」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/R340/findLatestPPSR340DataList`;
+    console.log(`Api Service 獲取「訂單交期回覆」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「訂單交期回覆」資料 參數 -> 無參數`);
+    return this.http.get(queryUrl);
+  }
+
+  findLatestPPSR341DataList(){
+    console.log('Api Service 獲取「成品庫存現況」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/R341/findLatestPPSR341DataList`;
+    console.log(`Api Service 獲取「成品庫存現況」資料 url -> ${queryUrl}`);
+    console.log(`Api Service 獲取「成品庫存現況」資料 參數 -> 無參數`);
+    return this.http.get(queryUrl);
+  }
+
 }

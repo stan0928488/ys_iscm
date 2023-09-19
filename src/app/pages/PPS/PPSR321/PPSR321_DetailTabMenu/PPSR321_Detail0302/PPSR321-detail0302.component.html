@@ -1,0 +1,62 @@
+<nz-content>
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+
+        <div class="container">
+            <div class="headButton">
+                <button
+                    *ngIf="!isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    (click)="edit()">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    修改
+                </button>
+                <button
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary"
+                    nz-popconfirm
+                    nzPopconfirmTitle="確定修改嗎?" 
+                    (nzOnConfirm)="confirm()">
+                    <span nz-icon nzType="check" nzTheme="outline"></span>
+                    確認
+                </button>
+                <button
+                    *ngIf="isEdit"
+                    nz-button 
+                    class="btn"
+                    nzType="primary" 
+                    nz-popconfirm
+                    nzPopconfirmTitle="放棄編輯嗎?" 
+                    (nzOnConfirm)="cancel()">
+                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                    取消
+                </button>
+            </div>
+
+            <nz-card
+                *ngIf="!isEdit"
+                style="width:100%;">
+                <p style="color: grey;" *ngIf="detail0302Obj.instructions === ''">無資料</p>
+                <p 
+                    style="white-space: pre-wrap;"
+                    *ngIf="detail0302Obj.instructions !== ''">
+                    {{ detail0302Obj.instructions }}
+                </p>
+            </nz-card>
+
+            <textarea 
+                style="width:100%; padding:25px; box-sizing:border-box;"
+                *ngIf="isEdit"
+                nz-input 
+                placeholder="請輸入說明" 
+                nzAutosize
+                [(ngModel)]="detail0302ObjEditCache.instructions">
+            </textarea>
+
+        </div>
+
+    </nz-spin>
+</nz-content>

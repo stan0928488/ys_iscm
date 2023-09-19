@@ -1,3 +1,4 @@
+import { NZ_I18N, zh_TW } from 'ng-zorro-antd/i18n';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ZorroCompomentModule } from './shared/zorro-compoment/zorro-compoment.module';
@@ -143,8 +144,26 @@ import { PPSI202_NonBarEditEndTimeCellEditorComponent  } from './pages/PPS/PPSI2
 import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShopCellEditorComponent';
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
-import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
-
+import { PPSR344Component } from './pages/PPS/PPSR344/PPSR344.component';
+import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
+import { PPSR321DetailTabMenuComponent } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321-detail-tab-menu.component';
+import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
+import { PPSR322Child1Component } from './pages/PPS/PPSR322/PPSR322-child1/PPSR322-child1.component';
+import { PPSR322Child2Component } from './pages/PPS/PPSR322/PPSR322-child2/PPSR322-child2.component';
+import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR322-child3.component';
+import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
+import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
+import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
+import { PPSR321Detail01Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.component';
+import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321-detail02.component';
+import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
+import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
+import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
+import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
+import { ListSaleInputComponent } from './pages/PPS/list-sale-input/list-sale-input.component';
+import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
+import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 
 registerLocaleData(zh);
 
@@ -263,7 +282,26 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShopCellEditorComponent,
     PPSI202_NonBarEditEquipCellEditorComponent,
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
-    PPSR320Component,
+    PPSR344Component,
+    PPSR321Component,
+    PPSR321DetailTabMenuComponent,
+    PPSR321Detail01Component,
+    PPSR321Detail02Component,
+    PPSR322Component,
+    PPSR322Child1Component,
+    PPSR322Child2Component,
+    PPSR322Child3Component,
+    PPSR322Child4Component,
+    PPSR322Child5Component,
+    PPSR322Child6Component,
+    PPSR321Detail0301Component,
+    PPSR321Detail0302Component,
+    PPSR321Detail0303Component,
+    PPSR322Child7Component,
+    PPSR343Component,
+    ListSaleInputComponent,
+    PPSR340Component,
+    PPSR341Component,
   ],
   imports: [
     BrowserModule,
@@ -285,7 +323,9 @@ registerLocaleData(zh);
     }),
     ///////
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: NZ_I18N, useValue: zh_TW }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

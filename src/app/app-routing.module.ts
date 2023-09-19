@@ -95,7 +95,30 @@ import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { PPSR312Component } from './pages/PPS/PPSR312/PPSR312.component';
 import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_TabMenu.component';
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
-import { PPSR320Component } from './pages/PPS/PPSR320/PPSR320.component';
+import { PPSR344Component } from './pages/PPS/PPSR344/PPSR344.component';
+import { PPSR321Component } from './pages/PPS/PPSR321/PPSR321.component';
+import { PPSR321Detail01Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.component';
+import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321-detail02.component';
+import { PPSR321CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321.CanDeactivateGuard';
+import { PPSR321Detail01CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail01/PPSR321-detail01.CanDeactivateGuard';
+import { PPSR322Component } from './pages/PPS/PPSR322/PPSR322.component';
+import { PPSR322Child1Component } from './pages/PPS/PPSR322/PPSR322-child1/PPSR322-child1.component';
+import { PPSR322Child2Component } from './pages/PPS/PPSR322/PPSR322-child2/PPSR322-child2.component';
+import { PPSR322Child3Component } from './pages/PPS/PPSR322/PPSR322-child3/PPSR322-child3.component';
+import { PPSR322Child4Component } from './pages/PPS/PPSR322/PPSR322-child4/PPSR322-child4.component';
+import { PPSR322Child5Component } from './pages/PPS/PPSR322/PPSR322-child5/PPSR322-child5.component';
+import { PPSR322Child6Component } from './pages/PPS/PPSR322/PPSR322-child6/PPSR322-child6.component';
+import { PPSR321Detail02CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail02/PPSR321Detail02CanDeactivateGuard';
+import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321-detail0301.component';
+import { PPSR321Detail0301CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
+import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
+import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
+import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
+import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
+import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 
 
 const routes: Routes = [
@@ -269,6 +292,56 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'FCPshiftRepo',
+    children: [
+      { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
+      { 
+        path: 'R321', 
+        component: PPSR321Component,
+        canDeactivate: [PPSR321CanDeactivateGuard],
+        children : [
+          { 
+            path: 'detail01', 
+            component: PPSR321Detail01Component,
+            canDeactivate: [PPSR321Detail01CanDeactivateGuard],
+          },
+          { 
+            path: 'detail02', 
+            component: PPSR321Detail02Component,
+            canDeactivate:[PPSR321Detail02CanDeactivateGuard], 
+          },
+          { 
+            path: 'detail0301', 
+            component: PPSR321Detail0301Component,
+            canDeactivate:[PPSR321Detail0301CanDeactivateGuard]
+          },
+          { 
+            path: 'detail0302', 
+            component: PPSR321Detail0302Component,
+            canDeactivate:[PPSR321Detail0302CanDeactivateGuard]
+          },
+          { 
+            path: 'detail0303', 
+            component: PPSR321Detail0303Component,
+            canDeactivate:[PPSR321Detail0303CanDeactivateGuard]
+          }
+        ]
+       },
+      { path: 'R322', component: PPSR322Component ,
+      children: [
+        { path: '', redirectTo: 'R322_1' },
+        { path: 'R322_1', component: PPSR322Child1Component },
+        { path: 'R322_2', component: PPSR322Child2Component },
+        { path: 'R322_3', component: PPSR322Child3Component },
+        { path: 'R322_4', component: PPSR322Child4Component },
+        { path: 'R322_5', component: PPSR322Child5Component },
+        { path: 'R322_6', component: PPSR322Child6Component },
+        { path: 'R322_7', component: PPSR322Child7Component },
+      ]},
+    ],
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'MSHSet',
     children: [
       { path: '', redirectTo: '/MSHSet/I001', pathMatch: 'full' },
@@ -313,9 +386,8 @@ const routes: Routes = [
     path: 'SaleInput',
     children: [
       { path: '', redirectTo: '/SaleInput/I001', pathMatch: 'full' },
-      { path: 'I001', component: ErrorPageComponent },
-      { path: 'I002', component: ErrorPageComponent },
-      { path: 'I003', component: ErrorPageComponent },
+      { path: 'I001', component: PPSR340Component },
+      { path: 'I002', component: PPSR341Component },
     ],
     canActivate: [AuthGuard],
   },
@@ -324,7 +396,8 @@ const routes: Routes = [
     path: 'SaleView',
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
-      { path: 'R001', component: PPSR320Component },
+      { path: 'R001', component: PPSR344Component },
+      { path: 'R002', component: PPSR343Component },
     ],
     canActivate: [AuthGuard],
   },

@@ -47,8 +47,8 @@
             <th nzWidth="5%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
-            <th nzWidth="5%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
-            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
           </tr>
@@ -175,15 +175,15 @@
             <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
             <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
-            <th nzWidth="9%" colspan = "7" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+            <th nzWidth="9%" colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
           </tr>
           <tr>
-            <th nzWidth="5%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
-            <th nzWidth="5%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
-            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">相臨站別<br>平衡排序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">機台<br>平衡策略</th>
+            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
             <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
           </tr>
         </thead>
@@ -219,8 +219,8 @@
             <td style="font-size: 11px; padding: 4px;">{{data.INITIALFLAG}}</td>
             <td style="font-size: 11px; padding: 4px;">{{data.MOSORTNA}}</td>
             <td style="font-size: 11px; padding: 4px;">{{data.CELLSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.NEXTSHOPSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.MACHINESORTNA}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.NEXTSHOPSORTNA}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.MACHINESORTNA}}</td>
             <td style="text-align:center;font-size: 11px; padding: 4px;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
           </tr>
 

@@ -1,0 +1,16 @@
+:host .addBtn {
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); 
+    padding:0px 10px 0px 10px;
+}
+
+.aDeleteDisabled {
+    color: gray;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+:host ::ng-deep .ant-spin-container {
+    display: inline-block;
+}

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PPSR320Component } from './PPSR320.component';
+import { PPSR322Child5Component } from './PPSR322-child5.component';
 
-describe('PPSR320Component', () => {
-  let component: PPSR320Component;
-  let fixture: ComponentFixture<PPSR320Component>;
+describe('PPSR322Child5Component', () => {
+  let component: PPSR322Child5Component;
+  let fixture: ComponentFixture<PPSR322Child5Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PPSR320Component ]
+      declarations: [ PPSR322Child5Component ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PPSR320Component);
+    fixture = TestBed.createComponent(PPSR322Child5Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
