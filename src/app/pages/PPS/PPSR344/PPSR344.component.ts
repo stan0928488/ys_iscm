@@ -21,7 +21,13 @@ export class PPSR344Component implements OnInit {
   hiddenSwitch;
   USERNAME;
   PLANT_CODE;
-  date = null;
+  rowData: data[] = [];
+  titleData: any[] = [];    
+  selectedVer = [{label:'',value:''}]; //版本选择
+  isSpinning = false;
+  searchData = {
+    date:null
+  }
 
   constructor(
     private PPSService: PPSService,
@@ -36,19 +42,9 @@ export class PPSR344Component implements OnInit {
   }
 
   ngOnInit(): void {
-    this.date = new Date();
+    this.searchData.date = new Date();
     this.hiddenSwitch = true;
     this.getDataList();
-  }
-
-  rowData: data[] = [];
-  titleData: any[] = [];    
-  
-  selectedVer = [{label:'',value:''}]; //版本选择
-  isSpinning = false;
-
-  searchData = {
-    selectedVer_default:null,
   }
 
   onChange(result: Date): void {
@@ -59,7 +55,6 @@ export class PPSR344Component implements OnInit {
 
     this.isSpinning = true;
     let postData = this.searchData;
-    postData['mo_EDITION'] = this.searchData.selectedVer_default;
     this.PPSService.getR344Data(postData).subscribe(res =>{
       let result:any = res ;
       if(result && result.datalist.length > 0) {
@@ -67,7 +62,7 @@ export class PPSR344Component implements OnInit {
         this.rowData = JSON.parse(JSON.stringify(result.datalist));
         this.titleData = JSON.parse(JSON.stringify(result.sald001HeaderInfoList));
       } else {
-        this.message.error("版次:"+this.searchData.selectedVer_default+"無資料");
+        this.message.error("無資料");
       }
       this.isSpinning = false;
     },err => {
@@ -83,4 +78,5 @@ interface data {
   saleAreaGroup:String
   chiDesc:String
   rowspanSize:number
+  weight:number
 }
