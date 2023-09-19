@@ -17,7 +17,7 @@
         <nz-collapse>
             <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
                 <div nz-row>
-                    <nz-date-picker nzMode="month" [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-date-picker>
+                    <nz-date-picker nzMode="month" [(ngModel)]="searchData.date" (ngModelChange)="onChange($event)"></nz-date-picker>
                     <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
                         <span nz-icon nzType="search" nzTheme="outline"></span>查詢
                     </button>
@@ -85,7 +85,7 @@
                     <td [hidden]="hiddenSwitch"></td>
                     <td [hidden]="hiddenSwitch"></td>
                     <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch">{{data.weight}}</td>
                     <td [hidden]="hiddenSwitch"></td>
 
                     <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
