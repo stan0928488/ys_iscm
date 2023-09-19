@@ -1368,7 +1368,7 @@ export class PPSService {
   //getTitleName 取得excel匯出表頭
   getTitleName() {
     console.log('api service getTitleName');
-    let queryUrl = this.APIURL + `/FCP/I220/getTitleName`;
+    let queryUrl = this.APINEWURL + `/FCP/I220/getTitleName`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1383,10 +1383,10 @@ export class PPSService {
 
   // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
   getFCPResRepoDynamic(_data) {
-    console.log('api service getFCPResRepoDynamic');
-    let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepoDynamic/${_data}`;
+    console.log('api service exportExcelFcp16');
+    let queryUrl = this.APINEWURL + `/FCP/I220/exportExcelFcp16/${_data}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
   //StartFullRunPlan 啟動規劃案--->Full Run

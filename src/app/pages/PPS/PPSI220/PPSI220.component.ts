@@ -1186,7 +1186,23 @@ export class PPSI220Component implements AfterViewInit {
 
         // 根據版次獲取該表的資料
         const fcpResObservable$ = this.getPPSService.getFCPResRepoDynamic(fcpEdition);
-        const fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        let fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        const decoder = new TextDecoder('utf-8');
+        fcpRes = decoder.decode(fcpRes);
+
+        let regex = /\r\n/g;
+        fcpRes = fcpRes.replace(regex, '');
+
+        regex = /\[|\]/g;
+        fcpRes = fcpRes.replace(regex, '');
+
+        regex = /\}\{/g;
+        fcpRes = fcpRes.replace(regex, '},{');
+
+        fcpRes = `[${fcpRes}]`;
+
+        fcpRes = JSON.parse(fcpRes);
+
         if(fcpRes.length <= 0){
           this.message.create("error", `該FCP版本：${fcpEdition}，無資料，不可轉出excel`);
           this.LoadingPage = false;
@@ -1198,10 +1214,10 @@ export class PPSI220Component implements AfterViewInit {
         const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
 
         // 擷取出英文的屬性名稱放到firstRow
-        const firstRow = _.keys(excelTitleRes);
+        const firstRow = _.keys(excelTitleRes.data);
 
         // 哪個英文title名稱要轉成哪個中文的title
-        const firstRowDisplay = excelTitleRes;
+        const firstRowDisplay = excelTitleRes.data;
 
         const exportData = [firstRowDisplay, ...fcpRes];
         const workSheet = XLSX.utils.json_to_sheet(exportData, {
@@ -1244,12 +1260,12 @@ export class PPSI220Component implements AfterViewInit {
           const excelTitleObservable$ =  this.getPPSService.getTitleName();
           const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
           // 擷取出英文的屬性名稱放到firstRow
-          const firstRow = _.values(excelTitleRes);
-      
-          
+          const firstRow = _.values(excelTitleRes.data);
+
           this.getPPSService.getFCPResRepo(data).subscribe(res => {
             let result:any = res ;
             this.FCPResRepo = result;
+
             const data = this.formatDataForExcel(this.FCPResRepo);
             let fileName = `FCP結果表`;
             this.excelService.exportAsExcelFile(data, fileName, firstRow);
