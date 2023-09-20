@@ -430,6 +430,14 @@
               </li>
             </ul>
           </li>
+
+          <li nz-submenu nzTitle="生產訂單" nzIcon="setting">
+            <ul>
+              <li nz-menu-item>
+                <a [routerLink]="['/POM/P001']"> 假分配 </a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </li>
 
@@ -538,12 +546,15 @@
       />
     </nz-header>
 
-    <router-outlet
-      (activate)="componentAdded($event)"
-      (deactivate)="componentRemoved($event)"
-    ></router-outlet>
+    <!-- router outlet area -->
+    <div class="router-outlet-area">
+      <router-outlet
+        (activate)="componentAdded($event)"
+        (deactivate)="componentRemoved($event)"
+      ></router-outlet>
+    </div>
 
-    <nz-footer style="text-align: center">
+    <nz-footer style="text-align: center; padding: 8px">
       Copyright © Walsin Lihwa Corp. All Rights Reserved.
     </nz-footer>
   </nz-layout>

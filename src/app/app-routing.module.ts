@@ -123,6 +123,8 @@ import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 
+import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
+
 const routes: Routes = [
   {
     path: 'login',
@@ -466,6 +468,15 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/TRAInput/I001', pathMatch: 'full' },
       { path: 'I001', component: TRAP001component },
+    ],
+    canActivate: [AuthGuard],
+  },
+  /* POM  */
+  {
+    path: 'POM',
+    children: [
+      { path: '', redirectTo: '/POM/P001', pathMatch: 'full' },
+      { path: 'P001', component: POMP001Component },
     ],
     canActivate: [AuthGuard],
   },
