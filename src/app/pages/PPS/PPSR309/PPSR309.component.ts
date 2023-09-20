@@ -114,7 +114,9 @@ export class PPSR309Component implements OnInit {
         this.rowData = JSON.parse(JSON.stringify(result));
         this.rowData.forEach((element) => {
           var temp = element['dateDeliveryPp'] as string;
-          element['dateDeliveryPp'] = moment(temp).format('YYYY-MM-DD');
+          if(temp){
+            element['dateDeliveryPp'] = moment(temp).format('YYYY-MM-DD');
+          }
 
           temp = element['pst'] as string;
           if(temp){
