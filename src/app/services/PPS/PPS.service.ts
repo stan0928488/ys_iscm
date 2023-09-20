@@ -1389,6 +1389,16 @@ export class PPSService {
     return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
+   // 刪除在後端產生的檔案避免佔用容量
+   deleteFcp16File(fileName : string) {
+    const httpParams = new HttpParams()
+      .set('fileName', fileName);
+    console.log('api service deleteFcp16File');
+    let queryUrl = `${this.APINEWURL}/FCP/I220/deleteFcp16File`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
   //StartFullRunPlan 啟動規劃案--->Full Run
   StartFullRunPlan(_plan, _flag, _type) {
     // _type: A手動啟動、B排程啟動
