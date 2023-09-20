@@ -17,7 +17,7 @@
         <nz-collapse>
             <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
                 <div nz-row>
-                    <nz-date-picker nzMode="month" [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-date-picker>
+                    <nz-date-picker nzMode="month" [(ngModel)]="searchData.date" (ngModelChange)="onChange($event)"></nz-date-picker>
                     <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
                         <span nz-icon nzType="search" nzTheme="outline"></span>查詢
                     </button>
@@ -76,28 +76,29 @@
             <tbody>
                 <tr *ngFor="let data of rowData; index as i">
                     
-                    <td>{{ data.estimateWeight }}</td>
-                    <td>{{ data.estimateWeight }}</td>
-                    <td>{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
-                    <td [hidden]="hiddenSwitch">{{ data.estimateWeight }}</td>
+                    <td [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0" >{{data.chiDesc}}</td>
+
+                    <td>{{ data.saleAreaGroup }}</td>
+                    <td></td>
+                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch"></td>
+                    <td [hidden]="hiddenSwitch">{{data.weight}}</td>
+                    <td [hidden]="hiddenSwitch"></td>
 
                     <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
-                        <td>{{ data.estimateWeight }}</td>
-                        <td>{{ data.estimateWeight }}</td>
-                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
-                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
-                        <td [hidden]="dataTitle.hidden">{{ data.estimateWeight }}</td>
-                        <td>{{ data.estimateWeight }}</td>
+                        <td></td>
+                        <td></td>
+                        <td [hidden]="dataTitle.hidden"></td>
+                        <td [hidden]="dataTitle.hidden"></td>
+                        <td [hidden]="dataTitle.hidden"></td>
+                        <td></td>
                     </ng-container>
 
-                    <td>{{ data.estimateWeight }}</td>
-                    <td>{{ data.estimateWeight }}</td>
+                    <td></td>
+                    <td></td>
 
                 </tr>
             </tbody>

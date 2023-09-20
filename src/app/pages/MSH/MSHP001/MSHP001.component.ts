@@ -531,7 +531,7 @@ this.handleSelectCarModal() ;
         } else {
         //console.log(" params.data[ORIGINAL_PST_MACHINE_ADD] :" + params.data["ORIGINAL_PST_MACHINE_ADD"])
         if( params.data["PST_MACHINE_ADD"] === 'RF' ||  params.data["PST_MACHINE_ADD"] === 'BA1' ) {
-          if(params.data["CAR_WEIGHT_ADD"] < 3900) { //低於 3900 淡紅色
+          if((params.data["PST_MACHINE_ADD"] === 'RF' && params.data["CAR_WEIGHT_ADD"] < 3900) || (params.data["PST_MACHINE_ADD"] === 'BA1' && params.data["CAR_WEIGHT_ADD"] < 3000)) { //低於 3900 淡紅色
             if(params.data["COLORFLAG"].toString() === '1') {
               return  { background: '#FF00FF' };
             }

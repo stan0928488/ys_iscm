@@ -286,7 +286,9 @@
                 <a [routerLink]="['/FCPBarRepo/R302']"> 交期-計畫彙總表 </a>
               </li>
               <li nz-menu-item *ngIf="userName == 'UR10369'">
-                <a [routerLink]="['/FCPBarRepo/R302_coil']"> 交期-計畫彙總表(鋼捲) </a>
+                <a [routerLink]="['/FCPBarRepo/R302_coil']">
+                  交期-計畫彙總表(鋼捲)
+                </a>
               </li>
               <li nz-menu-item>
                 <a [routerLink]="['/FCPBarRepo/R301']"> 機台產能分析表 </a>
@@ -402,6 +404,29 @@
               </li>
               <li nz-menu-item>
                 <a [routerLink]="['/SaleView/R002']"> 預估週入庫計畫 </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+
+      <li nz-submenu nzTitle="煙台" nzIcon="file-search">
+        <ul>
+          <li nz-submenu nzTitle="報表維護" nzIcon="file-text">
+            <ul>
+              <li nz-menu-item>
+                <a [routerLink]="['/maintenance/M001']"> 熱軋棒參數調整 </a>
+              </li>
+            </ul>
+          </li>
+
+          <li nz-submenu nzTitle="報表檢視" nzIcon="setting">
+            <ul>
+              <li nz-menu-item>
+                <a [routerLink]="['/report/R001']"> 熱軋棒最適長度 </a>
+              </li>
+              <li nz-menu-item>
+                <a [routerLink]="['/report/R002']"> 合併訂單 </a>
               </li>
             </ul>
           </li>
