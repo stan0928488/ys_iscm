@@ -24,6 +24,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { ClipboardModule } from 'ngx-clipboard';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -167,6 +168,7 @@ import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component';
 import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
 import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
+import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 
 registerLocaleData(zh);
 
@@ -308,6 +310,7 @@ registerLocaleData(zh);
     PPSR330YwComponent,
     PPSR331YwComponent,
     PPSR332YwComponent,
+    POMP001Component,
   ],
   imports: [
     BrowserModule,
@@ -323,6 +326,7 @@ registerLocaleData(zh);
     NzTimelineModule,
     CalendarModule,
     ClipboardModule,
+    NzMessageModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),

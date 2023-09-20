@@ -66,3 +66,10 @@
   background: #e8e8e8;
   padding: 0;
 }
+
+
+
+
+.router-outlet-area{ 
+  height: calc(100vh - 68px);
+}
