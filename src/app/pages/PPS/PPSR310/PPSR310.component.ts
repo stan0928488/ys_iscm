@@ -43,6 +43,7 @@ export class PPSR310Component implements OnInit {
   isSpinning = false;
 
   searchData = {
+    specialBar:"",
     selectedVer_default:null,
   }
 
