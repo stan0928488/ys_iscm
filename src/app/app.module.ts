@@ -24,6 +24,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { ClipboardModule } from 'ngx-clipboard';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -140,7 +141,7 @@ import { PPSI202TabMenuComponent } from './pages/PPS/PPSI202_TabMenu/PPSI202_Tab
 import { PPSI202NonBarComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBar.component';
 import { PPSI202_NonBarEditButtonRendererComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditButtonRendererComponent';
 import { PPSI202_NonBarEditStartTimeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditStartTimeCellEditorComponent';
-import { PPSI202_NonBarEditEndTimeCellEditorComponent  } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEndTimeeCellEditorComponent';
+import { PPSI202_NonBarEditEndTimeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEndTimeeCellEditorComponent';
 import { PPSI202_NonBarEditShopCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShopCellEditorComponent';
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202_NonBar/PPSI202_NonBarEditShutdownTypeCellEditorComponent';
@@ -164,6 +165,10 @@ import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { ListSaleInputComponent } from './pages/PPS/list-sale-input/list-sale-input.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
+import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component';
+import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
+import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
+import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 
 registerLocaleData(zh);
 
@@ -302,6 +307,10 @@ registerLocaleData(zh);
     ListSaleInputComponent,
     PPSR340Component,
     PPSR341Component,
+    PPSR330YwComponent,
+    PPSR331YwComponent,
+    PPSR332YwComponent,
+    POMP001Component,
   ],
   imports: [
     BrowserModule,
@@ -317,6 +326,7 @@ registerLocaleData(zh);
     NzTimelineModule,
     CalendarModule,
     ClipboardModule,
+    NzMessageModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
@@ -325,7 +335,8 @@ registerLocaleData(zh);
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    { provide: NZ_I18N, useValue: zh_TW }],
+    { provide: NZ_I18N, useValue: zh_TW },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

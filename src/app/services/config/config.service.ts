@@ -1,55 +1,64 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { map } from "rxjs/operators";
-import * as _ from "lodash";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class ConfigService {
-  APIURL: string = "";
+  APIURL: string = '';
 
   constructor(private http: HttpClient) {
     //this.setAPIURL();
   }
 
-  setAPIURL(flag?:string) {
+  setAPIURL(flag?: string) {
     // let APIBODY = "/YSiSCM";    // 未來移植完成的新專案包
-    
-    let APIBODY = "";       // 先連到舊的後台
-    let APIBODY_OLD = "/pps/rest";       // 先連到舊的後台
-    let APIBODY_NEW = "/ys-iscm";       // 改連到新的後台
 
+    let APIBODY = ''; // 先連到舊的後台
+    let APIBODY_OLD = '/pps/rest'; // 先連到舊的後台
+    let APIBODY_NEW = '/ys-iscm'; // 改連到新的後台
+    let APIBODY_YW = '/yw-iscm-be';
 
     let hostName = window.location.hostname;
     let host = window.location.host;
-    if(flag === "1") {
-      APIBODY = APIBODY_NEW ;
+    if (flag === '1') {
+      APIBODY = APIBODY_NEW;
+    } else if (flag === '2') {
+      APIBODY = APIBODY_YW;
     } else {
-      APIBODY = APIBODY_OLD ;
+      APIBODY = APIBODY_OLD;
     }
 
     switch (hostName) {
-      case "localhost":
-        if(flag === "1") { 
+      case 'localhost':
+        if (flag === '1') {
+          this.APIURL = `http://${hostName}:8080${APIBODY}`;
+        } else if (flag === '2') {
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
         } else {
-          var urlHost = "ys-ppsapt01.walsin.corp"
+          var urlHost = 'ys-ppsapt01.walsin.corp';
           this.APIURL = `http://${urlHost}:8080${APIBODY}`;
         }
-       
+
         break;
-      case "ys-pps.walsin.corp":
+      case 'ys-pps.walsin.corp':
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
       default:
-        this.APIURL = `http://${hostName}:8080${APIBODY}`;        
+        if (flag === '2') {
+          var urlHost = 'yw-ppsapsit201.walsin.corp';
+          this.APIURL = `http://${urlHost}:8080${APIBODY}`;
+        } else {
+          this.APIURL = `http://${hostName}:8080${APIBODY}`;
+        }
     }
   }
 
-  getAPIURL(flag?:string) {
-    this.setAPIURL(flag)
+  getAPIURL(flag?: string) {
+    this.setAPIURL(flag);
     return this.APIURL;
   }
 }

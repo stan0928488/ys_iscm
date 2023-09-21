@@ -1,0 +1,52 @@
+<nz-content style="margin: 0 16px; height: 857px">
+  <nz-breadcrumb style="margin: 16px 0">
+    <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>報表維護</nz-breadcrumb-item>
+    <nz-breadcrumb-item
+      ><font size="4">熱軋棒調整(PPSR330)</font></nz-breadcrumb-item
+    >
+  </nz-breadcrumb>
+  <nz-collapse>
+    <nz-collapse-panel
+      *ngFor="let panel of panels"
+      [nzHeader]="panel.name"
+      [nzActive]="panel.active"
+      [nzDisabled]="panel.disabled"
+      ><span>Cooling Bed 有效長度</span>
+      <input
+        nz-input
+        placeholder="cooling bed (mm)"
+        [(ngModel)]="newCoolingBed"
+      />
+      <span style="margin-left: 20px">Billet -> Bar 自然損耗率</span>
+      <input
+        nz-input
+        placeholder="Attrition rate / 100"
+        [(ngModel)]="newNaturalAttritionRate"
+      />
+      <span style="margin-left: 20px">頭切長度</span>
+      <input nz-input placeholder="headCut (mm)" [(ngModel)]="newHeadCut" />
+      <span style="margin-left: 20px">尾切長度</span>
+      <input nz-input placeholder="tailCut (mm)" [(ngModel)]="newTailCut" />
+      <span style="margin-left: 20px">刀損</span>
+      <input nz-input placeholder="cutDamage (mm)" [(ngModel)]="newCutDamage" />
+      <button
+        (click)="sendData()"
+        nz-button
+        nzType="primary"
+        [nzLoading]="isUpdate"
+        style="margin-left: 20px"
+      >
+        儲存
+      </button>
+    </nz-collapse-panel>
+  </nz-collapse>
+  <ag-grid-angular
+    style="width: 100%; height: 550px; margin-top: 50px"
+    class="ag-theme-alpine"
+    [rowData]="tbpomm04List"
+    [columnDefs]="columnDefs"
+    [gridOptions]="gridOptions"
+  >
+  </ag-grid-angular>
+</nz-content>

@@ -1190,10 +1190,20 @@ export class PPSI220Component implements AfterViewInit {
         const decoder = new TextDecoder('utf-8');
         fcpRes = decoder.decode(fcpRes);
 
-        let regex = /\r\n/g;
-        fcpRes = fcpRes.replace(regex, '');
+       
+        fcpRes = fcpRes.split('\r\n');
+        
+        // 取出檔案名稱(在倒數第二行)
+        // 最後要請求後端刪除該檔案用
+        const fileName = fcpRes[fcpRes.length - 2];
+        // 移除空白的最後一行
+        fcpRes.pop(); 
+        // 移除檔案名稱
+        fcpRes.pop();
 
-        regex = /\[|\]/g;
+        fcpRes = fcpRes.join('');
+
+        let regex = /\[|\]/g;
         fcpRes = fcpRes.replace(regex, '');
 
         regex = /\}\{/g;
@@ -1230,6 +1240,10 @@ export class PPSI220Component implements AfterViewInit {
           workBook,
           `FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
         );
+
+        // 刪除在後端產生的檔案避免佔用容量
+        const deleteFileObservable$ = this.getPPSService.deleteFcp16File(fileName);
+        firstValueFrom<any>(deleteFileObservable$);
       }
       else {
           this.message.create("error", `FCP版本：${fcpEdition}，已逾時，不可轉出excel`);

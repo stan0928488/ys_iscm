@@ -116,10 +116,14 @@ import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321
 import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
 import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321Detail0301CanDeactivateGuard';
+import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component';
+import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
+import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
 import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 
+import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 
 const routes: Routes = [
   {
@@ -235,13 +239,13 @@ const routes: Routes = [
     path: 'PlanSet',
     children: [
       { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
-      { 
-        path: 'I202_TabMenu', 
-        component: PPSI202TabMenuComponent, 
-        children : [
+      {
+        path: 'I202_TabMenu',
+        component: PPSI202TabMenuComponent,
+        children: [
           { path: 'I202', component: PPSI202Component },
-          { path: 'I202_NonBar', component: PPSI202NonBarComponent }
-        ]
+          { path: 'I202_NonBar', component: PPSI202NonBarComponent },
+        ],
       },
       { path: 'I205', component: PPSI205Component },
       { path: 'I205_100', component: PPSI205_100Component },
@@ -287,7 +291,7 @@ const routes: Routes = [
       { path: 'R309', component: PPSR309Component },
       { path: 'R310', component: PPSR310Component },
       { path: 'R311', component: PPSR311Component },
-      { path: 'R312', component: PPSR312Component }
+      { path: 'R312', component: PPSR312Component },
     ],
     canActivate: [AuthGuard],
   },
@@ -295,49 +299,52 @@ const routes: Routes = [
     path: 'FCPshiftRepo',
     children: [
       { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
-      { 
-        path: 'R321', 
+      {
+        path: 'R321',
         component: PPSR321Component,
         canDeactivate: [PPSR321CanDeactivateGuard],
-        children : [
-          { 
-            path: 'detail01', 
+        children: [
+          {
+            path: 'detail01',
             component: PPSR321Detail01Component,
             canDeactivate: [PPSR321Detail01CanDeactivateGuard],
           },
-          { 
-            path: 'detail02', 
+          {
+            path: 'detail02',
             component: PPSR321Detail02Component,
-            canDeactivate:[PPSR321Detail02CanDeactivateGuard], 
+            canDeactivate: [PPSR321Detail02CanDeactivateGuard],
           },
-          { 
-            path: 'detail0301', 
+          {
+            path: 'detail0301',
             component: PPSR321Detail0301Component,
-            canDeactivate:[PPSR321Detail0301CanDeactivateGuard]
+            canDeactivate: [PPSR321Detail0301CanDeactivateGuard],
           },
-          { 
-            path: 'detail0302', 
+          {
+            path: 'detail0302',
             component: PPSR321Detail0302Component,
-            canDeactivate:[PPSR321Detail0302CanDeactivateGuard]
+            canDeactivate: [PPSR321Detail0302CanDeactivateGuard],
           },
-          { 
-            path: 'detail0303', 
+          {
+            path: 'detail0303',
             component: PPSR321Detail0303Component,
-            canDeactivate:[PPSR321Detail0303CanDeactivateGuard]
-          }
-        ]
-       },
-      { path: 'R322', component: PPSR322Component ,
-      children: [
-        { path: '', redirectTo: 'R322_1' },
-        { path: 'R322_1', component: PPSR322Child1Component },
-        { path: 'R322_2', component: PPSR322Child2Component },
-        { path: 'R322_3', component: PPSR322Child3Component },
-        { path: 'R322_4', component: PPSR322Child4Component },
-        { path: 'R322_5', component: PPSR322Child5Component },
-        { path: 'R322_6', component: PPSR322Child6Component },
-        { path: 'R322_7', component: PPSR322Child7Component },
-      ]},
+            canDeactivate: [PPSR321Detail0303CanDeactivateGuard],
+          },
+        ],
+      },
+      {
+        path: 'R322',
+        component: PPSR322Component,
+        children: [
+          { path: '', redirectTo: 'R322_1' },
+          { path: 'R322_1', component: PPSR322Child1Component },
+          { path: 'R322_2', component: PPSR322Child2Component },
+          { path: 'R322_3', component: PPSR322Child3Component },
+          { path: 'R322_4', component: PPSR322Child4Component },
+          { path: 'R322_5', component: PPSR322Child5Component },
+          { path: 'R322_6', component: PPSR322Child6Component },
+          { path: 'R322_7', component: PPSR322Child7Component },
+        ],
+      },
     ],
     canActivate: [AuthGuard],
   },
@@ -391,7 +398,6 @@ const routes: Routes = [
     ],
     canActivate: [AuthGuard],
   },
-
   {
     path: 'SaleView',
     children: [
@@ -401,7 +407,23 @@ const routes: Routes = [
     ],
     canActivate: [AuthGuard],
   },
-
+  {
+    path: 'maintenance',
+    children: [
+      { path: '', redirectTo: '/maintenance/M001', pathMatch: 'full' },
+      { path: 'M001', component: PPSR330YwComponent },
+    ],
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'report',
+    children: [
+      { path: '', redirectTo: '/report/R002', pathMatch: 'full' },
+      { path: 'R001', component: PPSR331YwComponent },
+      { path: 'R002', component: PPSR332YwComponent },
+    ],
+    canActivate: [AuthGuard],
+  },
 
   /* RMP & PAS & DCM */
   {
@@ -446,6 +468,15 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/TRAInput/I001', pathMatch: 'full' },
       { path: 'I001', component: TRAP001component },
+    ],
+    canActivate: [AuthGuard],
+  },
+  /* POM  */
+  {
+    path: 'POM',
+    children: [
+      { path: '', redirectTo: '/POM/P001', pathMatch: 'full' },
+      { path: 'P001', component: POMP001Component },
     ],
     canActivate: [AuthGuard],
   },
