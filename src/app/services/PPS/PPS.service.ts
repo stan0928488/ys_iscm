@@ -1785,27 +1785,27 @@ export class PPSService {
   }
 
   getR305DataList(plantCode) {
-    let endpointUrl = this.APIURL + `/FCP/R305/getPPSR305List/${plantCode}`;
+    let endpointUrl = `${this.APINEWURL}/FCP/R305/getPPSR305List/${plantCode}`;
     return this.http.get<any>(endpointUrl);
   }
 
   batchSaveR305Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/R305/insertPPSR305BatchSave`;
+    let endpointUrl = `${this.APINEWURL}/FCP/R305/insertPPSR305BatchSave`;
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 :${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-  getR306Editionist() {
-    let endpointUrl = this.APIURL + `/FCP/R306/getPPSR306Edition`;
+  getR306EditionList() {
+    let endpointUrl = `${this.APINEWURL}/FCP/R306/getPPSR306EditionList`;
     return this.http.get<any>(endpointUrl);
   }
 
   getR306DataList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R306/getPPSR306List';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = `${this.APINEWURL}/FCP/R306/getPPSR306List`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   getR307Editionist() {

@@ -115,9 +115,9 @@ export class PPSR306Component implements AfterViewInit {
   getR306EditionList(){
     let myObj = this ;
 
-    myObj.PPSService.getR306Editionist().subscribe(res =>{
+    myObj.PPSService.getR306EditionList().subscribe(res =>{
 
-      let result : any = res;
+      let result : any = res.data;
 
       if(this.edition == '') {
         this.edition = result[0];
@@ -146,9 +146,9 @@ export class PPSR306Component implements AfterViewInit {
     let comitParamete = {edition : this.edition} ;
     myObj.PPSService.getR306DataList(comitParamete).subscribe(res =>{
 
-      let result : any = res;
+      let result : any = res.data;
 
-      console.log(res);
+      console.log(res.data);
 
       this.R306DataList = result;
       
