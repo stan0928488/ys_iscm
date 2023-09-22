@@ -281,7 +281,8 @@
                   [nzDisabled]="data.isOffloadDateDisabled"
                   nz-tooltip
                   [nzTooltipTitle]="data.offloadDateDisabledTooltip"
-                  [nzDisabledDate]="disabledDate">
+                  [nzDisabledDate]="disabledDate"
+                  (ngModelChange)="offloadDateChange(data)">
                 </nz-date-picker>
               </td>
 
@@ -302,8 +303,7 @@
             </tr>
         </tbody>
       </nz-table>
-
-
+      <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);">註：平衡設定及平移日期為，至平移日期+1天後，會恢復為原策略預設</label>
   </div>
 
   </nz-spin>

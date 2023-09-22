@@ -20,6 +20,15 @@
     <nz-collapse>
         <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
         <div nz-row>
+            <nz-radio-group style="margin-bottom: 8px;"
+            [(ngModel)]="searchData.specialBar"
+            (ngModelChange)="getDataList()"
+            [nzButtonStyle]="'solid'">
+                <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">產品:</label>
+                <label nz-radio-button nzValue="">ALL</label>
+                <label nz-radio-button nzValue="IS_BIG_STICK">大棒</label>
+                <label nz-radio-button nzValue="IS_PROFIELD">異型棒</label>
+            </nz-radio-group>
             <nz-select
             [(ngModel)]="searchData.selectedVer_default"
             style="width: 220px; margin-left:50px;"
