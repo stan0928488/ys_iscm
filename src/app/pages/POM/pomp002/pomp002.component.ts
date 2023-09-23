@@ -51,14 +51,27 @@ export class POMP002Component implements OnInit {
     ts: '',
   };
 
+  // 目前正在編輯數量 - 貨位
   editCountForRack: number = 0;
 
+  // 編輯 cache - 貨位
   editCacheForRack: {
     [key: string]: { edit: boolean; data: PpsTbpomM08Model };
   } = {};
 
   // 表格 datalist - 貨位
   rackNotInDataList: PpsTbpomM08Model[] = [];
+
+  // 目前正在編輯數量 - 倉庫
+  editCountForHouse: number = 0;
+
+  // 編輯 cache - 倉庫
+  editCacheForHouse: {
+    [key: string]: { edit: boolean; data: PpsTbpomM08Model };
+  } = {};
+
+  // 表格 datalist - 倉庫
+  houseInDataList: PpsTbpomM08Model[] = [];
 
   constructor(
     private pomService: POMService,
@@ -140,6 +153,40 @@ export class POMP002Component implements OnInit {
 
         // 貨位 cell 編輯  更新 editCacheForRack
         this.updateEditCacheForRack();
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', `請求異常: ${err}`);
+      }
+    );
+
+    console.log('===> fetch 需保留倉庫 ');
+
+    // 需保留倉庫
+    // HOUSE IN
+    const houseInObj = {
+      placeType: 'HOUSE',
+      filterAction: 'IN',
+    };
+
+    this.pomService.getPlaceFilterList(houseInObj).subscribe(
+      (res) => {
+        console.log('res');
+        console.log(res);
+
+        const houseInDataList = [];
+
+        res.data.forEach((item) => {
+          houseInDataList.push(item);
+        });
+
+        console.log('---> houseInDataList');
+        console.log(houseInDataList);
+
+        this.houseInDataList = houseInDataList;
+
+        // 貨位 cell 編輯  更新 editCacheForHouse
+        this.updateEditCacheForHouse();
       },
       (err) => {
         console.log(err);
@@ -325,6 +372,142 @@ export class POMP002Component implements OnInit {
 
     this.pomService
       .updateByPlaceTypeAndFilterAction(this.rackNotInDataList)
+      .subscribe(
+        (res) => {
+          console.log('res');
+          console.log(res);
+          this.message.create('success', `更新成功`);
+
+          // fetch data
+          this.fetchData();
+        },
+        (err) => {
+          console.log(err);
+          this.message.create('error', `更新失敗: ${err}`);
+        }
+      );
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯 開始
+   *
+   *
+   *
+   */
+  startEditForHouse(id: string): void {
+    this.editCacheForHouse[id].edit = true;
+    this.editCountForHouse++;
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯   取消
+   *
+   *
+   *
+   */
+  cancelEditForHouse(id: string): void {
+    const index = this.houseInDataList.findIndex((item) => item.id === id);
+    this.editCacheForHouse[id] = {
+      data: { ...this.houseInDataList[index] },
+      edit: false,
+    };
+    this.editCountForHouse--;
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯    儲存
+   *
+   *
+   *
+   */
+  saveEditForHouse(id: string): void {
+    const index = this.houseInDataList.findIndex((item) => item.id === id);
+    Object.assign(this.houseInDataList[index], this.editCacheForHouse[id].data);
+    this.editCacheForHouse[id].edit = false;
+    this.editCountForHouse--;
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯  - 刪除
+   *
+   *
+   *
+   */
+  deleteEditForHouse(id: string): void {
+    this.houseInDataList = _.filter(
+      this.houseInDataList,
+      (item) => item.id !== id
+    );
+
+    // 更新 editCacheForHouse
+    this.updateEditCacheForHouse();
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯  - 新增一筆空白
+   *
+   *
+   *
+   */
+  newEditForHouse(): void {
+    const id = uuid.v4();
+
+    const obj = {
+      id,
+      placeType: 'HOUSE',
+      filterAction: 'IN',
+      placeName: '',
+    };
+
+    this.houseInDataList.unshift(obj);
+
+    // 更新 editCacheForHouse
+    this.updateEditCacheForHouse();
+
+    // 將該id 設定為編輯狀態
+    const index = this.houseInDataList.findIndex((item) => item.id === id);
+    this.editCacheForHouse[id] = {
+      data: { ...this.houseInDataList[index] },
+      edit: true,
+    };
+    this.editCountForHouse++;
+  }
+
+  /**
+   *
+   * 倉庫 cell 編輯  更新 editCacheForHouse
+   *
+   *
+   *
+   */
+  updateEditCacheForHouse(): void {
+    this.houseInDataList.forEach((item) => {
+      this.editCacheForHouse[item.id] = {
+        edit: false,
+        data: { ...item },
+      };
+    });
+  }
+
+  /**
+   *
+   * 上傳更新 - 倉庫
+   *
+   *
+   */
+  uploadUpdateForHouse() {
+    console.log('===> 上傳更新 - 倉庫');
+    console.log(this.houseInDataList);
+
+    // 依類型 , 過濾動作更新
+
+    this.pomService
+      .updateByPlaceTypeAndFilterAction(this.houseInDataList)
       .subscribe(
         (res) => {
           console.log('res');

@@ -9,7 +9,7 @@
 
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
       <!--  card row -->
-      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="32">
+      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="24">
         <!-- 尺寸可容許誤差 card  -->
         <div nz-col nzSpan="12">
           <nz-card
@@ -77,7 +77,7 @@
       <!-- ============================================================================== -->
 
       <!-- 貨位 倉庫 設定區  card row -->
-      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="32">
+      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="24">
         <!-- 需剔除貨位區  card -->
         <div nz-col nzSpan="12">
           <nz-card
@@ -90,7 +90,9 @@
             <div nz-row>
               <div nz-col nzSpan="24">
                 <!-- 新增 row 按鈕 -->
-                <button nz-button    nzShape="round" (click)="newEditForRack()"><span nz-icon nzType="plus"></span>新增一列</button>
+                <button nz-button nzShape="round" (click)="newEditForRack()">
+                  <span nz-icon nzType="plus"></span>新增一列
+                </button>
                 <nz-table
                   #editRowTable
                   nzBordered
@@ -120,7 +122,7 @@
                             nz-popconfirm
                             nzPopconfirmTitle="確認刪除 ?"
                             (nzOnConfirm)="deleteEditForRack(data.id)"
-                            style="margin-left: 10px; color:red"
+                            style="margin-left: 10px; color: red"
                             >Delete</a
                           >
                         </td>
@@ -156,20 +158,84 @@
             </div>
           </nz-card>
         </div>
+
         <!-- 需保留倉庫區 card -->
         <div nz-col nzSpan="12">
           <nz-card
             style="width: 100%"
             [nzBordered]="false"
             [nzTitle]="houseAreaTitleTpl"
-            [nzExtra]="diaAdjExtraTpl"
+            [nzExtra]="houseInUpdateExtraTpl"
           >
             <!-- 需保留倉庫區 row -->
             <div nz-row>
-              <div nz-col nzSpan="11">3</div>
+              <div nz-col nzSpan="24">
+                <!-- 新增 row 按鈕 -->
+                <button nz-button nzShape="round" (click)="newEditForHouse()">
+                  <span nz-icon nzType="plus"></span>新增一列
+                </button>
+                <nz-table
+                  #editRowTable
+                  nzBordered
+                  [nzData]="houseInDataList"
+                  nzTableLayout="fixed"
+                  [nzShowPagination]="false"
+                >
+                  <thead>
+                    <tr>
+                      <th nzWidth="75%">倉庫</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of houseInDataList">
+                      <ng-container
+                        *ngIf="
+                          !editCacheForHouse[data.id].edit;
+                          else editTemplate
+                        "
+                      >
+                        <td>{{ data.placeName }}</td>
+                        <td>
+                          <a (click)="startEditForHouse(data.id)">Edit</a>
 
-              <div nz-col nzSpan="2"></div>
-              <div nz-col nzSpan="11">4</div>
+                          <a
+                            nz-popconfirm
+                            nzPopconfirmTitle="確認刪除 ?"
+                            (nzOnConfirm)="deleteEditForHouse(data.id)"
+                            style="margin-left: 10px; color: red"
+                            >Delete</a
+                          >
+                        </td>
+                      </ng-container>
+
+                      <!-- cell 行編輯 -->
+                      <ng-template #editTemplate>
+                        <td>
+                          <input
+                            type="text"
+                            nz-input
+                            [(ngModel)]="
+                              editCacheForHouse[data.id].data.placeName
+                            "
+                          />
+                        </td>
+                        <td>
+                          <a (click)="saveEditForHouse(data.id)" class="save"
+                            >Save</a
+                          >
+                          <a
+                            nz-popconfirm
+                            nzPopconfirmTitle="確認取消 ?"
+                            (nzOnConfirm)="cancelEditForHouse(data.id)"
+                            >Cancel</a
+                          >
+                        </td>
+                      </ng-template>
+                    </tr>
+                  </tbody>
+                </nz-table>
+              </div>
             </div>
           </nz-card>
         </div>
@@ -194,6 +260,23 @@
           更新
         </button>
       </ng-template>
+
+
+            <!-- 上傳更新 倉庫 -->
+      <ng-template #houseInUpdateExtraTpl>
+        <button
+          class="buttonOne"
+          nz-button
+          nzType="primary"
+          (click)="uploadUpdateForHouse()"
+          disabled="{{ editCountForHouse > 0 }}"
+        >
+          更新
+        </button>
+      </ng-template>
+
+
+
 
       <!-- 需剔除貨位區  -->
       <ng-template #rackAreaTitleTpl>
