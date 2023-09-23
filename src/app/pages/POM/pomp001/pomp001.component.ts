@@ -386,6 +386,14 @@ export class POMP001Component implements OnInit {
     return rowData;
   }
 
+
+
+  /**
+   * 
+   * cell 是否可編輯 
+   * 
+   * 
+   */
   isCellEditable(params: EditableCallbackParams | CellClassParams) {
     //TODO: 改成 Y
     return params.data.flagClosedRollProd === 'Y';

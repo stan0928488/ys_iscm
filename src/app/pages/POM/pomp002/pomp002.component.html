@@ -8,42 +8,199 @@
     </div>
 
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
-      <!--  card -->
-      <div style="background: #ececec; padding: 30px">
-        <nz-card
-          style="width: 20vw"
-          [nzBordered]="false"
-          nzTitle="尺寸可容許誤差"
-          [nzExtra]="diaAdjExtraTpl"
-        >
-          <!-- 尺寸可容許誤差 row -->
-          <div nz-row>
-            <div nz-col nzSpan="11">
-              下限:
-              <nz-input-number
-                class="cell-editable-color"
-                [(ngModel)]="paramObj.diaRangeAdjMin"
-                [nzMin]="0"
-              ></nz-input-number>
-            </div>
+      <!--  card row -->
+      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="32">
+        <!-- 尺寸可容許誤差 card  -->
+        <div nz-col nzSpan="12">
+          <nz-card
+            style="width: 100%"
+            [nzBordered]="false"
+            nzTitle="尺寸可容許誤差"
+            [nzExtra]="diaAdjExtraTpl"
+          >
+            <!-- 尺寸可容許誤差 row -->
+            <div nz-row>
+              <div nz-col nzSpan="11">
+                下限:
+                <nz-input-number
+                  class="cell-editable-color"
+                  [(ngModel)]="paramObj.diaRangeAdjMin"
+                  [nzMin]="0"
+                ></nz-input-number>
+                mm
+              </div>
 
-            <div nz-col nzSpan="2"></div>
+              <div nz-col nzSpan="2"></div>
 
-            <div nz-col nzSpan="11">
-              上限:
-              <nz-input-number
-                class="cell-editable-color"
-                [(ngModel)]="paramObj.diaRangeAdjMax"
-                [nzMin]="0"
-              ></nz-input-number>
+              <div nz-col nzSpan="11">
+                上限:
+                <nz-input-number
+                  class="cell-editable-color"
+                  [(ngModel)]="paramObj.diaRangeAdjMax"
+                  [nzMin]="0"
+                ></nz-input-number>
+                mm
+              </div>
             </div>
-          </div>
-        </nz-card>
+          </nz-card>
+        </div>
+
+        <!--  重量超配訂單重 card   -->
+        <div nz-col nzSpan="12">
+          <nz-card
+            style="width: 100%"
+            [nzBordered]="false"
+            nzTitle="重量超配訂單重"
+            [nzExtra]="diaAdjExtraTpl"
+          >
+            <!-- 尺寸可容許誤差 row -->
+            <div nz-row>
+              <div nz-col nzSpan="11"></div>
+
+              <div nz-col nzSpan="2"></div>
+              <div nz-col nzSpan="11">
+                上限:
+                <nz-input-number
+                  class="cell-editable-color"
+                  [(ngModel)]="paramObj.orderWeightAdjMax"
+                  [nzMin]="0"
+                ></nz-input-number>
+                MT
+              </div>
+            </div>
+          </nz-card>
+        </div>
       </div>
+
+      <!-- ============================================================================== -->
+      <!-- ============================================================================== -->
+      <!-- ============================================================================== -->
+
+      <!-- 貨位 倉庫 設定區  card row -->
+      <div style="background: #f0f2f5; padding: 10px" nz-row [nzGutter]="32">
+        <!-- 需剔除貨位區  card -->
+        <div nz-col nzSpan="12">
+          <nz-card
+            style="width: 100%"
+            [nzBordered]="false"
+            [nzTitle]="rackAreaTitleTpl"
+            [nzExtra]="rackNotInUpdateExtraTpl"
+          >
+            <!-- 需剔除貨位區 row -->
+            <div nz-row>
+              <div nz-col nzSpan="24">
+                <nz-table
+                  #editRowTable
+                  nzBordered
+                  [nzData]="rackNotInDataList"
+                  nzTableLayout="fixed"
+                  [nzShowPagination]="false"
+                >
+                  <thead>
+                    <tr>
+                      <th nzWidth="75%">貨位</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of rackNotInDataList">
+                      <ng-container
+                        *ngIf="
+                          !editCacheForRack[data.id].edit;
+                          else editTemplate
+                        "
+                      >
+                        <td>{{ data.placeName }}</td>
+                        <td>
+                          <a (click)="startEditForRack(data.id)">Edit</a>
+
+                          <a
+                            nz-popconfirm
+                            nzPopconfirmTitle="確認刪除 ?"
+                            (nzOnConfirm)="deleteEditForRack(data.id)"
+                            style="margin-left: 10px; color:red"
+                            >Delete</a
+                          >
+                        </td>
+                      </ng-container>
+
+                      <!-- cell 行編輯 -->
+                      <ng-template #editTemplate>
+                        <td>
+                          <input
+                            type="text"
+                            nz-input
+                            [(ngModel)]="
+                              editCacheForRack[data.id].data.placeName
+                            "
+                          />
+                        </td>
+                        <td>
+                          <a (click)="saveEditForRack(data.id)" class="save"
+                            >Save</a
+                          >
+                          <a
+                            nz-popconfirm
+                            nzPopconfirmTitle="確認取消 ?"
+                            (nzOnConfirm)="cancelEditForRack(data.id)"
+                            >Cancel</a
+                          >
+                        </td>
+                      </ng-template>
+                    </tr>
+                  </tbody>
+                </nz-table>
+              </div>
+            </div>
+          </nz-card>
+        </div>
+        <!-- 需保留倉庫區 card -->
+        <div nz-col nzSpan="12">
+          <nz-card
+            style="width: 100%"
+            [nzBordered]="false"
+            [nzTitle]="houseAreaTitleTpl"
+            [nzExtra]="diaAdjExtraTpl"
+          >
+            <!-- 需保留倉庫區 row -->
+            <div nz-row>
+              <div nz-col nzSpan="11">3</div>
+
+              <div nz-col nzSpan="2"></div>
+              <div nz-col nzSpan="11">4</div>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+
+      <!-- template -->
       <ng-template #diaAdjExtraTpl>
         <button nz-button nzType="primary" (click)="updateParamConfig()">
           更新
         </button>
+      </ng-template>
+
+      <!-- 上傳更新 貨位 -->
+      <ng-template #rackNotInUpdateExtraTpl>
+        <button
+          class="buttonOne"
+          nz-button
+          nzType="primary"
+          (click)="uploadUpdateForRack()"
+          disabled="{{ editCountForRack > 0 }}"
+        >
+          更新
+        </button>
+      </ng-template>
+
+      <!-- 需剔除貨位區  -->
+      <ng-template #rackAreaTitleTpl>
+        <p>需 <strong style="color: #f5222d">剔除</strong> 貨位</p>
+      </ng-template>
+
+      <!-- 需保留倉庫區  -->
+      <ng-template #houseAreaTitleTpl>
+        <p>需 <strong style="color: #52c41a">保留</strong> 倉庫</p>
       </ng-template>
     </nz-spin>
   </nz-content>

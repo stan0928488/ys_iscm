@@ -46,4 +46,18 @@ export class POMService {
     let queryUrl = `${this.APIYW}/iscm/ppsTbpomm06/update-by-id`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
+  // 取得倉貨貨位保留剔除清單
+  getPlaceFilterList(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm08/get-place-filter-list`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
+
+  // 依類型 , 過濾動作更新
+  updateByPlaceTypeAndFilterAction(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm08/save-by-place-filter-list`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
 }
