@@ -21,6 +21,7 @@ import { POMService } from '../../../services/POM/pom.service';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as uuid from 'uuid';
 
 interface PpsTbpomM08Model {
   id?: string;
@@ -260,7 +261,38 @@ export class POMP002Component implements OnInit {
     );
 
     // 更新 editCacheForRack
-    this, this.updateEditCacheForRack();
+    this.updateEditCacheForRack();
+  }
+
+  /**
+   *
+   * 貨位 cell 編輯  - 新增一筆空白
+   *
+   *
+   *
+   */
+  newEditForRack(): void {
+    const id = uuid.v4();
+
+    const obj = {
+      id,
+      placeType: 'RACK',
+      filterAction: 'NOT_IN',
+      placeName: '',
+    };
+
+    this.rackNotInDataList.unshift(obj);
+
+    // 更新 editCacheForRack
+    this.updateEditCacheForRack();
+
+    // 將該id 設定為編輯狀態
+    const index = this.rackNotInDataList.findIndex((item) => item.id === id);
+    this.editCacheForRack[id] = {
+      data: { ...this.rackNotInDataList[index] },
+      edit: true,
+    };
+    this.editCountForRack++;
   }
 
   /**

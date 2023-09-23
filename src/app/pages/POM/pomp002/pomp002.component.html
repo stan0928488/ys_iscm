@@ -89,6 +89,8 @@
             <!-- 需剔除貨位區 row -->
             <div nz-row>
               <div nz-col nzSpan="24">
+                <!-- 新增 row 按鈕 -->
+                <button nz-button    nzShape="round" (click)="newEditForRack()"><span nz-icon nzType="plus"></span>新增一列</button>
                 <nz-table
                   #editRowTable
                   nzBordered
