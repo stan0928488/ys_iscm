@@ -1,0 +1,50 @@
+<div class="background">
+  <nz-content style="margin: 0 16px">
+    <div style="padding: 10px 0px 10px 8px">
+      <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>生產訂單</nz-breadcrumb-item>
+        <nz-breadcrumb-item>無主掛單參數(POMP002)</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
+      <!--  card -->
+      <div style="background: #ececec; padding: 30px">
+        <nz-card
+          style="width: 20vw"
+          [nzBordered]="false"
+          nzTitle="尺寸可容許誤差"
+          [nzExtra]="diaAdjExtraTpl"
+        >
+          <!-- 尺寸可容許誤差 row -->
+          <div nz-row>
+            <div nz-col nzSpan="11">
+              下限:
+              <nz-input-number
+                class="cell-editable-color"
+                [(ngModel)]="paramObj.diaRangeAdjMin"
+                [nzMin]="0"
+              ></nz-input-number>
+            </div>
+
+            <div nz-col nzSpan="2"></div>
+
+            <div nz-col nzSpan="11">
+              上限:
+              <nz-input-number
+                class="cell-editable-color"
+                [(ngModel)]="paramObj.diaRangeAdjMax"
+                [nzMin]="0"
+              ></nz-input-number>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+      <ng-template #diaAdjExtraTpl>
+        <button nz-button nzType="primary" (click)="updateParamConfig()">
+          更新
+        </button>
+      </ng-template>
+    </nz-spin>
+  </nz-content>
+</div>

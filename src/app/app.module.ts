@@ -25,6 +25,8 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { ClipboardModule } from 'ngx-clipboard';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzCardModule } from 'ng-zorro-antd/card';
 
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
@@ -169,6 +171,7 @@ import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component'
 import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
 import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
 import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
+import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
 
 registerLocaleData(zh);
 
@@ -311,6 +314,7 @@ registerLocaleData(zh);
     PPSR331YwComponent,
     PPSR332YwComponent,
     POMP001Component,
+    POMP002Component,
   ],
   imports: [
     BrowserModule,
@@ -327,6 +331,8 @@ registerLocaleData(zh);
     CalendarModule,
     ClipboardModule,
     NzMessageModule,
+    NzGridModule,
+    NzCardModule,
     ///////
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),

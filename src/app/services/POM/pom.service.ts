@@ -8,8 +8,8 @@ import * as _ from 'lodash';
   providedIn: 'root',
 })
 export class POMService {
-  APIYW: string = ''; 
-  
+  APIYW: string = '';
+
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
@@ -30,6 +30,20 @@ export class POMService {
   updateMergeRollOrder(_parms) {
     const body = JSON.stringify(_parms);
     let queryUrl = `${this.APIYW}/iscm/pom-merge-roll-order/update`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
+
+  // 取得參數設定 by param id
+  getParamConfigByParamId(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm06/get-param-config-by-param-id`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
+
+  // 更新參數設定
+  updateParamConfig(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm06/update-by-id`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 }

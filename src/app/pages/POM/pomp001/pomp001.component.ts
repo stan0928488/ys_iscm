@@ -186,37 +186,45 @@ export class POMP001Component implements OnInit {
       merge_no: _mergeNo,
     };
 
-    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(async (res) => {
-      console.log('res');
-      console.log(res);
+    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
+      async (res) => {
+        console.log('res');
+        console.log(res);
 
-      const { code, data } = res;
+        const { code, data } = res;
 
-      console.log(code);
-      console.log(data);
+        console.log(code);
+        console.log(data);
 
-      const mergeNoList = [];
+        const mergeNoList = [];
 
-      _.forEach(_.uniqBy(data, 'merge_no'), (item) =>
-        mergeNoList.push(_.get(item, 'merge_no'))
-      );
+        _.forEach(_.uniqBy(data, 'merge_no'), (item) =>
+          mergeNoList.push(_.get(item, 'merge_no'))
+        );
 
-      // 更新 0R 清單
-      this.mergeNoList = mergeNoList;
+        // 更新 0R 清單
+        this.mergeNoList = mergeNoList;
 
-      this.datalist = [];
+        this.datalist = [];
 
-      if (_.size(mergeNoList) > 0) {
-        // 預設抓第一筆 0R 資料
-        this.selectedMergeNo = mergeNoList[0];
+        if (_.size(mergeNoList) > 0) {
+          // 預設抓第一筆 0R 資料
+          this.selectedMergeNo = mergeNoList[0];
 
-        // 取得 0R 資料 by merge_no
-        this.get0RDataByMergeNo(mergeNoList[0]);
+          // 取得 0R 資料 by merge_no
+          this.get0RDataByMergeNo(mergeNoList[0]);
+        }
+
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', `請求異常: ${err}`);
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
       }
-
-      // 關閉  loading Indicator
-      this.isShowLoadingIndicator(false);
-    });
+    );
   }
 
   /**
@@ -263,37 +271,45 @@ export class POMP001Component implements OnInit {
       merge_no: _mergeNo,
     };
 
-    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(async (res) => {
-      console.log('res');
-      console.log(res);
+    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
+      async (res) => {
+        console.log('res');
+        console.log(res);
 
-      const { code, data } = res;
+        const { code, data } = res;
 
-      console.log(code);
-      console.log(data);
+        console.log(code);
+        console.log(data);
 
-      // 更新 選中的 0R 號碼
-      this.selectedMergeNo = _mergeNo;
+        // 更新 選中的 0R 號碼
+        this.selectedMergeNo = _mergeNo;
 
-      const columnDefs = _.cloneDeep(this.columnDefs);
+        const columnDefs = _.cloneDeep(this.columnDefs);
 
-      columnDefs[0].headerName = `訂單號碼(${_mergeNo})`;
+        columnDefs[0].headerName = `訂單號碼(${_mergeNo})`;
 
-      console.log('columnDefs');
-      console.log(columnDefs);
+        console.log('columnDefs');
+        console.log(columnDefs);
 
-      // 更新 columnDefs
-      this.columnDefs = columnDefs;
+        // 更新 columnDefs
+        this.columnDefs = columnDefs;
 
-      // 更新 datalist
-      this.datalist = data;
+        // 更新 datalist
+        this.datalist = data;
 
-      // init 被修改 flag
-      this.isCellValueChanged = false;
+        // init 被修改 flag
+        this.isCellValueChanged = false;
 
-      // 關閉  loading Indicator
-      this.isShowLoadingIndicator(false);
-    });
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', `請求異常: ${err}`);
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
+      }
+    );
   }
 
   /**
@@ -439,7 +455,7 @@ export class POMP001Component implements OnInit {
       },
       (err) => {
         console.log(err);
-        this.message.create('error', `更新失敗`);
+        this.message.create('error', `更新失敗: ${err}`);
       }
     );
   }
