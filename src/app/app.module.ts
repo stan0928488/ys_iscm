@@ -172,6 +172,7 @@ import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component'
 import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
 import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
+import { POMP003Component } from './pages/POM/pomp003/pomp003.component'; 
 
 registerLocaleData(zh);
 
@@ -315,6 +316,7 @@ registerLocaleData(zh);
     PPSR332YwComponent,
     POMP001Component,
     POMP002Component,
+    POMP003Component, 
   ],
   imports: [
     BrowserModule,

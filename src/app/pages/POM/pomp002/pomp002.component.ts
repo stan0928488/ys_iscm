@@ -1,19 +1,4 @@
-import { PASService } from './../../../services/PAS/PAS.service';
 import { Component, OnInit } from '@angular/core';
-
-import {
-  ColDef,
-  ColumnApi,
-  ColumnResizedEvent,
-  GridApi,
-  GridReadyEvent,
-  AgGridEvent,
-  RowDragEndEvent,
-  EditableCallbackParams,
-  CellClassParams,
-  ValueParserParams,
-  CellValueChangedEvent,
-} from 'ag-grid-community';
 
 import { CookieService } from 'ngx-cookie-service';
 

@@ -60,4 +60,10 @@ export class POMService {
     let queryUrl = `${this.APIYW}/iscm/ppsTbpomm08/save-by-place-filter-list`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
+  // 取得 軋鋼投胚邏輯順序表 及鋼種desc 清單
+  getBilletOptionsWithDescList() {
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm07/billets/optionsWithDescList`;
+    return this.http.get<any>(queryUrl, this.httpOptions);
+  }
 }
