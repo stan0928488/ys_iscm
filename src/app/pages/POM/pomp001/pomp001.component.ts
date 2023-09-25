@@ -49,7 +49,7 @@ export class POMP001Component implements OnInit {
       headerName: `訂單號碼`,
       field: 'sale_order',
       width: 250,
-      rowDrag: true,
+      rowDrag: (params) => this.isCellEditable(params),
     },
     {
       headerName: '訂單項次',
@@ -386,13 +386,11 @@ export class POMP001Component implements OnInit {
     return rowData;
   }
 
-
-
   /**
-   * 
-   * cell 是否可編輯 
-   * 
-   * 
+   *
+   * cell 是否可編輯
+   *
+   *
    */
   isCellEditable(params: EditableCallbackParams | CellClassParams) {
     //TODO: 改成 Y
