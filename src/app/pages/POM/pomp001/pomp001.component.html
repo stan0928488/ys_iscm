@@ -48,6 +48,8 @@
         >
           0R 結案
         </button>
+
+
         <!-- <button class="buttonOne" nz-button nzType="primary" (click)="getGridRowData()">
           <span nz-icon nzTheme="outline" nzType="search"></span>
           getGridRowData
@@ -65,6 +67,7 @@
         [suppressMoveWhenRowDragging]="true"
         [columnTypes]="columnTypes"
         (cellValueChanged)="onCellValueChanged($event)"
+        (firstDataRendered)="onFirstDataRendered($event)"
       >
       </ag-grid-angular>
     </nz-spin>
