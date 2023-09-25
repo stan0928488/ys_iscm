@@ -15,6 +15,8 @@ import {
   CellValueChangedEvent,
 } from 'ag-grid-community';
 
+import { CookieService } from 'ngx-cookie-service';
+
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { POMService } from '../../../services/POM/pom.service';
@@ -41,6 +43,7 @@ interface PpsTbpomM08Model {
 })
 export class POMP002Component implements OnInit {
   isSpinning = false;
+  userId;
 
   // 參數設定 obj
   paramObj = {
@@ -75,12 +78,18 @@ export class POMP002Component implements OnInit {
 
   constructor(
     private pomService: POMService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
     // fetch data
     this.fetchData();
+
+    // 取得 userId;
+    this.userId = this.cookieService.get('USERNAME');
+
+    console.log('===> userId: ' + this.userId);
   }
 
   /**
@@ -230,20 +239,22 @@ export class POMP002Component implements OnInit {
     });
 
     // 更新參數設定
-    this.pomService.updateParamConfig(this.paramObj).subscribe(
-      (res) => {
-        console.log('res');
-        console.log(res);
-        this.message.create('success', `更新成功`);
+    this.pomService
+      .updateParamConfig({ ...this.paramObj, modifier: this.userId })
+      .subscribe(
+        (res) => {
+          console.log('res');
+          console.log(res);
+          this.message.create('success', `更新成功`);
 
-        // fetch data
-        this.fetchData();
-      },
-      (err) => {
-        console.log(err);
-        this.message.create('error', `更新失敗: ${err}`);
-      }
-    );
+          // fetch data
+          this.fetchData();
+        },
+        (err) => {
+          console.log(err);
+          this.message.create('error', `更新失敗: ${err}`);
+        }
+      );
 
     // 關閉  loading Indicator
     this.isShowLoadingIndicator(false);
@@ -367,6 +378,10 @@ export class POMP002Component implements OnInit {
   uploadUpdateForRack() {
     console.log('===> 上傳更新 - 貨位');
     console.log(this.rackNotInDataList);
+
+    _.forEach(this.rackNotInDataList, (item) => {
+      item.modifier = this.userId;
+    });
 
     // 依類型 , 過濾動作更新
 
@@ -503,6 +518,10 @@ export class POMP002Component implements OnInit {
   uploadUpdateForHouse() {
     console.log('===> 上傳更新 - 倉庫');
     console.log(this.houseInDataList);
+
+    _.forEach(this.houseInDataList, (item) => {
+      item.modifier = this.userId;
+    });
 
     // 依類型 , 過濾動作更新
 
