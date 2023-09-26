@@ -1634,7 +1634,7 @@ export class PPSService {
 
   //获取版本号仅限当月，报表使用
   getCurrentMonVerList(param) {
-    let queryUrl = this.APIURL + '/FCP/R302' + param + '/VerList';
+    let queryUrl = this.APINEWURL + '/FCP/R302' + param + '/VerList';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1648,7 +1648,7 @@ export class PPSService {
 
   //获取当月设定
   getWeekData() {
-    let queryUrl = this.APIURL + '/FCP/R302/getWeekData';
+    let queryUrl = this.APINEWURL + '/FCP/R302/getWeekData';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
