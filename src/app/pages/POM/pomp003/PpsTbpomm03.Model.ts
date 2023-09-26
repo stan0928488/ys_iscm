@@ -3,4 +3,5 @@ export class PpsTbpomm03 {
   billetShape: string;
   size: number;
   length: number;
+  billetTypeDesc:string;
 }

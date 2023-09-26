@@ -28,16 +28,15 @@
       </div> -->
       <div class="divTwo">
         <!-- 保存 -->
-        <!-- <button
+        <button
           class="buttonOne"
           nz-button
           nzType="primary"
-          (click)="updateMergeRollOrder()"
+          (click)="ovSave()"
           disabled="{{ !isCellValueChanged }}"
         >
           保存
-        </button> -->
-        <button class="buttonOne" nz-button nzType="primary">保存aa</button>
+        </button>
 
         <!-- <button class="buttonOne" nz-button nzType="primary" (click)="getGridRowData()">
           <span nz-icon nzTheme="outline" nzType="search"></span>
@@ -61,10 +60,9 @@
         [defaultColDef]="defaultColDef"
         [rowData]="datalist"
         (gridReady)="onGridReady($event)"
-                (firstDataRendered)="onFirstDataRendered($event)"
+        (cellValueChanged)="onCellValueChanged($event)"
+        (firstDataRendered)="onFirstDataRendered($event)"
       ></ag-grid-angular>
-
-      <p>this.billetTypeDescList {{ billetTypeDescList.length}}</p>
     </nz-spin>
   </nz-content>
 </div>

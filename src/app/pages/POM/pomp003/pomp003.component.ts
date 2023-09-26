@@ -19,6 +19,7 @@ import {
 } from 'ag-grid-community';
 
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { CookieService } from 'ngx-cookie-service';
 
 import { POMService } from '../../../services/POM/pom.service';
 
@@ -34,6 +35,7 @@ import * as _ from 'lodash';
 })
 export class POMP003Component implements OnInit {
   isSpinning = false;
+  userId;
 
   // cell 是否被修改
   isCellValueChanged = false;
@@ -200,10 +202,14 @@ export class POMP003Component implements OnInit {
 
   constructor(
     private pomService: POMService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
+    // 取得 userId;
+    this.userId = this.cookieService.get('USERNAME');
+
     // 取取得 軋鋼投胚邏輯順序表 及 鋼種desc 清單
     this.getBilletOptionsWithDescList();
 
@@ -332,6 +338,8 @@ export class POMP003Component implements OnInit {
         this.billetTypeList = data;
         this.billetTypeDescList = _.map(data, 'billetTypeDesc');
 
+        this.billetTypeDescList.push('---');
+
         console.log('this.billetTypeList');
         console.log(this.billetTypeList);
 
@@ -360,5 +368,69 @@ export class POMP003Component implements OnInit {
     return Number.isNaN(Number(params.newValue))
       ? params.oldValue
       : Number(params.newValue);
+  }
+
+  /**
+   *
+   * 保存數據
+   *
+   *
+   */
+  ovSave() {
+    console.log('on save');
+
+    // stop editing
+    this.gridApi.stopEditing();
+
+    // 取得目前 grid row data
+    const rowData = this.getGridRowData();
+
+    console.log('rowData');
+    console.log(rowData);
+
+    console.log(this.billetTypeList);
+    // 將 rowData 中 billetTypeDesc 轉成 billetTypeNo by this.billetTypeList
+    let tempRowData = _.cloneDeep(rowData);
+    _.forEach(tempRowData, (item) => {
+      item.billetTypeOption1 = _.find(this.billetTypeList, {
+        billetTypeDesc: item.billetTypeOption1Desc,
+      })?.billetTypeNo;
+      item.billetTypeOption2 = _.find(this.billetTypeList, {
+        billetTypeDesc: item.billetTypeOption2Desc,
+      })?.billetTypeNo;
+      item.billetTypeOption3 = _.find(this.billetTypeList, {
+        billetTypeDesc: item.billetTypeOption3Desc,
+      })?.billetTypeNo;
+      item.billetTypeOption4 = _.find(this.billetTypeList, {
+        billetTypeDesc: item.billetTypeOption4Desc,
+      })?.billetTypeNo;
+      item.billetTypeOption5 = _.find(this.billetTypeList, {
+        billetTypeDesc: item.billetTypeOption5Desc,
+      })?.billetTypeNo;
+    });
+
+    _.forEach(tempRowData, (item) => {
+      item.modifier = this.userId;
+    });
+
+    console.log('tempRowData');
+    console.log(tempRowData);
+  }
+
+  /**
+   *
+   *
+   * 取得當前 grid row data
+   *
+   *
+   */
+  getGridRowData() {
+    console.log('取得當前 grid row data');
+    let rowData = [];
+    this.gridApi.forEachNode((node, index) => {
+      rowData.push({ ...node.data });
+    });
+
+    return rowData;
   }
 }
