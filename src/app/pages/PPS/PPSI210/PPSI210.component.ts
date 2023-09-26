@@ -1328,9 +1328,9 @@ export class PPSI210Component implements AfterViewInit {
       }
       listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
 
-      // 如果指定平衡設定為「Push(C)」
+      // 如果指定平衡設定為「策略預設」或「Push(C)」
       // 畫面顯示當天日期，但存到資料庫的值還是存null
-      if(_.isEqual('C', listOfData_cloneDeep[i].MO_SORT)){
+      if(_.includes([null, 'C'], listOfData_cloneDeep[i].MO_SORT)){
         listOfData_cloneDeep[i].OFFLOAD_DATE = null;
       }
       else{
@@ -1585,9 +1585,9 @@ export class PPSI210Component implements AfterViewInit {
 
       listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
       
-      // 如果指定平衡設定為「Push(C)」
+      // 如果指定平衡設定為「策略預設」或「Push(C)」
       // 畫面顯示當天日期，但存到資料庫的值還是存null
-      if(_.isEqual('C', listOfData_cloneDeep[i].MO_SORT)){
+      if(_.includes([null, 'C'], listOfData_cloneDeep[i].MO_SORT)){
         listOfData_cloneDeep[i].OFFLOAD_DATE = null;
       }
       else{
@@ -1777,10 +1777,10 @@ export class PPSI210Component implements AfterViewInit {
       }
       this.offloadDateChange(data);
     }
-    // 選擇策略預設(null_string)，平移日期disable，無日期
+    // 選擇策略預設(null_string)，平移日期disable，顯示當天日期
     else if(_.isEqual('null_string', value)){
       data.moSortPrevSelected = 'null_string';
-      data.OFFLOAD_DATE = null;
+      data.OFFLOAD_DATE = new Date();
       data.isOffloadDateDisabled = true;
       // 取出該選擇的value對應的label
       const offloadLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, value))[0].notesChinese;
@@ -1802,9 +1802,6 @@ export class PPSI210Component implements AfterViewInit {
       rowData.offloadDateDisabledTooltip = '請選擇平移日期'
       return;
     }
-
-    console.log("rowData--------------->" , JSON.stringify(rowData));
-    
 
     const offloadValue = rowData.MO_SORT;
     const moLabel = _.isEqual('A', this.MOValue) ? 'offload-push' : 'push-offload';
