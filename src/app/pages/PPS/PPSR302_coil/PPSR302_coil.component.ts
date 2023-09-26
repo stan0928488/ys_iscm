@@ -689,7 +689,7 @@ getVerList() {
     console.log("getVerList success");
     console.log("获取版本号： " + res)
     let result:any = res ;
-    if(result.code === 1) {
+    if(result.code === 200) {
       let verList:any = result.data;
       const children: Array<{ label: string; value: string ; pointStatus : string}> = [];
       for(let i = 0 ; i<verList.length ; i++) {
@@ -733,7 +733,7 @@ getWeekData() {
     console.log("getWeekData success");
     console.log("获取星期设定 " + JSON.stringify(res) );
     let result:any = res ;
-    if(result.code === 1) {
+    if(result.code === 200) {
        let week:any = result.data;
       this.selectedValue = {label:week.weekName,value:week.weekIndex} ;//{ label: '星期一', value: '0' };
       console.log("日期赋值："+this.selectedValue) ;
