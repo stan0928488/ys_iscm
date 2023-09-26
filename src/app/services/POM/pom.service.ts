@@ -66,4 +66,10 @@ export class POMService {
     let queryUrl = `${this.APIYW}/iscm/ppsTbpomm07/billets/optionsWithDescList`;
     return this.http.get<any>(queryUrl, this.httpOptions);
   }
+
+  // 取得 鋼胚種類表 清單
+  getBilletTypeList() {
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm03/get/billet-type-list`;
+    return this.http.get<any>(queryUrl, this.httpOptions);
+  }
 }
