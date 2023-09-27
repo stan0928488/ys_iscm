@@ -252,6 +252,9 @@ export class POMP001Component implements OnInit {
 
     // 取得 0R 資料 by merge_no
     this.get0RDataByMergeNo(event);
+
+    // 將寬度調整到最適合
+    this.gridApi.sizeColumnsToFit();
   }
 
   /**
@@ -302,8 +305,6 @@ export class POMP001Component implements OnInit {
 
         // 關閉  loading Indicator
         this.isShowLoadingIndicator(false);
-
- 
       },
       (err) => {
         console.log(err);
@@ -339,8 +340,6 @@ export class POMP001Component implements OnInit {
   onGridReady(params: GridReadyEvent<PomMergeRollOrder>) {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-
- 
   }
 
   /**
@@ -563,17 +562,24 @@ export class POMP001Component implements OnInit {
     return !this.isCellValueChanged && isProdAllClosed;
   }
 
- 
+  /**
+   *
+   * 第一筆資料渲染完成
+   *
+   *
+   */
+  onFirstDataRendered(e: FirstDataRenderedEvent) {
+    // 將寬度調整到最適合
+    this.gridApi.sizeColumnsToFit();
+  }
 
   /**
-   * 
-   * 第一筆資料渲染完成
-   * 
-   * 
+   *
+   * 將寬度調整到最適合
+   *
+   *
    */
-  onFirstDataRendered(e: FirstDataRenderedEvent) { 
-
-    // 將寬度調整到最適合
-     this.gridApi.sizeColumnsToFit();
+  sizeColumnsToFit() {
+    this.gridApi.sizeColumnsToFit();
   }
 }
