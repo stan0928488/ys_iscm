@@ -392,21 +392,36 @@ export class POMP003Component implements OnInit {
     // 將 rowData 中 billetTypeDesc 轉成 billetTypeNo by this.billetTypeList
     let tempRowData = _.cloneDeep(rowData);
     _.forEach(tempRowData, (item) => {
-      item.billetTypeOption1 = _.find(this.billetTypeList, {
-        billetTypeDesc: item.billetTypeOption1Desc,
-      })?.billetTypeNo;
-      item.billetTypeOption2 = _.find(this.billetTypeList, {
-        billetTypeDesc: item.billetTypeOption2Desc,
-      })?.billetTypeNo;
-      item.billetTypeOption3 = _.find(this.billetTypeList, {
-        billetTypeDesc: item.billetTypeOption3Desc,
-      })?.billetTypeNo;
-      item.billetTypeOption4 = _.find(this.billetTypeList, {
-        billetTypeDesc: item.billetTypeOption4Desc,
-      })?.billetTypeNo;
-      item.billetTypeOption5 = _.find(this.billetTypeList, {
-        billetTypeDesc: item.billetTypeOption5Desc,
-      })?.billetTypeNo;
+      item.billetTypeOption1 =
+        item.billetTypeOption1Desc === '---'
+          ? 'XX'
+          : _.find(this.billetTypeList, {
+              billetTypeDesc: item.billetTypeOption1Desc,
+            })?.billetTypeNo;
+      item.billetTypeOption2 =
+        item.billetTypeOption2Desc === '---'
+          ? 'XX'
+          : _.find(this.billetTypeList, {
+              billetTypeDesc: item.billetTypeOption2Desc,
+            })?.billetTypeNo;
+      item.billetTypeOption3 =
+        item.billetTypeOption3Desc === '---'
+          ? 'XX'
+          : _.find(this.billetTypeList, {
+              billetTypeDesc: item.billetTypeOption3Desc,
+            })?.billetTypeNo;
+      item.billetTypeOption4 =
+        item.billetTypeOption4Desc === '---'
+          ? 'XX'
+          : _.find(this.billetTypeList, {
+              billetTypeDesc: item.billetTypeOption4Desc,
+            })?.billetTypeNo;
+      item.billetTypeOption5 =
+        item.billetTypeOption5Desc === '---'
+          ? 'XX'
+          : _.find(this.billetTypeList, {
+              billetTypeDesc: item.billetTypeOption5Desc,
+            })?.billetTypeNo;
     });
 
     _.forEach(tempRowData, (item) => {
@@ -415,6 +430,27 @@ export class POMP003Component implements OnInit {
 
     console.log('tempRowData');
     console.log(tempRowData);
+
+    this.pomService.updatePpsTbpomm07ResultById(tempRowData).subscribe(
+      (res) => {
+        console.log('res');
+        console.log(res);
+        this.message.create('success', `更新成功`);
+
+        // init 被修改 flag
+        this.isCellValueChanged = false;
+
+        // 取取得 軋鋼投胚邏輯順序表 及 鋼種desc 清單
+        this.getBilletOptionsWithDescList();
+
+        // 取得 鋼胚種類表 清單
+        this.getBilletTypeList();
+      },
+      (err) => {
+        console.log(err);
+        this.message.create('error', `更新失敗: ${err}`);
+      }
+    );
   }
 
   /**
@@ -432,5 +468,15 @@ export class POMP003Component implements OnInit {
     });
 
     return rowData;
+  }
+
+  /**
+   *
+   * 將寬度調整到最適合
+   *
+   *
+   */
+  sizeColumnsToFit() {
+    this.gridApi.sizeColumnsToFit();
   }
 }
