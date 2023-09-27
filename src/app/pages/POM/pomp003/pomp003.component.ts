@@ -27,6 +27,7 @@ import { PpsTbpomm07 } from './PpsTbpomm07.Model';
 import { PpsTbpomm03 } from './PpsTbpomm03.Model';
 
 import * as _ from 'lodash';
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-pomp003',
@@ -478,5 +479,21 @@ export class POMP003Component implements OnInit {
    */
   sizeColumnsToFit() {
     this.gridApi.sizeColumnsToFit();
+  }
+
+  /**
+   *
+   * 新增一列
+   *
+   *
+   */
+  addRow() {
+    const obj: PpsTbpomm07 = {};
+
+    // this.datalist.push(obj);
+
+    // this.gridApi.applyTransaction({ add: [{ id: uuid.v4() }] });
+
+    this.gridApi.setRowData([obj, ...this.datalist]);
   }
 }
