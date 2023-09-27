@@ -25,6 +25,7 @@ import { POMService } from '../../../services/POM/pom.service';
 
 import { PpsTbpomm07 } from './PpsTbpomm07.Model';
 import { PpsTbpomm03 } from './PpsTbpomm03.Model';
+import { Pomp003BtnCellRenderer } from './button-cell-renderer.component';
 
 import * as _ from 'lodash';
 import * as uuid from 'uuid';
@@ -175,6 +176,16 @@ export class POMP003Component implements OnInit {
         };
       },
     },
+    {
+      field: 'athlete',
+      cellRenderer: Pomp003BtnCellRenderer,
+      cellRendererParams: {
+        clicked: (param: any) => {
+          this.deleteRow(param.data);
+        },
+      },
+      minWidth: 150,
+    },
   ];
 
   columnTypes: {
@@ -297,7 +308,7 @@ export class POMP003Component implements OnInit {
    */
   onFirstDataRendered(e: FirstDataRenderedEvent) {
     // 將寬度調整到最適合
-    this.gridApi.sizeColumnsToFit();
+    this.sizeColumnsToFit();
 
     // this.gridApi.setColumnDefs(this.columnDefs);
   }
@@ -432,6 +443,9 @@ export class POMP003Component implements OnInit {
     console.log('tempRowData');
     console.log(tempRowData);
 
+    // 開啟  loading Indicator
+    this.isShowLoadingIndicator(true);
+
     this.pomService.updatePpsTbpomm07ResultById(tempRowData).subscribe(
       (res) => {
         console.log('res');
@@ -446,10 +460,16 @@ export class POMP003Component implements OnInit {
 
         // 取得 鋼胚種類表 清單
         this.getBilletTypeList();
+
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
       },
       (err) => {
         console.log(err);
         this.message.create('error', `更新失敗: ${err}`);
+
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
       }
     );
   }
@@ -478,6 +498,7 @@ export class POMP003Component implements OnInit {
    *
    */
   sizeColumnsToFit() {
+    if (this.gridApi === undefined) return;
     this.gridApi.sizeColumnsToFit();
   }
 
@@ -495,5 +516,53 @@ export class POMP003Component implements OnInit {
     // this.gridApi.applyTransaction({ add: [{ id: uuid.v4() }] });
 
     this.gridApi.setRowData([obj, ...this.datalist]);
+  }
+
+  /**
+   *
+   * 刪除一列
+   *
+   *
+   */
+  deleteRow(_data) {
+    console.log('_data');
+    console.log(_data);
+    const { id } = _data;
+
+    if (id === undefined) {
+      console.log('無 id');
+    } else {
+      console.log('刪除一列: ' + id);
+
+      // 開啟  loading Indicator
+      this.isShowLoadingIndicator(true);
+
+      this.pomService.deleteBilletOptionsById(_data).subscribe(
+        (res) => {
+          console.log('res');
+          console.log(res);
+          this.message.create('success', `刪除成功`);
+
+          // init 被修改 flag
+          this.isCellValueChanged = false;
+
+          // 取取得 軋鋼投胚邏輯順序表 及 鋼種desc 清單
+          this.getBilletOptionsWithDescList();
+
+          // 取得 鋼胚種類表 清單
+          this.getBilletTypeList();
+
+          // 關閉  loading Indicator
+          this.isShowLoadingIndicator(false);
+        },
+        (err) => {
+          console.log(err);
+          this.message.create('error', `刪除失敗: ${err}`);
+
+          // 關閉  loading Indicator
+          this.isShowLoadingIndicator(false);
+        }
+      );
+    }
   }
 }

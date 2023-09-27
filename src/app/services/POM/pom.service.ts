@@ -79,4 +79,11 @@ export class POMService {
     let queryUrl = `${this.APIYW}/iscm/ppsTbpomm07/update-by-id`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
+  // 更新 軋鋼投胚邏輯順序表 刪除 by id
+  deleteBilletOptionsById(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm07/delete-by-id`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
 }

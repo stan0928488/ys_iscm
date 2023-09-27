@@ -175,6 +175,8 @@ import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
 import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 
+import { Pomp003BtnCellRenderer } from './pages/POM/pomp003/button-cell-renderer.component';
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -318,6 +320,7 @@ registerLocaleData(zh);
     POMP001Component,
     POMP002Component,
     POMP003Component,
+    Pomp003BtnCellRenderer,
   ],
   imports: [
     BrowserModule,
