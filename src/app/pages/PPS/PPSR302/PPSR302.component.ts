@@ -230,7 +230,7 @@ export class PPSR302Component implements OnInit {
       // console.log("comitData :" + JSON.stringify(res)) ;
       let result:any = res ;
       let tw = 0 ; //总重
-      if(result.code === 1) {
+      if(result.code === 200) {
         this.secondModalData = result.data.tableData ;
         let dateList = result.data.dateList ;
         for(let d of dateList){
@@ -301,7 +301,7 @@ export class PPSR302Component implements OnInit {
     myObj.getPPSService.getR302MesDtlList(paramete).subscribe(res => {              
       let result:any = res ;
       let tw = 0 ; //总重
-      if(result.code === 1) {
+      if(result.code === 200) {
         this.mesDtlData = result.data.mesDtlList ;
         for(let i=0 ; i < this.mesDtlData.length ; i ++ ){
           let item = this.mesDtlData[i];
@@ -479,7 +479,7 @@ export class PPSR302Component implements OnInit {
       // console.log("comitData :" + JSON.stringify(res)) ;
       let result:any = res ;
       let tw = 0 ; //总重
-      if(result.code === 1) {
+      if(result.code === 200) {
         this.firstModalData = result.data ;
         this.totalCount = this.firstModalData.length ;
         for(let i=0 ; i < this.firstModalData.length ; i ++ ){
@@ -522,7 +522,7 @@ export class PPSR302Component implements OnInit {
     this.modalDataExportList = [] ;
     console.log("comitData :" + JSON.stringify(res)) ;
     let result:any = res ;
-    if(result.code === 1) {
+    if(result.code === 200) {
       this.firstModalData = result.data ;
       for(let i=0 ; i < this.firstModalData.length ; i ++ ){
         let item = this.firstModalData[i];
@@ -642,7 +642,7 @@ export class PPSR302Component implements OnInit {
 
     let result:any = res ;
     this.tbodyList = [] ;
-    if(result.code === 1) {
+    if(result.code === 200) {
       this.tbodyList = result.data.tableCell ;
       if(this.tbodyList.length > 0){
         this.loaded = true ;
