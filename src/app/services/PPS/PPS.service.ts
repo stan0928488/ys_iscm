@@ -1656,31 +1656,31 @@ export class PPSService {
   //获取交期总表数据
   getR302DataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302' + param + '/queryDataList';
+    let queryUrl = this.APINEWURL + '/FCP/R302' + param + '/queryDataList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //获取交期总表第一層数据
   getR302FirstModalDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getFirstModalData';
+    let queryUrl = this.APINEWURL + '/FCP/R302' + param + '/getFirstModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取延遲訂單信息
   getR302DelayDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getDelayDataList';
+    let queryUrl = this.APINEWURL + '/FCP/R302' + param + '/getDelayDataList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //獲取訂單詳情 第二層modal
   getR302OrderDataList(param, _data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302' + param + '/getSecondModalData';
+    let queryUrl = this.APINEWURL + '/FCP/R302' + param + '/getSecondModalData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // 取得mes以入庫量明細
   getR302MesDtlList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R302/getR302MesDtlList';
+    let queryUrl = this.APINEWURL + '/FCP/R302/getR302MesDtlList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
