@@ -21,6 +21,20 @@ import { POMService } from '../../../services/POM/pom.service';
 import { PomMergeRollOrder } from './PomMergeRollOrder.Model';
 
 import * as _ from 'lodash';
+import * as moment from 'moment';
+
+
+/**5.		【0R解開與配置】
+(1)	增加”尺寸”, “軋延日期” 篩選條件.
+(2)	訂單資訊新增”尺寸”, “交期”, “長度”, “訂單長度上下限”. “鋼種”, “客戶”.	曾開一
+
+【0R解開與配置】
+(1)	配置順位可隨時調整, 不限生產完才能調.
+(2)	原配置邏輯以滿足優先順位之”訂單下限量”, 再往下一順位; 改為滿足”訂單目標量”.
+
+ */
+
+
 
 @Component({
   selector: 'app-pomp001',
@@ -50,16 +64,19 @@ export class POMP001Component implements OnInit {
       field: 'sale_order',
       width: 250,
       rowDrag: (params) => this.isCellEditable(params),
+      pinned: 'left',
     },
     {
       headerName: '訂單項次',
       field: 'sale_item',
       width: 100,
+      pinned: 'left',
     },
     {
       headerName: '訂單行號',
       field: 'sale_lineno',
       width: 100,
+      pinned: 'left',
     },
 
     {
@@ -87,14 +104,62 @@ export class POMP001Component implements OnInit {
       width: 150,
       type: 'alightRightColumn',
     },
+
     {
-      headerName: '生計調整量',
-      field: 'adjustment_qty',
+      headerName: '鋼種',
+      field: 'grade_no',
+      width: 100,
+    },
+
+    {
+      headerName: '訂單尺寸',
+      field: 'order_dia',
+      width: 100,
+    },
+    {
+      headerName: '軋延尺寸',
+      field: 'shave_size',
+      width: 100,
+    },
+
+    {
+      headerName: '生計交期',
+      field: 'date_delivery_pp',
       width: 150,
-      type: 'editableColumn',
-      headerClass: 'header-editable-color',
-      // cellClass: 'cell-editable-color',
-      valueParser: this.numberParser,
+      valueFormatter: (params) => {
+        return moment(params.value).format('YYYY-MM-DD');
+      },
+    },
+    {
+      headerName: '訂單長度',
+      field: 'order_length',
+      width: 100,
+      valueFormatter: (params) => {
+        return Number(params.value).toLocaleString();
+      },
+    },
+
+    {
+      headerName: '長度下限',
+      field: 'order_length_min',
+      width: 100,
+      valueFormatter: (params) => {
+        return Number(params.value).toLocaleString();
+      },
+    },
+
+    {
+      headerName: '長度上限',
+      field: 'order_length_max',
+      width: 100,
+      valueFormatter: (params) => {
+        return Number(params.value).toLocaleString();
+      },
+    },
+    {
+      headerName: '客戶',
+      field: 'cust_abbreviations',
+      width: 250,
     },
     {
       headerName: ' 生產指令開立',
@@ -102,7 +167,7 @@ export class POMP001Component implements OnInit {
       width: 150,
     },
     {
-      headerName: '生產指令全部關閉',
+      headerName: '生產指令關閉',
       field: 'flagClosedRollProd',
       width: 150,
     },
@@ -254,7 +319,7 @@ export class POMP001Component implements OnInit {
     this.get0RDataByMergeNo(event);
 
     // 將寬度調整到最適合
-    this.gridApi.sizeColumnsToFit();
+    //  this.gridApi.sizeColumnsToFit();
   }
 
   /**
@@ -570,7 +635,7 @@ export class POMP001Component implements OnInit {
    */
   onFirstDataRendered(e: FirstDataRenderedEvent) {
     // 將寬度調整到最適合
-    this.gridApi.sizeColumnsToFit();
+    // this.gridApi.sizeColumnsToFit();
   }
 
   /**
@@ -580,6 +645,6 @@ export class POMP001Component implements OnInit {
    *
    */
   sizeColumnsToFit() {
-    this.gridApi.sizeColumnsToFit();
+    //  this.gridApi.sizeColumnsToFit();
   }
 }

@@ -177,7 +177,7 @@ export class POMP003Component implements OnInit {
       },
     },
     {
-      field: 'athlete',
+      field: '動作',
       cellRenderer: Pomp003BtnCellRenderer,
       cellRendererParams: {
         clicked: (param: any) => {
