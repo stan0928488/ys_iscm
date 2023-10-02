@@ -23,7 +23,6 @@ import { PomMergeRollOrder } from './PomMergeRollOrder.Model';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
-
 /**5.		【0R解開與配置】
 (1)	增加”尺寸”, “軋延日期” 篩選條件.
 (2)	訂單資訊新增”尺寸”, “交期”, “長度”, “訂單長度上下限”. “鋼種”, “客戶”.	曾開一
@@ -33,8 +32,6 @@ import * as moment from 'moment';
 (2)	原配置邏輯以滿足優先順位之”訂單下限量”, 再往下一順位; 改為滿足”訂單目標量”.
 
  */
-
-
 
 @Component({
   selector: 'app-pomp001',
@@ -461,10 +458,9 @@ export class POMP001Component implements OnInit {
    *
    */
   isCellEditable(params: EditableCallbackParams | CellClassParams) {
-    //TODO: 改成 Y
-    return params.data.flagClosedRollProd === 'Y';
+    // return params.data.flagClosedRollProd === 'Y';
 
-    // return true;
+    return true;
   }
 
   /**
