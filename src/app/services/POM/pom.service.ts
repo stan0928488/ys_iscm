@@ -86,4 +86,11 @@ export class POMService {
     let queryUrl = `${this.APIYW}/iscm/ppsTbpomm07/delete-by-id`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
+  // 取得 0R 清單
+  getMergeRoll0RList(_parms) {
+    const body = JSON.stringify(_parms);
+    let queryUrl = `${this.APIYW}/iscm/pom-merge-roll-order/0r-list`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
 }

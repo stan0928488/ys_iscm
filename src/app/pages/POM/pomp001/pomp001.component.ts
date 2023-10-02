@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { lastValueFrom, firstValueFrom } from 'rxjs';
 
 import {
   ColDef,
@@ -44,12 +45,23 @@ export class POMP001Component implements OnInit {
   // cell 是否被修改
   isCellValueChanged = false;
 
+  dateFormat = 'yyyy/MM/dd';
+
+  // 軋延日期區間
+  dateRange = [];
+
   // ag-grid  grid Column Api
   private gridApi!: GridApi<PomMergeRollOrder>;
   private gridColumnApi!: ColumnApi;
 
   // 0R 清單
   mergeNoList: string[] = [];
+
+  // 0R 軋延尺寸 清單
+  shaveDiaList: number[] = [];
+
+  // 選中的 0R 軋延尺寸
+  selectedShaveDia: number;
 
   // 選中的 0R 清單
   selectedMergeNo: string = '';
@@ -225,10 +237,7 @@ export class POMP001Component implements OnInit {
 
   ngOnInit(): void {
     // 取得全部 0R 資料
-    this.get0RDateList('0R');
-
-    // ag grid auto size all columns
-    this.autoSizeAll(false);
+    this.get0RDateList({});
   }
 
   /**
@@ -237,17 +246,76 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  get0RDateList(_mergeNo: string) {
-    console.log('取得 0R 資料  ');
+  async get0RDateList(_searchObj: any) {
+    console.log('取得 0R 資料 ');
     // 開啟  loading Indicator
     this.isShowLoadingIndicator(true);
 
-    let myObj = this;
+    try {
+      // 取得 0R 清單
 
-    const obj = {
-      merge_no: _mergeNo,
-    };
+      console.log('取得 0R 清單 0');
+      const res = await lastValueFrom(
+        this.pomService.getMergeRoll0RList(_searchObj)
+      );
 
+      const { code, data } = res;
+
+      const mergeRoll0RList = data;
+
+      console.log('mergeRoll0RList');
+      console.log(mergeRoll0RList);
+
+      // OR 合併號碼 清單
+      const mergeNoList = [];
+
+      _.forEach(_.uniqBy(mergeRoll0RList, 'merge_no'), (item) =>
+        mergeNoList.push(_.get(item, 'merge_no'))
+      );
+
+      // 更新 0R 清單
+      this.mergeNoList = mergeNoList;
+
+      // OR 軋延尺寸 清單
+      const shaveDiaList = [];
+
+      _.forEach(_.uniqBy(mergeRoll0RList, 'shave_size'), (item) => {
+        if (_.get(item, 'shave_size') !== undefined) {
+          shaveDiaList.push(_.get(item, 'shave_size'));
+        }
+      });
+
+      // 更新 0R 軋延尺寸 清單
+      this.shaveDiaList = shaveDiaList;
+
+      console.log('取得 0R 清單 1');
+
+      // 有 0R 資料清單
+      if (_.size(mergeRoll0RList) > 0) {
+        // 預設抓第一筆 0R 資料
+        this.selectedMergeNo = mergeRoll0RList[0]['merge_no'];
+
+        // 取得 0R 資料 by merge_no
+        this.get0RDataByMergeNo(mergeRoll0RList[0]['merge_no']);
+      } else { 
+        this.datalist = [];
+        this.mergeNoList = [];
+        this.shaveDiaList = [];
+        this.selectedMergeNo = '';
+      }
+
+      // 關閉  loading Indicator
+      this.isShowLoadingIndicator(false);
+    } catch (err) {
+      console.log('err');
+      console.log(err);
+
+      this.message.create('error', '請求異常');
+      // 關閉  loading Indicator
+      this.isShowLoadingIndicator(false);
+    }
+
+    /*
     myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
       async (res) => {
         console.log('res');
@@ -258,6 +326,7 @@ export class POMP001Component implements OnInit {
         console.log(code);
         console.log(data);
 
+        // OR 合併號碼 清單
         const mergeNoList = [];
 
         _.forEach(_.uniqBy(data, 'merge_no'), (item) =>
@@ -266,6 +335,31 @@ export class POMP001Component implements OnInit {
 
         // 更新 0R 清單
         this.mergeNoList = mergeNoList;
+        this.mergeNoAllList = data;
+
+        // OR 軋延尺寸 清單
+        const shaveDiaList = [];
+
+        _.forEach(_.uniqBy(data, 'shave_size'), (item) => {
+          if (_.get(item, 'shave_size') !== undefined) {
+            shaveDiaList.push(_.get(item, 'shave_size'));
+          }
+        });
+
+        // 更新 0R 軋延尺寸 清單
+        this.shaveDiaList = shaveDiaList;
+
+        // OR 鋼種 清單
+        const gradeNoList = [];
+
+        _.forEach(_.uniqBy(data, 'grade_no'), (item) => {
+          if (_.size(_.get(item, 'grade_no')) > 0) {
+            gradeNoList.push(_.get(item, 'grade_no'));
+          }
+        });
+
+        // 更新 0R 鋼種 清單
+        this.gradeNoList = gradeNoList;
 
         this.datalist = [];
 
@@ -275,6 +369,12 @@ export class POMP001Component implements OnInit {
 
           // 取得 0R 資料 by merge_no
           this.get0RDataByMergeNo(mergeNoList[0]);
+
+          // 選中的 0R 軋延尺寸
+          this.selectedShaveDia = undefined;
+
+          // 選中的 0R 鋼種
+          this.selectedGradeNo = undefined;
         }
 
         // 關閉  loading Indicator
@@ -287,6 +387,9 @@ export class POMP001Component implements OnInit {
         this.isShowLoadingIndicator(false);
       }
     );
+
+
+    */
   }
 
   /**
@@ -325,56 +428,79 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  get0RDataByMergeNo(_mergeNo: string) {
+  async get0RDataByMergeNo(_mergeNo: string) {
     console.log('取得 0R 資料 by merge_no');
     // 開啟  loading Indicator
     this.isShowLoadingIndicator(true);
 
     let myObj = this;
 
-    const obj = {
-      merge_no: _mergeNo,
-    };
+    try {
+      const obj = {
+        merge_no: _mergeNo,
+      };
 
-    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
-      async (res) => {
-        console.log('res');
-        console.log(res);
+      // 取得 0R 資料 by merge_no
+      const res = await lastValueFrom(
+        this.pomService.getVirtualQtyListBy0R(obj)
+      );
 
-        const { code, data } = res;
+      console.log('res');
+      console.log(res);
 
-        console.log(code);
-        console.log(data);
+      const { code, data } = res;
 
-        // 更新 選中的 0R 號碼
-        this.selectedMergeNo = _mergeNo;
+      console.log(code);
+      console.log(data);
 
-        const columnDefs = _.cloneDeep(this.columnDefs);
+      // 更新 選中的 0R 號碼
+      this.selectedMergeNo = _mergeNo;
 
-        columnDefs[0].headerName = `訂單號碼(${_mergeNo})`;
+      const columnDefs = _.cloneDeep(this.columnDefs);
 
-        console.log('columnDefs');
-        console.log(columnDefs);
+      columnDefs[0].headerName = `訂單號碼(${_mergeNo})`;
 
-        // 更新 columnDefs
-        this.columnDefs = columnDefs;
+      console.log('columnDefs');
+      console.log(columnDefs);
 
-        // 更新 datalist
-        this.datalist = data;
+      // 更新 columnDefs
+      this.columnDefs = columnDefs;
 
-        // init 被修改 flag
-        this.isCellValueChanged = false;
+      // 更新 datalist
+      this.datalist = data;
 
-        // 關閉  loading Indicator
-        this.isShowLoadingIndicator(false);
-      },
-      (err) => {
-        console.log(err);
-        this.message.create('error', `請求異常: ${err}`);
-        // 關閉  loading Indicator
-        this.isShowLoadingIndicator(false);
-      }
-    );
+      // init 被修改 flag
+      this.isCellValueChanged = false;
+
+      // 關閉  loading Indicator
+      this.isShowLoadingIndicator(false);
+    } catch (err) {
+      console.log('err');
+      console.log(err);
+
+      this.message.create('error', '請求異常');
+      // 關閉  loading Indicator
+      this.isShowLoadingIndicator(false);
+    }
+
+    // myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
+    //   async (res) => {
+    //     console.log('res');
+    //     console.log(res);
+
+    //     const { code, data } = res;
+
+    //     console.log(code);
+    //     console.log(data);
+
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //     this.message.create('error', `請求異常: ${err}`);
+    //     // 關閉  loading Indicator
+    //     this.isShowLoadingIndicator(false);
+    //   }
+    // );
   }
 
   /**
@@ -642,5 +768,88 @@ export class POMP001Component implements OnInit {
    */
   sizeColumnsToFit() {
     //  this.gridApi.sizeColumnsToFit();
+  }
+
+  /**
+   *
+   * on  0R 尺寸 清單選擇 Event
+   *
+   *
+   */
+  onShaveDiaSelectChange(event: any) {
+    console.log('onShaveDiaSelectChange');
+    console.log(event);
+
+    // init 被修改 flag
+    this.isCellValueChanged = false;
+
+    // 選種的 0R 軋延尺寸
+    this.selectedShaveDia = event;
+  }
+
+  /**
+   *
+   * 重置查詢條件
+   *
+   *
+   */
+  onResetSearch() {
+    console.log('onResetSearch');
+
+    // 取得全部 0R 資料
+    this.get0RDateList({});
+
+
+
+    this.selectedShaveDia = undefined;
+
+    this.dateRange = [];
+  }
+
+  nzOnCalendarChange(e: any) {
+    console.log('nzOnCalendarChange e');
+    console.log(e);
+
+    const startDate = moment(e[0]).format('YYYY-MM-DD');
+    const endDate = moment(e[1]).format('YYYY-MM-DD');
+
+    console.log('startDate');
+    console.log(startDate);
+
+    console.log('endDate');
+    console.log(endDate);
+  }
+
+  /**
+   *
+   *
+   * onSearch
+   *
+   *
+   */
+  async onSearch() {
+    console.log('onSearch');
+
+    // 開啟  loading Indicator
+    this.isShowLoadingIndicator(true);
+
+    //       qDia,
+    // qDateSrsStart,
+    // qDateSrsEnd,
+
+    const obj = {
+      qDia: this.selectedShaveDia,
+    };
+
+    if (_.size(this.dateRange) > 0) {
+      const startDate = moment(this.dateRange[0]).format('YYYY-MM-DD');
+      const endDate = moment(this.dateRange[1]).format('YYYY-MM-DD');
+
+      obj['qDateSrsStart'] = startDate;
+      obj['qDateSrsEnd'] = endDate;
+    }
+
+    console.log('取得 0R 資料 ');
+    this.get0RDateList(obj);
   }
 }
