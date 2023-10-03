@@ -9,19 +9,19 @@
     <tbody>
         <tr *ngFor="let data of listOfData">
             <ng-container *ngIf=" data.kindType.indexOf('小計') != -1">
-                <td [colSpan]="2" style="background-color: #00DB00;">{{ data.kindType }}</td>
-                <td style="background-color: #00DB00;">{{ data.planWeightI }}</td>
+                <td [colSpan]="2" style="background-color: #92D050; font-weight: bold;">{{ data.kindType }}</td>
+                <td style="background-color: #92D050; font-weight: bold;">{{ data.planWeightI | number:'1.1-1' }}</td>
             </ng-container>
             <ng-container *ngIf=" data.kindType.indexOf('小計') == -1">
                 <ng-container [ngSwitch]="data.rowspanSize">
                     <ng-container *ngSwitchCase="1">
                         <td>{{ data.process }}</td>
-                        <td>{{ data.planWeightI }}</td>
+                        <td>{{ data.planWeightI | number:'1.1-1' }}</td>
                     </ng-container>
                     <ng-container *ngSwitchCase="999">
                         <td>{{ data.kindType }}</td>
                         <td>{{ data.process }}</td>
-                        <td>{{ data.planWeightI }}</td>
+                        <td>{{ data.planWeightI | number:'1.1-1' }}</td>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                         <td [rowSpan]="data.rowspanSize">{{ data.kindType }}</td>

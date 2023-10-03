@@ -1,4 +1,4 @@
-<p>說明欄位：{{otherInfo.instructions}}</p>
+<pre class="multiline-text">說明欄位：<p>{{otherInfo.instructions}}</pre>
 <nz-table nzBordered nzSize="small" [nzFrontPagination]="'false'" [nzShowPagination]="'false'"
     [nzScroll]="{y: '650px' }" #colSpanTable [nzData]="listOfData">
     <thead>
@@ -26,7 +26,7 @@
             </ng-container>
             <ng-container [ngSwitch]="data.steelType">
                 <ng-container *ngSwitchCase="'合計'">
-                    <td style="background-color: #00DB00;">{{ data.weight }}</td>
+                    <td style="background-color: #00DB00;">{{ data.weight | number:'1.1-1'  }}</td>
                 </ng-container>
                 <ng-container *ngSwitchDefault>
                     <td>{{ data.dateDeliveryPpStr }}</td>

@@ -1,0 +1,5 @@
+.multiline-text {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    /* 可以根据需要设置其他样式属性 */
+  }

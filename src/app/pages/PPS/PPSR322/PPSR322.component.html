@@ -11,21 +11,23 @@
         <nz-collapse-panel nzHeader="查詢條件">
 
             <div nz-row>
+                FCP版次
                 <nz-select
-                    style="width: 220px; margin-left:50px;"
+                    style="width: 180px; margin-left:10px;"
                     [(ngModel)]="searchObj.fcpVer"
                     nzPlaceHolder="對應FCP版本"
                     >
                     <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
                 </nz-select>
+                <label style="margin-left:20px;">推移維護版次</label>
                 <nz-select
-                    style="width: 220px; margin-left:50px;"
+                    style="width: 180px; margin-left:10px;"
                     [(ngModel)]="searchObj.shiftVer"
                     nzPlaceHolder="推移維護版本"
                     >
                     <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
                 </nz-select>
-                <button style="margin-left:20px ; margin-top: 8px;" (click)="notifyClick()" nz-button nzType="primary">
+                <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
                     <span nz-icon nzType="search" nzTheme="outline"></span>查詢
                 </button>
             </div>
