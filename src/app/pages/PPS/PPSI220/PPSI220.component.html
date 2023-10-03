@@ -125,7 +125,7 @@
                 <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
               &nbsp;&nbsp;
               <label *ngIf="data.FCP_EDITION === undefined"></label>
-              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel_original(data.FCP_EDITION)">
+              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.FCP_EDITION)">
                 <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.FCP_EDITION }}</a> &nbsp;&nbsp;
 
               <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.PLAN_EDITION)">
@@ -209,7 +209,7 @@
                 <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
               &nbsp;&nbsp;
               <label *ngIf="data.FCP_EDITION === undefined"></label>
-              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel_original(data.FCP_EDITION)">
+              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.FCP_EDITION)">
                 <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.FCP_EDITION }}</a>
             </td>
             <td style="font-size: 11px; padding: 4px;">{{data.SCHEDULE_FLAG_NA}} <p>{{dateFormat(data.SCHEDULE_TIME, '1')}}</p></td>
