@@ -9,7 +9,7 @@
 
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
       <div class="search-area">
-        <span class="search">尺寸</span>
+        <span class="search">軋延尺寸</span>
         <nz-select
           class="merge-no-select"
           nzAllowClear
@@ -27,7 +27,11 @@
         </nz-select>
 
         <span class="search">軋延日期</span>
-        <nz-range-picker [nzFormat]="dateFormat"  [(ngModel)]="dateRange"  (nzOnCalendarChange)="nzOnCalendarChange($event)"></nz-range-picker>
+        <nz-range-picker
+          [nzFormat]="dateFormat"
+          [(ngModel)]="dateRange"
+          (nzOnCalendarChange)="nzOnCalendarChange($event)"
+        ></nz-range-picker>
 
         <span class="search">合併單號</span>
         <nz-select
@@ -45,11 +49,9 @@
             [nzValue]="merge_no"
           ></nz-option>
         </nz-select>
-
-
       </div>
       <div class="divTwo">
-                <!-- 重置 -->
+        <!-- 重置 -->
         <button
           class="buttonOne"
           nz-button
@@ -59,19 +61,10 @@
           查詢
         </button>
 
-
-
-                <!-- 重置 -->
-        <button
-          class="buttonOne"
-          nz-button 
-          (click)="onResetSearch()"
-        >
+        <!-- 重置 -->
+        <button class="buttonOne" nz-button (click)="onResetSearch()">
           重置
         </button>
-
-
-
 
         <!-- 保存 -->
         <button

@@ -79,13 +79,34 @@ export class POMP001Component implements OnInit {
       headerName: '訂單項次',
       field: 'sale_item',
       width: 100,
-      pinned: 'left',
     },
     {
       headerName: '訂單行號',
       field: 'sale_lineno',
       width: 100,
-      pinned: 'left',
+    },
+
+    {
+      headerName: '軋延計畫開始',
+      field: 'order_date_start',
+      width: 200,
+      valueFormatter: (params) => {
+        if (params.value === undefined) {
+          return '---';
+        }
+        return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+    {
+      headerName: '軋延計畫結束',
+      field: 'order_date_end',
+      width: 200,
+      valueFormatter: (params) => {
+        if (params.value === undefined) {
+          return '---';
+        }
+        return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
+      },
     },
 
     {
@@ -297,7 +318,7 @@ export class POMP001Component implements OnInit {
 
         // 取得 0R 資料 by merge_no
         this.get0RDataByMergeNo(mergeRoll0RList[0]['merge_no']);
-      } else { 
+      } else {
         this.datalist = [];
         this.mergeNoList = [];
         this.shaveDiaList = [];
@@ -621,21 +642,42 @@ export class POMP001Component implements OnInit {
     };
 
     _.forEach(rowData, (item) => {
-      const { id, plan_seq, adjustment_qty } = item;
-      data.Sublist.push({ id, plan_seq, adjustment_qty });
+      const { id, plan_seq, sale_order, sale_item, sale_lineno } = item;
+      data.Sublist.push({
+        id,
+        plan_seq,
+        sale_order,
+        sale_item,
+        sale_lineno,
+        lock: 0,
+      });
     });
 
     console.log('data');
     console.log(data);
 
-    // const d = {
-    //   merge_no: 'aaa',
-    //   Block: '1',
-    //   Sublist: [
-    //     { id: '111', plan_seq: '1', adjustment_qty: '1' },
-    //     { id: '222', plan_seq: '2', adjustment_qty: '2' },
-    //   ],
-    // };
+    //     {
+    //    "merge_no":"0R2023092200008",
+    //    "Block":"1",
+    //    "Sublist":[
+    //       {
+    //          "id":"3476286599565568",
+    //          "sale_order":"PP0102PPST2023000025",
+    //          "sale_item":10,
+    //          "sale_lineno":10,
+    //          "plan_seq":2,
+    //          "lock":0
+    //       },
+    //       {
+    //          "id":"3476286607282432",
+    //          "sale_order":"PP0102PPST2023000027",
+    //          "sale_item":10,
+    //          "sale_lineno":10,
+    //          "plan_seq":1,
+    //          "lock":0
+    //       }
+    //    ]
+    // }
 
     this.pomService.updateMergeRollOrder(data).subscribe(
       (res) => {
@@ -688,12 +730,16 @@ export class POMP001Component implements OnInit {
     };
 
     _.forEach(rowData, (item) => {
-      const { id, plan_seq, adjustment_qty } = item;
-      data.Sublist.push({ id, plan_seq, adjustment_qty });
+      const { id, plan_seq, sale_order, sale_item, sale_lineno } = item;
+      data.Sublist.push({
+        id,
+        plan_seq,
+        sale_order,
+        sale_item,
+        sale_lineno,
+        lock: 0,
+      });
     });
-
-    console.log('data');
-    console.log(data);
 
     // const d = {
     //   merge_no: 'aaa',
@@ -798,8 +844,6 @@ export class POMP001Component implements OnInit {
 
     // 取得全部 0R 資料
     this.get0RDateList({});
-
-
 
     this.selectedShaveDia = undefined;
 
