@@ -62,6 +62,9 @@ export class POMP001Component implements OnInit {
   // 選中的 0R 軋延尺寸
   selectedShaveDia: number;
 
+  // 表格 datalist
+  datalist: PomMergeRollOrder[] = [];
+
   // 表格 column 定義
   columnDefs: ColDef[] = [
     {
@@ -81,6 +84,7 @@ export class POMP001Component implements OnInit {
       headerName: `訂單號碼`,
       field: 'sale_order',
       width: 250,
+      pinned: 'left',
     },
     {
       headerName: '訂單項次',
@@ -210,9 +214,10 @@ export class POMP001Component implements OnInit {
         onClosed: (param: any) => {
           console.log('===> onClosed');
           console.log(param);
-          // this.deleteRow(param.data);
+          this.closeMergeRollOrder(param.data.merge_no);
         },
         orderChangedArr: this.orderChangedArr,
+        datalist: this.datalist,
       },
       minWidth: 150,
     },
@@ -262,9 +267,6 @@ export class POMP001Component implements OnInit {
       },
     },
   };
-
-  // 表格 datalist
-  datalist: PomMergeRollOrder[] = [];
 
   constructor(
     private pomService: POMService,
@@ -372,6 +374,7 @@ export class POMP001Component implements OnInit {
       let mergeNoArr = [];
 
       _.forEach(data, (item, index) => {
+        // 設定 合併單號 index
         if (_.indexOf(mergeNoArr, item.merge_no) === -1) {
           mergeNoIndex = mergeNoIndex + 1;
           item.mergeNoIndex = mergeNoIndex;
@@ -383,6 +386,11 @@ export class POMP001Component implements OnInit {
 
       // 更新 datalist
       this.datalist = data;
+
+      _.forEach(this.datalist, (item, index) => {
+        // 可否結案
+        item.isCanClosed = this.isCanCloseMergeRollOrder(item);
+      });
 
       // init 已改變順序的 0R 資料
       this.orderChangedArr = [];
@@ -463,9 +471,14 @@ export class POMP001Component implements OnInit {
 
           if (node.data.merge_no === event.node.data.merge_no) {
             // 目前有 move 的 0R 資料
-            rowData.push({ ...node.data, plan_seq: seq, isMoved: true });
+            rowData.push({
+              ...node.data,
+              plan_seq: seq,
+              isEditing: true,
+              isMoved: true,
+            });
           } else {
-            rowData.push({ ...node.data, plan_seq: seq });
+            rowData.push({ ...node.data, plan_seq: seq, isEditing: true });
           }
         }
       });
@@ -631,16 +644,18 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  closeMergeRollOrder() {
-    /*
+  closeMergeRollOrder(_mergeNo: string) {
     // stop editing
     this.gridApi.stopEditing();
 
     // 取得目前 grid row data
-    const rowData = this.getGridRowData();
+    const rowData = _.filter(
+      this.getGridRowData(),
+      (item) => item.merge_no === _mergeNo
+    );
 
     const data = {
-      merge_no: this.selectedMergeNo,
+      merge_no: _mergeNo,
       Block: '0',
       Sublist: [],
     };
@@ -672,47 +687,17 @@ export class POMP001Component implements OnInit {
         console.log(res);
         this.message.create('success', `結案成功`);
 
-        // init 被修改 flag
-        this.isCellValueChanged = false;
+        // init 已改變順序的 0R 資料
+        this.orderChangedArr = [];
 
         // 取得 0R 資料 by merge_no
-        this.get0RDataByMergeNo(this.selectedMergeNo);
+        this.onSearch();
       },
       (err) => {
         console.log(err);
         this.message.create('error', `結案失敗`);
       }
     );
-    */
-  }
-
-  /**
-   *
-   * 是否可以結案
-   *
-   *
-   */
-  isCanCloseMergeRollOrder() {
-    /* 
-    // 生產是否全部結束
-    let isProdAllClosed = false;
-
-    const notFinishList = _.filter(this.datalist, (item) => {
-      return (
-        item.flagClosedRollProd === 'N' &&
-        item.merge_no === this.selectedMergeNo
-      );
-    });
-
-    if (_.size(notFinishList) > 0) {
-      isProdAllClosed = false;
-    } else {
-      isProdAllClosed = true;
-    }
-
-    return !this.isCellValueChanged && isProdAllClosed;
-    */
-    return false;
   }
 
   /**
@@ -835,5 +820,31 @@ export class POMP001Component implements OnInit {
     } else {
       return { background: 'white' };
     }
+  }
+
+  /**
+   *
+   * 是否可以結案
+   *
+   *
+   */
+  isCanCloseMergeRollOrder(_item: any) {
+    // 生產是否全部結束
+    let isProdAllClosed = false;
+
+    const mergeNo = _item.merge_no;
+
+    const notFinishList = _.filter(this.datalist, (item) => {
+      return item.flagClosedRollProd === 'N' && item.merge_no === mergeNo;
+    });
+
+    if (_.size(notFinishList) > 0) {
+      isProdAllClosed = false;
+    } else {
+      isProdAllClosed = true;
+    }
+
+    //  _.size(this.params.orderChangedArr) === 0
+    return _.size(this.orderChangedArr) === 0 && isProdAllClosed;
   }
 }

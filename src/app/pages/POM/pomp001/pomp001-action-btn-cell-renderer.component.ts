@@ -2,20 +2,19 @@ import { Component, OnDestroy } from '@angular/core';
 
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
-
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
 @Component({
   selector: 'btn-cell-renderer',
-  template: ` 
-
+  template: `
     <button
       class="buttonOne"
       nz-button
       nz-popconfirm
       nzPopconfirmTitle="確認 0R 結案 ?"
       (nzOnConfirm)="onClosed($event)"
+      disabled="{{ !isCanCloseMergeRollOrder() }}"
       style="margin-left: 10px;"
     >
       0R 結案
@@ -34,15 +33,21 @@ export class Pomp001ActionBtnCellRenderer implements ICellRendererAngularComp {
     this.params = params;
   }
 
-  
-
   onClosed(event: any) {
     console.log('this.params onClosed ');
     console.log(this.params);
     this.params.onClosed(this.params);
   }
 
- 
+  /**
+   *
+   * 是否可以結案
+   *
+   *
+   */
+  isCanCloseMergeRollOrder() {
+    return this.params.data.isCanClosed && !this.params.data.isEditing;
+  }
 
   refresh() {
     return false;
