@@ -32,8 +32,6 @@
           [(ngModel)]="dateRange"
           (nzOnCalendarChange)="nzOnCalendarChange($event)"
         ></nz-range-picker>
-
-    
       </div>
       <div class="divTwo">
         <!-- 重置 -->
@@ -52,15 +50,15 @@
         </button>
 
         <!-- 保存 -->
-        <!-- <button
+        <button
           class="buttonOne"
           nz-button
           nzType="primary"
           (click)="updateMergeRollOrder()"
-          disabled="{{ !isCellValueChanged }}"
+          disabled="{{ orderChangedArr.length === 0 }}"
         >
           保存
-        </button> -->
+        </button>
 
         <!-- 結案 -->
         <!-- <button
@@ -81,7 +79,7 @@
       <ag-grid-angular
         style="min-width: 100%; height: calc(100vh - 220px)"
         class="ag-theme-alpine"
-       [getRowStyle]="getRowStyle"
+        [getRowStyle]="getRowStyle"
         [rowData]="datalist"
         [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"

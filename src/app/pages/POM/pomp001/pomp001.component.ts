@@ -44,8 +44,8 @@ import * as moment from 'moment';
 export class POMP001Component implements OnInit {
   isSpinning = false;
 
-  // cell 是否被修改
-  isCellValueChanged = false;
+  // 已改變順序的 0R 資料
+  orderChangedArr = ['0R2023092800006'];
 
   dateFormat = 'yyyy/MM/dd';
 
@@ -207,18 +207,12 @@ export class POMP001Component implements OnInit {
       field: '動作',
       cellRenderer: Pomp001ActionBtnCellRenderer,
       cellRendererParams: {
-        onSave: (param: any) => {
-          console.log('===> onSave');
-          console.log(param);
-
-          // 保存數據
-          this.updateMergeRollOrder(param.data.merge_no); 
-        },
         onClosed: (param: any) => {
           console.log('===> onClosed');
           console.log(param);
           // this.deleteRow(param.data);
         },
+        orderChangedArr: this.orderChangedArr,
       },
       minWidth: 150,
     },
@@ -347,7 +341,7 @@ export class POMP001Component implements OnInit {
 
   /**
    *
-   * 取得 0R 資料 by merge_no
+   * 取得 0R 資料 by Condition
    *  get0RDataByMergeNo
    *
    */
@@ -390,8 +384,8 @@ export class POMP001Component implements OnInit {
       // 更新 datalist
       this.datalist = data;
 
-      // init 被修改 flag
-      this.isCellValueChanged = false;
+      // init 已改變順序的 0R 資料
+      this.orderChangedArr = [];
 
       // 關閉  loading Indicator
       this.isShowLoadingIndicator(false);
@@ -442,6 +436,9 @@ export class POMP001Component implements OnInit {
   onRowDragEnd(event: RowDragEndEvent) {
     console.log('onRowDragEnd');
 
+    console.log('event');
+    console.log(event);
+
     console.log('    this.gridApi.getRenderedNodes()');
     console.log(this.gridApi.getRenderedNodes());
 
@@ -456,14 +453,20 @@ export class POMP001Component implements OnInit {
     mergeNoArr = _.uniq(mergeNoArr).sort();
 
     let rowData = [];
-    // 重新給排序 for 每一張合併單
 
+    // 重新給排序 for 每一張合併單
     _.forEach(mergeNoArr, (item, index) => {
       let seq = 0;
       this.gridApi.forEachNode((node, index) => {
         if (node.data.merge_no === item) {
           seq = seq + 1;
-          rowData.push({ ...node.data, plan_seq: seq });
+
+          if (node.data.merge_no === event.node.data.merge_no) {
+            // 目前有 move 的 0R 資料
+            rowData.push({ ...node.data, plan_seq: seq, isMoved: true });
+          } else {
+            rowData.push({ ...node.data, plan_seq: seq });
+          }
         }
       });
     });
@@ -473,8 +476,8 @@ export class POMP001Component implements OnInit {
 
     this.datalist = rowData;
 
-    //  被修改 flag
-    this.isCellValueChanged = true;
+    // 已改變順序的 0R 資料
+    this.orderChangedArr.push(event.node.data.merge_no);
   }
 
   /**
@@ -527,24 +530,28 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  updateMergeRollOrder(_mergeNo: string) {
+  updateMergeRollOrder() {
     // stop editing
     this.gridApi.stopEditing();
 
-    // 取得目前 grid row data
-    const rowData = this.getGridRowData();
+    // for each 被改變順序的 0R 資料
+    _.forEach(this.orderChangedArr, (mergeNo) => {
+      // 取得目前 grid row data
+      const rowData = _.filter(
+        this.getGridRowData(),
+        (item) => item.merge_no === mergeNo
+      );
 
-    const data = {
-      merge_no: _mergeNo,
-      Block: '1',
-      Sublist: [],
-    };
+      const data = {
+        merge_no: mergeNo,
+        Block: '1',
+        Sublist: [],
+      };
 
-    _.forEach(rowData, (item) => {
-      const { id, plan_seq, sale_order, sale_item, sale_lineno, merge_no } =
-        item;
+      _.forEach(rowData, (item) => {
+        const { id, plan_seq, sale_order, sale_item, sale_lineno, merge_no } =
+          item;
 
-      if (merge_no === _mergeNo) {
         data.Sublist.push({
           id,
           plan_seq,
@@ -553,51 +560,57 @@ export class POMP001Component implements OnInit {
           sale_lineno,
           lock: 0,
         });
-      }
+      });
+
+      console.log('data');
+      console.log(data);
+
+      //     {
+      //    "merge_no":"0R2023092200008",
+      //    "Block":"1",
+      //    "Sublist":[
+      //       {
+      //          "id":"3476286599565568",
+      //          "sale_order":"PP0102PPST2023000025",
+      //          "sale_item":10,
+      //          "sale_lineno":10,
+      //          "plan_seq":2,
+      //          "lock":0
+      //       },
+      //       {
+      //          "id":"3476286607282432",
+      //          "sale_order":"PP0102PPST2023000027",
+      //          "sale_item":10,
+      //          "sale_lineno":10,
+      //          "plan_seq":1,
+      //          "lock":0
+      //       }
+      //    ]
+      // }
+
+      this.pomService.updateMergeRollOrder(data).subscribe(
+        (res) => {
+          console.log('res');
+          console.log(res);
+          this.message.create('success', `更新成功 : ${mergeNo} `);
+
+          // init 已改變順序的 0R 資料
+          this.orderChangedArr = [];
+
+          this.onSearch();
+        },
+        (err) => {
+          console.log(err);
+          this.message.create('error', `更新失敗: ${mergeNo}  `);
+        }
+      );
     });
 
-    console.log('data');
-    console.log(data);
+    /*
+   
 
-    //     {
-    //    "merge_no":"0R2023092200008",
-    //    "Block":"1",
-    //    "Sublist":[
-    //       {
-    //          "id":"3476286599565568",
-    //          "sale_order":"PP0102PPST2023000025",
-    //          "sale_item":10,
-    //          "sale_lineno":10,
-    //          "plan_seq":2,
-    //          "lock":0
-    //       },
-    //       {
-    //          "id":"3476286607282432",
-    //          "sale_order":"PP0102PPST2023000027",
-    //          "sale_item":10,
-    //          "sale_lineno":10,
-    //          "plan_seq":1,
-    //          "lock":0
-    //       }
-    //    ]
-    // }
 
-    this.pomService.updateMergeRollOrder(data).subscribe(
-      (res) => {
-        console.log('res');
-        console.log(res);
-        this.message.create('success', `更新成功`);
-
-        // init 被修改 flag
-        this.isCellValueChanged = false;
-
-        this.onSearch();
-      },
-      (err) => {
-        console.log(err);
-        this.message.create('error', `更新失敗: ${err}`);
-      }
-    );
+    */
   }
 
   /**
@@ -608,7 +621,7 @@ export class POMP001Component implements OnInit {
    *
    */
   onCellValueChanged(e: CellValueChangedEvent) {
-    this.isCellValueChanged = true;
+    //  this.isCellValueChanged = true;
   }
 
   /**
@@ -733,9 +746,6 @@ export class POMP001Component implements OnInit {
     console.log('onShaveDiaSelectChange');
     console.log(event);
 
-    // init 被修改 flag
-    this.isCellValueChanged = false;
-
     // 選種的 0R 軋延尺寸
     this.selectedShaveDia = event;
   }
@@ -802,6 +812,9 @@ export class POMP001Component implements OnInit {
 
     console.log('取得 0R 資料 ');
     this.get0RDataByCondition(obj);
+
+    // init 已改變順序的 0R 資料
+    this.orderChangedArr = [];
   }
 
   /**
@@ -811,8 +824,14 @@ export class POMP001Component implements OnInit {
    *
    */
   getRowStyle(params: any) {
-    if (params.data.mergeNoIndex % 2 === 0) {
+    // 表註有編輯的 row (mergeNo 有在 已修改順序的 0R 資料)
+
+    if (params.data.isMoved === true) {
       return { background: '#bae0ff' };
+    }
+
+    if (params.data.mergeNoIndex % 2 === 0) {
+      return { background: '#d9d9d9' };
     } else {
       return { background: 'white' };
     }
