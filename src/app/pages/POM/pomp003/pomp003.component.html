@@ -1,0 +1,74 @@
+<div class="background">
+  <nz-content style="margin: 0 16px">
+    <div style="padding: 10px 0px 10px 8px">
+      <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>生產訂單</nz-breadcrumb-item>
+        <nz-breadcrumb-item>軋鋼投胚邏輯順序表(POMP003)</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
+      <!-- <div class="search-area">
+        <span class="search">合併單號</span>
+        <nz-select
+          class="merge-no-select"
+          nzAllowClear
+          nzPlaceHolder="請選擇合併單號"
+          nzShowSearch
+          style="width: 160px"
+          [(ngModel)]="selectedMergeNo"
+          (ngModelChange)="onMergeNoSelectChange($event)"
+        >
+          <nz-option
+            *ngFor="let merge_no of mergeNoList"
+            [nzLabel]="merge_no"
+            [nzValue]="merge_no"
+          ></nz-option>
+        </nz-select>
+      </div> -->
+      <div class="divTwo">
+        <!-- 保存 -->
+        <button
+          class="buttonOne"
+          nz-button
+          nzType="primary"
+          (click)="ovSave()"
+          disabled="{{ !isCellValueChanged }}"
+        >
+          保存
+        </button>
+
+        <!-- <button class="buttonOne" nz-button nzType="primary" (click)="getGridRowData()">
+          <span nz-icon nzTheme="outline" nzType="search"></span>
+          getGridRowData
+        </button> -->
+      </div>
+
+      <!-- <ag-grid-angular
+        style="width: 100%; height: calc(100vh - 220px)"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefs"
+        [columnTypes]="columnTypes"
+        [rowData]="datalist"
+        (gridReady)="onGridReady($event)"
+      ></ag-grid-angular> -->
+
+
+            <button nz-button nzShape="round" (click)="addRow()">
+                  <span nz-icon nzType="plus"></span>新增一列
+                </button>
+
+      <ag-grid-angular
+        style="width: 100%; height: calc(100vh - 220px)"
+        class="ag-theme-alpine"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [rowData]="datalist"
+        (gridReady)="onGridReady($event)"
+        (cellValueChanged)="onCellValueChanged($event)"
+        (firstDataRendered)="onFirstDataRendered($event)"
+        (modelUpdated)="sizeColumnsToFit()"
+      ></ag-grid-angular>
+    </nz-spin>
+  </nz-content>
+</div>

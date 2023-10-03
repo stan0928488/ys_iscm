@@ -8,4 +8,5 @@ export class PomMergeRollOrder {
   adjustment_qty: number;
   flagRollProdOrder: string;
   flagClosedRollProd: string;
+  isCanClosed?: boolean;
 }

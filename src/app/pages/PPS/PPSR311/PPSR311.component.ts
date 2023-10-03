@@ -173,7 +173,7 @@ export class PPSR311Component implements OnInit, AfterViewInit {
       const resObservable$ = this.PPSService.getShipRepoEditionList();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取版次資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
@@ -197,7 +197,7 @@ export class PPSR311Component implements OnInit, AfterViewInit {
   async search(){
     const result = await this.obtainData();
     if(result.isObtainDataSuccess){
-      this.r311DataList = result.ppsr311Data;
+      this.r311DataList = result.ppsc311DataList;
       this.insertDateTime = result.insertDateTime;
     }
   } 
@@ -205,7 +205,7 @@ export class PPSR311Component implements OnInit, AfterViewInit {
   async obtainData() : Promise<any> {
 
     const result = {
-      ppsr311Data:[],
+      ppsc311DataList:[],
       insertDateTime : undefined,
       isObtainDataSuccess : false
     };
@@ -219,10 +219,10 @@ export class PPSR311Component implements OnInit, AfterViewInit {
         return result;
       }
 
-      const resObservable$ = this.PPSService.getPPSR311Data(this.edition);
+      const resObservable$ = this.PPSService.getPPSC311DataList(this.edition);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取資料結轉資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
@@ -230,11 +230,11 @@ export class PPSR311Component implements OnInit, AfterViewInit {
         return result;
       }
 
-      if(res.data.ppsr311Data.length <= 0){
+      if(res.data.ppsc311DataList.length <= 0){
         this.nzMessageService.success('該版次無資料，請選擇其他版次');
         return result;
       }
-      result.ppsr311Data = res.data.ppsr311Data;
+      result.ppsc311DataList = res.data.ppsc311DataList;
       result.insertDateTime = res.data.insertDateTime
       result.isObtainDataSuccess = true;
     }
@@ -263,7 +263,7 @@ export class PPSR311Component implements OnInit, AfterViewInit {
       return;
     }
 
-    const exportData = [this.englishChineseTitleMapping, ...result.ppsr311Data];
+    const exportData = [this.englishChineseTitleMapping, ...result.ppsc311DataList];
 
     const workSheet = XLSX.utils.json_to_sheet(exportData, {
       header: this.fieldNameList,

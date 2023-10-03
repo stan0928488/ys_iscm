@@ -9,37 +9,59 @@
 
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="isSpinning">
       <div class="search-area">
-        <span class="search">合併單號</span>
+        <span class="search">軋延尺寸</span>
         <nz-select
           class="merge-no-select"
           nzAllowClear
-          nzPlaceHolder="請選擇合併單號"
+          nzPlaceHolder="請選擇尺寸"
           nzShowSearch
           style="width: 160px"
-          [(ngModel)]="selectedMergeNo"
-          (ngModelChange)="onMergeNoSelectChange($event)"
+          [(ngModel)]="selectedShaveDia"
+          (ngModelChange)="onShaveDiaSelectChange($event)"
         >
           <nz-option
-            *ngFor="let merge_no of mergeNoList"
-            [nzLabel]="merge_no"
-            [nzValue]="merge_no"
+            *ngFor="let dia of shaveDiaList"
+            [nzLabel]="dia"
+            [nzValue]="dia"
           ></nz-option>
         </nz-select>
+
+        <span class="search">軋延日期</span>
+        <nz-range-picker
+          [nzFormat]="dateFormat"
+          [(ngModel)]="dateRange"
+          (nzOnCalendarChange)="nzOnCalendarChange($event)"
+        ></nz-range-picker>
       </div>
       <div class="divTwo">
+        <!-- 重置 -->
+        <button
+          class="buttonOne"
+          nz-button
+          nzType="primary"
+          (click)="onSearch()"
+        >
+          查詢
+        </button>
+
+        <!-- 重置 -->
+        <button class="buttonOne" nz-button (click)="onResetSearch()">
+          重置
+        </button>
+
         <!-- 保存 -->
         <button
           class="buttonOne"
           nz-button
           nzType="primary"
           (click)="updateMergeRollOrder()"
-          disabled="{{ !isCellValueChanged }}"
+          disabled="{{ orderChangedArr.length === 0 }}"
         >
           保存
         </button>
 
         <!-- 結案 -->
-        <button
+        <!-- <button
           class="buttonOne"
           nz-button
           nzType="primary"
@@ -47,15 +69,17 @@
           disabled="{{ !isCanCloseMergeRollOrder() }}"
         >
           0R 結案
-        </button>
+        </button> -->
+
         <!-- <button class="buttonOne" nz-button nzType="primary" (click)="getGridRowData()">
           <span nz-icon nzTheme="outline" nzType="search"></span>
           getGridRowData
         </button> -->
       </div>
       <ag-grid-angular
-        style="width: 100%; height: calc(100vh - 220px)"
+        style="min-width: 100%; height: calc(100vh - 220px)"
         class="ag-theme-alpine"
+        [getRowStyle]="getRowStyle"
         [rowData]="datalist"
         [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"
@@ -65,6 +89,9 @@
         [suppressMoveWhenRowDragging]="true"
         [columnTypes]="columnTypes"
         (cellValueChanged)="onCellValueChanged($event)"
+        (firstDataRendered)="onFirstDataRendered($event)"
+        (modelUpdated)="sizeColumnsToFit()"
+        [enableCellTextSelection]="true"
       >
       </ag-grid-angular>
     </nz-spin>

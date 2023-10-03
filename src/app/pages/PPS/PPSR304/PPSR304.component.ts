@@ -10,7 +10,7 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { AppComponent } from "src/app/app.component";
 import { DatePipe } from '@angular/common';
-import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
+import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct, ValueFormatterParams } from 'ag-grid-community';
 import { firstValueFrom } from "rxjs";
 import { ListShipRepoDataTransferService } from "../list-ship-repo/ListShipRepoDataTransferService";
 
@@ -71,12 +71,17 @@ export class PPSR304Component implements AfterViewInit, OnInit {
     { headerName:'客戶簡稱',field: 'custAbbreviations' , filter: false,width: 120 },
     { headerName: '區別' ,field: 'areaGroup' , filter: false,width: 120 },
     { headerName: '業務員' ,field: 'sales' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
-    { headerName: '付款條件' ,field: 'paymentTers' , filter: false,width: 120},
-    { headerName: '預估出貨量' ,field: 'estimateWeight' , filter: false,width: 120 },
+    { headerName: '付款條件' ,field: 'paymentTerms' , filter: false,width: 120},
+    { 
+      headerName:'預估出貨量', 
+      field:'estimateWeight', 
+      filter:false,
+      width:120
+    },
     { headerName:'異型棒目標',field: 'profieldGoal' , filter: false,width: 120},
     { headerName:'大棒目標',field: 'bigStickGoal' , filter: false,width: 100 },
     { headerName:'允收截止日',field: 'datePlanInStorage' , filter: false,width: 120, cellStyle: { textAlign: "center" } },
-    { headerName:'可接受交期', field:'dateAcceptTable', filter:false, width:120, cellStyle: { textAlign: "center" }},
+    { headerName:'可接受交期', field:'dateAcceptable', filter:false, width:120, cellStyle: { textAlign: "center" }},
     { headerName: '交期依據' ,field: 'deliveryDateBasis' , filter: false,width: 120},
  ];
 
@@ -103,9 +108,17 @@ public autoGroupColumnDef: ColDef = {
       const resObservable$ = this.PPSService.getR304DataList();
       const result = await firstValueFrom(resObservable$);
 
-      this.R304DataList = result ;
-      this.uploadDate = result[0]['dateUpdate'] != undefined? result[0]['dateUpdate'].split(" ")[0]:result[0]['dateCreate'].split(" ")[0];
-      this.uploadUser = result[0]['userUpdate'] != undefined? result[0]['userUpdate']:result[0]['userCreate'];
+      if(result.code !== 200){
+        this.errorMSG(
+          '獲取客戶出貨資訊清單失敗', 
+          `請聯繫系統工程師。錯誤訊息 : ${result.message}`
+        );
+        return;
+      }
+
+      this.R304DataList = result.data;
+      this.uploadDate = result.data[0]['dateUpdate'] != undefined? result.data[0]['dateUpdate'].split(" ")[0]:result.data[0]['dateCreate'].split(" ")[0];
+      this.uploadUser = result.data[0]['userUpdate'] != undefined? result.data[0]['userUpdate']:result.data[0]['userCreate'];
 
     }
     catch (error) {
@@ -278,15 +291,15 @@ public autoGroupColumnDef: ColDef = {
           custAbbreviations: _data[i]['客戶簡稱'].toString(),
           areaGroup : _data[i]['區別'] != undefined ?_data[i]['區別'].toString():null,
           sales : _data[i]['業務員'] != undefined ?_data[i]['業務員'].toString():null,
-          paymentTers : !_.isNil(_data[i]['付款條件']) ? _data[i]['付款條件'] : null,
+          paymentTerms : !_.isNil(_data[i]['付款條件']) ? _data[i]['付款條件'] : null,
           estimateWeight: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['預估出貨量']),
           profieldGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['異型棒目標']),
           bigStickGoal: _data[i]['預估出貨量'] == undefined ? null : parseInt(_data[i]['大棒目標']),
           datePlanInStorage : datePlanInStorage,
-          dateAcceptTable :dateDeliveryPp,
+          dateAcceptable :dateDeliveryPp,
           deliveryDateBasis : deliveryDateBasis,
-          date : moment().format('YYYY-MM-DD HH:mm:ss'),
-          user : this.USERNAME
+          dateCreate : moment().format('YYYY-MM-DD HH:mm:ss'),
+          userCreate : this.USERNAME
         })
       }
     }
@@ -302,7 +315,7 @@ public autoGroupColumnDef: ColDef = {
 
       console.log("EXCELDATA:"+ upload_data);
       myObj.PPSService.batchSaveR304Data(upload_data).subscribe(res => {
-        if(res[0].MSG === "Y") { 
+        if(res.code === 200) { 
           this.loading = false;
           this.LoadingPage = false;
           

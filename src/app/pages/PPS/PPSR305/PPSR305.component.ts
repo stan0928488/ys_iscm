@@ -91,7 +91,7 @@ export class PPSR305Component implements AfterViewInit, OnInit {
 
     myObj.PPSService.getR305DataList(this.PLANT_CODE).subscribe(res =>{
 
-      let result : any = res;
+      let result : any = res.data;
 
       
       this.R305DataList = result ;
@@ -228,8 +228,8 @@ export class PPSR305Component implements AfterViewInit, OnInit {
           saleOrder: saleInfo[0],
           saleItem : saleInfo[1],
           missingGroup :_data[i]['缺項群組'].toString(),
-          date : moment().format('YYYY-MM-DD HH:mm:ss'),
-          user : this.USERNAME
+          dateCreate : moment().format('YYYY-MM-DD HH:mm:ss'),
+          userCreate : this.USERNAME
         })
       }
     }
@@ -247,7 +247,7 @@ export class PPSR305Component implements AfterViewInit, OnInit {
       console.log("EXCELDATA:"+ upload_data);
       myObj.PPSService.batchSaveR305Data(upload_data).subscribe(res => {
         console.log("importExcelPPSR305");
-        if(res[0].MSG === "Y") { 
+        if(res.code === 200) { 
           
 
           this.loading = false;
