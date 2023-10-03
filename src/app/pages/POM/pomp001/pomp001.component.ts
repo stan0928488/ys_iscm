@@ -543,15 +543,25 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  updateMergeRollOrder() {
+  async updateMergeRollOrder() {
     // stop editing
     this.gridApi.stopEditing();
 
-    // for each 被改變順序的 0R 資料
-    _.forEach(this.orderChangedArr, (mergeNo) => {
+    // 開啟  loading Indicator
+    this.isShowLoadingIndicator(true);
+
+    // 取得目前 grid row data
+    const tableRowData = this.getGridRowData();
+
+    let successCount = 0;
+
+    // for loop 被改變順序的 0R 資料
+    for (let i = 0; i < _.size(this.orderChangedArr); i++) {
+      const mergeNo = this.orderChangedArr[i];
+
       // 取得目前 grid row data
       const rowData = _.filter(
-        this.getGridRowData(),
+        tableRowData,
         (item) => item.merge_no === mergeNo
       );
 
@@ -601,29 +611,34 @@ export class POMP001Component implements OnInit {
       //    ]
       // }
 
-      this.pomService.updateMergeRollOrder(data).subscribe(
-        (res) => {
-          console.log('res');
-          console.log(res);
-          this.message.create('success', `更新成功 : ${mergeNo} `);
+      try {
+        const res = await lastValueFrom(
+          this.pomService.updateMergeRollOrder(data)
+        );
 
-          // init 已改變順序的 0R 資料
-          this.orderChangedArr = [];
+        successCount = successCount + 1;
+      } catch (err) {
+        console.log('err');
+        console.log(err);
 
-          this.onSearch();
-        },
-        (err) => {
-          console.log(err);
-          this.message.create('error', `更新失敗: ${mergeNo}  `);
-        }
-      );
-    });
+        this.message.create('error', '請求異常 :' + mergeNo);
+        // 關閉  loading Indicator
+        this.isShowLoadingIndicator(false);
+      }
+    }
 
-    /*
-   
+    console.log('successCount:' + successCount);
 
+    if (successCount === _.size(this.orderChangedArr)) {
+      this.message.create('success', `更新成功`);
+      // init 已改變順序的 0R 資料
+      this.orderChangedArr = [];
+    }
 
-    */
+    this.get0RDateList({});
+
+    // 關閉  loading Indicator
+    this.isShowLoadingIndicator(false);
   }
 
   /**
@@ -644,9 +659,12 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  closeMergeRollOrder(_mergeNo: string) {
+  async closeMergeRollOrder(_mergeNo: string) {
     // stop editing
     this.gridApi.stopEditing();
+
+    // 開啟  loading Indicator
+    this.isShowLoadingIndicator(true);
 
     // 取得目前 grid row data
     const rowData = _.filter(
@@ -681,23 +699,23 @@ export class POMP001Component implements OnInit {
     //   ],
     // };
 
-    this.pomService.updateMergeRollOrder(data).subscribe(
-      (res) => {
-        console.log('res');
-        console.log(res);
-        this.message.create('success', `結案成功`);
+    try {
+      await lastValueFrom(this.pomService.updateMergeRollOrder(data));
+      this.message.create('success', `結案成功`); // init 已改變順序的 0R 資料
+      this.orderChangedArr = [];
 
-        // init 已改變順序的 0R 資料
-        this.orderChangedArr = [];
+      this.get0RDateList({});
+    } catch (err) {
+      console.log('err');
+      console.log(err);
 
-        // 取得 0R 資料 by merge_no
-        this.onSearch();
-      },
-      (err) => {
-        console.log(err);
-        this.message.create('error', `結案失敗`);
-      }
-    );
+      this.message.create('error', '結案失敗');
+      // 關閉  loading Indicator
+      this.isShowLoadingIndicator(false);
+    }
+
+    // 關閉  loading Indicator
+    this.isShowLoadingIndicator(false);
   }
 
   /**
