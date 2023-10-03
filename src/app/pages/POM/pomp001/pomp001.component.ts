@@ -21,6 +21,8 @@ import { POMService } from '../../../services/POM/pom.service';
 
 import { PomMergeRollOrder } from './PomMergeRollOrder.Model';
 
+import { Pomp001ActionBtnCellRenderer } from './pomp001-action-btn-cell-renderer.component';
+
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
@@ -54,26 +56,31 @@ export class POMP001Component implements OnInit {
   private gridApi!: GridApi<PomMergeRollOrder>;
   private gridColumnApi!: ColumnApi;
 
-  // 0R 清單
-  mergeNoList: string[] = [];
-
   // 0R 軋延尺寸 清單
   shaveDiaList: number[] = [];
 
   // 選中的 0R 軋延尺寸
   selectedShaveDia: number;
 
-  // 選中的 0R 清單
-  selectedMergeNo: string = '';
-
   // 表格 column 定義
   columnDefs: ColDef[] = [
+    {
+      headerName: '軋延尺寸',
+      field: 'shave_size',
+      width: 100,
+      pinned: 'left',
+      rowDrag: (params) => this.isCellEditable(params),
+    },
+    {
+      headerName: '合併號碼',
+      field: 'merge_no',
+      width: 200,
+      pinned: 'left',
+    },
     {
       headerName: `訂單號碼`,
       field: 'sale_order',
       width: 250,
-      rowDrag: (params) => this.isCellEditable(params),
-      pinned: 'left',
     },
     {
       headerName: '訂單項次',
@@ -146,11 +153,6 @@ export class POMP001Component implements OnInit {
       field: 'order_dia',
       width: 100,
     },
-    {
-      headerName: '軋延尺寸',
-      field: 'shave_size',
-      width: 100,
-    },
 
     {
       headerName: '生計交期',
@@ -200,6 +202,25 @@ export class POMP001Component implements OnInit {
       headerName: '生產指令關閉',
       field: 'flagClosedRollProd',
       width: 150,
+    },
+    {
+      field: '動作',
+      cellRenderer: Pomp001ActionBtnCellRenderer,
+      cellRendererParams: {
+        onSave: (param: any) => {
+          console.log('===> onSave');
+          console.log(param);
+
+          // 保存數據
+          this.updateMergeRollOrder(param.data.merge_no); 
+        },
+        onClosed: (param: any) => {
+          console.log('===> onClosed');
+          console.log(param);
+          // this.deleteRow(param.data);
+        },
+      },
+      minWidth: 150,
     },
   ];
 
@@ -274,28 +295,13 @@ export class POMP001Component implements OnInit {
 
     try {
       // 取得 0R 清單
-
-      console.log('取得 0R 清單 0');
       const res = await lastValueFrom(
         this.pomService.getMergeRoll0RList(_searchObj)
       );
 
-      const { code, data } = res;
+      const { data } = res;
 
       const mergeRoll0RList = data;
-
-      console.log('mergeRoll0RList');
-      console.log(mergeRoll0RList);
-
-      // OR 合併號碼 清單
-      const mergeNoList = [];
-
-      _.forEach(_.uniqBy(mergeRoll0RList, 'merge_no'), (item) =>
-        mergeNoList.push(_.get(item, 'merge_no'))
-      );
-
-      // 更新 0R 清單
-      this.mergeNoList = mergeNoList;
 
       // OR 軋延尺寸 清單
       const shaveDiaList = [];
@@ -309,20 +315,12 @@ export class POMP001Component implements OnInit {
       // 更新 0R 軋延尺寸 清單
       this.shaveDiaList = shaveDiaList;
 
-      console.log('取得 0R 清單 1');
-
       // 有 0R 資料清單
       if (_.size(mergeRoll0RList) > 0) {
-        // 預設抓第一筆 0R 資料
-        this.selectedMergeNo = mergeRoll0RList[0]['merge_no'];
-
-        // 取得 0R 資料 by merge_no
-        this.get0RDataByMergeNo(mergeRoll0RList[0]['merge_no']);
+        this.onSearch();
       } else {
         this.datalist = [];
-        this.mergeNoList = [];
         this.shaveDiaList = [];
-        this.selectedMergeNo = '';
       }
 
       // 關閉  loading Indicator
@@ -335,82 +333,6 @@ export class POMP001Component implements OnInit {
       // 關閉  loading Indicator
       this.isShowLoadingIndicator(false);
     }
-
-    /*
-    myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
-      async (res) => {
-        console.log('res');
-        console.log(res);
-
-        const { code, data } = res;
-
-        console.log(code);
-        console.log(data);
-
-        // OR 合併號碼 清單
-        const mergeNoList = [];
-
-        _.forEach(_.uniqBy(data, 'merge_no'), (item) =>
-          mergeNoList.push(_.get(item, 'merge_no'))
-        );
-
-        // 更新 0R 清單
-        this.mergeNoList = mergeNoList;
-        this.mergeNoAllList = data;
-
-        // OR 軋延尺寸 清單
-        const shaveDiaList = [];
-
-        _.forEach(_.uniqBy(data, 'shave_size'), (item) => {
-          if (_.get(item, 'shave_size') !== undefined) {
-            shaveDiaList.push(_.get(item, 'shave_size'));
-          }
-        });
-
-        // 更新 0R 軋延尺寸 清單
-        this.shaveDiaList = shaveDiaList;
-
-        // OR 鋼種 清單
-        const gradeNoList = [];
-
-        _.forEach(_.uniqBy(data, 'grade_no'), (item) => {
-          if (_.size(_.get(item, 'grade_no')) > 0) {
-            gradeNoList.push(_.get(item, 'grade_no'));
-          }
-        });
-
-        // 更新 0R 鋼種 清單
-        this.gradeNoList = gradeNoList;
-
-        this.datalist = [];
-
-        if (_.size(mergeNoList) > 0) {
-          // 預設抓第一筆 0R 資料
-          this.selectedMergeNo = mergeNoList[0];
-
-          // 取得 0R 資料 by merge_no
-          this.get0RDataByMergeNo(mergeNoList[0]);
-
-          // 選中的 0R 軋延尺寸
-          this.selectedShaveDia = undefined;
-
-          // 選中的 0R 鋼種
-          this.selectedGradeNo = undefined;
-        }
-
-        // 關閉  loading Indicator
-        this.isShowLoadingIndicator(false);
-      },
-      (err) => {
-        console.log(err);
-        this.message.create('error', `請求異常: ${err}`);
-        // 關閉  loading Indicator
-        this.isShowLoadingIndicator(false);
-      }
-    );
-
-
-    */
   }
 
   /**
@@ -425,45 +347,21 @@ export class POMP001Component implements OnInit {
 
   /**
    *
-   * on  0R 清單選擇 Event
-   *
-   *
-   */
-  onMergeNoSelectChange(event: any) {
-    console.log('onMergeNoSelectChange');
-    console.log(event);
-
-    // init 被修改 flag
-    this.isCellValueChanged = false;
-
-    // 取得 0R 資料 by merge_no
-    this.get0RDataByMergeNo(event);
-
-    // 將寬度調整到最適合
-    //  this.gridApi.sizeColumnsToFit();
-  }
-
-  /**
-   *
    * 取得 0R 資料 by merge_no
-   *
+   *  get0RDataByMergeNo
    *
    */
-  async get0RDataByMergeNo(_mergeNo: string) {
-    console.log('取得 0R 資料 by merge_no');
+  async get0RDataByCondition(_obj: any) {
+    console.log('取得 0R 資料 get0RDataByCondition ');
     // 開啟  loading Indicator
     this.isShowLoadingIndicator(true);
 
     let myObj = this;
 
     try {
-      const obj = {
-        merge_no: _mergeNo,
-      };
-
-      // 取得 0R 資料 by merge_no
+      // 取得 0R 資料 by condition
       const res = await lastValueFrom(
-        this.pomService.getVirtualQtyListBy0R(obj)
+        this.pomService.getVirtualQtyListBy0R(_obj)
       );
 
       console.log('res');
@@ -474,18 +372,20 @@ export class POMP001Component implements OnInit {
       console.log(code);
       console.log(data);
 
-      // 更新 選中的 0R 號碼
-      this.selectedMergeNo = _mergeNo;
+      // 設定 合併單號 index
 
-      const columnDefs = _.cloneDeep(this.columnDefs);
+      let mergeNoIndex = 0;
+      let mergeNoArr = [];
 
-      columnDefs[0].headerName = `訂單號碼(${_mergeNo})`;
-
-      console.log('columnDefs');
-      console.log(columnDefs);
-
-      // 更新 columnDefs
-      this.columnDefs = columnDefs;
+      _.forEach(data, (item, index) => {
+        if (_.indexOf(mergeNoArr, item.merge_no) === -1) {
+          mergeNoIndex = mergeNoIndex + 1;
+          item.mergeNoIndex = mergeNoIndex;
+          mergeNoArr.push(item.merge_no);
+        } else {
+          item.mergeNoIndex = mergeNoIndex;
+        }
+      });
 
       // 更新 datalist
       this.datalist = data;
@@ -503,25 +403,6 @@ export class POMP001Component implements OnInit {
       // 關閉  loading Indicator
       this.isShowLoadingIndicator(false);
     }
-
-    // myObj.pomService.getVirtualQtyListBy0R(obj).subscribe(
-    //   async (res) => {
-    //     console.log('res');
-    //     console.log(res);
-
-    //     const { code, data } = res;
-
-    //     console.log(code);
-    //     console.log(data);
-
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //     this.message.create('error', `請求異常: ${err}`);
-    //     // 關閉  loading Indicator
-    //     this.isShowLoadingIndicator(false);
-    //   }
-    // );
   }
 
   /**
@@ -564,9 +445,27 @@ export class POMP001Component implements OnInit {
     console.log('    this.gridApi.getRenderedNodes()');
     console.log(this.gridApi.getRenderedNodes());
 
-    let rowData = [];
+    // 合併單
+    let mergeNoArr = [];
+
     this.gridApi.forEachNode((node, index) => {
-      rowData.push({ ...node.data, plan_seq: index + 1 });
+      mergeNoArr.push(node.data.merge_no);
+    });
+
+    // mergeNoArr 取 uniq and sort
+    mergeNoArr = _.uniq(mergeNoArr).sort();
+
+    let rowData = [];
+    // 重新給排序 for 每一張合併單
+
+    _.forEach(mergeNoArr, (item, index) => {
+      let seq = 0;
+      this.gridApi.forEachNode((node, index) => {
+        if (node.data.merge_no === item) {
+          seq = seq + 1;
+          rowData.push({ ...node.data, plan_seq: seq });
+        }
+      });
     });
 
     console.log('rowData');
@@ -628,7 +527,7 @@ export class POMP001Component implements OnInit {
    *
    *
    */
-  updateMergeRollOrder() {
+  updateMergeRollOrder(_mergeNo: string) {
     // stop editing
     this.gridApi.stopEditing();
 
@@ -636,21 +535,25 @@ export class POMP001Component implements OnInit {
     const rowData = this.getGridRowData();
 
     const data = {
-      merge_no: this.selectedMergeNo,
+      merge_no: _mergeNo,
       Block: '1',
       Sublist: [],
     };
 
     _.forEach(rowData, (item) => {
-      const { id, plan_seq, sale_order, sale_item, sale_lineno } = item;
-      data.Sublist.push({
-        id,
-        plan_seq,
-        sale_order,
-        sale_item,
-        sale_lineno,
-        lock: 0,
-      });
+      const { id, plan_seq, sale_order, sale_item, sale_lineno, merge_no } =
+        item;
+
+      if (merge_no === _mergeNo) {
+        data.Sublist.push({
+          id,
+          plan_seq,
+          sale_order,
+          sale_item,
+          sale_lineno,
+          lock: 0,
+        });
+      }
     });
 
     console.log('data');
@@ -688,8 +591,7 @@ export class POMP001Component implements OnInit {
         // init 被修改 flag
         this.isCellValueChanged = false;
 
-        // 取得 0R 資料 by merge_no
-        this.get0RDataByMergeNo(this.selectedMergeNo);
+        this.onSearch();
       },
       (err) => {
         console.log(err);
@@ -717,6 +619,7 @@ export class POMP001Component implements OnInit {
    *
    */
   closeMergeRollOrder() {
+    /*
     // stop editing
     this.gridApi.stopEditing();
 
@@ -767,6 +670,7 @@ export class POMP001Component implements OnInit {
         this.message.create('error', `結案失敗`);
       }
     );
+    */
   }
 
   /**
@@ -776,6 +680,7 @@ export class POMP001Component implements OnInit {
    *
    */
   isCanCloseMergeRollOrder() {
+    /* 
     // 生產是否全部結束
     let isProdAllClosed = false;
 
@@ -793,6 +698,8 @@ export class POMP001Component implements OnInit {
     }
 
     return !this.isCellValueChanged && isProdAllClosed;
+    */
+    return false;
   }
 
   /**
@@ -894,6 +801,20 @@ export class POMP001Component implements OnInit {
     }
 
     console.log('取得 0R 資料 ');
-    this.get0RDateList(obj);
+    this.get0RDataByCondition(obj);
+  }
+
+  /**
+   *
+   * row style
+   *
+   *
+   */
+  getRowStyle(params: any) {
+    if (params.data.mergeNoIndex % 2 === 0) {
+      return { background: '#bae0ff' };
+    } else {
+      return { background: 'white' };
+    }
   }
 }

@@ -33,22 +33,7 @@
           (nzOnCalendarChange)="nzOnCalendarChange($event)"
         ></nz-range-picker>
 
-        <span class="search">合併單號</span>
-        <nz-select
-          class="merge-no-select"
-          nzAllowClear
-          nzPlaceHolder="請選擇軋延日期"
-          nzShowSearch
-          style="width: 160px"
-          [(ngModel)]="selectedMergeNo"
-          (ngModelChange)="onMergeNoSelectChange($event)"
-        >
-          <nz-option
-            *ngFor="let merge_no of mergeNoList"
-            [nzLabel]="merge_no"
-            [nzValue]="merge_no"
-          ></nz-option>
-        </nz-select>
+    
       </div>
       <div class="divTwo">
         <!-- 重置 -->
@@ -67,7 +52,7 @@
         </button>
 
         <!-- 保存 -->
-        <button
+        <!-- <button
           class="buttonOne"
           nz-button
           nzType="primary"
@@ -75,10 +60,10 @@
           disabled="{{ !isCellValueChanged }}"
         >
           保存
-        </button>
+        </button> -->
 
         <!-- 結案 -->
-        <button
+        <!-- <button
           class="buttonOne"
           nz-button
           nzType="primary"
@@ -86,7 +71,7 @@
           disabled="{{ !isCanCloseMergeRollOrder() }}"
         >
           0R 結案
-        </button>
+        </button> -->
 
         <!-- <button class="buttonOne" nz-button nzType="primary" (click)="getGridRowData()">
           <span nz-icon nzTheme="outline" nzType="search"></span>
@@ -96,6 +81,7 @@
       <ag-grid-angular
         style="min-width: 100%; height: calc(100vh - 220px)"
         class="ag-theme-alpine"
+       [getRowStyle]="getRowStyle"
         [rowData]="datalist"
         [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"
@@ -107,6 +93,7 @@
         (cellValueChanged)="onCellValueChanged($event)"
         (firstDataRendered)="onFirstDataRendered($event)"
         (modelUpdated)="sizeColumnsToFit()"
+        [enableCellTextSelection]="true"
       >
       </ag-grid-angular>
     </nz-spin>
