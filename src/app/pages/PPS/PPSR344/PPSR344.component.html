@@ -25,7 +25,7 @@
             </nz-collapse-panel>
         </nz-collapse>
 
-        <nz-table nzSize="small" [nzScroll]="{y: '650px',x:'2000px'}" nzBordered>
+        <nz-table nzSize="small" [nzScroll]="{y: '400px',x:'3500px'}" nzBordered>
             <thead>
                 <tr>
                     <th nzWidth="100px" rowSpan="2">產品</th>
@@ -33,20 +33,16 @@
                     <th style = "background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
                         {{titleData[0].title}}
                         <span *ngIf="hiddenSwitch" nz-icon nzType="right" nzTheme="outline"
-                        (click)="hiddenSwitch = !hiddenSwitch"
                         ></span>
                         <span *ngIf="!hiddenSwitch" nz-icon nzType="left" nzTheme="outline"
-                        (click)="hiddenSwitch = !hiddenSwitch"
                         ></span>
                     </th>
                     <th style = "background-color:#BDD7EE;" *ngFor="let data of titleData | slice:1; index as i"
-                    [colSpan]="data.hidden ? 3 : 6">
+                    [colSpan]="data.hidden ? 3 : 5">
                         {{data.title}}
                         <span *ngIf="data.hidden" nz-icon nzType="right" nzTheme="outline"
-                        (click)="data.hidden = !data.hidden"
                         ></span>
                         <span *ngIf="!data.hidden" nz-icon nzType="left" nzTheme="outline"
-                        (click)="data.hidden = !data.hidden"
                         ></span>
                     </th>
                     <th style = "background-color:#BDD7EE;" nzWidth="100px" rowSpan="2">累計出貨量</th>
@@ -55,9 +51,9 @@
                 <tr>
                     <th style = "background-color:#C6E0B4;" nzWidth="100px" >出貨目標</th>
                     <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存A</th>
-                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月入庫量B</th>
-                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨C=A+B</th>
-                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨(已過帳)</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月需入庫量B</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨=A+B</th>
+                    <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨已過帳</th>
                     <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">檢貨未過帳</th>
                     <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
                     <th style = "background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
@@ -66,9 +62,8 @@
                         <th style = "background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}目標</th>
                         <th style = "background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}實績</th>
                         <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">成品(A)</th>
-                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">待入庫(C)</th>
-                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">假日出貨(C)</th>
-                        <th style = "background-color:#BDD7EE;" nzWidth="180px">次週可出貨量D=(A)+(B)-(C)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">待入庫(B)</th>
+                        <th style = "background-color:#BDD7EE;" nzWidth="180px">次週可出貨量D=(A)+(B)</th>
                     </ng-container>
 
                 </tr>
@@ -78,23 +73,22 @@
                     
                     <td [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0" >{{data.chiDesc}}</td>
 
-                    <td>{{ data.saleAreaGroup }}</td>
-                    <td></td>
-                    <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch"></td>
-                    <td [hidden]="hiddenSwitch">{{data.weight}}</td>
-                    <td [hidden]="hiddenSwitch"></td>
+                    <td>{{ data.analGroup }}</td>
+                    <td>{{data.aimDlvyQty}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.openingStock}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.unStock}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.maxShipmentVolumeThisMonth}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.weightShp}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.weightShpNon}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.sumWipWeight}}</td>
+                    <td [hidden]="hiddenSwitch">{{data.sumNonfinishWeight}}</td>
 
                     <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
-                        <td></td>
-                        <td></td>
-                        <td [hidden]="dataTitle.hidden"></td>
-                        <td [hidden]="dataTitle.hidden"></td>
-                        <td [hidden]="dataTitle.hidden"></td>
-                        <td></td>
+                        <td>{{data.ppsd344RangeInfo1.weekDlvyQty}}</td>
+                        <td>{{data.ppsd344RangeInfo1.weight}}</td>
+                        <td [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.wipWeight}}</td>
+                        <td [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.nonfinishWeight}}</td>
+                        <td>{{data.ppsd344RangeInfo1.availableShipmentsNextWeek}}</td>
                     </ng-container>
 
                     <td></td>

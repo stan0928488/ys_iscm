@@ -2245,6 +2245,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getR344HeaderData(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344HeaderData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   getR343Data(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APINEWURL + `/FCP/R343/getPPSR343Data`;
