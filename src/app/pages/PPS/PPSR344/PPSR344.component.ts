@@ -43,8 +43,8 @@ export class PPSR344Component implements OnInit {
 
   ngOnInit(): void {
     this.searchData.date = new Date();
-    this.hiddenSwitch = true;
-    this.getDataList();
+    this.hiddenSwitch = false;
+    this.getHeaderDataList();
   }
 
   onChange(result: Date): void {
@@ -60,7 +60,26 @@ export class PPSR344Component implements OnInit {
       if(result && result.datalist.length > 0) {
         console.log(result);
         this.rowData = JSON.parse(JSON.stringify(result.datalist));
-        this.titleData = JSON.parse(JSON.stringify(result.sald001HeaderInfoList));
+        this.titleData = JSON.parse(JSON.stringify(result.headerInfoList));
+      } else {
+        this.message.error("無資料");
+      }
+      this.isSpinning = false;
+    },err => {
+      this.isSpinning = false;
+      this.message.error('網絡請求失敗');
+    })
+
+  }
+
+  getHeaderDataList(){
+
+    this.isSpinning = true;
+    let postData = this.searchData;
+    this.PPSService.getR344HeaderData(postData).subscribe(res =>{
+      let result:any = res ;
+      if(result && result.headerInfoList.length > 0) {
+        this.titleData = JSON.parse(JSON.stringify(result.headerInfoList));
       } else {
         this.message.error("無資料");
       }
@@ -75,8 +94,57 @@ export class PPSR344Component implements OnInit {
 }
 
 interface data {
-  saleAreaGroup:String
+  analGroup:String
   chiDesc:String
   rowspanSize:number
-  weight:number
+  weightShp:number
+  weightShpNon:number
+  aimDlvyQty:number
+  openingStock:number
+  unStock:number
+  sumWipWeight:number
+  sumNonfinishWeight:number
+  maxShipmentVolumeThisMonth:number
+  ppsd344RangeInfo1:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
+  ppsd344RangeInfo2:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
+  ppsd344RangeInfo3:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
+  ppsd344RangeInfo4:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
+  ppsd344RangeInfo5:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
+  ppsd344RangeInfo6:{
+    weight:number
+    wipWeight:number
+    nonfinishWeight:number
+    weekDlvyQty:number
+    availableShipmentsNextWeek:number
+  }
 }
