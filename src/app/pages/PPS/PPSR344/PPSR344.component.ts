@@ -57,10 +57,22 @@ export class PPSR344Component implements OnInit {
     let postData = this.searchData;
     this.PPSService.getR344Data(postData).subscribe(res =>{
       let result:any = res ;
-      if(result && result.datalist.length > 0) {
-        console.log(result);
-        this.rowData = JSON.parse(JSON.stringify(result.datalist));
-        this.titleData = JSON.parse(JSON.stringify(result.headerInfoList));
+      if(result) {
+        if(result.headerInfoList && result.headerInfoList.length > 0) {
+          this.titleData = JSON.parse(JSON.stringify(result.headerInfoList));
+        }
+        if(result.datalist && result.datalist.length > 0) {
+          this.rowData = JSON.parse(JSON.stringify(result.datalist));
+          this.rowData.forEach(function (value) {
+            value.colspanSize = 1
+            if(value.analGroup.indexOf("總計") != -1){
+              value.backgroupColor = "#FFE699"
+            }else if(value.analGroup.indexOf("合計") != -1){
+              value.backgroupColor = "#FFD966"
+              value.colspanSize = 2
+            }
+          }); 
+        }
       } else {
         this.message.error("無資料");
       }
@@ -94,6 +106,8 @@ export class PPSR344Component implements OnInit {
 }
 
 interface data {
+  colspanSize:number
+  backgroupColor:string
   analGroup:String
   chiDesc:String
   rowspanSize:number
@@ -104,6 +118,8 @@ interface data {
   unStock:number
   sumWipWeight:number
   sumNonfinishWeight:number
+  sumWeight:number
+  diffSumWeightWeekDlvyQty:number
   maxShipmentVolumeThisMonth:number
   ppsd344RangeInfo1:{
     weight:number
