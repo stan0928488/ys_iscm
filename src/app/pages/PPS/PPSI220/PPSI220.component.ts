@@ -182,6 +182,23 @@ export class PPSI220Component implements AfterViewInit {
       width:110,
       headerClass:'wrap-header-Text',
       cellClass:'wrap-cell-Text',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        if(_.isNil(params.value)){
+          return moment().format('YYYY-MM-DD');
+        }
+      }
+    },
+    { 
+      headerName:'平移日期-迄',
+      field:'OFFLOAD_DATE_END',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        if(_.isNil(params.value)){
+          return moment().format('YYYY-MM-DD');
+        }
+      }
     },
     { 
       headerName:'Action',

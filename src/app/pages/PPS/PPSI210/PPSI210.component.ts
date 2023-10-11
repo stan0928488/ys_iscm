@@ -86,6 +86,9 @@ export class PPSI210Component implements AfterViewInit {
   moSortListOfOption : any[] = []; // MO站別搬移順序選項
   moSortListOfOptionLoading = false; // MO站別搬移順序載入狀態
 
+  // 使用者是否有選擇檢視已存在的策略
+  isChooseStrategy = false;
+
   i = 1;
   j = 1;
   editId: string | null = null;
@@ -207,11 +210,28 @@ export class PPSI210Component implements AfterViewInit {
       }
     },
     { 
-      headerName:'平移日期',
-      field:'OFFLOAD_DATE',
+      headerName:'平移日期-起',
+      field:'OFFLOAD_DATE_START',
       width:110,
       headerClass:'wrap-header-Text',
-      cellClass:'wrap-cell-Text'
+      cellClass:'wrap-cell-Text',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        if(_.isNil(params.value)){
+          return moment().format('YYYY-MM-DD');
+        }
+      }
+    },
+    { 
+      headerName:'平移日期-迄',
+      field:'OFFLOAD_DATE_END',
+      width:110,
+      headerClass:'wrap-header-Text',
+      cellClass:'wrap-cell-Text',
+      valueFormatter : (params: ValueFormatterParams) : string => {
+        if(_.isNil(params.value)){
+          return moment().format('YYYY-MM-DD');
+        }
+      }
     },
     { 
       headerName:'Action',
@@ -523,9 +543,12 @@ export class PPSI210Component implements AfterViewInit {
         ISCOMBINE: `Y`,
         COMBINE_RANGE: `3`,
         MO_SORT : '',
-        OFFLOAD_DATE : null,
-        isOffloadDateDisabled : false, // 平移日期選取器是否禁用
-        offloadDateDisabledTooltip : '', // 平移日期選取器被禁用的說明訊息
+        OFFLOAD_DATE_START : null,
+        OFFLOAD_DATE_END : null,
+        isOffloadStartDateDisabled : false, // 「平移日期-起」選取器是否禁用
+        offloadStartDateDisabledTooltip : '', // 「平移日期-起」選取器被禁用的說明訊息
+        isOffloadEndDateDisabled : false, // 「平移日期-起」選取器是否禁用
+        offloadEndDateDisabledTooltip : '', // 「平移日期-起」選取器被禁用的說明訊息
         moSortPrevSelected : null // 紀錄上一個選擇的平衡設定選項
       }
     ];
@@ -844,7 +867,6 @@ export class PPSI210Component implements AfterViewInit {
     this.getPPSService.getShopSortingList('I', 1).subscribe((res) => {
       console.log('getShopSortingList success');
       this.pickerShopList = res;
-      console.log(res);
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -1048,9 +1070,12 @@ export class PPSI210Component implements AfterViewInit {
         const ISCOMBINE = this.pickerShopList[i].ISCOMBINE;
         const COMBINE_RANGE = this.pickerShopList[i].COMBINE_RANGE;
         const MO_SORT = this.pickerShopList[i].MO_SORT === undefined ? 'null_string' : this.pickerShopList[i].MO_SORT;
-        const OFFLOAD_DATE = _.isNil(this.pickerShopList[i].OFFLOAD_DATE) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE, 'YYYY-MM-DD').toDate();
-        const isOffloadDateDisabled =  this.pickerShopList[i].isOffloadDateDisabled;
-        const offloadDateDisabledTooltip = this.pickerShopList[i].offloadDateDisabledTooltip;
+        const OFFLOAD_DATE_START = _.isNil(this.pickerShopList[i].OFFLOAD_DATE_START) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE_START, 'YYYY-MM-DD').toDate();
+        const OFFLOAD_DATE_END = _.isNil(this.pickerShopList[i].OFFLOAD_DATE_END) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE_END, 'YYYY-MM-DD').toDate();
+        const isOffloadStartDateDisabled =  this.pickerShopList[i].isOffloadStartDateDisabled;
+        const offloadStartDateDisabledTooltip = this.pickerShopList[i].offloadStartDateDisabledTooltip;
+        const isOffloadEndDateDisabled =  this.pickerShopList[i].isOffloadEndDateDisabled;
+        const offloadEndDateDisabledTooltip = this.pickerShopList[i].offloadEndDateDisabledTooltip;
         const moSortPrevSelected = this.pickerShopList[i].moSortPrevSelected;
 
         if (REQUIREMENT === undefined) {
@@ -1065,18 +1090,25 @@ export class PPSI210Component implements AfterViewInit {
           ISCOMBINE,
           COMBINE_RANGE,
           MO_SORT,
-          OFFLOAD_DATE,
-          isOffloadDateDisabled,
-          offloadDateDisabledTooltip,
+          OFFLOAD_DATE_START,
+          isOffloadStartDateDisabled,
+          offloadStartDateDisabledTooltip,
+          OFFLOAD_DATE_END,
+          isOffloadEndDateDisabled,
+          offloadEndDateDisabledTooltip,
           moSortPrevSelected
         });
       }
       this.listOfData = initdata;
+      // 用於標示目前是該批策略資料載入
+      this.isChooseStrategy = true;
       for (let j = 0; j < this.listOfData.length; j++) {
         this.provinceChange('13', this.listOfData[j].SHOP_CODE, '　', j);
         this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
         this.moSortSelectChange(this.listOfData[j].MO_SORT, this.listOfData[j]);
       }
+      // 該批策略資料載入結束
+      this.isChooseStrategy = false;
       this.getMachineSortList(data.PLANSET_EDITION);
     });
 
@@ -1311,31 +1343,55 @@ export class PPSI210Component implements AfterViewInit {
         return;
       }
 
-      // 平衡設定選擇 offload-psuh 必須選擇平移日期
-      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
-         _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)){
+      // 平衡設定選擇 offload-psuh 必須選擇「平移日期-起」與「平移日期-迄」
+      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
 
           const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
 
-          myObj.message.create(
-            'error',
-            `
-            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-            平衡設定選擇「${moSortLabel}」必須選擇平移日期，請檢查！ 
-            `
-          );
-          return;
+          if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
+            myObj.message.create(
+              'error',
+              `
+              「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+              平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
+              `
+            );
+            return;
+          }
+
+          if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
+            myObj.message.create(
+              'error',
+              `
+              「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+              平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
+              `
+            );
+            return;
+          }
+          
       }
       listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
 
       // 如果指定平衡設定為「策略預設」或「Push(C)」
-      // 畫面顯示當天日期，但存到資料庫的值還是存null
+      // 「平移日期-起」與「平移日期-迄」畫面顯示當天日期，
+      // 但存到資料庫的值是存null
+      // 指定平衡設定為「push-策略預設」且「平移日期-起」為今天，
+      // 存到資料庫的值也是存null
       if(_.includes([null, 'C'], listOfData_cloneDeep[i].MO_SORT)){
-        listOfData_cloneDeep[i].OFFLOAD_DATE = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = null;
+      }
+      else if(_.isEqual('F', listOfData_cloneDeep[i].MO_SORT) &&
+      moment(new Date().toLocaleDateString('en-CA')).isSame(moment(listOfData_cloneDeep[i].OFFLOAD_DATE_START.toLocaleDateString('en-CA')))){
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_END).format('YYYY-MM-DD');
       }
       else{
-        listOfData_cloneDeep[i].OFFLOAD_DATE = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE).format('YYYY-MM-DD');
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_START).format('YYYY-MM-DD');
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_END).format('YYYY-MM-DD');
       }
+
     }
 
     /*
@@ -1568,30 +1624,54 @@ export class PPSI210Component implements AfterViewInit {
         return;
       }
 
-      // 平衡設定選擇 offload-psuh 必須選擇平移日期
-      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F') && 
-         _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE)) {
+      // 平衡設定選擇 offload-psuh 必須選擇「平移日期-起」與「平移日期-迄」
+      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
 
         const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
-        myObj.message.create(
-          'error',
-          `
-          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-          平衡設定選擇「${moSortLabel}」必須選擇平移日期，請檢查！ 
-          `
-        );
-        return;
-      }
+
+        if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
+          myObj.message.create(
+            'error',
+            `
+            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+            平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
+            `
+          );
+          return;
+        }
+
+        if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
+          myObj.message.create(
+            'error',
+            `
+            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+            平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
+            `
+          );
+          return;
+        }
+        
+    }
 
       listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
       
       // 如果指定平衡設定為「策略預設」或「Push(C)」
-      // 畫面顯示當天日期，但存到資料庫的值還是存null
+      // 「平移日期-起」與「平移日期-迄」畫面顯示當天日期，
+      // 但存到資料庫的值是存null
+      // 指定平衡設定為「push-策略預設」且「平移日期-起」為今天，
+      // 存到資料庫的值也是存null
       if(_.includes([null, 'C'], listOfData_cloneDeep[i].MO_SORT)){
-        listOfData_cloneDeep[i].OFFLOAD_DATE = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = null;
+      }
+      else if(_.isEqual('F', listOfData_cloneDeep[i].MO_SORT) &&
+      moment(new Date().toLocaleDateString('en-CA')).isSame(moment(listOfData_cloneDeep[i].OFFLOAD_DATE_START.toLocaleDateString('en-CA')))){
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = null;
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_END).format('YYYY-MM-DD');
       }
       else{
-        listOfData_cloneDeep[i].OFFLOAD_DATE = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE).format('YYYY-MM-DD');
+        listOfData_cloneDeep[i].OFFLOAD_DATE_START = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_START).format('YYYY-MM-DD');
+        listOfData_cloneDeep[i].OFFLOAD_DATE_END = _.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END) ? null : moment(listOfData_cloneDeep[i].OFFLOAD_DATE_END).format('YYYY-MM-DD');
       }
 
     }
@@ -1647,9 +1727,12 @@ export class PPSI210Component implements AfterViewInit {
                   ISCOMBINE: `Y`,
                   COMBINE_RANGE: `3`,
                   MO_SORT : '',
-                  OFFLOAD_DATE : null,
-                  isOffloadDateDisabled : false, // 平移日期選取器是否禁用
-                  offloadDateDisabledTooltip : '', // 平移日期選取器被禁用的說明訊息
+                  OFFLOAD_DATE_START : null,
+                  isOffloadStartDateDisabled : false, // 「平移日期-起」選取器是否禁用
+                  offloadStartDateDisabledTooltip : '', // 「平移日期-起」選取器被禁用的說明訊息
+                  OFFLOAD_DATE_END : null,
+                  isOffloadEndDateDisabled : false, // 「平移日期-迄」選取器是否禁用
+                  offloadEndDateDisabledTooltip : '', // 「平移日期-迄」選取器被禁用的說明訊息
                   moSortPrevSelected : null // 紀錄上一個選擇的平衡設定選項
                 },
               ]);
@@ -1755,77 +1838,154 @@ export class PPSI210Component implements AfterViewInit {
   moSortSelectChange(value, data){
 
     // 選擇push(C)，平移日期disable，畫面顯示當天日期
+    // 禁止使用者輸入「平移日期-起」與「平移日期-迄」
     // tooltip顯示：{{ 平移日期(當天日期) }} 以前為 {{ 指定平衡策略 }}，{{ 平移日期 +1day }} 以後為 {{ MO 平衡搬移順序 }}
     if(_.isEqual('C', value)){
       data.moSortPrevSelected = 'C';
-      data.OFFLOAD_DATE = new Date();
-      data.isOffloadDateDisabled = true;
+      data.OFFLOAD_DATE_START = new Date();
+      data.OFFLOAD_DATE_END = new Date();
+      data.isOffloadStartDateDisabled = true;
+      data.isOffloadEndDateDisabled = true;
       const moLabel = _.isEqual('A', this.MOValue) ? 'offload-push' : 'push-offload';
       const offloadLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, value))[0].notesChinese;
-      data.offloadDateDisabledTooltip = `
-        ${moment(data.OFFLOAD_DATE).format('YYYY-MM-DD')} 以前為 ${offloadLabel}，
-        ${moment(data.OFFLOAD_DATE).add(1, 'days').format('YYYY-MM-DD')} 以後為 ${moLabel}
+      data.offloadStartDateDisabledTooltip = `
+        ${moment(data.OFFLOAD_DATE_START).format('YYYY-MM-DD')} 以前為 ${offloadLabel}，
+        ${moment(data.OFFLOAD_DATE_START).add(1, 'days').format('YYYY-MM-DD')} 以後為 ${moLabel}
       `;
+      data.offloadEndDateDisabledTooltip = data.offloadStartDateDisabledTooltip;
     }
     // 選擇push-策略預設(F)，平移日期開放選擇
     else if(_.isEqual('F', value)){
 
       // 如果上一個選擇是其他平衡設定，則將平移日期清空
       if(!_.isNil(data.moSortPrevSelected) && !_.isEqual('F', data.moSortPrevSelected)){
-        data.OFFLOAD_DATE = null;
+        data.OFFLOAD_DATE_START = null;
+        data.OFFLOAD_DATE_END = null;
         data.moSortPrevSelected = 'F';
       }
-      this.offloadDateChange(data);
+      
+      this.offloadStartDateChange(data);
     }
     // 選擇策略預設(null_string)，平移日期disable，顯示當天日期
     else if(_.isEqual('null_string', value)){
       data.moSortPrevSelected = 'null_string';
-      data.OFFLOAD_DATE = new Date();
-      data.isOffloadDateDisabled = true;
+      data.OFFLOAD_DATE_START = new Date();
+      data.OFFLOAD_DATE_END = new Date();
+      data.isOffloadStartDateDisabled = true;
+      data.isOffloadEndDateDisabled = true;
       // 取出該選擇的value對應的label
       const offloadLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, value))[0].notesChinese;
-      data.offloadDateDisabledTooltip = `選擇「${offloadLabel}」不可選擇平移日期`;
+      data.offloadStartDateDisabledTooltip = `選擇「${offloadLabel}」不可選擇平移日期`;
+      data.offloadEndDateDisabledTooltip = data.offloadStartDateDisabledTooltip;
     }
     else{
       data.moSortPrevSelected = null;
-      data.OFFLOAD_DATE = null;
-      data.isOffloadDateDisabled = false;
-      data.offloadDateDisabledTooltip = null;
+      data.OFFLOAD_DATE_START = null;
+      data.OFFLOAD_DATE_END = null;
+      data.isOffloadStartDateDisabled = false;
+      data.offloadStartDateDisabledTooltip = null;
+      data.isOffloadEndDateDisabled = false;
+      data.offloadEndDateDisabledTooltip = null;
     }
   }
 
-  offloadDateChange(rowData : any){
+  offloadStartDateChange(rowData : any){
 
-    rowData.isOffloadDateDisabled = false;
+    rowData.isOffloadStartDateDisabled = false;
+    rowData.offloadStartDateDisabledTooltip = '請選擇「平移日期-起」';
 
-    if(_.isNil(rowData.OFFLOAD_DATE)){
-      rowData.offloadDateDisabledTooltip = '請選擇平移日期'
+    if(_.isNil(rowData.OFFLOAD_DATE_START) && !this.isChooseStrategy){
+      // 「平移日期-迄」須等到「平移日期-起」先選擇完畢才能選
+      // 為了使「平移日期-迄」日期元件僅顯示「平移日期-起」日期的當天與當天之後的日期供使用者選擇
+      rowData.isOffloadEndDateDisabled = true;
+      rowData.offloadEndDateDisabledTooltip = '請先選擇「平移日期-起」';
+      rowData.OFFLOAD_DATE_END = null;
       return;
     }
 
-    const offloadValue = rowData.MO_SORT;
-    const moLabel = _.isEqual('A', this.MOValue) ? 'offload-push' : 'push-offload';
+    // 若之前選擇那時候的當天日期，資料庫會存NULL
+    // 此時從資料庫讀回來會是NULL，是NULL就顯示使用者此時選擇策略的當天日期
+    if(_.isNil(rowData.OFFLOAD_DATE_START) && this.isChooseStrategy){
+      rowData.OFFLOAD_DATE_START = new Date();
+    }
 
-    // 選擇push-策略預設(F)，平移日期開放選擇
-    // tooltip顯示：{{ 平移日期(選擇的日期) }} 以前為 {{ 指定平衡策略 }}，{{ 平移日期 +1day }} 以後為 {{ MO 平衡搬移順序 }}
+    const offloadValue = rowData.MO_SORT;
+    // 選擇push-策略預設(F)，「平移日期-迄」開放選擇
     if(_.isEqual('F', offloadValue)){
-      const offloadLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, offloadValue))[0].notesChinese;
-      rowData.offloadDateDisabledTooltip = `
-        ${moment(rowData.OFFLOAD_DATE).format('YYYY-MM-DD')} 以前為 ${offloadLabel}，
-        ${moment(rowData.OFFLOAD_DATE).add(1, 'days').format('YYYY-MM-DD')} 以後為 ${moLabel}
-      `;
+
+      // 「平移日期-起」已選擇，不顯示Tooltip
+      rowData.offloadStartDateDisabledTooltip = null;
+
+      // 「平移日期-起」已被選擇，開放「平移日期-迄」給使用者選擇
+      // 「平移日期-迄」日期元件僅供今天與今天之後的日期給使用者選擇
+      rowData.isOffloadEndDateDisabled = false;
+
+       // 「平移日期-迄」已開放選擇，Tooltip提示使用者
+       rowData.offloadEndDateDisabledTooltip = '請選擇「平移日期-迄」';
+      
+      // 如果是第一次載入，
+      // 調用offloadEndDateChange函數主動將Tooltip相關訊息設置好
+      if(this.isChooseStrategy){
+        this.offloadEndDateChange(rowData);
+      }
+      // 如果不是第一次載入的情況，
+      // 每次「平移日期-起」有變更日期就要清空「平移日期-迄」的日期
+      else{
+        rowData.OFFLOAD_DATE_END = null;
+      }
+        
     }
   }
 
-  // 平移日期不能選擇當前日期之前的日期
-  disabledDate = (datePick: Date): boolean => {
+  offloadEndDateChange(rowData : any){
+
+    const offloadValue = rowData.MO_SORT;
+    const moLabel = _.isEqual('A', this.MOValue) ? 'offload-push' : 'push-offload';
+    // 選擇push-策略預設(F)且選擇完「平移日期-迄」
+    // tooltip顯示：{{ 平移日期-起 }} 以前為 {{ 指定平衡策略 }}，{{ 平移日期-迄  }} 以後為 {{ MO 平衡搬移順序 }}
+    if(_.isEqual('F', offloadValue)){
+
+      // 如果使用者清空「平移日期-迄」
+      if(_.isNil(rowData.OFFLOAD_DATE_END)){
+        // 提示使用者選擇「平移日期-迄」並清空「平移日期-迄」的tooltip
+        rowData.offloadEndDateDisabledTooltip = '請選擇「平移日期-迄」';
+        rowData.offloadStartDateDisabledTooltip = '';
+        return;
+      }
+
+      const offloadLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, offloadValue))[0].notesChinese;
+      if(moment(rowData.OFFLOAD_DATE_START.toLocaleDateString('en-CA')).isSame(moment(rowData.OFFLOAD_DATE_END.toLocaleDateString('en-CA')))) {
+        rowData.offloadStartDateDisabledTooltip = `
+          ${moment(rowData.OFFLOAD_DATE_START).format('YYYY-MM-DD')} 為 ${offloadLabel}，
+          ${moment(rowData.OFFLOAD_DATE_END).add(1, 'days').format('YYYY-MM-DD')} 以後為 ${moLabel}
+        `;
+      }
+      else{
+        rowData.offloadStartDateDisabledTooltip = `
+          ${moment(rowData.OFFLOAD_DATE_START).format('YYYY-MM-DD')} ~ ${moment(rowData.OFFLOAD_DATE_END).format('YYYY-MM-DD')} 為 ${offloadLabel}，
+          ${moment(rowData.OFFLOAD_DATE_END).add(1, 'days').format('YYYY-MM-DD')} 以後為 ${moLabel}
+        `;
+      }
+        rowData.offloadEndDateDisabledTooltip = rowData.offloadStartDateDisabledTooltip;
+      }
+  }
+
+  // 「平移日期-起」不能選擇當前日期之前的日期
+  disabledOffloadStartDate = (datePick: Date): boolean => {
     // 日期選擇器的日期在當前日期之前不能選擇
     // 例如:(2023-09-11).isBefore(2023-09-12) => true
     // 2023-09-11此日期無法被使用者選擇
     return moment(moment(datePick).format('YYYY-MM-DD')).isBefore(moment(new Date()).format('YYYY-MM-DD'));
   }
 
-  
+  // 「平移日期-迄」不能選「平移日期-起」之前的日期
+  disabledOffloadEndDate(OFFLOAD_DATE_START : Date){
+    return (datePick: Date): boolean => {
+      // 例如:「平移日期-起」的日期為 2023-09-11 在 2023-09-11 之前的日期都不能選
+      return moment(moment(datePick).format('YYYY-MM-DD')).isBefore(moment(OFFLOAD_DATE_START).format('YYYY-MM-DD'));
+    }
+  }
+
   // 首次渲染資料完畢後被調用
   onFirstDataRendered(event : FirstDataRenderedEvent<any>){
     // 在首次資料渲染完畢後，再做寬度適應的調整

@@ -193,13 +193,14 @@
           <tr>
             <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;"></th>
             <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別</th>
-            <th nzWidth="25%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
+            <th nzWidth="20%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">規劃優先順序</th>
             <th nzWidth="7%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批天數</th>
             <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">集批條件</th>
-            <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
-            <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
+            <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">COMBINE<br>執行</th>
+            <th nzWidth="9%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">交期範圍<br>(單位:月)</th>
             <th nzWidth="12%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">指定平衡設定</th>
-            <th nzWidth="15%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">平移日期</th>
+            <th nzWidth="15%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">平移日期-起</th>
+            <th nzWidth="15%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">平移日期-迄</th>
             <th nzWidth="10%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台規劃<br>優先順序</th>
             <th nzWidth="8%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Action</th>
           </tr>
@@ -220,7 +221,7 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-select style="width: 200px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder="選擇優先順序" [nzNotFoundContent]="'請選擇順序'" (click)="provinceChange('1', data.SHOP_CODE, '　', i)" [(ngModel)]="data.SORTING" (blur)="stopEdit('')">
+                  <nz-select style="width: 150px;" [nzDropdownMatchSelectWidth]="false" nzPlaceHolder="選擇優先順序" [nzNotFoundContent]="'請選擇順序'" (click)="provinceChange('1', data.SHOP_CODE, '　', i)" [(ngModel)]="data.SORTING" (blur)="stopEdit('')">
                     <nz-option *ngFor="let s of SortList" [nzValue]="s" [nzLabel]="s"></nz-option>
                   </nz-select>
                 </div>
@@ -228,7 +229,7 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-input-number style="width: 60px;"  nzPlaceHolder = "集批天數" [(ngModel)]="data.INTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('1', i, data.INTERVAL)"></nz-input-number>
+                  <nz-input-number style="width: 40px;"  nzPlaceHolder = "集批天數" [(ngModel)]="data.INTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('1', i, data.INTERVAL)"></nz-input-number>
                 </div>
               </td>
 
@@ -277,12 +278,25 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <nz-date-picker 
-                  [(ngModel)]="data.OFFLOAD_DATE"
-                  [nzDisabled]="data.isOffloadDateDisabled"
+                  [(ngModel)]="data.OFFLOAD_DATE_START"
+                  nzPlaceHolder="平移日期-起"
+                  [nzDisabled]="data.isOffloadStartDateDisabled"
                   nz-tooltip
-                  [nzTooltipTitle]="data.offloadDateDisabledTooltip"
-                  [nzDisabledDate]="disabledDate"
-                  (ngModelChange)="offloadDateChange(data)">
+                  [nzTooltipTitle]="data.offloadStartDateDisabledTooltip"
+                  [nzDisabledDate]="disabledOffloadStartDate"
+                  (ngModelChange)="offloadStartDateChange(data)">
+                </nz-date-picker>
+              </td>
+
+              <td style="text-align:center; padding: 5px; height: 60px;">
+                <nz-date-picker 
+                  [(ngModel)]="data.OFFLOAD_DATE_END"
+                  nzPlaceHolder="平移日期-迄"
+                  [nzDisabled]="data.isOffloadEndDateDisabled"
+                  nz-tooltip
+                  [nzTooltipTitle]="data.offloadEndDateDisabledTooltip"
+                  [nzDisabledDate]="disabledOffloadEndDate(data.OFFLOAD_DATE_START)"
+                  (ngModelChange)="offloadEndDateChange(data)">
                 </nz-date-picker>
               </td>
 
