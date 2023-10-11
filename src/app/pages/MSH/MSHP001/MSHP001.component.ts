@@ -1904,7 +1904,83 @@ this.handleSelectCarModal() ;
         else if( key === 'SALE_ORDER_ITEM_ADD') { // MO逗號隔開
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           preGroupObject[key] =arr ;
-        } 
+        } else if( key === 'INV_A') {  // 若果是精整A 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_P') {  // 若果是精整P 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_OTHER') {  // 若果是其他 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_OUT') {  // 若果是委外 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_ARR_T') {  // 若果是直棒已到 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_NARR_T') {  // 若果是直棒未到 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_0CA') {  // 若果是0C_A 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_0CP') {  // 若果是0C_P 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_0CT') {  // 若果是0C_T 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_0COTHER') {  // 若果是0C_其他 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
+        else if( key === 'INV_SHORT') {  // 若果是軋延欠量 加總 
+          let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
+          let numArr = arr.map(Number); // 将字符数组转换为数字数组
+          let sum = numArr.reduce((acc, curr) => acc + curr, 0); // 计算数字数组的总和
+          preGroupObject[key] = sum ;
+
+        }
         else {
          // let newStr = preGroupObject[key].toString().replace('null,','') //.toString().replace("null","");
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
