@@ -1190,8 +1190,7 @@ export class PPSI220Component implements AfterViewInit {
         const decoder = new TextDecoder('utf-8');
         fcpRes = decoder.decode(fcpRes);
 
-       
-        fcpRes = fcpRes.split('\r\n');
+        fcpRes = fcpRes.split(/\r\n|\n/g);
         
         // 取出檔案名稱(在倒數第二行)
         // 最後要請求後端刪除該檔案用
