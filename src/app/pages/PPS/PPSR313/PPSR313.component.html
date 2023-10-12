@@ -2,29 +2,29 @@
     <app-list-ship-repo></app-list-ship-repo>
     <div nz-row>
         <div nz-col nzSpan="20">
-            <label>版次:</label>
-            <nz-select [(ngModel)]="searchData.selectedVer_default" style="width: 220px; margin-left:50px;"
+            <label>版次：</label>
+            <nz-select [(ngModel)]="searchData.selectedVer_default" style="width: 180px; margin-left:10px;"
                 nzPlaceHolder="選擇版次">
                 <nz-option *ngFor="let abbr of selectedVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
             </nz-select>
-            <button style="margin-left:20px ; margin-top: 8px;" 
+            <button style="margin-left:30px ; margin-top: 8px;" 
                 (click) = "getDataList()" nz-button nzType="primary">
                 <span nz-icon nzType="search" nzTheme="outline"></span>查詢
             </button>
             <button nz-button
                 (click) = "excelExport()"
-                style="margin-left:30px; margin-top: 8px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+                style="margin-left:50px; margin-top: 8px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
                 nzType="primary"><span nz-icon nzType="download" nzTheme="outline"></span>
                 E X C E L 匯出
             </button>
         </div>
         <div nz-col nzSpan="4">
-            <h3>節轉時間 :{{convertTimeStr}}</h3>
+            <h3>結轉時間：{{convertTimeStr}}</h3>
         </div>
     </div>
     <br>
     <ag-grid-angular
-        style="width: 100%; height:400px;"
+        style="width: 100%; height:600px;"
         class="ag-theme-alpine"
         [rowData]="rowData"
         [columnDefs]="columnDefs">

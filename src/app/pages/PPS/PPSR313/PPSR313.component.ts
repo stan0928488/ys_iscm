@@ -28,89 +28,89 @@ export class PPSR313Component implements OnInit {
   }
 
   columnDefs: ColDef[] = [
-    { field: 'saleAreaGroup', headerName: '區別' },
-    { field: 'custAbbreviations', headerName: '客戶' },
-    { field: 'consignee', headerName: '收貨人' },
-    { field: 'classCode', headerName: '等級碼' },
-    { field: 'chiDesc', headerName: '產品類別' },
-    { field: 'saleOrder', headerName: '訂單編號' },
-    { field: 'saleItem', headerName: '訂單項次' },
-    { field: 'micNo', headerName: 'MIC_NO' },
-    { field: 'mergeNo', headerName: '合併單號' },
-    { field: 'ppFlagClosed', headerName: '是否發料' },
-    { field: 'dateDeliveryPp', headerName: '生計交期',
-    cellRenderer: (data) => {
-      if(data.value){
-        return moment(data.value).format('YYYY/MM/DD')
-      }else{
-        return data.value;
-      }
+    { field: 'saleAreaGroup', headerName: '區別', width: 100 },
+    { field: 'custAbbreviations', headerName: '客戶', width: 100 },
+    { field: 'consignee', headerName: '收貨人', width: 100 },
+    { field: 'classCode', headerName: '等級碼', width: 100 },
+    { field: 'chiDesc', headerName: '產品類別', width: 100 },
+    { field: 'saleOrder', headerName: '訂單編號', width: 100 },
+    { field: 'saleItem', headerName: '訂單項次', width: 100 },
+    { field: 'micNo', headerName: 'MIC_NO', width: 100 },
+    { field: 'mergeNo', headerName: '合併單號', width: 100 },
+    { field: 'ppFlagClosed', headerName: '是否發料', width: 100 },
+    { field: 'dateDeliveryPp', headerName: '生計交期', width: 100,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
     }},
-    { field: 'dateDeliverySales', headerName: '營業交期',
-    cellRenderer: (data) => {
-      if(data.value){
-        return moment(data.value).format('YYYY/MM/DD')
-      }else{
-        return data.value;
-      }
+    { field: 'dateDeliverySales', headerName: '營業交期', width: 100,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
     }},
-    { field: 'mtrlNo', headerName: '料號' },
-    { field: 'saleOrderDia', headerName: '尺寸' },
-    { field: 'hotRolledSize', headerName: '冷抽前尺寸' },
-    { field: 'ppShaveSize', headerName: '軋延尺寸' },
-    { field: 'saleOrderWeight', headerName: '訂單重量' },
-    { field: 'merageWeight', headerName: '併單計畫量' },
-    { field: 'totalWeight', headerName: '總重上限' },
-    { field: 'currentWeightB', headerName: 'B倉' },
-    { field: 'currentWeightR', headerName: 'R倉' },
-    { field: 'currentWeightA', headerName: 'A倉' },
-    { field: 'currentWeightP', headerName: 'P倉' },
-    { field: 'currentWeightS', headerName: 'S倉' },
-    { field: 'currentWeightT', headerName: 'T倉' },
-    { field: 'currentWeightO', headerName: 'O倉' },
-    { field: 'currentWeightF', headerName: 'F倉' },
-    { field: 'currentWeightZ', headerName: '待入' },
-    { field: 'currentWeightV', headerName: 'V倉(成品)' },
-    { field: 'wtVUnfinish', headerName: 'V倉(待退庫品)' },
-    { field: 'pickedNotShippingWeight', headerName: '撿貨' },
-    { field: 'shippingWeight', headerName: '出貨' },
-    { field: 'rejectWeight', headerName: '退貨' },
-    { field: 'lineupDesc', headerName: 'LINEUP製程' },
-    { field: 'empName', headerName: '建檔人員' },
-    { field: 'ppRollLength', headerName: '熱軋長度' },
-    { field: 'inputLinupDesc', headerName: '投產類型' },
-    { field: 'saleItemLength', headerName: '訂單長度' },
-    { field: 'kindType', headerName: '產品種類' },
-    { field: 'kindTypeDetial', headerName: '產品細分' },
-    { field: 'chamfer', headerName: '倒角' },
-    { field: 'cycleNo', headerName: 'CYCLE_NO' },
+    { field: 'mtrlNo', headerName: '料號', width: 100  },
+    { field: 'saleOrderDia', headerName: '尺寸', width: 100 },
+    { field: 'hotRolledSize', headerName: '冷抽前尺寸', width: 100 },
+    { field: 'ppShaveSize', headerName: '軋延尺寸', width: 100 },
+    { field: 'saleOrderWeight', headerName: '訂單重量', width: 100 },
+    { field: 'merageWeight', headerName: '併單計畫量', width: 100 },
+    { field: 'totalWeight', headerName: '總重上限', width: 100 },
+    { field: 'currentWeightB', headerName: 'B倉', width: 100 },
+    { field: 'currentWeightR', headerName: 'R倉', width: 100 },
+    { field: 'currentWeightA', headerName: 'A倉', width: 100 },
+    { field: 'currentWeightP', headerName: 'P倉', width: 100 },
+    { field: 'currentWeightS', headerName: 'S倉', width: 100 },
+    { field: 'currentWeightT', headerName: 'T倉', width: 100 },
+    { field: 'currentWeightO', headerName: 'O倉', width: 100 },
+    { field: 'currentWeightF', headerName: 'F倉', width: 100 },
+    { field: 'currentWeightZ', headerName: '待入', width: 100 },
+    { field: 'currentWeightV', headerName: 'V倉(成品)', width: 100 },
+    { field: 'wtVUnfinish', headerName: 'V倉(待退庫品)', width: 100 },
+    { field: 'pickedNotShippingWeight', headerName: '撿貨', width: 100 },
+    { field: 'shippingWeight', headerName: '出貨', width: 100 },
+    { field: 'rejectWeight', headerName: '退貨, width: 100' },
+    { field: 'lineupDesc', headerName: 'LINEUP製程', width: 100 },
+    { field: 'empName', headerName: '建檔人員', width: 100 },
+    { field: 'ppRollLength', headerName: '熱軋長度', width: 100 },
+    { field: 'inputLinupDesc', headerName: '投產類型', width: 100 },
+    { field: 'saleItemLength', headerName: '訂單長度', width: 100 },
+    { field: 'kindType', headerName: '產品種類', width: 100 },
+    { field: 'kindTypeDetial', headerName: '產品細分', width: 100 },
+    { field: 'chamfer', headerName: '倒角', width: 100 },
+    { field: 'cycleNo', headerName: 'CYCLE_NO', width: 100 },
     { field: 'lock', headerName: 'LOCK' },
-    { field: 'vendorName', headerName: '代工廠名稱' },
-    { field: 'oemCode', headerName: '代工' },
-    { field: 'barShortPc', headerName: '允收短尺支數' },
-    { field: 'countryName', headerName: '國家別' },
-    { field: 'oxsaleOrder', headerName: '備料訂單' },
-    { field: 'oxsaleItem', headerName: '備料項次' },
-    { field: 'etTest', headerName: '需ET' },
-    { field: 'flagSetUt', headerName: '需UT' },
-    { field: 'sale0XOrder', headerName: '研發訂單' },
-    { field: 'sale0XItem', headerName: '研發項次' },
-    { field: 'lpst', headerName: '最晚投入日' ,
-    cellRenderer: (data) => {
-      if(data.value){
-        return moment(data.value).format('YYYY/MM/DD')
-      }else{
-        return data.value;
-      }
+    { field: 'vendorName', headerName: '代工廠名稱', width: 100 },
+    { field: 'oemCode', headerName: '代工', width: 100 },
+    { field: 'barShortPc', headerName: '允收短尺支數', width: 100 },
+    { field: 'countryName', headerName: '國家別', width: 100 },
+    { field: 'oxsaleOrder', headerName: '備料訂單', width: 100 },
+    { field: 'oxsaleItem', headerName: '備料項次', width: 100 },
+    { field: 'etTest', headerName: '需ET', width: 100 },
+    { field: 'flagSetUt', headerName: '需UT', width: 100 },
+    { field: 'sale0XOrder', headerName: '研發訂單', width: 100 },
+    { field: 'sale0XItem', headerName: '研發項次', width: 100 },
+    { field: 'lpst', headerName: '最晚投入日', width: 100 ,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
     }},
-    { field: 'lpstMonth', headerName: '最晚投入月份',
-    cellRenderer: (data) => {
-      if(data.value){
-        return moment(data.value).format('YYYY/MM/DD')
-      }else{
-        return data.value;
-      }
-    }},
+    { field: 'lpstMonth', headerName: '最晚投入月份', width: 100,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
+      }},
   ];
 
   ngOnInit(): void {
@@ -127,7 +127,7 @@ export class PPSR313Component implements OnInit {
       if (result.length > 0) {
         this.rowData = JSON.parse(JSON.stringify(result));
         if(this.rowData.length > 0 && this.rowData[0].dateCreate){
-          this.convertTimeStr = moment(this.rowData[0].dateCreate).format('YYYY/MM/DD')
+          this.convertTimeStr = moment(this.rowData[0].dateCreate).format('YYYY-MM-DD')
         }
       } else {
         this.message.error("版次:" + this.searchData.selectedVer_default + "無資料");
@@ -182,8 +182,8 @@ export class PPSR313Component implements OnInit {
             "MIC_NO": (element['micNo'] ? element['micNo'] : null),
             "合併單號": (element['mergeNo'] ? element['mergeNo'] : null),
             "是否發料": (element['ppFlagClosed'] ? element['ppFlagClosed'] : null),
-            "生計交期": (element['dateDeliveryPp'] ? moment(element['dateDeliveryPp']).format('YYYY/MM/DD') : null),
-            "營業交期": (element['dateDeliverySales'] ? moment(element['dateDeliverySales']).format('YYYY/MM/DD') : null),
+            "生計交期": (element['dateDeliveryPp'] ? moment(element['dateDeliveryPp']).format('YYYY-MM-DD') : null),
+            "營業交期": (element['dateDeliverySales'] ? moment(element['dateDeliverySales']).format('YYYY-MM-DD') : null),
             "料號": (element['mtrlNo'] ? element['mtrlNo'] : null),
             "尺寸": (element['saleOrderDia'] ? element['saleOrderDia'] : null),
             "冷抽前尺寸": (element['hotRolledSize'] ? element['hotRolledSize'] : null),
@@ -225,8 +225,8 @@ export class PPSR313Component implements OnInit {
             "需UT": (element['flagSetUt'] ? element['flagSetUt'] : null),
             "研發訂單": (element['sale0XOrder'] ? element['sale0XOrder'] : null),
             "研發項次": (element['sale0XItem'] ? element['sale0XItem'] : null),
-            "最晚投入日": (element['lpst'] ? moment(element['lpst']).format('YYYY/MM/DD') : null),
-            "最晚投入月份": (element['lpstMonth'] ? moment(element['lpstMonth']).format('YYYY/MM/DD') : null)
+            "最晚投入日": (element['lpst'] ? moment(element['lpst']).format('YYYY-MM-DD') : null),
+            "最晚投入月份": (element['lpstMonth'] ? moment(element['lpstMonth']).format('YYYY-MM-DD') : null)
           }
           exportData.push(obj);
         }
