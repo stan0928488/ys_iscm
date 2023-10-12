@@ -177,6 +177,7 @@ import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 
 import { Pomp003BtnCellRenderer } from './pages/POM/pomp003/button-cell-renderer.component';
 import { Pomp001ActionBtnCellRenderer } from './pages/POM/pomp001/pomp001-action-btn-cell-renderer.component';
+import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 
 registerLocaleData(zh);
 
@@ -323,6 +324,7 @@ registerLocaleData(zh);
     POMP003Component,
     Pomp003BtnCellRenderer,
     Pomp001ActionBtnCellRenderer,
+    PPSR313Component,
   ],
   imports: [
     BrowserModule,
