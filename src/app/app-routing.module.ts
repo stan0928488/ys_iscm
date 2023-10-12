@@ -126,6 +126,7 @@ import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
 import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
 import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
+import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 
 const routes: Routes = [
   {
@@ -294,6 +295,7 @@ const routes: Routes = [
       { path: 'R310', component: PPSR310Component },
       { path: 'R311', component: PPSR311Component },
       { path: 'R312', component: PPSR312Component },
+      { path: 'R313', component: PPSR313Component },
     ],
     canActivate: [AuthGuard],
   },
