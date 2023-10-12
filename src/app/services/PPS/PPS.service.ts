@@ -2135,6 +2135,18 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+  getPPSC312Tbppsrm009Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R312/getTbppsrm009Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getPPSC312Tbppsrm009VerListData(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R312/getTbppsrm009VerListData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //importPPSI116Excel
   importExcelPPSI116(_data) {
     const body = JSON.stringify(_data);
