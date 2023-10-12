@@ -923,8 +923,8 @@ this.handleSelectCarModal() ;
     let statisticHeaderColumnDefsTemp = [] ;
     let header1 = {headerName:"站別",field:"SCH_SHOP_CODE",rowDrag: false,resizable:true,width:100,hide: false }
     let header2 = {headerName:"投產機台",field:"PST_MACHINE",rowDrag: false,resizable:true,width:100,hide: false }
-    let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
-    let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:180,hide: false }
+    let header11 = {headerName:"開始",field:"START_DATE_C",rowDrag: false,resizable:true,width:100,hide: false }
+    let header12 = {headerName:"結束",field:"END_DATE_C",rowDrag: false,resizable:true,width:30,hide: false }
     statisticHeaderColumnDefsTemp.push(header1) ;
     statisticHeaderColumnDefsTemp.push(header2) ;
     statisticHeaderColumnDefsTemp.push(header11) ;
@@ -934,7 +934,7 @@ this.handleSelectCarModal() ;
       let value1 = item1.columLabel ;
       if(this.groupArray.includes(key1)) {
         console.log("find key key :" + key1) 
-        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:120,hide: false ,filter: true }
+        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:80,hide: false ,filter: true }
         statisticHeaderColumnDefsTemp.push(header) ;
       }
     })
@@ -1169,14 +1169,14 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:200 }
+        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
         exportHeader.push("開始")
         this.columnDefs.push(index3);
         this.outsideColumnDefs.push(index3);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:200 }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:30,headerClass: 'custom-header' }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
@@ -1330,7 +1330,7 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90 ,filter: true}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1338,7 +1338,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90,filter: true }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1773,10 +1773,12 @@ this.handleSelectCarModal() ;
         if(key === 'START_DATE_C') {
          // preGroupObject[key] = ""
         let  startDateArray =   preGroupObject[key].toString().split(',')[0]
+        startDateArray = moment(startDateArray).format('YYMMDD')
         preGroupObject[key] = startDateArray
         } else if(key === 'END_DATE_C'){ // 結束時間取左後一筆
           let endDateArrayLen = preGroupObject[key].toString().split(',').length ;
           let  endDateArray =   preGroupObject[key].toString().split(',')[endDateArrayLen - 1]
+          endDateArray = moment(endDateArray).format('YYMMDD')
           preGroupObject[key] = endDateArray
          // preGroupObject[key] = ""
         } else if( key === 'NEXT_SCH_SHOP_CODE') {  // 若果是下站別 逗號隔開 去重復
@@ -1848,7 +1850,7 @@ this.handleSelectCarModal() ;
           const filteredArray: string[] = dateTimeStrings.filter(str => str !== null && str !== 'null');
           let dateObjects = filteredArray.map((dateString) => new Date(dateString)); // 将日期字符串数组转换为日期对象数组
           dateObjects.sort((a, b) => a.getTime() - b.getTime()); // 对日期对象数组进行从小到大排序
-          let r = moment(dateObjects[0]).format('YYYYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYYYMM') ;
+          let r = moment(dateObjects[0]).format('YYMM') + ' ~ ' + moment(dateObjects[dateObjects.length - 1]).format('YYMM') ;
           preGroupObject[key] = r 
         }  
         else if( key === 'PST') {  // 若果是投產日 從低到高
@@ -2287,7 +2289,7 @@ this.handleSelectCarModal() ;
     }
 
     comitExcelBatchModelModal(){
-      if(this.selectShopCode !== '453' && this.selectShopCode !== '452') {
+      if(this.selectShopCode !== '453' && this.selectShopCode !== '452' && this.selectShopCode !== '404') {
         this.nzMessageService.error("指定機台才可以使用當前功能")
         return ;
       }
