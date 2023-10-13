@@ -11,32 +11,45 @@
         <nz-collapse-panel nzHeader="查詢條件">
 
             <div nz-row>
-                FCP版次
-                <nz-select
-                    style="width: 180px; margin-left:10px;"
-                    [(ngModel)]="searchObj.fcpVer"
-                    nzPlaceHolder="對應FCP版本"
-                    >
-                    <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-                </nz-select>
-                <label style="margin-left:20px;">推移維護版次</label>
-                <nz-select
-                    style="width: 180px; margin-left:10px;"
-                    [(ngModel)]="searchObj.shiftVer"
-                    nzPlaceHolder="推移維護版本"
-                    >
-                    <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-                </nz-select>
-                <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
-                    <span nz-icon nzType="search" nzTheme="outline"></span>查詢
-                </button>
+                <div nz-col nzSpan="24">
+                    <nz-radio-group [(ngModel)]="radioRepo" nzButtonStyle="solid" (ngModelChange)="radioRepoChange()">
+                        <label nz-radio-button nzValue="A">月推移報表</label>
+                        <label nz-radio-button nzValue="B">日推移報表</label>
+                    </nz-radio-group>
+                    <label style="margin-left:20px;">FCP版次</label>
+                    <nz-select
+                        style="width: 180px; margin-left:10px;"
+                        [(ngModel)]="searchObj.fcpVer"
+                        nzPlaceHolder="對應FCP版本"
+                        >
+                        <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+                    </nz-select>
+                    <label style="margin-left:20px;">推移維護版次</label>
+                    <nz-select
+                        style="width: 180px; margin-left:10px;"
+                        [(ngModel)]="searchObj.shiftVer"
+                        nzPlaceHolder="推移維護版本"
+                        >
+                        <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+                    </nz-select>
+                    <label [hidden]="radioRepo == 'A'" style="margin-left:20px;">站別</label>
+                    <nz-select
+                        [hidden]="radioRepo == 'A'"
+                        style="width: 180px; margin-left:10px;"
+                        nzPlaceHolder="請選擇站台"
+                        >
+                    </nz-select>
+                    <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
+                        <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+                    </button>
+                </div>
             </div>
         </nz-collapse-panel>
     </nz-collapse>
     <br>
 
     <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'" [(nzSelectedIndex)]="breadcrumbIndex">
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 0">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_1" (click)="breadcrumbClick(0)" style="color: dodgerblue">
                     預計入庫資訊
@@ -49,7 +62,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 1">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_2" (click)="breadcrumbClick(1)" style="color: dodgerblue">
                     特殊鋼種量
@@ -62,7 +75,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 2">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_3" (click)="breadcrumbClick(2)" style="color: dodgerblue">
                     頭份預計回廠日
@@ -75,7 +88,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 3">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_4" (click)="breadcrumbClick(3)" style="color: dodgerblue">
                     退貨生產資訊
@@ -88,7 +101,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 4">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_5" (click)="breadcrumbClick(4)" style="color: dodgerblue">
                     排程生產原則說明
@@ -101,7 +114,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 5">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_6" (click)="breadcrumbClick(5)" style="color: dodgerblue">
                     各產線目標量
@@ -114,7 +127,7 @@
             </div>
         </nz-tab>
 
-        <nz-tab>
+        <nz-tab [nzDisabled]="radioRepo == 'B'">
             <div *ngIf="breadcrumbIndex == 6">
                 <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: dodgerblue">
                     目標量總量
@@ -123,6 +136,32 @@
             <div *ngIf="breadcrumbIndex != 6">
                 <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_7" (click)="breadcrumbClick(6)" style="color: gray">
                     目標量總量
+                </a>
+            </div>
+        </nz-tab>
+
+        <nz-tab [nzDisabled]="radioRepo == 'A'">
+            <div *ngIf="breadcrumbIndex == 7">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_8" (click)="breadcrumbClick(7)" style="color: dodgerblue">
+                    各站生產站別
+                </a>
+            </div>
+            <div *ngIf="breadcrumbIndex != 7">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_8" (click)="breadcrumbClick(7)" style="color: gray">
+                    各站生產站別
+                </a>
+            </div>
+        </nz-tab>
+
+        <nz-tab [nzDisabled]="radioRepo == 'A'">
+            <div *ngIf="breadcrumbIndex == 8">
+                <a  *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_9" (click)="breadcrumbClick(8)" style="color: dodgerblue">
+                    490入庫推移
+                </a>
+            </div>
+            <div *ngIf="breadcrumbIndex != 8">
+                <a *nzTabLink nz-tab-link href="#/FCPshiftRepo/R322/R322_9" (click)="breadcrumbClick(8)" style="color: gray">
+                    490入庫推移
                 </a>
             </div>
         </nz-tab>

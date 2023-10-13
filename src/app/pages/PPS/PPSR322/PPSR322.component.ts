@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { PPSR322EvnetBusComponent } from './PPSR322-evnet-bus/PPSR322-evnet-bus.component';
 import { PPSService } from "src/app/services/PPS/PPS.service";
+import { Router} from '@angular/router';
 
 @Component({
   selector: 'app-PPSR322',
@@ -10,6 +11,7 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 })
 export class PPSR322Component implements OnInit,AfterViewInit {
 
+  radioRepo = 'A';
   selectedFcpVer = [{label:'',value:''}]; //版本选择
   selectedShiftVer = [{label:'',value:''}]; //版本选择
 
@@ -23,6 +25,7 @@ export class PPSR322Component implements OnInit,AfterViewInit {
   constructor(
     private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
     private PPSService: PPSService,
+    private router: Router
   ) {}
 
   ngOnInit(){
@@ -62,6 +65,17 @@ export class PPSR322Component implements OnInit,AfterViewInit {
     this.ppsr322EvnetBusComponent.addToInventory({
       index:index
     },this.searchObj)
+  }
+
+  radioRepoChange(){
+    if('A' == this.radioRepo){
+      this.breadcrumbClick(0)
+      this.router.navigate(['/FCPshiftRepo/R322/R322_1', {}]);
+    }else{
+      this.breadcrumbClick(7)
+      this.router.navigate(['/FCPshiftRepo/R322/R322_8', {}]);
+    }
+    this.breadcrumbIndex = this.ppsr322EvnetBusComponent.breadcrumbObj.index;
   }
 
 }
