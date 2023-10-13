@@ -178,6 +178,8 @@ import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 import { Pomp003BtnCellRenderer } from './pages/POM/pomp003/button-cell-renderer.component';
 import { Pomp001ActionBtnCellRenderer } from './pages/POM/pomp001/pomp001-action-btn-cell-renderer.component';
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
+import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
+import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
 
 registerLocaleData(zh);
 
@@ -325,6 +327,8 @@ registerLocaleData(zh);
     Pomp003BtnCellRenderer,
     Pomp001ActionBtnCellRenderer,
     PPSR313Component,
+    PPSR322Child8Component,
+    PPSR322Child9Component,
   ],
   imports: [
     BrowserModule,

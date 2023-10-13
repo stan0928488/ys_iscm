@@ -127,6 +127,8 @@ import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
 import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
+import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
+import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
 
 const routes: Routes = [
   {
@@ -347,6 +349,8 @@ const routes: Routes = [
           { path: 'R322_5', component: PPSR322Child5Component },
           { path: 'R322_6', component: PPSR322Child6Component },
           { path: 'R322_7', component: PPSR322Child7Component },
+          { path: 'R322_8', component: PPSR322Child8Component },
+          { path: 'R322_9', component: PPSR322Child9Component },
         ],
       },
     ],
