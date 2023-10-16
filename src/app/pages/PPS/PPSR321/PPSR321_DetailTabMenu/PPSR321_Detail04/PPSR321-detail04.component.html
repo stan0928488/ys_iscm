@@ -1,0 +1,104 @@
+<nz-content>
+    <nz-spin nzTip="載入中.." nzSize ="large" [nzSpinning]="isLoading">
+       
+       
+        <div class="container">
+
+            <div class="btn">
+                <button
+                    nz-button 
+                    class="addBtn"
+                    nzType="primary" 
+                    (click)="add()">
+                    <span nz-icon nzType="file-add" nzTheme="outline"></span>
+                    新增
+                </button>
+            </div>
+
+            <nz-table
+                style="width:850px; height: 550px;"
+                #tbppsrm011Detail04RowData
+                [nzScroll]="{ x: '800px', y: '450px' }"
+                [(nzPageSize)]="tablePageSize"
+                [(nzPageIndex)]="tablePageIndex"
+                [nzData]="tbppsrm011Detail04List" 
+                nzHideOnSinglePage="true">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 130px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>原始尺寸</b></font>
+                        </th>
+                        <th rowspan="2" style="width: 200px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>對應尺寸</b></font>
+                        </th>
+                        <th rowspan="2" style="width: 160px; padding:5px; text-align:center; background-color: #CED7DE;">
+                            <font size="3.5"><b>Action</b></font>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let rowData of tbppsrm011Detail04RowData.data;let i = index">
+                        <ng-container *ngIf="!editCacheListIsEmpty()">
+                            <ng-container *ngIf="!tbppsrm011Detail04EditCacheList[rowData.id].edit && !tbppsrm011Detail04EditCacheList[rowData.id].add; else addOrEditTemplate">
+                                <td style="text-align:center;"><font size="3">{{ rowData.originalDia }}</font></td>
+                                <td style="text-align:center;"><font size="3">{{ rowData.mappingDia }}</font></td>
+                                <td style="text-align:center;">
+                                    <a 
+                                        style="margin-right: 10px;" 
+                                        (click)="editRow(rowData.id)">
+                                        <span nz-icon nzType="edit" nzTheme="outline"></span>
+                                        <font size="3">修改</font>
+                                    </a>
+                                    <a 
+                                        nz-popconfirm 
+                                        [class]="{aDeleteDisabled : rowData.hasDeleted}"
+                                        nzPopconfirmTitle="確定刪除嗎?" 
+                                        (nzOnConfirm)="deleteRow(rowData)">
+                                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                                        <font size="3">刪除</font>
+                                    </a>
+                                </td>
+                            </ng-container>
+                            <ng-template #addOrEditTemplate>
+                                <td style="text-align:center;">
+                                    <nz-input-number
+                                        style="width:130px;"
+                                        nzPlaceHolder="請輸入原始尺寸"
+                                        [nzMin]="0"
+                                        [nzMax]="9999"
+                                        [(ngModel)]="tbppsrm011Detail04EditCacheList[rowData.id].data.originalDia" 
+                                        [nzStep]="1">
+                                    </nz-input-number>
+                                </td>
+                                <td style="text-align:center;">
+                                    <nz-input-number
+                                        style="width:130px;"
+                                        nzPlaceHolder="請輸入對應尺寸"
+                                        [nzMin]="0"
+                                        [nzMax]="9999"
+                                        [(ngModel)]="tbppsrm011Detail04EditCacheList[rowData.id].data.mappingDia" 
+                                        [nzStep]="1">
+                                    </nz-input-number>
+                                </td>
+                                <td style="text-align:center;">
+                                    <a 
+                                        style="margin-right: 10px;"
+                                        nz-popconfirm
+                                        [nzPopconfirmTitle]="tbppsrm011Detail04EditCacheList[rowData.id].add ? '確定新增嗎?' : '確定修改嗎?'" 
+                                        (nzOnConfirm)="addOrUpdateConfirm(rowData.id)">
+                                        <span nz-icon nzType="check" nzTheme="outline"></span>
+                                        <font size="3">確定</font>
+                                    </a>
+                                    <a (click)="cancelAddOrUpdate(rowData.id)">
+                                        <span nz-icon nzType="close" nzTheme="outline"></span>
+                                        <font size="3">取消</font>
+                                    </a>
+                                </td>
+                            </ng-template>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </nz-spin>
+</nz-content>

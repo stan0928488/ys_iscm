@@ -2239,12 +2239,12 @@ export class PPSService {
   deleteShutdownData(deleteCondition: any) {
     console.log('Api Service 刪除非直棒停機資料');
     const queryUrl = `${this.APIURL}/FCP/I202/NonBar/deleteShutdownData`;
-    console.log(`Api Service 刪除非直棒停機資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 刪除非直棒停機資料 參數 -> ${JSON.stringify(
-        deleteCondition
-      )}`
-    );
+    // console.log(`Api Service 刪除非直棒停機資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 刪除非直棒停機資料 參數 -> ${JSON.stringify(
+    //     deleteCondition
+    //   )}`
+    // );
     return this.http.delete(queryUrl, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
       body: deleteCondition,
@@ -2272,10 +2272,10 @@ export class PPSService {
   addShiftData(shiftData: any) {
     console.log('Api Service 新增月推移報表維護資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/addShiftData`;
-    console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(shiftData)}`
-    );
+    // console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(shiftData)}`
+    // );
     return this.http.post(queryUrl, shiftData, this.httpOptions);
   }
 
@@ -2283,8 +2283,8 @@ export class PPSService {
     console.log('Api Service 刪除「月推移報表」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/deleteShiftData`;
     const httpParams = new HttpParams().set('shiftEdition', shiftEdition);
-    console.log(`Api Service 刪除「月推移報表」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 刪除「月推移報表」資料 參數 -> ${shiftEdition}`);
+    // console.log(`Api Service 刪除「月推移報表」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 刪除「月推移報表」資料 參數 -> ${shiftEdition}`);
     return this.http.delete(queryUrl, {
       headers: this.httpOptions.headers,
       params: httpParams,
@@ -2294,18 +2294,16 @@ export class PPSService {
   cloneShiftData(rowData: any) {
     console.log('Api Service 複製「月推移報表」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/cloneShiftData`;
-    console.log(`Api Service 複製「月推移報表」資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 複製「月推移報表」資料 參數 -> ${JSON.stringify(rowData)}`
-    );
+    // console.log(`Api Service 複製「月推移報表」資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 複製「月推移報表」資料 參數 -> ${JSON.stringify(rowData)}`
+    // );
     return this.http.post(queryUrl, rowData, this.httpOptions);
   }
 
   findAllShiftData() {
     console.log('Api Service 獲取「月推移報表」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/findAllShiftData`;
-    console.log(`Api Service 獲取「月推移報表」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 獲取「月推移報表」資料 參數 -> 無`);
     return this.http.get(queryUrl);
   }
 
@@ -2313,40 +2311,37 @@ export class PPSService {
     const httpParams = new HttpParams().set('shiftEdition', shiftEdition);
     console.log('Api Service 獲取「月推移報表」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/getDetail01ByShiftEdition`;
-    console.log(`Api Service 獲取「月推移報表」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 獲取「月推移報表」資料 參數 -> 無`);
     return this.http.get(queryUrl, { params: httpParams });
   }
 
   insertOrUpdateDetail01(ppsc321Detail01List: any[]) {
     console.log('Api Service 新增或更新「預計入庫資訊」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/insertOrUpdateDetail01`;
-    console.log(
-      `Api Service 新增或更新「預計入庫資訊」資料 url -> ${queryUrl}`
-    );
-    console.log(
-      `Api Service 新增或更新「預計入庫資訊」資料 參數 -> ${JSON.stringify(
-        ppsc321Detail01List
-      )}`
-    );
+    // console.log(
+    //   `Api Service 新增或更新「預計入庫資訊」資料 url -> ${queryUrl}`
+    // );
+    // console.log(
+    //   `Api Service 新增或更新「預計入庫資訊」資料 參數 -> ${JSON.stringify(
+    //     ppsc321Detail01List
+    //   )}`
+    // );
     return this.http.post(queryUrl, ppsc321Detail01List, this.httpOptions);
   }
 
   findAllGrade() {
     console.log('Api Service 獲取「鋼種」清單');
     const queryUrl = `${this.APINEWURL}/FCP/C321/findAllGrade`;
-    console.log(`Api Service 獲取「鋼種」清單 url -> ${queryUrl}`);
-    console.log(`Api Service 獲取「鋼種」清單 參數 -> 無`);
+    // console.log(`Api Service 獲取「鋼種」清單 url -> ${queryUrl}`);
     return this.http.get(queryUrl);
   }
 
   insertDetail02(rowData: any) {
     console.log('Api Service 新增「特殊鋼種量」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail02`;
-    console.log(`Api Service 新增「特殊鋼種量」資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 新增「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
-    );
+    // console.log(`Api Service 新增「特殊鋼種量」資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 新增「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
+    // );
     return this.http.post(queryUrl, rowData, this.httpOptions);
   }
 
@@ -2354,28 +2349,64 @@ export class PPSService {
     const httpParams = new HttpParams().set('shiftEdition', shiftEdition);
     console.log('Api Service 查詢「特殊鋼種量」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/findAllDetail02`;
-    console.log(`Api Service 查詢「特殊鋼種量」資料 url -> ${queryUrl}`);
-    console.log(`Api Service 查詢「特殊鋼種量」資料 參數 -> ${shiftEdition}`);
+    // console.log(`Api Service 查詢「特殊鋼種量」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 查詢「特殊鋼種量」資料 參數 -> ${shiftEdition}`);
     return this.http.get(queryUrl, { params: httpParams });
   }
 
   updateDetail02ByPk(rowData: any) {
     console.log('Api Service 更新「特殊鋼種量」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail02ByPk`;
-    console.log(`Api Service 更新「特殊鋼種量」資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 更新「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
-    );
+    // console.log(`Api Service 更新「特殊鋼種量」資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 更新「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
+    // );
     return this.http.put(queryUrl, rowData, this.httpOptions);
   }
 
   deleteDetail02ByPk(rowData: any) {
     console.log('Api Service 刪除「特殊鋼種量」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/deleteDetail02ByPk`;
-    console.log(`Api Service 刪除「特殊鋼種量」資料 url -> ${queryUrl}`);
-    console.log(
-      `Api Service 刪除「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
-    );
+    // console.log(`Api Service 刪除「特殊鋼種量」資料 url -> ${queryUrl}`);
+    // console.log(
+    //   `Api Service 刪除「特殊鋼種量」資料 參數 -> ${JSON.stringify(rowData)}`
+    // );
+    return this.http.delete(queryUrl, {
+      headers: this.httpOptions.headers,
+      body: rowData,
+    });
+  }
+
+  findAllDetail04(shiftEdition: string) {
+    const httpParams = new HttpParams().set('shiftEdition', shiftEdition);
+    console.log('Api Service 查詢「頭份預計回廠尺寸」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/findAllDetail04`;
+    // console.log(`Api Service 查詢「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 查詢「頭份預計回廠尺寸」資料 參數 -> ${shiftEdition}`);
+    return this.http.get(queryUrl, { params: httpParams });
+  }
+
+  insertDetail04(rowData: any) {
+    console.log('Api Service 新增「頭份預計回廠尺寸」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail04`;
+    // console.log(`Api Service 新增「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 新增「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.post(queryUrl, rowData, this.httpOptions);
+  }
+
+  updateDetail04ByPk(rowData: any) {
+    console.log('Api Service 更新「頭份預計回廠尺寸」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail04ByPk`;
+    // console.log(`Api Service 更新「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 更新「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
+    return this.http.put(queryUrl, rowData, this.httpOptions);
+  }
+
+  deleteDetail04ByPk(rowData: any) {
+    console.log('Api Service 刪除「頭份預計回廠尺寸」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/deleteDetail04ByPk`;
+    // console.log(`Api Service 刪除「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
+    // console.log(`Api Service 刪除「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
     return this.http.delete(queryUrl, {
       headers: this.httpOptions.headers,
       body: rowData,

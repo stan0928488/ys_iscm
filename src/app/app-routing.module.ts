@@ -129,6 +129,8 @@ import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
+import { PPSR321Detail04Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail04/PPSR321-detail04.component';
+import { PPSR321Detail04CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail04/PPSR321Detail04CanDeactivateGuard';
 
 const routes: Routes = [
   {
@@ -334,6 +336,11 @@ const routes: Routes = [
             path: 'detail0303',
             component: PPSR321Detail0303Component,
             canDeactivate: [PPSR321Detail0303CanDeactivateGuard],
+          },
+          {
+            path: 'detail04',
+            component: PPSR321Detail04Component,
+            canDeactivate: [PPSR321Detail04CanDeactivateGuard],
           },
         ],
       },

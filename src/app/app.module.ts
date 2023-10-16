@@ -163,6 +163,7 @@ import { PPSR321Detail02Component } from './pages/PPS/PPSR321/PPSR321_DetailTabM
 import { PPSR321Detail0301Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0301/PPSR321-detail0301.component';
 import { PPSR321Detail0302Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0302/PPSR321-detail0302.component';
 import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
+import { PPSR321Detail04Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail04/PPSR321-detail04.component';
 import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { ListSaleInputComponent } from './pages/PPS/list-sale-input/list-sale-input.component';
@@ -313,6 +314,7 @@ registerLocaleData(zh);
     PPSR321Detail0301Component,
     PPSR321Detail0302Component,
     PPSR321Detail0303Component,
+    PPSR321Detail04Component,
     PPSR322Child7Component,
     PPSR343Component,
     ListSaleInputComponent,
