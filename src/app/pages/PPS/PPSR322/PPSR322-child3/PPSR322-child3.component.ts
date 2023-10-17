@@ -27,14 +27,15 @@ export class PPSR322Child3Component implements OnInit, OnDestroy {
     this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
 
       if (data.data) {
-        this.searchData.verList = data.data;
+        this.searchData.verList = data.data.verList;
       }
       this.getR322Data(this.searchData);
       this.getR322OtherInfo(this.searchData);
 
     })
 
-    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
+    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any
+    this.searchData.verList = tempObj.verList;
     this.getR322Data(this.searchData);
     this.getR322OtherInfo(this.searchData);
 
