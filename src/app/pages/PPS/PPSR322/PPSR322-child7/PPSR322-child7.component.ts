@@ -25,13 +25,14 @@ export class PPSR322Child7Component implements OnInit {
     this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
 
       if (data.data) {
-        this.searchData.verList = data.data;
+        this.searchData.verList = data.data.verList;
       }
       this.getR322Data(this.searchData);
 
     })
 
-    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
+    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any
+    this.searchData.verList = tempObj.verList; 
     this.getR322Data(this.searchData);
 
   }

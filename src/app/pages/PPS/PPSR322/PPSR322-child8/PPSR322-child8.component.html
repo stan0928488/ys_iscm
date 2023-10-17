@@ -1,12 +1,14 @@
 <nz-table #expandTable [nzData]="listOfData" nzTableLayout="fixed"
-[nzScroll]="{y: '400px',x:'2000px'}" nzBordered nzSize="small" >
+[nzScroll]="{y: '400px',x:'2000px'}" nzBordered nzSize="small" [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>站台</th>
         <th>機台</th>
-        <th *ngFor="let item of listOfData[0].dateList">
-            {{item.pst | date: 'yyyy-MM-dd'}}
-        </th>
+        <ng-container *ngIf="listOfData != null && listOfData.length > 0">
+          <th *ngFor="let item of listOfData[0].dateList">
+              {{item.pst | date: 'yyyy-MM-dd'}}
+          </th>
+        </ng-container>
         <th>總計</th>
       </tr>
     </thead>

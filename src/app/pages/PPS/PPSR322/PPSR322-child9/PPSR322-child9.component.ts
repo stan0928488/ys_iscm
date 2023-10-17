@@ -12,6 +12,7 @@ export class PPSR322Child9Component implements OnInit {
 
   listOfData: ItemData[] = [];
   searchData = {} as SearchData;
+  mapOfExpandedData: { [schShopCode: string]: ItemData[] } = {};
 
   constructor(
     private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
@@ -24,13 +25,16 @@ export class PPSR322Child9Component implements OnInit {
     this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
 
       if (data.data) {
-        this.searchData.verList = data.data;
+        this.searchData.verList = data.data.verList;
+        this.searchData.schShop = data.data.schShop;
       }
       this.getR322Data(this.searchData);
 
     })
 
-    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
+    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any
+    this.searchData.verList = tempObj.verList; 
+    this.searchData.schShop = tempObj.schShop;
     this.getR322Data(this.searchData);
 
   }
@@ -40,13 +44,48 @@ export class PPSR322Child9Component implements OnInit {
   }
 
   getR322Data(postData){
-    postData['tabType'] = 7
+    postData['tabType'] = 9
     this.PPSService.getR322Data(postData).subscribe({
       next: (res) => {
         let result: any = res;
 
         if(result[0]){
           this.listOfData = result.map((itemData)=> itemData as ItemData) as ItemData[]
+          //底色
+          this.listOfData.forEach(function (value) {
+            if(value.schShopCodeDisplay.indexOf("總計") != -1){
+              value.backgroupColor = "#92D050"
+            }else if(value.schShopCodeDisplay.indexOf("合計") != -1){
+              value.backgroupColor = "#a3efd6"
+            }
+            
+            if(value.children){
+              value.children.forEach(function (value2) {
+                if(value2.schShopCodeDisplay.indexOf("總計") != -1){
+                  value2.backgroupColor = "#92D050"
+                }else if(value2.schShopCodeDisplay.indexOf("合計") != -1){
+                  value2.backgroupColor = "#a3efd6"
+                }else if(value2.modelType == 'Y'){
+                  value2.backgroupColor = "#efa5a3"
+                }
+              });
+            }
+
+            value.dateList.forEach(function (value2) {
+              if(value2.schShopCodeDisplay.indexOf("總計") != -1){
+                value2.backgroupColor = "#92D050"
+              }else if(value2.schShopCodeDisplay.indexOf("合計") != -1){
+                value2.backgroupColor = "#a3efd6"
+              }else if(value2.modelType == 'Y'){
+                value2.backgroupColor = "#efa5a3"
+              }
+            });
+            
+          }); 
+          this.listOfData.forEach(item => {
+            this.mapOfExpandedData[item.schShopCode] = this.convertTreeToList(item);
+          });
+          console.log(this.mapOfExpandedData)
         }else{
           this.listOfData = [];
         }
@@ -59,14 +98,54 @@ export class PPSR322Child9Component implements OnInit {
     
   }
 
+  collapse(array: ItemData[], data: ItemData, $event: boolean): void {
+    if (!$event) {
+      if (data.children) {
+        data.children.forEach(d => {
+          const target = array.find(a => a.schShopCode === d.schShopCode)!;
+          target.expand = false;
+        });
+      } else {
+        return;
+      }
+    }
+  }
+
+  convertTreeToList(root: ItemData): ItemData[] {
+    const stack: ItemData[] = [];
+    const array: ItemData[] = [];
+    const hashMap = {};
+    stack.push({ ...root, level: 0, expand: false });
+
+    while (stack.length !== 0) {
+      let node = stack.pop();
+      array.push(node);
+      if (node.children) {
+        for (let i = node.children.length - 1; i >= 0; i--) {
+          stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
+        }
+      }
+    }
+
+    return array;
+  }
+
 }
 
 interface ItemData {
-  seq:number;
-  kindType:string;
-  process:string;
-  planWeightI:number;
-  rowspanSize: number;
+  dateTotal:number;
+  schShopCode: string;
+  schShopCodeDisplay:string;
+  kindType: string;
+  modelType:string;
+  backgroupColor:string;
+  pst?:Date;
+  planWeightI?:number;
+  level?: number;
+  expand?: boolean;
+  children?: ItemData[];
+  parent?: ItemData;
+  dateList?:ItemData[];
 }
 
 interface SearchData {
@@ -75,4 +154,5 @@ interface SearchData {
     fcpVer: String,
     shiftVer: String
   };
+  schShop:[]
 }

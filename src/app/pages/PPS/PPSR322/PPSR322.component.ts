@@ -14,12 +14,17 @@ export class PPSR322Component implements OnInit,AfterViewInit {
   radioRepo = 'A';
   selectedFcpVer = [{label:'',value:''}]; //版本选择
   selectedShiftVer = [{label:'',value:''}]; //版本选择
+  selectedSchShop = [{label:'',value:''}]; //站別選擇
 
   breadcrumbIndex:number = 0;
   clickSubject:Subject<any> = new Subject();
+  
   searchObj = {
-    fcpVer:String,
-    shiftVer:String,
+    verList: {
+      fcpVer: String,
+      shiftVer: String
+    },
+    schShop:[]
   };
 
   constructor(
@@ -50,6 +55,20 @@ export class PPSR322Component implements OnInit,AfterViewInit {
       }
     });
 
+    postData = this.searchObj;
+    postData['tabType'] = 8
+    this.PPSService.getR322OtherInfo(postData).subscribe(res => {
+      let result: any = res;
+      if (result) {
+        let shopCode:[] = result.shopCode.split(",");
+        if(shopCode.length > 0) {
+          for(let i = 0 ; i<shopCode.length ; i++) {
+            this.selectedSchShop.push({label:shopCode[i], value:shopCode[i]})
+          }
+        }
+      }
+    });
+
   }
 
   ngAfterViewInit(){
@@ -58,6 +77,19 @@ export class PPSR322Component implements OnInit,AfterViewInit {
   }
 
   notifyClick() {
+    let postData = this.searchObj;
+    postData['tabType'] = 8
+    this.PPSService.getR322OtherInfo(postData).subscribe(res => {
+      let result: any = res;
+      if (result) {
+        let shopCode:[] = result.shopCode.split(",");
+        if(shopCode.length > 0) {
+          for(let i = 0 ; i<shopCode.length ; i++) {
+            this.selectedSchShop.push({label:shopCode[i], value:shopCode[i]})
+          }
+        }
+      }
+    });
     this.ppsr322EvnetBusComponent.emit({name:"ppsr322search",data:this.searchObj})
   }
 

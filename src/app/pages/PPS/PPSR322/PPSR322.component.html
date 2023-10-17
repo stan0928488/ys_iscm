@@ -19,7 +19,7 @@
                     <label style="margin-left:20px;">FCP版次</label>
                     <nz-select
                         style="width: 180px; margin-left:10px;"
-                        [(ngModel)]="searchObj.fcpVer"
+                        [(ngModel)]="searchObj.verList.fcpVer"
                         nzPlaceHolder="對應FCP版本"
                         >
                         <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
@@ -27,17 +27,20 @@
                     <label style="margin-left:20px;">推移維護版次</label>
                     <nz-select
                         style="width: 180px; margin-left:10px;"
-                        [(ngModel)]="searchObj.shiftVer"
+                        [(ngModel)]="searchObj.verList.shiftVer"
                         nzPlaceHolder="推移維護版本"
                         >
                         <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
                     </nz-select>
                     <label [hidden]="radioRepo == 'A'" style="margin-left:20px;">站別</label>
                     <nz-select
+                        [(ngModel)]="searchObj.schShop"
+                        nzMode="multiple"
                         [hidden]="radioRepo == 'A'"
                         style="width: 180px; margin-left:10px;"
                         nzPlaceHolder="請選擇站台"
                         >
+                        <nz-option *ngFor="let abbr of selectedSchShop" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
                     </nz-select>
                     <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
                         <span nz-icon nzType="search" nzTheme="outline"></span>查詢

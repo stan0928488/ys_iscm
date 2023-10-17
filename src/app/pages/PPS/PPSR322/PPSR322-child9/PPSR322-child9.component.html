@@ -1,22 +1,41 @@
-<nz-table nzSize="small" [nzScroll]="{y: '650px' }">
+<nz-table #expandTable [nzData]="listOfData" nzTableLayout="fixed"
+[nzScroll]="{y: '400px',x:'2000px'}" nzBordered nzSize="small" [nzFrontPagination]="false">
     <thead>
-        <tr>
-            <th>產品別</th>
-            <th>製程</th>
-            <th>入庫量</th>
-        </tr>
+      <tr>
+        <th>站台</th>
+        <th>產品別</th>
+        <ng-container *ngIf="listOfData != null && listOfData.length > 0">
+          <th *ngFor="let item of listOfData[0].dateList">
+              {{item.pst | date: 'yyyy-MM-dd'}}
+          </th>
+        </ng-container>
+        <th>總計</th>
+      </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let data of listOfData">
-            <ng-container *ngIf=" data.kindType.indexOf('小計') == -1">
-                <td [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0" >{{data.kindType}}</td>
-                <td>{{ data.process }}</td>
-                <td>{{ data.planWeightI | number:'1.1-1' }}</td>
-            </ng-container>
-            <ng-container *ngIf=" data.kindType.indexOf('小計') != -1">
-                <td [colSpan]="2" style="background-color: #92D050; font-weight: bold;">{{ data.kindType }}</td>
-                <td style="background-color: #92D050; font-weight: bold;">{{ data.planWeightI | number:'1.1-1' }}</td>
-            </ng-container>
-        </tr>
+      <ng-container *ngFor="let data of expandTable.data">
+        <ng-container *ngFor="let item of mapOfExpandedData[data.schShopCode]">
+          <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+            <td
+            [ngStyle]="{'background-color': item.backgroupColor}"
+            *ngIf="item.parent == null"
+            [nzShowExpand]="item.children != null"
+            [(nzExpand)]="item.expand"
+            (nzExpandChange)="collapse(mapOfExpandedData[data.schShopCode], item, $event)"
+            >
+              {{ item.schShopCodeDisplay }}
+            </td>
+            <td 
+            [ngStyle]="{'background-color': item.backgroupColor}"
+            *ngIf="item.parent != null"
+            [nzShowExpand]="!!item.children"
+            [(nzExpand)]="item.expand"
+            (nzExpandChange)="collapse(mapOfExpandedData[data.schShopCode], item, $event)"></td>
+            <td [ngStyle]="{'background-color': item.backgroupColor}">{{ item.kindType }}</td>
+            <td [ngStyle]="{'background-color': dateObj.backgroupColor}" *ngFor="let dateObj of item.dateList">{{dateObj.planWeightI}}</td>
+            <td [ngStyle]="{'background-color': item.backgroupColor}">{{item.dateTotal}}</td>
+          </tr>
+        </ng-container>
+      </ng-container>
     </tbody>
-</nz-table>
+  </nz-table>

@@ -25,13 +25,16 @@ export class PPSR322Child8Component implements OnInit {
     this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
 
       if (data.data) {
-        this.searchData.verList = data.data;
+        this.searchData.verList = data.data.verList;
+        this.searchData.schShop = data.data.schShop;
       }
       this.getR322Data(this.searchData);
 
     })
 
-    this.searchData.verList = this.ppsr322EvnetBusComponent.searchObj as any
+    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any
+    this.searchData.verList = tempObj.verList; 
+    this.searchData.schShop = tempObj.schShop;
     this.getR322Data(this.searchData);
 
   }
@@ -151,4 +154,5 @@ interface SearchData {
     fcpVer: String,
     shiftVer: String
   };
+  schShop:[]
 }
