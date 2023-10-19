@@ -773,7 +773,7 @@ getWeekData() {
     let monFirstDay = mon.startOf('month').format("YYYY-MM-DD");
     let monLastDay = mon.endOf('month').format("YYYY-MM-DD");
     let index = 1 ;
-    let dateObj = {label:"上月延遲訂單", mon:mon.format("YYYY-MM"),startDate:null,endDate:monLastDay,sortindex:index}
+    let dateObj = {label:"前月延遲訂單", mon:mon.format("YYYY-MM"),startDate:null,endDate:monLastDay,sortindex:index}
     this.headerFirst.push(dateObj);
   }
 currentMonTotal(){

@@ -417,7 +417,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
       { path: 'R001', component: PPSR344Component },
-      { path: 'R002', component: PPSR343Component },
+      // { path: 'R002', component: PPSR343Component },       // 先關閉預估周入庫計畫表
+      { path: 'R002', component: ErrorPageComponent },
     ],
     canActivate: [AuthGuard],
   },

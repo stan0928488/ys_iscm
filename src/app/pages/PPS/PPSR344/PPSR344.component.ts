@@ -102,6 +102,11 @@ export class PPSR344Component implements OnInit {
     })
 
   }
+  
+  // 資料結轉
+  converTBPPSRM010Data() {
+
+  }
 
 }
 
