@@ -118,10 +118,10 @@ export class AppComponent {
         env = " 正式環境 ";
         break;
       case "localhost":
-        env = " -- 本機環境 -- ";
+        env = "_本機環境";
         break;
       default:
-        env = " -- 測試環境 -- ";
+        env = "_測試環境";
     }
 
     return env;
