@@ -145,10 +145,11 @@
     
   </div>
   
+  <p></p>
+  <p></p>
      <!-- 内容区  -->
-     <div  *ngIf="loaded">
+     <div *ngIf="loaded">
      <div style="text-align: center;"><h4>訂單交期彙總 (單位：MT)</h4> </div>
-     <div>
       <nz-table #basicTable [nzData]="tbodyList"  [nzShowPagination]="false"  >
         <thead>
           <tr>
@@ -228,6 +229,9 @@
       </nz-table>
     </div>
     </div>
+    <div style="text-align: left; margin-top: 10px;">
+       <label style="font-weight: bolder;">色塊說明：</label> <label style="background-color: #f2dede; font-weight: bolder;">　遞延　</label> <label style="margin-left: 10px; background-color: #ddf5dd; font-weight: bolder;">　如期　</label> <label style="margin-left: 10px; background-color: #d1f4ff; font-weight: bolder;">　超前　</label> </div>
+    <div>
   </div>
 </nz-content>
 <!-- 第一层modal 开始 -->
