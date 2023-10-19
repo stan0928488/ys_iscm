@@ -13,6 +13,7 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import * as _ from "lodash";
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
   interface data {
 
@@ -920,9 +921,10 @@ this.firstModalTableAppendList = [] ;
   }
 
   onChangekindType(result:any): void {
-    if(result){
+    if(result !== 'ALL'){
       this.specialBarDisable = false;
-    }else{
+    } else {
+      this.searchData.specialBar = undefined;
       this.specialBarDisable = true;
     }
   }
