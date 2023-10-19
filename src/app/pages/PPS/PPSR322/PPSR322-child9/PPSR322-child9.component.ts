@@ -68,6 +68,13 @@ export class PPSR322Child9Component implements OnInit {
                 }else if(value2.modelType == 'Y'){
                   value2.backgroupColor = "#efa5a3"
                 }
+
+                value2.dateList.forEach(function (value3) {
+                  if(value3.modelType == 'Y'){
+                    value3.backgroupColor = "#efa5a3"
+                  }
+                });
+
               });
             }
 
