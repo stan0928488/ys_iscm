@@ -2251,15 +2251,21 @@ export class PPSService {
     });
   }
 
-  getR344Data(_data) {
+  convertR344Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344Data`;
+    let queryUrl = this.APINEWURL + `/FCP/R344/convertR344Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getR344HeaderData(_data) {
     const body = JSON.stringify(_data);
     let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344HeaderData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getR344Data(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/R344/getPPSR344Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 

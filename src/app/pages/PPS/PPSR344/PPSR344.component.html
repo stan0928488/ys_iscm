@@ -35,9 +35,9 @@
         <nz-table nzSize="small" [nzScroll]="{y: '600px',x:'3500px'}" nzBordered>
             <thead>
                 <tr>
-                    <th nzWidth="100px" rowSpan="2">產品</th>
-                    <th nzWidth="100px" rowSpan="2">區域</th>
-                    <th style="background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
+                    <th nzLeft nzWidth="100px" rowSpan="2">產品</th>
+                    <th nzLeft="100px" nzWidth="100px" rowSpan="2">區域</th>
+                    <th nzLeft="200px" style="background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
                         {{titleData[0].title}}
                     </th>
                     <th style="background-color:#BDD7EE;" *ngFor="let data of titleData | slice:1; index as i"
@@ -48,14 +48,14 @@
                     <th style="background-color:#BDD7EE;" nzWidth="100px" rowSpan="2">月差異實績VS目標</th>
                 </tr>
                 <tr>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px">出貨目標</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存 A</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月需入庫量 B</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨 C=A+B</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨已過帳</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨未過帳</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
+                    <th nzLeft="200px" style="background-color:#C6E0B4;" nzWidth="100px">出貨目標</th>
+                    <th nzLeft="295px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存 A</th>
+                    <th nzLeft="390px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月需入庫量 B</th>
+                    <th nzLeft="485px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨 C=A+B</th>
+                    <th nzLeft="580px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨已過帳</th>
+                    <th nzLeft="675px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨未過帳</th>
+                    <th nzLeft="770px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
+                    <th nzLeft="865px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
 
                     <ng-container *ngFor="let data of titleData | slice:1; index as i">
                         <th style="background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}目標</th>
@@ -69,16 +69,22 @@
             </thead>
             <tbody>
                 <tr *ngFor="let data of rowData; index as i">
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" *ngIf="data.colspanSize == 1">{{ data.analGroup }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.aimDlvyQty | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.openingStock | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.unStock | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.maxShipmentVolumeThisMonth | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShp | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShpNon | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumWipWeight | number:'1.2-2' }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumNonfinishWeight | number:'1.2-2' }}</td>
+                    <ng-container *ngIf="data.colspanSize > 1">
+                        <td nzLeft [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" nzLeft *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
+                        <td nzLeft="100px" [ngStyle]="{'background-color': data.backgroupColor}"></td>
+                    </ng-container>
+                    <ng-container *ngIf="data.colspanSize <= 1">
+                        <td nzLeft [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
+                        <td nzLeft="100px" [ngStyle]="{'background-color': data.backgroupColor}" *ngIf="data.colspanSize == 1">{{ data.analGroup }}</td>
+                    </ng-container>
+                    <td nzLeft="200px" [ngStyle]="{'background-color': data.backgroupColor}">{{data.aimDlvyQty | number:'1.2-2' }}</td>
+                    <td nzLeft="295px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.openingStock | number:'1.2-2' }}</td>
+                    <td nzLeft="390px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.unStock | number:'1.2-2' }}</td>
+                    <td nzLeft="485px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.maxShipmentVolumeThisMonth | number:'1.2-2' }}</td>
+                    <td nzLeft="580px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShp | number:'1.2-2' }}</td>
+                    <td nzLeft="675px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShpNon | number:'1.2-2' }}</td>
+                    <td nzLeft="770px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumWipWeight | number:'1.2-2' }}</td>
+                    <td nzLeft="865px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumNonfinishWeight | number:'1.2-2' }}</td>
 
                     <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
                         <ng-container [ngSwitch]="i">
