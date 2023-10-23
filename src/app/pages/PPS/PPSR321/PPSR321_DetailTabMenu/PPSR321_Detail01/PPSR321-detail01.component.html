@@ -39,13 +39,22 @@
             </div>
 
             <div class="produceMonth">
-                <span>
-                    <font size="3.5">
-                        <b>
-                        推移生產月份：{{ displayProduceMonth }}
-                        </b>
-                    </font>
-                </span>
+                <font size="3.5">
+                    <b>
+                    推移生產月份：
+                    <span *ngIf="!isEdit">{{ displayProduceMonth }}
+                    </span>
+                    <span *ngIf="isEdit">
+                        <nz-date-picker
+                            style="width: 120px"
+                            (nzOnOpenChange) = "changeDate()"
+                            [(ngModel)]="produceMonth"
+                            nzMode="month" 
+                            [nzFormat]="monthFormat">
+                        </nz-date-picker>
+                    </span>
+                    </b>
+                </font>
             </div>
 
             <nz-table
