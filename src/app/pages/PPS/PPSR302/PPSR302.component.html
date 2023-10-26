@@ -65,7 +65,7 @@
           </nz-select>
 
           <nz-select nzPlaceHolder="選擇產品別" style="width: 120px; margin-left:10px;" [(ngModel)]="searchData.kindType" (ngModelChange) = "onChangekindType($event)"  nzShowSearch nzAllowClear>
-            <nz-option nzValue="ALL" nzLabel="ALL"></nz-option>
+            <nz-option nzValue="" nzLabel="ALL"></nz-option>
             <nz-option nzValue="PL" nzLabel="PL"></nz-option>
             <nz-option nzValue="B to B" nzLabel="BTB"></nz-option>
             <nz-option nzValue="C to B" nzLabel="CTB"></nz-option>
@@ -73,7 +73,7 @@
 
           <!-- 要再重調 -->
           <nz-select nzPlaceHolder="選擇區域別" style="width: 150px; margin-left:10px" [(ngModel)]="searchData.saleAreaGroup"  nzShowSearch nzAllowClear>
-            <nz-option nzValue="ALL" nzLabel="ALL"></nz-option>
+            <nz-option nzValue="" nzLabel="ALL"></nz-option>
             <nz-option nzValue="北區" nzLabel="北區"></nz-option>
             <nz-option nzValue="鹽水" nzLabel="鹽水"></nz-option>
             <nz-option nzValue="中南區" nzLabel="中南區"></nz-option>
@@ -95,7 +95,7 @@
           </nz-select> -->
 
           <nz-select nzPlaceHolder="選擇高附加" style="width: 120px; margin-left:10px;" [(ngModel)]="searchData.specialBar"  nzShowSearch nzAllowClear>
-            <nz-option nzValue="ALL" nzLabel="ALL" [nzDisabled]="specialBarDisable"></nz-option>
+            <nz-option nzValue="" nzLabel="ALL" [nzDisabled]="specialBarDisable"></nz-option>
             <nz-option nzValue="CODE490" nzLabel="異型" [nzDisabled]="specialBarDisable"></nz-option>
             <nz-option nzValue="CODE49041TO67" nzLabel="大棒" [nzDisabled]="specialBarDisable"></nz-option>
           </nz-select>
