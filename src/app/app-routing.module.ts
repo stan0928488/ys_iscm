@@ -61,9 +61,6 @@ import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
-
-import { PPSR302_coilComponent } from './pages/PPS/PPSR302_coil/PPSR302_coil.component';
-
 import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
@@ -281,7 +278,6 @@ const routes: Routes = [
       { path: '', redirectTo: '/FCPBarRepo/R302', pathMatch: 'full' },
       { path: 'R303', component: PPSR303Component },
       { path: 'R302', component: PPSR302Component },
-      { path: 'R302_coil', component: PPSR302_coilComponent },
       { path: 'R301', component: PPSR301Component },
     ],
     canActivate: [AuthGuard],

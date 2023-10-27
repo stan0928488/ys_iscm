@@ -94,13 +94,13 @@ export class PPSI230Component implements AfterViewInit {
     { 
       headerName:'規劃優先順序',
       field:'SORTING_SEQ',
-      width:180,
+      width:350,
       cellClass:'wrap-cell-Text'
     },
     { 
       headerName:'集批天數',
       field:'INTERVAL',
-      width:105,
+      width:110,
       headerClass:'wrap-header-Text',
       cellClass:'wrap-cell-Text'
     },
@@ -194,7 +194,7 @@ export class PPSI230Component implements AfterViewInit {
     { 
       headerName:'規劃優先順序',
       field:'SORTING_SEQ_D2',
-      width:200,
+      width:400,
       cellClass:'wrap-cell-Text',
     },
     { 

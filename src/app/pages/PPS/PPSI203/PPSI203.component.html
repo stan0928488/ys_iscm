@@ -1,9 +1,9 @@
 <nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
+  <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
     <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
     <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
     <nz-breadcrumb-item>策略基礎設定</nz-breadcrumb-item>
-    <nz-breadcrumb-item><font size="4">最早可投產時間調整(PPSI203)</font></nz-breadcrumb-item>
+    <nz-breadcrumb-item>最早可投產時間調整(PPSI203)</nz-breadcrumb-item>
   </nz-breadcrumb>
  
   <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
@@ -69,7 +69,7 @@
       <nz-table #editRowTable nzBordered 
                 [nzData]="displayPPSI203DataList" 
                 [nzPageSize]="20" 
-                [nzScroll]="{ x: '1000px', y: '400px' }">
+                [nzScroll]="{ x: '1000px', y: tableHeight }">
         <thead>
           <tr>
             <th  style="width: 40px; height:min-content; padding: 0px; text-align:center; background-color:#eee;display:none;">ID</th>
@@ -529,7 +529,7 @@
             [nzData]="T19DetailDataListForEdit" 
             *ngIf="T19DetailDataListForEdit.length > 0 "
             [nzPageSize]="100" 
-            [nzScroll]="{ x: '700px', y: '400px' }">
+            [nzScroll]="{ x: '700px', y: tableHeight }">
         <thead>
           <tr>
             <th nzWidth="30px" style = "text-align:left; background-color: #eee; padding: 0px; height: 36px;">

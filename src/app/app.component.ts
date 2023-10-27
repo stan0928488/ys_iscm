@@ -54,7 +54,7 @@ export class AppComponent {
 
   //檢查是否是最新版本
   isLatestVersion() {
-    const dateID = "check_Coil_WEB_Date";
+    const dateID = "check_YS_iSCM_Date";
     const checkDate = localStorage.getItem(dateID);
     console.log("checkDate");
     console.log(checkDate);

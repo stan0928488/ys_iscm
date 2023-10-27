@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone,EventEmitter } from "@angular/core";
+import { Component, AfterViewInit, NgZone, EventEmitter, ViewChild, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -29,6 +29,9 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI203Component implements AfterViewInit {
+  @ViewChild('editRowTable', { static: false }) editRowTable: ElementRef;
+  tableHeight: string;  // 用来存储表格高度的变量
+
   USERNAME;
 	loading              = false; //loaging data flag
   LoadingPage          = false;
@@ -167,6 +170,18 @@ export class PPSI203Component implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    console.log('ngAfterViewChecked');
+    // 在视图初始化后，计算表格的高度
+    const windowHeight = window.innerHeight;
+    const tableHeaderHeight = 55;  // 假设表头高度为50像素
+    const pageSize = 1;  // 假设每页显示50条数据
+    // 计算表格内容的高度，减去表头和底部分页的高度
+    const tableContentHeight = windowHeight - tableHeaderHeight - 32;  // 60是底部分页的高度
+    // 计算每行数据的高度
+    const rowHeight = tableContentHeight / pageSize;
+    // 设置表格高度
+    this.tableHeight = `${rowHeight * pageSize}px`;
+
     console.log("ngAfterViewChecked");
     const time = new Date();
     const children: Array<{ label: string; value: string }> = [];

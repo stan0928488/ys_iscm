@@ -1,3 +1,5 @@
+ 
+@import url("../../../../standard.less");
 .nz-table-hide-scrollbar::-webkit-scrollbar {
     width: 17px;
   }
