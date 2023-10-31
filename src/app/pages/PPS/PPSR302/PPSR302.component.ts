@@ -13,6 +13,7 @@ import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
 import * as _ from "lodash";
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
   interface data {
 
@@ -772,7 +773,7 @@ getWeekData() {
     let monFirstDay = mon.startOf('month').format("YYYY-MM-DD");
     let monLastDay = mon.endOf('month').format("YYYY-MM-DD");
     let index = 1 ;
-    let dateObj = {label:"上月延遲訂單", mon:mon.format("YYYY-MM"),startDate:null,endDate:monLastDay,sortindex:index}
+    let dateObj = {label:"前月延遲訂單", mon:mon.format("YYYY-MM"),startDate:null,endDate:monLastDay,sortindex:index}
     this.headerFirst.push(dateObj);
   }
 currentMonTotal(){
@@ -920,9 +921,10 @@ this.firstModalTableAppendList = [] ;
   }
 
   onChangekindType(result:any): void {
-    if(result){
+    if(result !== 'ALL'){
       this.specialBarDisable = false;
-    }else{
+    } else {
+      this.searchData.specialBar = undefined;
       this.specialBarDisable = true;
     }
   }

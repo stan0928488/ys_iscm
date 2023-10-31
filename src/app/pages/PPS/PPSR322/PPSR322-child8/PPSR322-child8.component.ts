@@ -13,6 +13,7 @@ export class PPSR322Child8Component implements OnInit {
   listOfData: ItemData[] = [];
   searchData = {} as SearchData;
   mapOfExpandedData: { [schShopCode: string]: ItemData[] } = {};
+  selectedSchShop = [{label:'',value:''}]; //站別選擇
 
   constructor(
     private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
@@ -26,9 +27,23 @@ export class PPSR322Child8Component implements OnInit {
 
       if (data.data) {
         this.searchData.verList = data.data.verList;
-        this.searchData.schShop = data.data.schShop;
       }
       this.getR322Data(this.searchData);
+
+      let postData = {};
+      postData = this.searchData;
+      postData['tabType'] = 8
+      this.PPSService.getR322OtherInfo(postData).subscribe(res => {
+        let result: any = res;
+        if (result) {
+          let shopCode:[] = result.shopCode.split(",");
+          if(shopCode.length > 0) {
+            for(let i = 0 ; i<shopCode.length ; i++) {
+              this.selectedSchShop.push({label:shopCode[i], value:shopCode[i]})
+            }
+          }
+        }
+      });
 
     })
 
@@ -36,6 +51,21 @@ export class PPSR322Child8Component implements OnInit {
     this.searchData.verList = tempObj.verList; 
     this.searchData.schShop = tempObj.schShop;
     this.getR322Data(this.searchData);
+
+    let postData = {};
+    postData = this.searchData;
+    postData['tabType'] = 8
+    this.PPSService.getR322OtherInfo(postData).subscribe(res => {
+      let result: any = res;
+      if (result) {
+        let shopCode:[] = result.shopCode.split(",");
+        if(shopCode.length > 0) {
+          for(let i = 0 ; i<shopCode.length ; i++) {
+            this.selectedSchShop.push({label:shopCode[i], value:shopCode[i]})
+          }
+        }
+      }
+    });
 
   }
 
@@ -65,9 +95,14 @@ export class PPSR322Child8Component implements OnInit {
                   value2.backgroupColor = "#92D050"
                 }else if(value2.schShopCodeDisplay.indexOf("合計") != -1){
                   value2.backgroupColor = "#a3efd6"
-                }else if(value2.modelType == 'Y'){
-                  value2.backgroupColor = "#efa5a3"
                 }
+                
+                value2.dateList.forEach(function (value3) {
+                  if(value3.modelType == 'Y'){
+                    value3.backgroupColor = "#efa5a3"
+                  }
+                });
+
               });
             }
 
@@ -76,8 +111,6 @@ export class PPSR322Child8Component implements OnInit {
                 value2.backgroupColor = "#92D050"
               }else if(value2.schShopCodeDisplay.indexOf("合計") != -1){
                 value2.backgroupColor = "#a3efd6"
-              }else if(value2.modelType == 'Y'){
-                value2.backgroupColor = "#efa5a3"
               }
             });
             

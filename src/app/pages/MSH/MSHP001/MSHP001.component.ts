@@ -1509,7 +1509,7 @@ this.handleSelectCarModal() ;
     //console.log("已選擇站別：" + JSON.stringify(shopCodeListTemp))
     this.getSetColumByUser();
   }
-
+  /*選擇機台BA1 TC切換 */
   selectEquipCodeFunc(){
     if(this.selectShopCode === '401' || this.selectShopCode === '411') {
     if(this.selectEquipCode === 'BA1'){
@@ -1568,7 +1568,9 @@ this.handleSelectCarModal() ;
     }
     console.log("columnDefs2:" + JSON.stringify(this.columnDefs))
    // this.gridOptionsModal.api.setColumnDefs(this.outsideColumnDefs)  ;
-    this.gridOptions.api.setColumnDefs(this.columnDefs)  ;
+    this.gridOptions.api.setColumnDefs(this.outsideColumnDefs)  ;
+    //this.gridOptions.api.setColumnDefs(this.columnDefs)  ;
+    
     //this.gridOptionsRowDataModal.api.setColumnDefs(this.columnDefs) ;
     //console.log("columnDefs:" + JSON.stringify(this.columnDefs)) ;
     //console.log("outsideColumnDefs:" + JSON.stringify(this.outsideColumnDefs)) ;
@@ -2289,7 +2291,7 @@ this.handleSelectCarModal() ;
     }
 
     comitExcelBatchModelModal(){
-      if(this.selectShopCode !== '453' && this.selectShopCode !== '452' && this.selectShopCode !== '404') {
+      if(this.selectShopCode === '411' || this.selectShopCode === '401') {
         this.nzMessageService.error("指定機台才可以使用當前功能")
         return ;
       }

@@ -608,7 +608,13 @@ export class PPSI201NonBarComponent implements AfterViewInit {
 
   comitData() {
     let myObj = this;
-    let comitParamete = { shopAndCode: this.shopCodeAndEquipCodeList, cnStr: this.comitCNStr, enStr: this.comitENStr, user: this.userName };
+    let comitParamete = { 
+      type:"TYPE_NON_STRAIGHT_ROD",
+      shopAndCode: this.shopCodeAndEquipCodeList, 
+      cnStr: this.comitCNStr, 
+      enStr: this.comitENStr, 
+      user: this.userName 
+    };
     console.log("新增最後提交後台數據： " + JSON.stringify(comitParamete));
     myObj.getPPSService.saveSortData(comitParamete).subscribe(res => {
       console.log("comitData :" + res)
@@ -817,6 +823,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
         var worksheet: any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
         this.postData = {
+          type:"TYPE_NON_STRAIGHT_ROD",
           excelData:this.importdata,
           userName:this.userName
         }

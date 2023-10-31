@@ -371,8 +371,7 @@ const routes: Routes = [
           { path: 'R322_5', component: PPSR322Child5Component },
           { path: 'R322_6', component: PPSR322Child6Component },
           { path: 'R322_7', component: PPSR322Child7Component },
-          { path: 'R322_8', component: PPSR322Child8Component },
-          { path: 'R322_9', component: PPSR322Child9Component },
+          { path: 'R322_8', component: PPSR322Child8Component }
         ],
       },
     ],
@@ -433,7 +432,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
       { path: 'R001', component: PPSR344Component },
-      { path: 'R002', component: PPSR343Component },
+      // { path: 'R002', component: PPSR343Component },       // 先關閉預估周入庫計畫表
+      { path: 'R002', component: ErrorPageComponent },
     ],
     canActivate: [AuthGuard],
   },

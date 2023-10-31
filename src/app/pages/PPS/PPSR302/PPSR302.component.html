@@ -11,12 +11,12 @@
   <div nz-row>
     <div nz-col nzSpan="16">
       <div nz-row>
-          <nz-radio-group [(ngModel)]="radioPointValue" nzButtonStyle="solid" disabled = "true" (ngModelChange)="onChangePoint($event)">
+          <nz-radio-group *ngIf="false" [(ngModel)]="radioPointValue" nzButtonStyle="solid" disabled = "true" (ngModelChange)="onChangePoint($event)">
             <label nz-radio-button nzValue="A" checked>ASAP</label>
             <label nz-radio-button nzValue="J">JIT</label>
           </nz-radio-group>
           <nz-select
-          style="width: 220px; margin-left:50px;"
+          style="width: 220px;"
           [compareWith]="compareFn1"
           [(ngModel)]="selectedVer"
           (ngModelChange)="changeVersion($event)"
@@ -25,20 +25,26 @@
           >
           <nz-option   *ngFor="let option of listOfOption" [nzValue]="option" [nzLabel]="option.label"></nz-option>
           </nz-select>
-      
+<!--       
           <nz-radio-group
           style="width: 150px; margin-left: 20px;"
           [(ngModel)]="radioSelectValue" [nzButtonStyle]="'solid'"
-          (ngModelChange) = "onSelectChange($event)" >
+          (ngModelChange) = "onSelectChange($event)" 
+          >
             <label nz-radio-button nzValue="M">月</label>
             <label nz-radio-button nzValue="N">旬</label>
             <label nz-radio-button nzValue="Z">周</label>
-          </nz-radio-group>
+          </nz-radio-group> -->
       
+          <nz-select nzPlaceHolder="選擇模式" style="width: 60px; margin-left:10px;" [(ngModel)]="radioSelectValue" (ngModelChange) = "onSelectChange($event)"  nzShowSearch nzAllowClear>
+            <nz-option nzValue="M" nzLabel="月"></nz-option>
+            <nz-option nzValue="N" nzLabel="旬"></nz-option>
+            <nz-option nzValue="Z" nzLabel="周"></nz-option>
+          </nz-select>
           <nz-select
             nzDisabled
             *ngIf="showSelectSplitNum"
-            style="width: 120px; margin-left: 20px;"
+            style="width: 50px; margin-left: 10px;"
             [(ngModel)]="selectedDayValue"
             [compareWith]="compareFn2"
             (ngModelChange)="selectDayLog($event)"
@@ -46,10 +52,9 @@
           >
           <nz-option *ngFor="let option of dayOptionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
           </nz-select>
-      
           <nz-select
            *ngIf = "showSelectWeek"
-            style="width: 120px; margin-left: 20px;"
+            style="width: 100px; margin-left: 10px;"
             [compareWith]="compareFn3"
             [(ngModel)]="selectedValue"
             (ngModelChange)="log($event)"
@@ -59,16 +64,55 @@
           <nz-option *ngFor="let option of optionList" [nzValue]="option" [nzLabel]="option.label"></nz-option>
           </nz-select>
 
-      <div nz-col nzSpan="1">
-        <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
-          <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
-      </div>
+          <nz-select nzPlaceHolder="選擇產品別" style="width: 120px; margin-left:10px;" [(ngModel)]="searchData.kindType" (ngModelChange) = "onChangekindType($event)"  nzShowSearch nzAllowClear>
+            <nz-option nzValue="" nzLabel="ALL"></nz-option>
+            <nz-option nzValue="PL" nzLabel="PL"></nz-option>
+            <nz-option nzValue="B to B" nzLabel="BTB"></nz-option>
+            <nz-option nzValue="C to B" nzLabel="CTB"></nz-option>
+          </nz-select>
+
+          <!-- 要再重調 -->
+          <nz-select nzPlaceHolder="選擇區域別" style="width: 150px; margin-left:10px" [(ngModel)]="searchData.saleAreaGroup"  nzShowSearch nzAllowClear>
+            <nz-option nzValue="" nzLabel="ALL"></nz-option>
+            <nz-option nzValue="北區" nzLabel="北區"></nz-option>
+            <nz-option nzValue="鹽水" nzLabel="鹽水"></nz-option>
+            <nz-option nzValue="中南區" nzLabel="中南區"></nz-option>
+            <nz-option nzValue="盤元大客戶" nzLabel="盤元大客戶"></nz-option>
+            <nz-option nzValue="北亞紐澳區" nzLabel="北亞紐澳區"></nz-option>
+            <nz-option nzValue="南亞及其它區" nzLabel="南亞及其它區"></nz-option>
+            <nz-option nzValue="產業客戶" nzLabel="產業客戶"></nz-option>
+            <nz-option nzValue="歐美區" nzLabel="歐美區"></nz-option>
+          </nz-select>
+<!--           
+          <nz-select
+            style="width: 220px; margin-left:10px;"
+            [compareWith]="compareFn1"
+            [(ngModel)]="searchData.saleAreaGroup"
+            nzAllowClear
+            nzPlaceHolder="選擇區域別"
+          >
+          <nz-option  *ngFor="let option of areaGroup" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+          </nz-select> -->
+
+          <nz-select nzPlaceHolder="選擇高附加" style="width: 120px; margin-left:10px;" [(ngModel)]="searchData.specialBar"  nzShowSearch nzAllowClear>
+            <nz-option nzValue="" nzLabel="ALL" [nzDisabled]="specialBarDisable"></nz-option>
+            <nz-option nzValue="CODE490" nzLabel="異型" [nzDisabled]="specialBarDisable"></nz-option>
+            <nz-option nzValue="CODE49041TO67" nzLabel="大棒" [nzDisabled]="specialBarDisable"></nz-option>
+          </nz-select>
+        <div>
+          <button style="margin-left:20px ;"  (click) = "subnitBtnFunc()"  nz-button nzType="primary" >
+            <span nz-icon nzType="search" nzTheme="outline"></span>查詢</button>
+        </div>
+        <div>
+          <button style="margin-left: 50px;" (click)="openBiWeekWip()"  nz-button nzType="default" nzDanger>週入庫計畫表</button>
+        </div>
       </div>
     </div>
   </div>
 
   <div nz-row>
     
+<!-- 
     <nz-radio-group style="margin-top: 8px;" 
       (ngModelChange)="onChangekindType($event)"
       [(ngModel)]="searchData.kindType"
@@ -78,9 +122,9 @@
       <label nz-radio-button nzValue="PL">PL</label>
       <label nz-radio-button nzValue="B to B">BTB</label>
       <label nz-radio-button nzValue="C to B">CTB</label>
-    </nz-radio-group>
+    </nz-radio-group> -->
     
-    <p>
+    <!-- <p>
     <nz-radio-group style="margin-top: 8px; margin-left: 10px;" 
     [(ngModel)]="searchData.saleAreaGroup" 
     [nzButtonStyle]="'solid'">
@@ -88,23 +132,24 @@
       <label nz-radio-button>ALL</label>
       <label nz-radio-button [nzValue]="a.value" *ngFor="let a of areaGroup">{{ a.label }}</label>
     </nz-radio-group>    
-    <p>
-    <nz-radio-group style="margin-top: 8px; margin-left: 10px; margin-bottom: 8px;" 
+    <p> -->
+    <!-- <nz-radio-group style="margin-top: 8px; margin-left: 10px; margin-bottom: 8px;" 
     [(ngModel)]="searchData.specialBar"
     [nzButtonStyle]="'solid'">
       <label nz-radio-button nzDisabled="true" style="color: blue; font-weight: bolder;">高附加:</label>
       <label nz-radio-button [nzDisabled]="specialBarDisable">ALL</label>
       <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE490">異型</label>
       <label nz-radio-button [nzDisabled]="specialBarDisable" nzValue="CODE49041TO67">大棒</label>
-    </nz-radio-group>
+    </nz-radio-group> -->
 
-    <button style="margin-top: 8px; margin-left: 20px; margin-bottom: 8px;" (click)="openBiWeekWip()"  nz-button nzType="default" nzDanger>週入庫計畫表</button>
+    
   </div>
   
+  <p></p>
+  <p></p>
      <!-- 内容区  -->
-     <div  *ngIf="loaded">
+     <div *ngIf="loaded">
      <div style="text-align: center;"><h4>訂單交期彙總 (單位：MT)</h4> </div>
-     <div>
       <nz-table #basicTable [nzData]="tbodyList"  [nzShowPagination]="false"  >
         <thead>
           <tr>
@@ -184,72 +229,73 @@
       </nz-table>
     </div>
     </div>
+    <div style="text-align: left; margin-top: 10px;">
+       <label style="font-weight: bolder;">色塊說明：</label> <label style="background-color: #f2dede; font-weight: bolder;">　遞延　</label> <label style="margin-left: 10px; background-color: #ddf5dd; font-weight: bolder;">　如期　</label> <label style="margin-left: 10px; background-color: #d1f4ff; font-weight: bolder;">　超前　</label> </div>
+    <div>
   </div>
 </nz-content>
 <!-- 第一层modal 开始 -->
-<div class="firstModalDiv" style="width:1500px ;">
-    
-    <!-- <nz-modal
-     [(nzVisible)]="isModalVisible" [nzTitle]="firstModalTitle" nzCancelText="關閉" nzOkText="EXCEL匯出"  (nzOnCancel)="handleModalChange()" (nzOnOk)="handleModalExport()">
-    </nz-modal> -->
-    <ng-template  #tplTitle>
-      <div nz-row>
-        <div nz-col nzSpan="8">{{firstModalTitle}}</div>
-        <div nz-col nzSpan="4">
-          <input nz-input placeholder="客戶名稱" [(ngModel)]="firstSearchParamete.custAbbreviations" />
+  <div class="firstModalDiv" style="width:1500px ;" cdkDrag>
+      <!-- <nz-modal
+      [(nzVisible)]="isModalVisible" [nzTitle]="firstModalTitle" nzCancelText="關閉" nzOkText="EXCEL匯出"  (nzOnCancel)="handleModalChange()" (nzOnOk)="handleModalExport()">
+      </nz-modal> -->
+      <ng-template  #tplTitle>
+        <div nz-row>
+          <div nz-col nzSpan="8">{{firstModalTitle}}</div>
+          <div nz-col nzSpan="4">
+            <input nz-input placeholder="客戶名稱" [(ngModel)]="firstSearchParamete.custAbbreviations" />
+          </div>
+          <div nz-col nzSpan="4">
+            <input nz-input placeholder="訂單編號" [(ngModel)]="firstSearchParamete.saleOrder" />
+          </div>
+          <div nz-col nzSpan="6">
+            <button style="margin-left:20px ;"  
+            (click)="firstSearchClickFun()"
+            nz-button nzType="primary" >
+              <span nz-icon nzType="search" ></span>查詢
+            </button>
+          </div>
         </div>
-        <div nz-col nzSpan="4">
-          <input nz-input placeholder="訂單編號" [(ngModel)]="firstSearchParamete.saleOrder" />
-        </div>
-        <div nz-col nzSpan="6">
-          <button style="margin-left:20px ;"  
-          (click)="firstSearchClickFun()"
-          nz-button nzType="primary" >
-            <span nz-icon nzType="search" ></span>查詢
-          </button>
-        </div>
+      </ng-template>
+      <ng-template  #tplContent>
+      <div>
+        <nz-table nzBordered  #fixedTable [nzData]="firstModalData"  [nzLoading]="firstModalLoading"  [nzShowPagination]="false"  [nzScroll]="{ x: '1350px', y: '500px' }">
+          <thead>
+            <tr>
+              <th *ngFor=" let head of firstModalTableHeaderList let h = index " [nzWidth]="h === 0 ? '100px':'100px'" nzLeft="{{100*h}}px">{{head.label}}</th>
+              <th *ngFor=" let item of firstModalTableAppendList let j = index " nzWidth="150px" >{{item.label}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of firstModalData let i = index" (dblclick) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
+              <td nzWidth="100px"  nzLeft="0px" >{{i+1}}</td>
+              <td nzWidth="100px" nzLeft="100px" >{{data.orderNo}}-{{data.orderItemNo}}</td>
+              <td nzWidth="100px" nzLeft="200px" >{{data.deliveryDate}}</td>
+              <td nzWidth="100px" nzLeft="300px" >{{data.planEndDate}}</td>
+              <td nzWidth="100px" nzLeft="400px" >{{data.customer}}</td>
+              <td nzWidth="100px" nzLeft="500px" >{{data.steelType}}</td>
+              <td nzWidth="100px" nzLeft="600px" >{{data.steelSize}}</td>
+              <td nzWidth="100px" nzLeft="700px" >{{data.pendingStorage}}</td>
+              <td nzWidth="100px" nzLeft="800px" >{{data.planInDate}}</td>
+              <td nzWidth="100px" nzLeft="900px" >{{data.planWeight}}</td>
+              <td nzWidth="150px" *ngFor="let item of data.dateWeightList ">{{item}}</td>
+              <!-- <td nzWidth="100px" >
+                <nz-tag *ngFor="let d of data.dateWeightList let di = index "  [nzColor]="'orange'">{{d}}</nz-tag>
+              </td> -->
+            </tr>
+          </tbody>
+        </nz-table>
       </div>
-    </ng-template>
-    <ng-template  #tplContent>
-     <div>
-      <nz-table nzBordered  #fixedTable [nzData]="firstModalData"  [nzLoading]="firstModalLoading"  [nzShowPagination]="false"  [nzScroll]="{ x: '1350px', y: '500px' }">
-        <thead>
-          <tr>
-            <th *ngFor=" let head of firstModalTableHeaderList let h = index " [nzWidth]="h === 0 ? '100px':'100px'" nzLeft="{{100*h}}px">{{head.label}}</th>
-            <th *ngFor=" let item of firstModalTableAppendList let j = index " nzWidth="150px" >{{item.label}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of firstModalData let i = index" (dblclick) ="firstModalClick(data.orderNo,data.orderItemNo,secondModalTitle, secondModalContent, secondModalFooter)">
-            <td nzWidth="100px"  nzLeft="0px" >{{i+1}}</td>
-            <td nzWidth="100px" nzLeft="100px" >{{data.orderNo}}-{{data.orderItemNo}}</td>
-            <td nzWidth="100px" nzLeft="200px" >{{data.deliveryDate}}</td>
-            <td nzWidth="100px" nzLeft="300px" >{{data.planEndDate}}</td>
-            <td nzWidth="100px" nzLeft="400px" >{{data.customer}}</td>
-            <td nzWidth="100px" nzLeft="500px" >{{data.steelType}}</td>
-            <td nzWidth="100px" nzLeft="600px" >{{data.steelSize}}</td>
-            <td nzWidth="100px" nzLeft="700px" >{{data.pendingStorage}}</td>
-            <td nzWidth="100px" nzLeft="800px" >{{data.planInDate}}</td>
-            <td nzWidth="100px" nzLeft="900px" >{{data.planWeight}}</td>
-            <td nzWidth="150px" *ngFor="let item of data.dateWeightList ">{{item}}</td>
-            <!-- <td nzWidth="100px" >
-              <nz-tag *ngFor="let d of data.dateWeightList let di = index "  [nzColor]="'orange'">{{d}}</nz-tag>
-            </td> -->
-          </tr>
-        </tbody>
-      </nz-table>
-     </div>
-    </ng-template>
-    <ng-template #tplFooter>
-      <button nz-button nzType="primary" nzDanger (click)="handleModalExport()" [nzLoading]="tplModalButtonLoading">
-        EXCEL匯出
-      </button>
-      <button nz-button nzType="primary" (click)="handleModalChange()" [nzLoading]="tplModalButtonLoading">
-        關閉
-      </button>
-    </ng-template>
-
-  </div>
+      </ng-template>
+      <ng-template #tplFooter>
+        <button nz-button nzType="primary" nzDanger (click)="handleModalExport()" [nzLoading]="tplModalButtonLoading">
+          EXCEL匯出
+        </button>
+        <button nz-button nzType="primary" (click)="handleModalChange()" [nzLoading]="tplModalButtonLoading">
+          關閉
+        </button>
+      </ng-template>
+    </div>
     <!-- 第一层Modal结束 -->
     <!-- 延期訂單顯示Modal開始 -->
     <div>

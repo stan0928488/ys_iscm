@@ -4,6 +4,7 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as _ from "lodash";
+import * as moment from 'moment';
 import { firstValueFrom } from 'rxjs';
 import { CookieService } from 'src/app/services/config/cookie.service';
 
@@ -29,44 +30,55 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
   // 顯示的推移生產月份
   displayProduceMonth = '';
 
+  // 變更推移生產月份
+  produceMonth = '';
+
   // 需計算的屬性
   needSumProperties = ['PL', 'BTB', 'CTB'];
+  monthFormat = 'yyyy-MM';
 
   editCacheTbppsrm011Detail01List : any[] = [];
 
   // 表格的數據
   tbppsrm011Detail01List : any[] = [
     {
+      produceMonth : null,
       displayKindType : 'PL',
       kindType : 'PL',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : 'BTB',
       kindType : 'B to B',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : 'CTB',
       kindType : 'C to B',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : '冷抽代工',
       kindType : '冷抽代工',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : '合計',
       kindType : '合計',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : '異形棒',
       kindType : '異形棒',
       goalWeight : null
     },
     {
+      produceMonth : null,
       displayKindType : '大棒',
       kindType : '大棒',
       goalWeight : null
@@ -81,6 +93,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
       // 接收月推移主檔傳遞過來的資料
       this.receivedData = this.ppsr321DataPassService.mainData;
       this.displayProduceMonth = (this.receivedData.produceMonth as string).split('-')[1];
+      this.produceMonth = this.receivedData.produceMonth;
       
       this.PLANT_CODE = this.cookieService.getCookie("plantCode");
       this.USER_NAME = this.cookieService.getCookie("USERNAME");
@@ -174,6 +187,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
     this.editCacheTbppsrm011Detail01List = _.cloneDeep(cloneTbppsrm011Detail01List);
 
     this.tbppsrm011Detail01List = cloneTbppsrm011Detail01List;
+    
   }
 
   // 合計計算
@@ -193,6 +207,15 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
     
   }
 
+  changeDate() {
+    const updatedItems = this.tbppsrm011Detail01List.map(item => {
+      return { ...item, produceMonth: moment(this.produceMonth).format('YYYY-MM') };
+    });
+    
+    this.tbppsrm011Detail01List = updatedItems;
+
+  }
+
   edit(): void {
     // 通知父元件(PPSR321DetailTabMenuComponent)當前子元件正在編輯中
     this.ppsr321DataPassService.hasEdited = '預計入庫資訊正在編輯中';
@@ -200,14 +223,11 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
   }
 
   async confirm(): Promise<void> {
-
     // 若使用者未修改任何資料，則無需更新
     if(_.isEqual(this.tbppsrm011Detail01List, this.editCacheTbppsrm011Detail01List)){
       this.nzMessageService.warning('尚未做任何修改，無法更新');
       return;
     }
-
-    // 如果是新增資料則要往請求數據添加資料
     if(!this.tbppsrm011Detail01List[0].id){
       this.tbppsrm011Detail01List = this.assembleInsertRequestData();
     }
@@ -239,6 +259,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
       // 通知主檔頁面更新資料並渲染畫面
       this.ppsr321DataPassService.setRefresh(true);
 
+      this.displayProduceMonth = moment(this.produceMonth).format('YYYY-MM');
       this.sucessMSG(
         '修改「預計入庫資訊」資料成功',
         `修改「預計入庫資訊」資料成功`
@@ -261,7 +282,7 @@ export class PPSR321Detail01Component implements OnInit, AfterViewInit {
           plantCode : this.PLANT_CODE,
           plant : '直棒',
           shiftEdition : this.receivedData.shiftEdition,
-          produceMonth : this.receivedData.produceMonth,
+          produceMonth : this.produceMonth,
           userCreate : this.USER_NAME
         }
         _.merge(item, appendProperties);

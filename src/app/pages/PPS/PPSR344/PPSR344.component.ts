@@ -102,6 +102,21 @@ export class PPSR344Component implements OnInit {
     })
 
   }
+  
+  // 資料結轉
+  converTBPPSRM010Data() {
+    this.isSpinning = true;
+    let postData = this.searchData;
+    this.PPSService.convertR344Data(postData).subscribe(res =>{
+      if(res['code'] == 200){
+        this.message.info('結轉成功');
+        this.getDataList();
+      }else{
+        this.message.error('結轉失敗');
+      }
+      this.isSpinning = false;
+    });
+  }
 
 }
 

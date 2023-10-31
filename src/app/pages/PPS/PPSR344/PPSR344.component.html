@@ -2,14 +2,15 @@
     <nz-breadcrumb style="margin:16px 0;">
         <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
         <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
-        <nz-breadcrumb-item>
+        <nz-breadcrumb-item><font size="4">出貨追蹤管理報表(PPSR344)</font></nz-breadcrumb-item>
+        <!-- <nz-breadcrumb-item>
             <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
                 <ul>
                     <li class="active"><a href="#/SaleView/R001"><label style="color:blue">出貨追蹤管理報表</label></a></li>
                     <li><a href="#/SaleView/R002"><label>預估週入庫計畫</label></a></li>
                 </ul>
             </tr>
-        </nz-breadcrumb-item>
+        </nz-breadcrumb-item> -->
     </nz-breadcrumb>
 
     <nz-spin [nzSize]="'large'" [nzSpinning]="isSpinning">
@@ -22,16 +23,21 @@
                     <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
                         <span nz-icon nzType="search" nzTheme="outline"></span>查詢
                     </button>
+                    <button nz-button nzType="primary" 
+                      style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:50px; "
+                      (click)="converTBPPSRM010Data()"><span nzTheme="outline"></span>
+                      資料結轉
+                    </button>
                 </div>
             </nz-collapse-panel>
         </nz-collapse>
 
-        <nz-table nzSize="small" [nzScroll]="{y: '400px',x:'3500px'}" nzBordered>
+        <nz-table nzSize="small" [nzScroll]="{y: '600px',x:'3500px'}" nzBordered>
             <thead>
                 <tr>
-                    <th nzWidth="100px" rowSpan="2">產品</th>
-                    <th nzWidth="100px" rowSpan="2">區域</th>
-                    <th style="background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
+                    <th nzLeft nzWidth="100px" rowSpan="2">產品</th>
+                    <th nzLeft="100px" nzWidth="100px" rowSpan="2">區域</th>
+                    <th nzLeft="200px" style="background-color:#C6E0B4;" [colSpan]="hiddenSwitch ? 1 : 8">
                         {{titleData[0].title}}
                     </th>
                     <th style="background-color:#BDD7EE;" *ngFor="let data of titleData | slice:1; index as i"
@@ -42,87 +48,93 @@
                     <th style="background-color:#BDD7EE;" nzWidth="100px" rowSpan="2">月差異實績VS目標</th>
                 </tr>
                 <tr>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px">出貨目標</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存A</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月需入庫量B</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨=A+B</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨已過帳</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">檢貨未過帳</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
-                    <th style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
+                    <th nzLeft="200px" style="background-color:#C6E0B4;" nzWidth="100px">出貨目標</th>
+                    <th nzLeft="295px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">期初庫存 A</th>
+                    <th nzLeft="390px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">當月需入庫量 B</th>
+                    <th nzLeft="485px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">本月最大出貨 C=A+B</th>
+                    <th nzLeft="580px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨已過帳</th>
+                    <th nzLeft="675px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">出貨未過帳</th>
+                    <th nzLeft="770px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">成品</th>
+                    <th nzLeft="865px" style="background-color:#C6E0B4;" nzWidth="100px" [hidden]="hiddenSwitch">待入庫</th>
 
                     <ng-container *ngFor="let data of titleData | slice:1; index as i">
                         <th style="background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}目標</th>
                         <th style="background-color:#BDD7EE;" nzWidth="100px">{{data.title2}}實績</th>
-                        <th style="background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">成品(A)</th>
-                        <th style="background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">待入庫(B)</th>
-                        <th style="background-color:#BDD7EE;" nzWidth="180px">次週可出貨量D=(A)+(B)</th>
+                        <th style="background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">成品 D</th>
+                        <th style="background-color:#BDD7EE;" nzWidth="100px" [hidden]="data.hidden">待入庫 E</th>
+                        <th style="background-color:#BDD7EE;" nzWidth="180px">次週可出貨量 F=D+E</th>
                     </ng-container>
 
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let data of rowData; index as i">
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" *ngIf="data.colspanSize == 1">{{ data.analGroup }}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.aimDlvyQty}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.openingStock}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.unStock}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.maxShipmentVolumeThisMonth}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShp}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShpNon}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumWipWeight}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumNonfinishWeight}}</td>
+                    <ng-container *ngIf="data.colspanSize > 1">
+                        <td nzLeft [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" nzLeft *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
+                        <td nzLeft="100px" [ngStyle]="{'background-color': data.backgroupColor}"></td>
+                    </ng-container>
+                    <ng-container *ngIf="data.colspanSize <= 1">
+                        <td nzLeft [ngStyle]="{'background-color': data.backgroupColor}" [colSpan]="data.colspanSize" [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0">{{data.chiDesc}}</td>
+                        <td nzLeft="100px" [ngStyle]="{'background-color': data.backgroupColor}" *ngIf="data.colspanSize == 1">{{ data.analGroup }}</td>
+                    </ng-container>
+                    <td nzLeft="200px" [ngStyle]="{'background-color': data.backgroupColor}">{{data.aimDlvyQty | number:'1.2-2' }}</td>
+                    <td nzLeft="295px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.openingStock | number:'1.2-2' }}</td>
+                    <td nzLeft="390px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.unStock | number:'1.2-2' }}</td>
+                    <td nzLeft="485px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.maxShipmentVolumeThisMonth | number:'1.2-2' }}</td>
+                    <td nzLeft="580px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShp | number:'1.2-2' }}</td>
+                    <td nzLeft="675px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.weightShpNon | number:'1.2-2' }}</td>
+                    <td nzLeft="770px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumWipWeight | number:'1.2-2' }}</td>
+                    <td nzLeft="865px" [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="hiddenSwitch">{{data.sumNonfinishWeight | number:'1.2-2' }}</td>
 
                     <ng-container *ngFor="let dataTitle of titleData | slice:1; index as i">
                         <ng-container [ngSwitch]="i">
                             <ng-container *ngSwitchCase="0">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo1.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo1.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.nonfinishWeight}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo1.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo1.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo1.nonfinishWeight | number:'1.2-2' }}</td>
                                 <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo1.availableShipmentsNextWeek}}</td>
                             </ng-container>
                             <ng-container *ngSwitchCase="1">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo2.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo2.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo2.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo2.nonfinishWeight}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo2.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo2.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo2.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo2.nonfinishWeight | number:'1.2-2' }}</td>
                                 <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo2.availableShipmentsNextWeek}}</td>
                             </ng-container>
                             <ng-container *ngSwitchCase="2">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo3.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo3.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo3.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo3.nonfinishWeight}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo3.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo3.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo3.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo3.nonfinishWeight | number:'1.2-2' }}</td>
                                 <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo3.availableShipmentsNextWeek}}</td>
                             </ng-container>
                             <ng-container *ngSwitchCase="3">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo4.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo4.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo4.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo4.nonfinishWeight}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo4.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo4.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo4.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo4.nonfinishWeight | number:'1.2-2' }}</td>
                                 <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo4.availableShipmentsNextWeek}}</td>
                             </ng-container>
                             <ng-container *ngSwitchCase="4">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo5.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo5.nonfinishWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.availableShipmentsNextWeek}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo5.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo5.nonfinishWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo5.availableShipmentsNextWeek | number:'1.2-2' }}</td>
                             </ng-container>
                             <ng-container *ngSwitchCase="5">
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.weekDlvyQty}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.weight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo6.wipWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo6.nonfinishWeight}}</td>
-                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.availableShipmentsNextWeek}}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.weekDlvyQty | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.weight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo6.wipWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}" [hidden]="dataTitle.hidden">{{data.ppsd344RangeInfo6.nonfinishWeight | number:'1.2-2' }}</td>
+                                <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.ppsd344RangeInfo6.availableShipmentsNextWeek | number:'1.2-2' }}</td>
                             </ng-container>
                         </ng-container>
                     </ng-container>
 
-                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.sumWeight}}</td>
-                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.diffSumWeightWeekDlvyQty}}</td>
+                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.sumWeight | number:'1.2-2' }}</td>
+                    <td [ngStyle]="{'background-color': data.backgroupColor}">{{data.diffSumWeightWeekDlvyQty | number:'1.2-2' }}</td>
                 </tr>
             </tbody>
         </nz-table>
