@@ -1,8 +1,8 @@
 <nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
+  <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
     <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
     <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
-    <nz-breadcrumb-item><font size="4">規劃策略清單(PPSI220)</font></nz-breadcrumb-item>
+    <nz-breadcrumb-item>規劃策略清單(PPSI220)</nz-breadcrumb-item>
   </nz-breadcrumb>
 
   <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
@@ -61,52 +61,9 @@
               <a [attr.disabled]="isRunFCP ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
               <a [attr.disabled]="data.PLAN_STATU !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.PLAN_EDITION, data.PLAN_STATU)">刪除</a>
               <p><a disabled = false>結果表</a></p>
-            </td>                                               <!--  (click)="routerRun(data.STARTRUN_TIME, data.PLAN_EDITION)" -->
+            </td> 
             <td nzLeft="80px" style="font-size: 13px; padding: 4px;"><a (click)="updPlanData(data)">{{data.PLAN_EDITION}}</a><p> {{data.PLAN_START_TYPE_NA}}</td>
             <td nzLeft="200px" style="font-size: 11px; padding: 4px;">
-  <!--
-              <nz-steps nzType="navigation" nzSize="small" [nzCurrent]="index">
-                <nz-step *ngIf="data.PLAN_STATU === 'Create'"
-                  nzTitle="Create"
-                  nzSubtitle="data.PLAN_STATU_NA"
-                  nzStatus="finish"
-                  nzDescription="建立規劃案"
-                ></nz-step>
-
-                <nz-step *ngIf="data.PLAN_STATU === 'Plan' && "
-                  nzTitle="Plan"
-                  nzSubtitle="data.PLAN_STATU_NA"
-                  nzStatus="process"
-                  nzDescription="This is a description."
-                ></nz-step>
-                <nz-step *ngIf="data.PLAN_STATU === 'Plan'"
-                  nzTitle="Plan"
-                  nzSubtitle="waiting for long long time"
-                  nzStatus="wait"
-                  nzDescription="This is a description."
-                ></nz-step>
-
-                <nz-step *ngIf="data.PLAN_STATU === 'Plan OK'"
-                  nzTitle="Plan OK"
-                  nzSubtitle="waiting for long long time"
-                  nzStatus="wait"
-                  nzDescription="This is a description."
-                ></nz-step>
-                <nz-step *ngIf="data.PLAN_STATU === 'Plan OK'"
-                  nzTitle="Plan OK"
-                  nzSubtitle="waiting for long long time"
-                  nzStatus="wait"
-                  nzDescription="This is a description."
-                ></nz-step>
-                <nz-step
-                  nzTitle="Publish"
-                  nzSubtitle="waiting for long long time"
-                  nzStatus="wait"
-                  nzDescription="This is a description."
-                ></nz-step>
-              -->
-
-
               <p> {{ data.PLAN_STATU_NA}}
                   <nz-tag *ngIf="data.PLAN_STATU === 'Plan'" nzColor="processing">
                     <span nz-icon nzType="sync" nzSpin></span>

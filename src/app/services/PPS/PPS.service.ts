@@ -1312,7 +1312,8 @@ export class PPSService {
   //Get getPlanDataListByPlan 取得規劃清單(取得該版次已執行過內容)
   getPlanDataListByPlan(_Plan) {
     console.log('api service getPlanDataListByPlan');
-    let queryUrl = this.APIURL + `/FCP/I220/getPlanDataListByPlan/${_Plan}`;
+    let queryUrl = this.APIURL + `/FCP/I220/getPlanDataListByPlan/${_Plan}`;   // old
+    // let queryUrl = this.APIURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
