@@ -14,7 +14,7 @@ import * as XLSX from 'xlsx';
 import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { OpenMachineRendererComponent } from "../PPSI210/open-machine-renderer-component";
+import { OpenMachineRendererComponent } from "../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 registerLocaleData(zh);
 
 
@@ -96,6 +96,9 @@ export class PPSI220Component implements AfterViewInit {
   planlist;       // 規劃案版本清單
   choicePlanset = 'A';  // 不更換策略版本
   plansetlist;    // 規劃策略版本清單
+
+  plant = '直棒'; // 工廠別
+
 
   timer = new Date();
   commSCHEDULE_TIME;
@@ -559,8 +562,13 @@ export class PPSI220Component implements AfterViewInit {
     this.isVisibleSelPlanSet = true;
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPlanSetData().subscribe(res => {     // 取規劃策略
+    this.getPPSService.getPlanSetData(this.plant).subscribe(res => {     // 取規劃策略
       console.log("getPlanSetInitstData success");
+      if(res.length <= 0){
+        this.message.success(`目前${this.plant}尚無任何規劃策略內容`)
+        myObj.loading = false;
+        return;
+      }
       this.planSetDataList = res;
       myObj.loading = false;
     });

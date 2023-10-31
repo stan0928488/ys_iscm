@@ -1202,11 +1202,11 @@ export class PPSService {
   }
 
   //Get getPlanSetData 規劃策略清單 (I210-I220 共用)
-  getPlanSetData() {
+  getPlanSetData(_plant) {
     console.log('api service getPlanSetData');
-    let queryUrl = this.APIURL + `/FCP/I210/getPlanSetData`;
+    let queryUrl = this.APIURL + `/FCP/I210/getPlanSetData/${_plant}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //Get getShopSortingList (I210-I220-I230 共用)
   getShopSortingList(_type, _value) {
@@ -1253,19 +1253,19 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
   //Get getPickerShopData sorting表的站別
-  getPickerShopData() {
-    let queryUrl = this.APIURL + '/FCP/I210/getPickerShopData';
+  getPickerShopData(_plant) {
+    let queryUrl = `${this.APIURL}/FCP/I210/getPickerShopData/${_plant}`;
     return this.http.get(queryUrl);
   }
   //Get getPickerMachineData 下拉機台 by 站別
-  getPickerMachineData(_shop) {
-    let queryUrl = this.APIURL + `/FCP/I210/getPickerMachineData/${_shop}`;
+  getPickerMachineData(_plant, _shop) {
+    let queryUrl = this.APIURL + `/FCP/I210/getPickerMachineData/${_plant}/${_shop}`;
     return this.http.get(queryUrl);
   }
   //Get getPickerSortData sorting表的排序 by 站別
-  getPickerSortData(_shop, _machine) {
+  getPickerSortData(_plant, _shop, _machine) {
     let queryUrl =
-      this.APIURL + `/FCP/I210/getPickerSortData/${_shop}/${_machine}`;
+      this.APIURL + `/FCP/I210/getPickerSortData/${_plant}/${_shop}/${_machine}`;
     return this.http.get(queryUrl);
   }
   //Get getRequierList sorting內的 集批條件

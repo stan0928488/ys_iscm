@@ -263,7 +263,7 @@ export class PPSI111Component implements AfterViewInit {
     console.log(_idx)
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPickerShopData().subscribe(res => {
+    this.getPPSService.getPickerShopData('直棒').subscribe(res => {
       console.log("getPickerShopData success");
       this.pickerShopList = res;
       const SchShopCode = [];
@@ -283,7 +283,7 @@ export class PPSI111Component implements AfterViewInit {
   getPickerMachineData(_shop, _idx) {
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPickerMachineData(_shop).subscribe(res => {
+    this.getPPSService.getPickerMachineData('直棒', _shop).subscribe(res => {
       console.log("getPickerMachineData success");
       this.pickerMachineList = res;
       const machine = [];
