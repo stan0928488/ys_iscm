@@ -182,7 +182,7 @@ export class PPSI201Component implements AfterViewInit {
         myObj.getPPSService.deleteSortData(data).subscribe(res => {
           console.log("comitData :" + res)
           let result: any = res;
-          if (result.code === 1) {
+          if (result.code === 200) {
             this.message.info(result.message);
             this.getSetShopEQUIP();
           } else {
@@ -342,7 +342,7 @@ export class PPSI201Component implements AfterViewInit {
       console.log("获取已设定数据 success");
       console.log("获取已设定数据 :" + JSON.stringify(res));
       let result: any = res;
-      if (result.code === 1) {
+      if (result.code === 200) {
         this.setData = result.data;
         this.pageNum = result.pageNum;
         this.totalPage = result.totalPage;
@@ -611,7 +611,7 @@ export class PPSI201Component implements AfterViewInit {
     myObj.getPPSService.saveSortData(comitParamete).subscribe(res => {
       console.log("comitData :" + res)
       let result: any = res;
-      if (result.code === 1) {
+      if (result.code === 200) {
         this.message.info(result.message);
         //this.getSetShopEQUIP() ;
         this.queryData();
@@ -632,7 +632,7 @@ export class PPSI201Component implements AfterViewInit {
     myObj.getPPSService.editSortData(comitParamete).subscribe(res => {
       console.log("comitData :" + res)
       let result: any = res;
-      if (result.code === 1) {
+      if (result.code === 200) {
         this.message.info(result.message);
         this.getSetShopEQUIP();
       } else {

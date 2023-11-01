@@ -56,7 +56,7 @@ import { PPSI204_NonBarComponent } from './pages/PPS/PPSI204_NonBar/PPSI204_NonB
 import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
 import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
-import { PPSI210Component } from './pages/PPS/PPSI210/PPSI210.component';
+import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
 import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
@@ -128,6 +128,8 @@ import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR3
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
 import { PPSR321Detail04Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail04/PPSR321-detail04.component';
 import { PPSR321Detail04CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail04/PPSR321Detail04CanDeactivateGuard';
+import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_TabMenu.component';
+import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 
 const routes: Routes = [
   {
@@ -265,8 +267,21 @@ const routes: Routes = [
   {
     path: 'FCPBarData',
     children: [
-      { path: '', redirectTo: '/FCPBarData/P201', pathMatch: 'full' },
-      { path: 'P201', component: PPSI210Component },
+      { path: '', redirectTo: '/FCPBarData/P201_TabMenu', pathMatch: 'full' },
+      { 
+        path: 'P201_TabMenu', 
+        component: PPSI210TabMenuComponent,
+        children: [
+          {
+            path: 'P201',
+            component: PPSI210Component
+          },
+          {
+            path: 'P201_Refining',
+            component: PPSI210RefiningComponent
+          }
+        ]
+      },
       { path: 'P202', component: PPSI220Component },
       { path: 'P203', component: PPSI230Component },
     ],

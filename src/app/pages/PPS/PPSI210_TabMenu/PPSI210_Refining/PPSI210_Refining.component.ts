@@ -10,18 +10,18 @@ import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from 'ag-grid-community';
-import { OpenSortRendererComponent } from './open-sort-renderer-component';
-import { SendChoiceRendererComponent } from './send-choice-renderer-component';
+import { PPSI210RefiningOpenSortRendererComponent } from './open-sort-renderer-component';
+import { PPSI210RefiningSendChoiceRendererComponent } from './send-choice-renderer-component';
 import { firstValueFrom } from 'rxjs';
-import { OpenMachineRendererComponent } from './open-machine-renderer-component';
+import { PPSI210RefiningOpenMachineRendererComponent } from './open-machine-renderer-component';
 
 @Component({
-  selector: 'app-PPSI210',
-  templateUrl: './PPSI210.component.html',
-  styleUrls: ['./PPSI210.component.scss'],
+  selector: 'app-PPSI210-Refining',
+  templateUrl: './PPSI210_Refining.component.html',
+  styleUrls: ['./PPSI210_Refining.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI210Component implements AfterViewInit {
+export class PPSI210RefiningComponent implements AfterViewInit {
   planSetLoading = false; // 現有規劃策略明細表是否載入中
   shopSortLoading = false; // 站別優先順序明細表是否載入中
   machineSortLoading = false // 站別機台優先順序明細表是否載入中
@@ -89,6 +89,9 @@ export class PPSI210Component implements AfterViewInit {
   // 使用者是否有選擇檢視已存在的策略
   isChooseStrategy = false;
 
+  // 工廠別
+  plant = '精整';
+
   i = 1;
   j = 1;
   editId: string | null = null;
@@ -108,7 +111,7 @@ export class PPSI210Component implements AfterViewInit {
       field:'choice',
       pinned: 'left', 
       width: 80,
-      cellRenderer: SendChoiceRendererComponent
+      cellRenderer: PPSI210RefiningSendChoiceRendererComponent
     },
     { 
       headerName:'策略版本', 
@@ -146,7 +149,7 @@ export class PPSI210Component implements AfterViewInit {
     { 
       headerName:'站別策略設定',
       field:'action', 
-      cellRenderer: OpenSortRendererComponent,
+      cellRenderer: PPSI210RefiningOpenSortRendererComponent,
     }
   ];
 
@@ -238,7 +241,7 @@ export class PPSI210Component implements AfterViewInit {
       field:'action',
       width:95,
       headerClass:'wrap-header-Text',
-      cellRenderer: OpenMachineRendererComponent
+      cellRenderer: PPSI210RefiningOpenMachineRendererComponent
     }
   ];
 
@@ -387,7 +390,7 @@ export class PPSI210Component implements AfterViewInit {
   getPickerShopData(_idx) {
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPickerShopData().subscribe((res) => {
+    this.getPPSService.getPickerShopData(this.plant).subscribe((res) => {
       console.log('getPickerShopData success');
       this.pickerShopList = res;
       const SchShopCode = [];
@@ -410,7 +413,7 @@ export class PPSI210Component implements AfterViewInit {
   getPickerMachineData(_shop, _idx, _type) {
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPickerMachineData(_shop).subscribe((res) => {
+    this.getPPSService.getPickerMachineData(this.plant, _shop).subscribe((res) => {
       console.log('getPickerMachineData success');
       this.pickerMachineList = res;
       const machine = [];
@@ -449,7 +452,7 @@ export class PPSI210Component implements AfterViewInit {
         return;
       } else {
         this.getPPSService
-          .getPickerSortData(_shopcode, _machine)
+          .getPickerSortData(this.plant, _shopcode, _machine)
           .subscribe((res) => {
             console.log('getPickerSortData success');
             this.pickerSortingList = res;
@@ -1026,9 +1029,14 @@ export class PPSI210Component implements AfterViewInit {
     this.isVisibleSelPlanSet = true;
     this.planSetLoading = true;
     let myObj = this;
-    this.getPPSService.getPlanSetData().subscribe((res) => {
+    this.getPPSService.getPlanSetData(this.plant).subscribe((res) => {
       // 取規劃策略
       console.log('getPlanSetData success');
+      if(res.length <= 0){
+        this.message.success(`目前${this.plant}尚無任何規劃策略內容`)
+        myObj.planSetLoading = false;
+        return;
+      }
       this.planSetDataList = res;
       myObj.planSetLoading = false;
     });
@@ -1441,6 +1449,7 @@ export class PPSI210Component implements AfterViewInit {
         SETNAME: setname,
         AJValue: this.AJValue,
         MOValue: this.MOValue,
+        plant : this.plant,
         cellValue: this.cellValue,
         nextshopValue: this.nextshopValue,
         machineValue: this.machineValue,
@@ -1691,6 +1700,7 @@ export class PPSI210Component implements AfterViewInit {
         SETNAME: setname,
         AJValue: this.AJValue,
         MOValue: this.MOValue,
+        plant: this.plant,
         cellValue: this.cellValue,
         nextshopValue: this.nextshopValue,
         machineValue: this.machineValue,

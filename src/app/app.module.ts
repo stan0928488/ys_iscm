@@ -87,7 +87,7 @@ import { PPSI204_NonBarComponent } from './pages/PPS/PPSI204_NonBar/PPSI204_NonB
 import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
 import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
-import { PPSI210Component } from './pages/PPS/PPSI210/PPSI210.component';
+import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
 import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
@@ -126,14 +126,17 @@ import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
 import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
-import { OpenSortRendererComponent } from './pages/PPS/PPSI210/open-sort-renderer-component';
-import { SendChoiceRendererComponent } from './pages/PPS/PPSI210/send-choice-renderer-component';
+import { OpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/open-sort-renderer-component';
+import { SendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/send-choice-renderer-component';
+import { PPSI210RefiningOpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-sort-renderer-component';
+import { PPSI210RefiningSendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/send-choice-renderer-component';
 import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
-import { OpenMachineRendererComponent } from './pages/PPS/PPSI210/open-machine-renderer-component';
+import { OpenMachineRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/open-machine-renderer-component';
+import { PPSI210RefiningOpenMachineRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-machine-renderer-component';
 import { AutoCampaignUpdateSaveCellRenderer } from './pages/PPS/PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
 import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
@@ -181,6 +184,8 @@ import { Pomp001ActionBtnCellRenderer } from './pages/POM/pomp001/pomp001-action
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
+import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_TabMenu.component';
+import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 
 registerLocaleData(zh);
 
@@ -246,6 +251,7 @@ registerLocaleData(zh);
     PPSI205_100Component,
     PPSI205_401Component,
     PPSI210Component,
+    PPSI210RefiningComponent,
     PPSI220Component,
     PPSI230Component,
     PPSR301Component,
@@ -281,6 +287,9 @@ registerLocaleData(zh);
     OpenSortRendererComponent,
     OpenMachineRendererComponent,
     SendChoiceRendererComponent,
+    PPSI210RefiningOpenSortRendererComponent,
+    PPSI210RefiningOpenMachineRendererComponent,
+    PPSI210RefiningSendChoiceRendererComponent,
     PPSI112Component,
     BtnCellRendererUpdate,
     SummaryDatePickerCellEditorComponent,
@@ -331,6 +340,7 @@ registerLocaleData(zh);
     PPSR313Component,
     PPSR322Child8Component,
     PPSR322Child9Component,
+    PPSI210TabMenuComponent,
   ],
   imports: [
     BrowserModule,

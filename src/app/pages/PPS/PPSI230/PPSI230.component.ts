@@ -10,7 +10,7 @@ import * as moment from 'moment';
 
 import * as _ from "lodash";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { OpenMachineRendererComponent } from "../PPSI210/open-machine-renderer-component";
+import { OpenMachineRendererComponent } from "../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 import { firstValueFrom } from "rxjs";
 
 @Component({
