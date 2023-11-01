@@ -760,21 +760,21 @@ export class PPSService {
   //Get getOrignListData 建立規劃策略
   getOrignListData() {
     console.log('api service getOrignListData');
-    let queryUrl = this.APIURL + '/FCP/I201/getOrignListData';
+    let queryUrl = this.APINEWURL + '/FCP/I201/getOrignListData';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   getPickerShopEQUIPNEW(_type, _ShopArr) {
     console.log('api service getPickerShopEQUIP');
     let queryUrl =
-      this.APIURL + `/FCP/I201/getPickerShopEQUIPNEW/${_type}/${_ShopArr}`;
+      this.APINEWURL + `/FCP/I201/getPickerShopEQUIPNEW/${_type}/${_ShopArr}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   getSetShopEQUIP(_data) {
     console.log('api service getSetShopEQUIP');
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/I201/getSetShopEQUIP';
+    let queryUrl = this.APINEWURL + '/FCP/I201/getSetShopEQUIP';
     console.log(queryUrl);
     console.log(body);
 
@@ -783,7 +783,7 @@ export class PPSService {
   //保存排序數據
   saveSortData(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/I201/saveSortData';
+    let queryUrl = this.APINEWURL + '/FCP/I201/saveSortData';
     console.log(queryUrl);
     console.log(body);
 
@@ -792,7 +792,7 @@ export class PPSService {
   //修改排序數據
   editSortData(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/I201/editSortData';
+    let queryUrl = this.APINEWURL + '/FCP/I201/editSortData';
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -800,7 +800,7 @@ export class PPSService {
   //刪除排序數據
   deleteSortData(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/I201/deleteSortData';
+    let queryUrl = this.APINEWURL + '/FCP/I201/deleteSortData';
     console.log(queryUrl);
     console.log(body);
 
