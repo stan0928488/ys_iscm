@@ -1,8 +1,8 @@
 <nz-content style="margin:0 16px;">
-  <nz-breadcrumb style="margin:16px 0;">
+  <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
     <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
     <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
-    <nz-breadcrumb-item><font size="4">生產規劃執行(PPSI230)</font></nz-breadcrumb-item>
+    <nz-breadcrumb-item>生產規劃執行(PPSI230)</nz-breadcrumb-item>
   </nz-breadcrumb>
 
 
@@ -10,15 +10,15 @@
 
     <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
 
-    <table>
+    <table width="100%">
       <tr style="height: 30px;">
-        <td style="width: 50px; text-align:right; background-color: rgb(138, 236, 230); border-bottom: 1px rgb(138, 236, 230) ridge; font-size: 14px;" colspan="2">資料與策略</td>
-        <td style="width: 120px; text-align:center; background-color: rgb(138, 236, 230);" rowspan = "2">規劃案版本：{{PLAN_EDITION}}</td>
-        <td style="width: 250px; text-align:center; background-color: rgb(138, 236, 230);" rowspan = "2">執行狀態</td>
+        <td style="width: 50px; text-align:right; background-color: #3689c0; border-bottom: 1px #3689c0 ridge; font-size: 14px;" colspan="2">資料與策略</td>
+        <td style="width: 120px; text-align:center; background-color: #3689c0;" rowspan = "2">規劃案版本：{{PLAN_EDITION}}</td>
+        <td style="width: 250px; text-align:center; background-color: #3689c0;" rowspan = "2">執行狀態</td>
       </tr>
 
       <tr style="height: 30px;">
-        <td style="width: 80px; text-align:left; background-color: rgb(138, 236, 230); border-top: 1px rgb(138, 236, 230) ridge; font-size: 14px;" colspan="2">&nbsp;&nbsp;版本</td>
+        <td style="width: 80px; text-align:left; background-color: #3689c0; border-top: 1px #3689c0 ridge; font-size: 14px;" colspan="2">&nbsp;&nbsp;版本</td>
       </tr>
 
       <tr style="height: 50px;">
@@ -26,22 +26,22 @@
         <td style="width: 120px;">&nbsp;&nbsp;{{PLAN_STATU_NA}}</td>
         <td style="width: 250px; vertical-align:text-top; font-size: 18px;" rowspan = "12">
           <p></p>
-          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;生產規劃啟動： {{ PLANSTARTVER }}</p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;生產規劃啟動： {{ PLANSTARTVER }}</p>
           <p *ngIf = "RES_S != 'OK' && RES_S != ''">&nbsp;&nbsp;失敗：{{ RES_S }}<p>
           <nz-progress [nzPercent]="S_PENT"></nz-progress>
 
           <p></p>
-          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;取 MO 資料： {{ MOVER }}</p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;取 MO 資料： {{ MOVER }}</p>
           <p *ngIf = "RES_M != 'OK' && RES_M != ''">&nbsp;&nbsp;失敗：{{ RES_M }}<p>
           <nz-progress [nzPercent]="M_PENT"></nz-progress>
 
           <p></p>
-          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;工時計算： {{ DATAVER }}</p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;工時計算： {{ DATAVER }}</p>
           <p *ngIf = "RES_I != 'OK' && RES_I != ''">&nbsp;&nbsp;失敗：{{ RES_I }}<p>
           <nz-progress [nzPercent]="I_PENT"></nz-progress>
 
           <p></p>
-          <p style="font-size: 16px; color:#e98644;">&nbsp;&nbsp;ICP&FCP 計算： {{ FCPVER }}
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;ICP&FCP 計算： {{ FCPVER }}
             <p style="font-weight: bold; color: #2638db;" *ngIf = "RES_F != 'OK' && RES_F != ''">&nbsp;&nbsp;失敗：{{ RES_F }}<p>
             <nz-progress [nzPercent]="F_PENT"></nz-progress>
           </p>
@@ -109,14 +109,14 @@
   [nzTitle]="shopSortTitle"
   [nzContent]="shopSortContent"
   [nzFooter]="null"
-  [nzWidth]="1000"
+  [nzWidth]="1400"
   (nzOnCancel)="handleCancel()"
 >
   <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
   <ng-template #shopSortContent>
     <nz-spin style="z-index:9999;" nzTip="站別優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "shopSortLoading">
       <ag-grid-angular
-          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          style="width:100%; height: 550px"
           class="ag-theme-alpine ag-theme-PPSI230-custom"
           [rowData]="ShopSortingList"
           [columnDefs]="shopSortingColumnDefs"
@@ -137,13 +137,13 @@
   [nzContent]="MachineSortContent"
   [nzFooter]="null"
   (nzOnCancel)="handleCancel_M()"
-  [nzWidth]="1000"
+  [nzWidth]="1300"
 >
   <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
   <ng-template #MachineSortContent>
     <nz-spin style="z-index:9999;" nzTip="站別機台優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "machineSortLoading">
       <ag-grid-angular
-          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          style="width:100%; height:450px;"
           class="ag-theme-alpine ag-theme-PPSI230-custom"
           [rowData]="MachineSortingList"
           [columnDefs]="machineSortingColumnDefs"
