@@ -2385,7 +2385,7 @@ export class PPSService {
 
   findAllDetail04(shiftEdition: string) {
     const httpParams = new HttpParams().set('shiftEdition', shiftEdition);
-    console.log('Api Service 查詢「頭份預計回廠尺寸」資料');
+    console.log('Api Service 查詢「頭份尺寸對照設定」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/findAllDetail04`;
     // console.log(`Api Service 查詢「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
     // console.log(`Api Service 查詢「頭份預計回廠尺寸」資料 參數 -> ${shiftEdition}`);
@@ -2393,7 +2393,7 @@ export class PPSService {
   }
 
   insertDetail04(rowData: any) {
-    console.log('Api Service 新增「頭份預計回廠尺寸」資料');
+    console.log('Api Service 新增「頭份尺寸對照設定」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/insertDetail04`;
     // console.log(`Api Service 新增「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
     // console.log(`Api Service 新增「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
@@ -2401,7 +2401,7 @@ export class PPSService {
   }
 
   updateDetail04ByPk(rowData: any) {
-    console.log('Api Service 更新「頭份預計回廠尺寸」資料');
+    console.log('Api Service 更新「頭份尺寸對照設定」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/updateDetail04ByPk`;
     // console.log(`Api Service 更新「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
     // console.log(`Api Service 更新「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
@@ -2409,7 +2409,7 @@ export class PPSService {
   }
 
   deleteDetail04ByPk(rowData: any) {
-    console.log('Api Service 刪除「頭份預計回廠尺寸」資料');
+    console.log('Api Service 刪除「頭份尺寸對照設定」資料');
     const queryUrl = `${this.APINEWURL}/FCP/C321/deleteDetail04ByPk`;
     // console.log(`Api Service 刪除「頭份預計回廠尺寸」資料 url -> ${queryUrl}`);
     // console.log(`Api Service 刪除「頭份預計回廠尺寸」資料 參數 -> ${JSON.stringify(rowData)}`);
@@ -2417,6 +2417,12 @@ export class PPSService {
       headers: this.httpOptions.headers,
       body: rowData,
     });
+  }
+
+  batchInsertDetail04(rowDataList: any) {
+    console.log('Api Service 批次匯入「頭份尺寸對照設定」資料');
+    const queryUrl = `${this.APINEWURL}/FCP/C321/batchInsertDetail04`;
+    return this.http.post(queryUrl, rowDataList, this.httpOptions);
   }
 
   getDetail03ByCondition(shiftEdition: string, masterType: string) {

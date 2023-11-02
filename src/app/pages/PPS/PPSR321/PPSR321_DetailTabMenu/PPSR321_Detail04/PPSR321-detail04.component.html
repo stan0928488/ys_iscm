@@ -5,6 +5,7 @@
         <div class="container">
 
             <div class="btn">
+
                 <button
                     nz-button 
                     class="addBtn"
@@ -13,6 +14,31 @@
                     <span nz-icon nzType="file-add" nzTheme="outline"></span>
                     新增
                 </button>
+
+               
+                <div style="margin-left:auto;">
+
+                      <!-- 匯入EXCEL功能 -->
+                    <input style="width:180px;" type="file" name="file" id="importExcelFile" required (change)="incomingFile($event)"
+                            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                
+                    <button
+                        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color:#4CAF50; border:2px none;"
+                        nz-button
+                        nzType="primary"
+                        (click)="handleImport()">
+                        <span nz-icon nzType="upload" nzTheme="outline"></span>EXCEL匯入
+                    </button>
+
+                    <!-- 匯出EXCEL功能 -->
+                    <button
+                        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); margin-left:20px; background-color:#4CAF50; border:2px none;"
+                        nz-button
+                        nzType="primary"
+                        (click)="exportExcel()">
+                        <span nz-icon nzType="download" nzTheme="outline"></span>EXCEL匯出
+                    </button>
+                </div>
             </div>
 
             <nz-table

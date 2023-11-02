@@ -16,4 +16,5 @@
     margin-bottom: 10px;
     width: 850px;
     text-align: left;
+    display: flex;
 }
