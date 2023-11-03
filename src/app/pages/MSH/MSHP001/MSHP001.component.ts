@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MSHService } from 'src/app/services/MSH/MSH.service';
 import {NzMessageService} from "ng-zorro-antd/message";
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { cloneDeep } from 'lodash';
 import { ColDef, GetRowIdFunc, GetRowIdParams ,
   ColumnApi,
   GridApi,
@@ -13,6 +14,8 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   GridOptions
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
+import { CellDoubleClickedEvent } from 'ag-grid-community/dist/lib/events';
+
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
@@ -248,6 +251,9 @@ handleStatisticModal(){
 // 換車標識
 // 1 更換作業代碼 換車 
 changeCarFlag = '1' ;
+
+//移除當前子項頁
+moveFlag = false ;
 
 
  /**同作業換車開始 */
@@ -659,8 +665,9 @@ this.handleSelectCarModal() ;
       } */
       },
       onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
+      onCellDoubleClicked: (event: CellClickedEvent<any>) => {this.onCellDoubleClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
-      onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
+      onRowDoubleClicked : (event:RowDoubleClickedEvent<any>) => {
         this.doubleClickConfigCar(event) ;
       }
     }
@@ -754,9 +761,11 @@ this.handleSelectCarModal() ;
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
   onCellClicked(event:any){
-    console.log("cellClick :" + event.value )
+    console.log("cellClick :" +event.colDef.field )
     if(event.colDef.field === 'ID_NO') {
       this.copy(event.value) ;
+    } else if(event.colDef.field === 'sortId') {
+      console.log("click ID")
     }
    
   }
@@ -801,11 +810,58 @@ this.handleSelectCarModal() ;
     })
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
+     if(this.rowSelectData.length > 1 ){
+      this.moveFlag = true ;
+     }
 
   }
+ //子層雙擊
+  onCellDoubleClicked(event) {
+     if(event.colDef.field === 'sortId') {
+          console.log("double click ：" + event.value)
+        }
+  }
 
-  doubleClickConfigCar(row) {
-    console.log(row) ;
+  //子層獲取check欄位
+  getSelectedRows() {
+     const selectedNodes = this.gridOptionsModal.api.getSelectedNodes();
+     const selectedData = selectedNodes.map(node => node.data);
+     if(this.rowSelectData.length === selectedData.length) {
+      this.nzMessageService.error("無法全部移出，請重新選擇！")
+      return
+      } else if (selectedData.length === 0){
+       this.nzMessageService.error("至少選擇一筆，請重新選擇！")
+       return
+      }
+      const ids = this.rowData[this.selectRowIndex].sortId
+      let originalSortIds: any[] = ids.split(',') ;
+      let newSortIds: any[] = [] ;
+      selectedData.forEach((item,index,array)=>{
+        newSortIds.push(item.sortId) ;
+      })
+      let resultArray: any[] = originalSortIds.filter(item => ! newSortIds.includes(item));
+      console.log('原來 ids ', ids);
+      console.log('新的 ids ', newSortIds.join(','));
+      console.log('過濾重複 ids ', resultArray.join(','));
+      //先將要更改的Row提出來
+      let newRow = cloneDeep(this.rowData[this.selectRowIndex])
+      newRow.sortId = newSortIds.join(',') ;
+      console.log("newRow" + JSON.stringify(newRow)) 
+      this.rowData[this.selectRowIndex].sortId = resultArray.join(',') ;
+      console.log("this.rowData[this.selectRowIndex] :" + JSON.stringify(this.rowData[this.selectRowIndex]))
+      this.rowData.unshift(newRow) ;
+      console.log("this.rowData" + JSON.stringify(this.rowData)) 
+      this.gridOptions.api.setRowData(this.rowData);
+      this.handleChangeModal();
+  }
+
+  doubleClickConfigCar(event) {
+    //console.log(row) ;
+    // if(event.colDef.field === 'ID_NO') {
+    //   this.copy(event.value) ;
+    // } else if(event.colDef.field === 'sortId') {
+    //   console.log("click ID")
+    // }
   }
   onChangeStartDate(result): void {
     console.log('onChange: ', result);
@@ -819,6 +875,7 @@ this.handleSelectCarModal() ;
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
     this.selectRowIndex = -1 ;
+    this.moveFlag = false ;
   }
 
   handleChangeRowDataModal(){
@@ -1156,6 +1213,11 @@ this.handleSelectCarModal() ;
       this.columKeyType = {} ;
      
       if(this.allColumList.length > 0) {
+        //選擇
+        let checkRow = {headerName:'選擇',field:'checked',rowDrag: false,resizable:true,width:50, minWidth: 30,
+        checkboxSelection: true }
+        this.columnDefs.push(checkRow);
+
         let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
