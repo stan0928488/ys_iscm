@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MSHService } from 'src/app/services/MSH/MSH.service';
 import {NzMessageService} from "ng-zorro-antd/message";
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { cloneDeep } from 'lodash';
 import { ColDef, GetRowIdFunc, GetRowIdParams ,
   ColumnApi,
   GridApi,
@@ -13,6 +14,8 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   GridOptions
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
+import { CellDoubleClickedEvent } from 'ag-grid-community/dist/lib/events';
+
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { isDataSource } from '@angular/cdk/collections';
@@ -248,6 +251,9 @@ handleStatisticModal(){
 // 換車標識
 // 1 更換作業代碼 換車 
 changeCarFlag = '1' ;
+
+//移除當前子項頁
+moveFlag = false ;
 
 
  /**同作業換車開始 */
@@ -523,6 +529,10 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
+        // 如果是移出分群的，反顏色
+        if(params.data["colorValue"] === "1"){
+          return  { background: '#C0FF3E' }; // 移出分群反顏色
+        }
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") { // EPST修正
           if(params.data["COLORFLAG"].toString() === '1') {
             return  { background: '#FF00FF' }; // 搜索反顏色
@@ -659,8 +669,9 @@ this.handleSelectCarModal() ;
       } */
       },
       onCellClicked: (event: CellClickedEvent<any>) => {this.onCellClicked(event)},
+      onCellDoubleClicked: (event: CellClickedEvent<any>) => {this.onCellDoubleClicked(event)},
       onRowDragEnd: (event: RowDragEndEvent ) => {this.onRowDragEndModal(event);},
-      onRowDoubleClicked : (event:RowDoubleClickedEvent) => {
+      onRowDoubleClicked : (event:RowDoubleClickedEvent<any>) => {
         this.doubleClickConfigCar(event) ;
       }
     }
@@ -754,9 +765,11 @@ this.handleSelectCarModal() ;
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
   onCellClicked(event:any){
-    console.log("cellClick :" + event.value )
+    console.log("cellClick :" +event.colDef.field )
     if(event.colDef.field === 'ID_NO') {
       this.copy(event.value) ;
+    } else if(event.colDef.field === 'sortId') {
+      console.log("click ID")
     }
    
   }
@@ -801,11 +814,62 @@ this.handleSelectCarModal() ;
     })
    //  console.log(this.rowSelectData )
      this.modalTableVisible = true ;
+     if(this.rowSelectData.length > 1 ){
+      this.moveFlag = true ;
+     }
 
   }
+ //子層雙擊
+  onCellDoubleClicked(event) {
+     if(event.colDef.field === 'sortId') {
+          console.log("double click ：" + event.value)
+        }
+  }
 
-  doubleClickConfigCar(row) {
-    console.log(row) ;
+  //子層獲取check欄位
+  getSelectedRows() {
+     const selectedNodes = this.gridOptionsModal.api.getSelectedNodes();
+     const selectedData = selectedNodes.map(node => node.data);
+     if(this.rowSelectData.length === selectedData.length) {
+      this.nzMessageService.error("無法全部移出，請重新選擇！")
+      return
+      } else if (selectedData.length === 0){
+       this.nzMessageService.error("至少選擇一筆，請重新選擇！")
+       return
+      }
+      const ids = this.rowData[this.selectRowIndex].sortId
+      let originalSortIds: any[] = ids.split(',') ;
+      let newSortIds: any[] = [] ;
+      let groupWeight = 0 ;
+      selectedData.forEach((item,index,array)=>{
+        groupWeight = groupWeight + item.PLAN_WEIGHT_I ;
+        newSortIds.push(item.sortId) ;
+      })
+      let resultArray: any[] = originalSortIds.filter(item => ! newSortIds.includes(item));
+      console.log('原來 ids ', ids);
+      console.log('新的 ids ', newSortIds.join(','));
+      console.log('過濾重複 ids ', resultArray.join(','));
+      //先將要更改的Row提出來
+      let newRow = cloneDeep(this.rowData[this.selectRowIndex])
+      newRow.sortId = newSortIds.join(',') ;
+      newRow.colorValue = '1' ; // 設定移出分群反顏色
+      newRow.PLAN_WEIGHT_I = groupWeight ; 
+      console.log("newRow" + JSON.stringify(newRow)) 
+      this.rowData[this.selectRowIndex].sortId = resultArray.join(',') ;
+      console.log("this.rowData[this.selectRowIndex] :" + JSON.stringify(this.rowData[this.selectRowIndex]))
+      this.rowData.unshift(newRow) ;
+      console.log("this.rowData" + JSON.stringify(this.rowData)) 
+      this.gridOptions.api.setRowData(this.rowData);
+      this.handleChangeModal();
+  }
+
+  doubleClickConfigCar(event) {
+    //console.log(row) ;
+    // if(event.colDef.field === 'ID_NO') {
+    //   this.copy(event.value) ;
+    // } else if(event.colDef.field === 'sortId') {
+    //   console.log("click ID")
+    // }
   }
   onChangeStartDate(result): void {
     console.log('onChange: ', result);
@@ -819,6 +883,7 @@ this.handleSelectCarModal() ;
   handleChangeModal(){
     this.modalTableVisible = !this.modalTableVisible ;
     this.selectRowIndex = -1 ;
+    this.moveFlag = false ;
   }
 
   handleChangeRowDataModal(){
@@ -934,7 +999,7 @@ this.handleSelectCarModal() ;
       let value1 = item1.columLabel ;
       if(this.groupArray.includes(key1)) {
         console.log("find key key :" + key1) 
-        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:80,hide: false ,filter: true }
+        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:100,hide: false ,filter: true }
         statisticHeaderColumnDefsTemp.push(header) ;
       }
     })
@@ -1156,6 +1221,16 @@ this.handleSelectCarModal() ;
       this.columKeyType = {} ;
      
       if(this.allColumList.length > 0) {
+        // 移出分群反顏色
+        let colorValue = {headerName:'colorValue',field:'colorValue',rowDrag: false,resizable:true,width:50, hide: true }
+        exportHeader.push("移出反色")
+        this.outsideColumnDefs.push(colorValue);
+        this.columKeyType["colorValue"] = 0 ;
+        //選擇
+        let checkRow = {headerName:'選擇',field:'checked',rowDrag: false,resizable:true,width:50, minWidth: 30,
+        checkboxSelection: true }
+        this.columnDefs.push(checkRow);
+
         let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
@@ -1169,14 +1244,15 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header' }
         exportHeader.push("開始")
-        this.columnDefs.push(index3);
-        this.outsideColumnDefs.push(index3);
+        this.columnDefs.push(index3_2);
+        this.outsideColumnDefs.push(index3_1);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:30,headerClass: 'custom-header' }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header' }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
@@ -1325,12 +1401,11 @@ this.handleSelectCarModal() ;
        //数据类型
        this.columKeyType["SALE_ORDER_ITEM_ADD"] = 0 ;
 
-
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110 ,filter: true}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1338,7 +1413,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110,filter: true }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {

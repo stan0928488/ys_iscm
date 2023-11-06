@@ -20,7 +20,7 @@
           </nz-select>
          
           <nz-date-picker style="margin-left: 20px;" [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
-          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" ></nz-date-picker>
+          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" [nzAllowClear] = 'false'   ></nz-date-picker>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()" [nzLoading] = "isLoading">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
           <button style="margin-left: 20px;" nz-button nzType="primary"  *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'"  (click)="handleExcelModelModal()">Excel模式</button>
@@ -175,6 +175,7 @@
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'BA1'"  (click)="ChangeCarModalBA1()">換車</button>
 
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && (selectEquipCode !== 'RF')"  (click)="handleChangeMachineModal()">更換機台</button>
+      <button  nz-button style="float:left;margin-left:5px;background-color: #e24d42; border-color: #e24d42;  color: #fff;" *ngIf="moveFlag === true &&( selectEquipCode != 'RF' && selectEquipCode != 'BA1' ) "   nzType="primary"  (click)="getSelectedRows()">移出分群</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 
