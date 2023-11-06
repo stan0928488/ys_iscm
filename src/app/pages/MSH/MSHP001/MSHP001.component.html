@@ -175,7 +175,7 @@
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && selectEquipCode === 'BA1'"  (click)="ChangeCarModalBA1()">換車</button>
 
       <button style="float:left" nz-button nzType="primary"  *ngIf=" selectFcpVerObj.fcpLockStatus ==='1' && (selectEquipCode !== 'RF')"  (click)="handleChangeMachineModal()">更換機台</button>
-      <button  nz-button style="float:left;margin-left:5px;background-color: #e24d42; border-color: #e24d42;  color: #fff;" *ngIf="moveFlag === true  "   nzType="primary"  (click)="getSelectedRows()">移出分群</button>
+      <button  nz-button style="float:left;margin-left:5px;background-color: #e24d42; border-color: #e24d42;  color: #fff;" *ngIf="moveFlag === true &&( selectEquipCode != 'RF' && selectEquipCode != 'BA1' ) "   nzType="primary"  (click)="getSelectedRows()">移出分群</button>
 
       <!-- <button style="float:left" nz-button nzType="primary" (click)="queryBtn()">更换機台</button> -->
 

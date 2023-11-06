@@ -529,6 +529,10 @@ this.handleSelectCarModal() ;
       rowDragManaged: true,     
       animateRows: true, 
       getRowStyle(params) {
+        // 如果是移出分群的，反顏色
+        if(params.data["colorValue"] === "1"){
+          return  { background: '#C0FF3E' }; // 移出分群反顏色
+        }
         if(params.data["TIMEDIFFFLAG_ADD"] === "1") { // EPST修正
           if(params.data["COLORFLAG"].toString() === '1') {
             return  { background: '#FF00FF' }; // 搜索反顏色
@@ -846,6 +850,7 @@ this.handleSelectCarModal() ;
       //先將要更改的Row提出來
       let newRow = cloneDeep(this.rowData[this.selectRowIndex])
       newRow.sortId = newSortIds.join(',') ;
+      newRow.colorValue = '1' ; // 設定移出分群反顏色
       console.log("newRow" + JSON.stringify(newRow)) 
       this.rowData[this.selectRowIndex].sortId = resultArray.join(',') ;
       console.log("this.rowData[this.selectRowIndex] :" + JSON.stringify(this.rowData[this.selectRowIndex]))
@@ -991,7 +996,7 @@ this.handleSelectCarModal() ;
       let value1 = item1.columLabel ;
       if(this.groupArray.includes(key1)) {
         console.log("find key key :" + key1) 
-        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:80,hide: false ,filter: true }
+        let header = {headerName:value1,field:key1,rowDrag: false,resizable:true,width:100,hide: false ,filter: true }
         statisticHeaderColumnDefsTemp.push(header) ;
       }
     })
@@ -1213,6 +1218,10 @@ this.handleSelectCarModal() ;
       this.columKeyType = {} ;
      
       if(this.allColumList.length > 0) {
+        // 移出分群反顏色
+        let colorValue = {headerName:'colorValue',field:'colorValue',rowDrag: false,resizable:true,width:50, hide: true }
+        this.outsideColumnDefs.push(colorValue);
+        this.columKeyType["colorValue"] = 0 ;
         //選擇
         let checkRow = {headerName:'選擇',field:'checked',rowDrag: false,resizable:true,width:50, minWidth: 30,
         checkboxSelection: true }
@@ -1238,7 +1247,7 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:30,headerClass: 'custom-header' }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header' }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
@@ -1392,7 +1401,7 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110 ,filter: true}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1400,7 +1409,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:90,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110,filter: true }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
