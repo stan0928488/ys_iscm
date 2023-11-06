@@ -840,7 +840,9 @@ this.handleSelectCarModal() ;
       const ids = this.rowData[this.selectRowIndex].sortId
       let originalSortIds: any[] = ids.split(',') ;
       let newSortIds: any[] = [] ;
+      let groupWeight = 0 ;
       selectedData.forEach((item,index,array)=>{
+        groupWeight = groupWeight + item.PLAN_WEIGHT_I ;
         newSortIds.push(item.sortId) ;
       })
       let resultArray: any[] = originalSortIds.filter(item => ! newSortIds.includes(item));
@@ -851,6 +853,7 @@ this.handleSelectCarModal() ;
       let newRow = cloneDeep(this.rowData[this.selectRowIndex])
       newRow.sortId = newSortIds.join(',') ;
       newRow.colorValue = '1' ; // 設定移出分群反顏色
+      newRow.PLAN_WEIGHT_I = groupWeight ; 
       console.log("newRow" + JSON.stringify(newRow)) 
       this.rowData[this.selectRowIndex].sortId = resultArray.join(',') ;
       console.log("this.rowData[this.selectRowIndex] :" + JSON.stringify(this.rowData[this.selectRowIndex]))
