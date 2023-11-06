@@ -279,7 +279,7 @@ export class PPSI230Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getLogPlanData("N", "N").subscribe(res => {
       console.log("getLogPlanData success");
-      this.planListData = res;
+      this.planListData = res.data;
       console.log(" ------ res ------ ");
       console.log(res);
       console.log(" ------ res ------ ");
@@ -299,7 +299,7 @@ export class PPSI230Component implements AfterViewInit {
 
         this.getPPSService.getStartLogData(this.planListData[0].STARTRUN_TIME, this.planListData[0].PLAN_EDITION).subscribe(res => {
           console.log("getStartLogData success");
-          this.StartLogList = res;
+          this.StartLogList = res.data;
           this.PLANSTARTVER = this.StartLogList[0].PLANSTARTVER;
           this.MOVER = this.StartLogList[0].MOVER;
           this.DATAVER = this.StartLogList[0].DATAVER;
@@ -340,7 +340,7 @@ export class PPSI230Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopMachineSortingList('Q', _planset).subscribe(res => {
       console.log("getShopMachineSortingList success");
-      this.tmpArr = res;
+      this.tmpArr = res.data;
       if (this.tmpArr.length > 0) {
         var newSchShopCode = this.tmpArr.filter(function(item, index, arr) {    // 排除重複資料
           return item.SCH_SHOP_CODE_D2 === _shopcode;
@@ -371,10 +371,10 @@ export class PPSI230Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(res => {
       console.log("getShopSortingList success");
-      res.forEach(item => {
-        item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
+      res.data.forEach(item => {
+        item.MO_SORT = _.isNil(item.MO_SORT) ? 'null_string' : item.MO_SORT;
       })
-      this.ShopSortingList = res;
+      this.ShopSortingList = res.data;
       myObj.shopSortLoading = false;
     });
   }
@@ -400,7 +400,7 @@ export class PPSI230Component implements AfterViewInit {
       const resObservable$ = this.getPPSService.getMoSort();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取平衡設定選項資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`

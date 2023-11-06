@@ -1213,7 +1213,7 @@ export class PPSService {
     // _type: I-210新增；Q-其他所有查詢
     console.log('api service getShopSortingList');
     let queryUrl =
-      this.APIURL + `/FCP/I210/getShopSortingList/${_type}/${_value}`;
+      this.APINEWURL + `/FCP/I230/getShopSortingList/${_type}/${_value}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }
@@ -1222,9 +1222,9 @@ export class PPSService {
     // _type: I-210新增；Q-其他所有查詢
     console.log('api service getShopMachineSortingList');
     let queryUrl =
-      this.APIURL + `/FCP/I210/getShopMachineSortingList/${_type}/${_value}`;
+      this.APINEWURL + `/FCP/I230/getShopMachineSortingList/${_type}/${_value}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
 
   // 刪除某筆規劃策略
@@ -1241,7 +1241,7 @@ export class PPSService {
   // 獲取MO站別搬移順序選項
   getMoSort() {
     console.log('api service 獲取MO站別搬移順序選項');
-    const queryUrl = this.APIURL + `/FCP/I210/getMoSort`;
+    const queryUrl = this.APINEWURL + `/FCP/I230/getMoSort`;
     console.log(`獲取MO站別搬移順序選項API --> ${queryUrl}`);
     console.log(`刪除策略API參數 --> 無`);
     return this.http.get(queryUrl);
@@ -1426,17 +1426,17 @@ export class PPSService {
   getLogPlanData(_startrun, _plan) {
     console.log('api service getLogPlanData');
     let queryUrl =
-      this.APIURL + `/FCP/I230/getLogPlanData/${_startrun}/${_plan}`;
+      this.APINEWURL + `/FCP/I230/getLogPlanData/${_startrun}/${_plan}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //Get getStartLogData 規劃案執行log
   getStartLogData(_startrun, _planver) {
     console.log('api service getStartLogData');
     let queryUrl =
-      this.APIURL + `/FCP/I230/getStartLogData/${_startrun}/${_planver}`;
+      this.APINEWURL + `/FCP/I230/getStartLogData/${_startrun}/${_planver}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
 
   //getICPMOVerList (共用)

@@ -869,7 +869,7 @@ export class PPSI210Component implements AfterViewInit {
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', 1).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -914,7 +914,7 @@ export class PPSI210Component implements AfterViewInit {
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', 2).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
       console.log(res);
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
@@ -1067,7 +1067,7 @@ export class PPSI210Component implements AfterViewInit {
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', data.SEQNO).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -1077,7 +1077,7 @@ export class PPSI210Component implements AfterViewInit {
         var REQUIREMENT = this.pickerShopList[i].REQUIREMENT;
         const ISCOMBINE = this.pickerShopList[i].ISCOMBINE;
         const COMBINE_RANGE = this.pickerShopList[i].COMBINE_RANGE;
-        const MO_SORT = this.pickerShopList[i].MO_SORT === undefined ? 'null_string' : this.pickerShopList[i].MO_SORT;
+        const MO_SORT = _.isNil(this.pickerShopList[i].MO_SORT) ? 'null_string' : this.pickerShopList[i].MO_SORT;
         const OFFLOAD_DATE_START = _.isNil(this.pickerShopList[i].OFFLOAD_DATE_START) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE_START, 'YYYY-MM-DD').toDate();
         const OFFLOAD_DATE_END = _.isNil(this.pickerShopList[i].OFFLOAD_DATE_END) ? null : moment(this.pickerShopList[i].OFFLOAD_DATE_END, 'YYYY-MM-DD').toDate();
         const isOffloadStartDateDisabled =  this.pickerShopList[i].isOffloadStartDateDisabled;
@@ -1131,7 +1131,7 @@ export class PPSI210Component implements AfterViewInit {
       .getShopMachineSortingList('I', _planset)
       .subscribe((res) => {
         console.log('getShopMachineSortingList success');
-        this.machienList = res;
+        this.machienList = res.data;
         console.log(res);
         let initdata = [];
         for (let i = 0; i < this.machienList.length; i++) {
@@ -1169,9 +1169,9 @@ export class PPSI210Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(async (res) => {
       console.log('getShopSortingList success');
-      this.ShopSortingList = res;
+      this.ShopSortingList = res.data;
       this.ShopSortingList.forEach(item => {
-        item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
+        item.MO_SORT = _.isNil(item.MO_SORT) ? 'null_string' : item.MO_SORT;
       });
       myObj.shopSortLoading = false;
     });
@@ -1205,7 +1205,7 @@ export class PPSI210Component implements AfterViewInit {
       .getShopMachineSortingList('Q', _planset)
       .subscribe((res) => {
         console.log('getShopMachineSortingList success');
-        this.tmpArr = res;
+        this.tmpArr = res.data;
         if (this.tmpArr.length > 0) {
           var newSchShopCode = this.tmpArr.filter(function (item, index, arr) {
             // 排除重複資料
@@ -1825,7 +1825,7 @@ export class PPSI210Component implements AfterViewInit {
       const resObservable$ = this.getPPSService.getMoSort();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取平衡設定選項資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`

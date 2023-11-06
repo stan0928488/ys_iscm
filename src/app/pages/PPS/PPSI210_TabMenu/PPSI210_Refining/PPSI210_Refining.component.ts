@@ -1131,7 +1131,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       .getShopMachineSortingList('I', _planset)
       .subscribe((res) => {
         console.log('getShopMachineSortingList success');
-        this.machienList = res;
+        this.machienList = res.data;
         console.log(res);
         let initdata = [];
         for (let i = 0; i < this.machienList.length; i++) {
@@ -1205,7 +1205,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       .getShopMachineSortingList('Q', _planset)
       .subscribe((res) => {
         console.log('getShopMachineSortingList success');
-        this.tmpArr = res;
+        this.tmpArr = res.data;
         if (this.tmpArr.length > 0) {
           var newSchShopCode = this.tmpArr.filter(function (item, index, arr) {
             // 排除重複資料
@@ -1825,7 +1825,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       const resObservable$ = this.getPPSService.getMoSort();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取平衡設定選項資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`

@@ -350,10 +350,10 @@ export class PPSI220Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(res => {
       console.log("getShopSortingList success");
-      res.forEach(item => {
-        item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
+      res.data.forEach(item => {
+        item.MO_SORT = _.isNil(item.MO_SORT) ? 'null_string' : item.MO_SORT;
       })
-      this.ShopSortingList = res;
+      this.ShopSortingList = res.data;
       myObj.shopSortLoading = false;
     });
   }
@@ -378,7 +378,7 @@ export class PPSI220Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopMachineSortingList('Q', _planset).subscribe(res => {
       console.log("getShopMachineSortingList success");
-      this.tmpArr = res;
+      this.tmpArr = res.data;
 
       if (this.tmpArr.length > 0) {
         var newSchShopCode = this.tmpArr.filter(function(item, index, arr) {    // 排除重複資料
@@ -1090,7 +1090,7 @@ export class PPSI220Component implements AfterViewInit {
       this.loading = true;
       this.getPPSService.getShopSortingList('Q', data.SEQNO).subscribe(res => {
         console.log("sendchoice : getShopSortingList success");
-        this.ShopSortingList = res;
+        this.ShopSortingList = res.data;
         console.log(this.ShopSortingList)
 
         for(let i=0; i<this.ShopSortingList.length; i++) {
@@ -1718,7 +1718,7 @@ export class PPSI220Component implements AfterViewInit {
       const resObservable$ = this.getPPSService.getMoSort();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取平衡設定選項資料失敗',
           `請聯繫系統工程師。錯誤訊息 : ${res.message}`
