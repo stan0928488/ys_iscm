@@ -764,7 +764,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     console.log("excel匯出查詢數據:" + JSON.stringify(comitParamete));
     myObj.getPPSService.getSetShopEQUIP(comitParamete).subscribe(res => {
       let result: any = res;
-      if (result.code === 1) {
+      if (result.code === 200) {
 
         for (var i = 0; i <= result.data.length; i++) {
           var element = result.data[i];

@@ -1949,7 +1949,7 @@ export class PPSService {
 
   importppsfcptb13TablExcel(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I201/importppsfcptb13TablExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I201/importppsfcptb13TablExcel`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
