@@ -1223,6 +1223,7 @@ this.handleSelectCarModal() ;
       if(this.allColumList.length > 0) {
         // 移出分群反顏色
         let colorValue = {headerName:'colorValue',field:'colorValue',rowDrag: false,resizable:true,width:50, hide: true }
+        exportHeader.push("移出反色")
         this.outsideColumnDefs.push(colorValue);
         this.columKeyType["colorValue"] = 0 ;
         //選擇
@@ -1243,10 +1244,11 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header' }
         exportHeader.push("開始")
-        this.columnDefs.push(index3);
-        this.outsideColumnDefs.push(index3);
+        this.columnDefs.push(index3_2);
+        this.outsideColumnDefs.push(index3_1);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
@@ -1398,7 +1400,6 @@ this.handleSelectCarModal() ;
        this.outsideColumnDefs.push(SALE_ORDER_ITEM_ADD_index);
        //数据类型
        this.columKeyType["SALE_ORDER_ITEM_ADD"] = 0 ;
-
 
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
