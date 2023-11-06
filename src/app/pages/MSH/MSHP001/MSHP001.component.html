@@ -20,7 +20,7 @@
           </nz-select>
          
           <nz-date-picker style="margin-left: 20px;" [(ngModel)]="searchV0.startDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeStartDate($event)" nzDisabled  ></nz-date-picker> -
-          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" ></nz-date-picker>
+          <nz-date-picker [(ngModel)]="searchV0.endDate" [nzFormat]="dateFormat" (ngModelChange)="onChangeEndDate($event)" [nzDisabled] = " selectEquipCode === 'RF'" [nzAllowClear] = 'false'   ></nz-date-picker>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="queryBtn()" [nzLoading] = "isLoading">查詢</button>
           <button style="margin-left: 20px;" nz-button nzType="primary" (click)="exportBtn()">原始EXCEL匯出</button>
           <button style="margin-left: 20px;" nz-button nzType="primary"  *ngIf="selectEquipCode !== 'RF' && selectEquipCode !== 'BA1'"  (click)="handleExcelModelModal()">Excel模式</button>
