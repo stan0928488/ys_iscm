@@ -1388,6 +1388,34 @@ export class PPSService {
     let queryUrl = this.APINEWURL + `/FCP/I220/getFcpEdition?edition=${fcpEdition}`; 
     return this.http.get<any>(queryUrl);
   }
+  
+  //getICPMOVerList (共用)
+  getICPMOVerList() {
+    // let queryUrl = this.APIURL + '/FCP/I220/ICPMOVerList';
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionData`;
+    return this.http.get<any>(queryUrl);
+  }
+
+  //getICPVerList (共用)
+  getICPVerList() {
+    // let queryUrl = this.APIURL + '/FCP/I220/ICPVerList';
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisIcpEditionData`;
+    console.log(queryUrl);
+    return this.http.get<any>(queryUrl);
+  }
+
+  //getPlansetVerList 規劃策略版本-排除目前資料 (共用)
+  getPlansetVerList(_edition) {
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList?edition=${_edition}`;
+    return this.http.get<any>(queryUrl);
+  }
+
+  //getPlanVerList 規劃案執行版本 (共用)
+  getPlanVerList(_flag) {
+    // let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList?flag=${_flag}`;
+    return this.http.get<any>(queryUrl);
+  }
 
   
   // http://ys-webapt1.walsin.com:8080/pps_FCP/rest/toMES/?FCP_Version=F20220714104112
@@ -1418,33 +1446,6 @@ export class PPSService {
     return this.http.get<any>(queryUrl);
   }
 
-  //getICPMOVerList (共用)
-  getICPMOVerList() {
-    // let queryUrl = this.APIURL + '/FCP/I220/ICPMOVerList';
-    let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionData`;
-    return this.http.get<any>(queryUrl);
-  }
-
-  //getICPVerList (共用)
-  getICPVerList() {
-    // let queryUrl = this.APIURL + '/FCP/I220/ICPVerList';
-    let queryUrl = this.APINEWURL + `/FCP/I220/getHisIcpEditionData`;
-    console.log(queryUrl);
-    return this.http.get<any>(queryUrl);
-  }
-
-  //getPlansetVerList 規劃策略版本-排除目前資料 (共用)
-  getPlansetVerList(_edition) {
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList?edition=${_edition}`;
-    return this.http.get<any>(queryUrl);
-  }
-
-  //getPlanVerList 規劃案執行版本 (共用)
-  getPlanVerList(_flag) {
-    // let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList?flag=${_flag}`;
-    return this.http.get<any>(queryUrl);
-  }
 
   // //Get getSaleAreaListData 訂單-交期彙總表
   // getSaleAreaListData() {
