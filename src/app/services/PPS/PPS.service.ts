@@ -1295,103 +1295,75 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  // ----------------------------------------------------------------------------------------------------------------------------------------------- //
+
   //Get getCreatePlanDataList 取得規劃清單(僅建立)
   getCreatePlanDataList() {
-    console.log('api service getCreatePlanDataList');
-    let queryUrl = this.APIURL + `/FCP/I220/getCreatePlanDataList`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getCreatedPlanEditionData`; 
+    return this.http.get<any>(queryUrl);
   }
   //Get getPlanDataList 取得規劃清單(含執行-最大一筆)
   getPlanDataList() {
-    console.log('api service getPlanDataList');
-    let queryUrl = this.APIURL + `/FCP/I220/getPlanDataList`;
-    console.log(queryUrl);
+    let queryUrl = this.APINEWURL + '/FCP/I220/getNowPlanDataList'
     return this.http.get(queryUrl);
   }
   //Get getPlanDataListByPlan 取得規劃清單(取得該版次已執行過內容)
   getPlanDataListByPlan(_Plan) {
-    console.log('api service getPlanDataListByPlan');
-    let queryUrl = this.APIURL + `/FCP/I220/getPlanDataListByPlan/${_Plan}`;   // old
-    // let queryUrl = this.APIURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
+    return this.http.get<any>(queryUrl);
   }
   //addPlanData 建立規劃清單insert
   addPlanData(_result) {
     const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/addPlanData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I220/insertPlanEditionData';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   //updPlanData 修改規劃清單upd
   updPlanData(_result) {
     const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/updPlanData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I220/updPlanData';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   //delPlanData 刪除規劃清單_cancel_flag = '1'
   delPlanData(_result) {
     const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/delPlanData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    // let queryUrl = this.APIURL + '/FCP/I220/delPlanData';
+    let queryUrl = this.APINEWURL + '/FCP/I220/deletePlanData';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   //stopPlanData
   stopPlanData(_result) {
     const body = JSON.stringify(_result);
-    let queryUrl = this.APIURL + '/FCP/I220/stopPlanData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I220/stopPlanData`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
-  //PublishToMES Publish 規劃案結果到 mes (FCP結果塞到MES)
-  PublishToMES(_result) {
+  //publishData Publish 規劃案，FCP結果發版到工廠排程
+  publishData(_result) {
     const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/PublishToMES';
-    return this.http.post(queryUrl, body, this.httpOptions);
-  }
-  //updatePlanData 更新規劃案
-  updatePlanData(_result) {
-    const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/updatePlanData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I220/publishData`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   //updSCHEDULEPlanEdition 更改公版規劃案版本
   updSCHEDULEPlanEdition(_result) {
     const body = JSON.stringify(_result);
-    console.log('JSON.stringify');
-    console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I220/updSCHEDULEPlanEdition';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I220/updateCommonPlanData`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   //getTitleName 取得excel匯出表頭
   getTitleName() {
-    console.log('api service getTitleName');
     let queryUrl = this.APINEWURL + `/FCP/I220/getTitleName`;
-    console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
   // getFCPResRepo 取得表內容
   getFCPResRepo(_data) {
-    console.log('api service getFCPResRepo');
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
-    console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
   // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
   getFCPResRepoDynamic(_data) {
-    console.log('api service exportExcelFcp16');
     let queryUrl = this.APINEWURL + `/FCP/I220/exportExcelFcp16/${_data}`;
-    console.log(queryUrl);
     return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
@@ -1399,28 +1371,35 @@ export class PPSService {
    deleteFcp16File(fileName : string) {
     const httpParams = new HttpParams()
       .set('fileName', fileName);
-    console.log('api service deleteFcp16File');
     let queryUrl = `${this.APINEWURL}/FCP/I220/deleteFcp16File`;
-    console.log(queryUrl);
     return this.http.get(queryUrl, { params: httpParams });
   }
 
   //StartFullRunPlan 啟動規劃案--->Full Run
-  StartFullRunPlan(_plan, _flag, _type) {
+  StartFullRunPlan(body) {
     // _type: A手動啟動、B排程啟動
-    console.log('api service StartFullRunPlan');
-    let queryUrl =
-      this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    // let queryUrl = this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
+    let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
-  //getFCP_EDITIONexist 檢誤是否有FCP版次
-  getFCP_EDITIONexist(_FCP) {
-    console.log('api service getFCP_EDITIONexist');
-    let queryUrl = this.APIURL + `/FCP/Run/getFCP_EDITIONexist/${_FCP}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+  
+  //getFcpEdition 檢誤是否有FCP版次
+  getFcpEdition(fcpEdition) {
+    let queryUrl = this.APINEWURL + `/FCP/I220/getFcpEdition?edition=${fcpEdition}`; 
+    return this.http.get<any>(queryUrl);
   }
+
+  
+  // http://ys-webapt1.walsin.com:8080/pps_FCP/rest/toMES/?FCP_Version=F20220714104112
+  // publishDataToMsh
+  publishDataToMsh(_result, _code) {
+    let hostName = window.location.hostname;
+    const body = JSON.stringify('');
+    let queryUrl = `http://${hostName}:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&${_code}`;
+    return this.http.post(queryUrl, body, {});
+  }
+
+  // ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
   //Get getNewPlanData 啟動規劃案歷程
   getLogPlanData(_startrun, _plan) {
@@ -1441,30 +1420,30 @@ export class PPSService {
 
   //getICPMOVerList (共用)
   getICPMOVerList() {
-    let queryUrl = this.APIURL + '/FCP/I220/ICPMOVerList';
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    // let queryUrl = this.APIURL + '/FCP/I220/ICPMOVerList';
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionData`;
+    return this.http.get<any>(queryUrl);
   }
 
   //getICPVerList (共用)
   getICPVerList() {
-    let queryUrl = this.APIURL + '/FCP/I220/ICPVerList';
+    // let queryUrl = this.APIURL + '/FCP/I220/ICPVerList';
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisIcpEditionData`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
 
   //getPlansetVerList 規劃策略版本-排除目前資料 (共用)
   getPlansetVerList(_edition) {
-    let queryUrl = this.APIURL + `/FCP/I220/getPlansetVerList/${_edition}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList?edition=${_edition}`;
+    return this.http.get<any>(queryUrl);
   }
 
   //getPlanVerList 規劃案執行版本 (共用)
   getPlanVerList(_flag) {
-    let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
-    console.log(queryUrl);
-    return this.http.get(queryUrl);
+    // let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList?flag=${_flag}`;
+    return this.http.get<any>(queryUrl);
   }
 
   // //Get getSaleAreaListData 訂單-交期彙總表
@@ -1612,16 +1591,6 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // http://ys-webapt1.walsin.com:8080/pps_FCP/rest/toMES/?FCP_Version=F20220714104112
-  // PublishDataToMES
-  PublishDataToMES(_result, _code) {
-    let hostName = window.location.hostname;
-    const body = JSON.stringify('');
-    console.log('PublishDataToMES');
-    let queryUrl = `http://${hostName}:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&${_code}`;
-    // let queryUrl = `http:///ys-pps.walsin.corp:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&${_code}`;
-    return this.http.post(queryUrl, body, {});
-  }
 
   /*** 機台負荷表*/
   getR301DataList(_data) {

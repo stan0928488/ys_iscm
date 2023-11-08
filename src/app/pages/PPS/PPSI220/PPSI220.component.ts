@@ -313,9 +313,10 @@ export class PPSI220Component implements AfterViewInit {
 
     this.getPPSService.getPlanDataList().subscribe(res => {
       console.log("getPlanDataList success");
-      this.PlanDataList = res;
+      let result: any = res;
+      this.PlanDataList = result.data;
       this.PlanDataList.forEach(data => {
-        if(data.SCHEDULE_FLAG === '1') this.SCHEDULEVER = true;
+        if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
       });
 
       this.LoadingPage = false;
@@ -327,10 +328,13 @@ export class PPSI220Component implements AfterViewInit {
     this.LoadingPage = true;
     this.getPPSService.getPlanDataListByPlan(_Plan).subscribe(res => {
       console.log("getPlanDataListByPlan success");
-      this.PlanDataDtlList = res;
-      this.PlanDataDtlList.forEach(data => {
-        if(data.SCHEDULE_FLAG === '1') this.SCHEDULEVER = true;
-      });
+      if(res.code == 200) {
+        this.PlanDataDtlList = res.data;
+        console.log(this.PlanDataDtlList)
+        this.PlanDataDtlList.forEach(data => {
+          if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
+        });
+      }
 
       this.LoadingPage = false;
     });
@@ -377,9 +381,7 @@ export class PPSI220Component implements AfterViewInit {
     this.machineSortLoading = true;
     let myObj = this;
     this.getPPSService.getShopMachineSortingList('Q', _planset).subscribe(res => {
-      console.log("getShopMachineSortingList success");
       this.tmpArr = res.data;
-
       if (this.tmpArr.length > 0) {
         var newSchShopCode = this.tmpArr.filter(function(item, index, arr) {    // 排除重複資料
           return item.SCH_SHOP_CODE_D2 === _shopcode;
@@ -398,7 +400,6 @@ export class PPSI220Component implements AfterViewInit {
   }
 
   handleCancel_M(): void {
-    console.log(this.MachineSortingList)
     this.MachineSortingList = [];
     this.isVisibleMachine = false;
   }
@@ -407,7 +408,6 @@ export class PPSI220Component implements AfterViewInit {
   // 靜態資料選擇
   ICPchange(_value) {
     this.ICPDATA = _value;
-
     if(_value === '1') {
       this.HISICP = undefined;
     } else {
@@ -418,18 +418,18 @@ export class PPSI220Component implements AfterViewInit {
   // 靜態資料歷史版本拉選
   getICPVerList(){
     this.loading = true;
-    console.log("getICPVerList...");
-
     let myObj = this;
     this.getPPSService.getICPVerList().subscribe(res => {
-      this.ICPverList = res;
-      const children: Array<{ label: string; value: string }> = [];
-      for(let i = 0 ; i<this.ICPverList.length ; i++) {
-        children.push({ label: this.ICPverList[i].ICP_EDITION, value: this.ICPverList[i].ICP_EDITION })
+      if(res.code = 200) {
+        this.ICPverList = res.data;
+        const children: Array<{ label: string; value: string }> = [];
+        for(let i = 0 ; i<this.ICPverList.length ; i++) {
+          children.push({ label: this.ICPverList[i].icpEdition, value: this.ICPverList[i].icpEdition })
+        }
+        this.listOfICPOption = children;
+        console.log(this.listOfICPOption)
+        myObj.loading = false;
       }
-      this.listOfICPOption = children;
-      console.log(this.listOfICPOption)
-      myObj.loading = false;
     });
   }
 
@@ -449,18 +449,18 @@ export class PPSI220Component implements AfterViewInit {
   // MO 歷史版本拉選
   getMOVerList(){
     this.loading = true;
-    console.log("getMOVerList...");
-
     let myObj = this;
     this.getPPSService.getICPMOVerList().subscribe(res => {
-      this.MOverList = res;
-      const children: Array<{ label: string; value: string }> = [];
-      for(let i = 0 ; i<this.MOverList.length ; i++) {
-        children.push({ label: this.MOverList[i].MO_EDITION, value: this.MOverList[i].MO_EDITION })
-      }
-      this.listOfMOOption = children;
-      console.log(this.listOfMOOption)
-      myObj.loading = false;
+      if(res.code = 200) {
+        this.MOverList = res.data;
+        const children: Array<{ label: string; value: string }> = [];
+        for(let i = 0 ; i<this.MOverList.length ; i++) {
+          children.push({ label: this.MOverList[i].moEdition, value: this.MOverList[i].moEdition })
+        }
+        this.listOfMOOption = children;
+        console.log(this.listOfMOOption)
+        myObj.loading = false;
+      } 
     });
   }
 
@@ -554,7 +554,6 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
-
   // 開啟策略選擇---------------------
   selPlanSet(): void {
     console.log("selPlanSet...");
@@ -594,16 +593,16 @@ export class PPSI220Component implements AfterViewInit {
 
     let myObj = this;
     this.getPPSService.getCreatePlanDataList().subscribe(res => {
-      console.log("getCreatePlanDataList success");
-      this.selPlanDataList = res;
-      console.log(this.selPlanDataList)
-      this.selPlanDataList.forEach(data => {
-        if(data.SCHEDULE_FLAG === '1') this.SCHEDULEVER = true;
-      })
-
+      if(res.code == 200) {
+        this.selPlanDataList = res.data;
+        this.selPlanDataList.forEach(data => {
+          if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
+        })
+      }
       myObj.loading = false;
     });
   }
+
   planhandleCancel(): void {
     this.isVisibleSelPlan = false;
   }
@@ -612,30 +611,30 @@ export class PPSI220Component implements AfterViewInit {
   sendPlanchoice(data) {
     console.log("--------sendPlanchoice---------")
 
-    this.PLANSET_EDITION = data.PLANSET_EDITION;
-    this.ICPDATA = data.ICP_FLAG;
-    this.HISICP = data.HIS_ICP_EDITION;
-    this.listOfICPOption = [{label: data.HIS_ICP_EDITION, value: data.HIS_ICP_EDITION}];
-    this.MODATA = data.MO_FLAG;
-    this.HISMO = data.HIS_MO_EDITION;
-    this.listOfMOOption = [{label: data.HIS_MO_EDITION, value: data.HIS_MO_EDITION}];
-    this.startdate = data.LPST_STARTDATE;
-    this.enddate = data.LPST_ENDTDATE;
+    this.PLANSET_EDITION = data.plansetEdition;
+    this.ICPDATA = data.icpFlag;
+    this.HISICP = data.hisIcpEdition;
+    this.listOfICPOption = [{label: data.hisIcpEdition, value: data.hisIcpEdition}];
+    this.MODATA = data.moFlag;
+    this.HISMO = data.hisMoEdition;
+    this.listOfMOOption = [{label: data.hisMoEdition, value: data.hisMoEdition}];
+    this.startdate = data.lpstStartdate;
+    this.enddate = data.lpstEndtdate;
 
-    if(data.LPST_FLAG === '1') {
+    if(data.lpstFlag === '1') {
       this.LPSTDATA = '1';
-    } else if(data.LPST_FLAG === '2') {
+    } else if(data.lpstFlag === '2') {
       this.LPSTDATA = '2';
     } else {
       this.LPSTDATA = '3';
     }
 
-    if(data.SCHEDULE_FLAG === '1') {
+    if(data.scheduleFlag === '1') {
       this.SCHEDULE_FLAG = undefined;
     } else {
-      console.log(this.dateFormat(data.SCHEDULE_TIME, '1'))
-      this.SCHEDULE_FLAG = data.SCHEDULE_FLAG;
-      this.SCHEDULE_TIME = this.dateFormat(data.SCHEDULE_TIME, '1');
+      console.log(this.dateFormat(data.scheduleTime, '1'))
+      this.SCHEDULE_FLAG = data.scheduleFlag;
+      this.SCHEDULE_TIME = this.dateFormat(data.scheduleTime, '1');
     }
 
     this.isVisibleSelPlan = false;
@@ -696,24 +695,21 @@ export class PPSI220Component implements AfterViewInit {
       if (this.SCHEDULE_TIME === undefined) SCHEDULE = "";  else SCHEDULE = this.SCHEDULE_TIME;
 
 			_.extend(obj, {
-        PLAN_START_TYPE : 'F',      // full run
-        PLANSET_EDITION : this.PLANSET_EDITION,
-				ICP_FLAG : this.ICPDATA,
-				HIS_ICP_EDITION : ICP,
-				MO_FLAG : this.MODATA,
-				HIS_MO_EDITION : MO,
-        LPST_FLAG : this.LPSTDATA,
-				LPST_STARTDATE : this.startdate,
-        LPST_ENDTDATE : this.enddate,
-        PLAN_STATU : 'Create',      // Create 規劃案
-        SCHEDULE_FLAG : this.SCHEDULE_FLAG,
-        SCHEDULE_TIME : SCHEDULE,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        planStartType : 'F',      // full run
+        plansetEdition : this.PLANSET_EDITION,
+				icpFlag : this.ICPDATA,
+				hisIcpEdition : ICP,
+				moFlag : this.MODATA,
+				hisMoEdition : MO,
+        lpstFlag : this.LPSTDATA,
+				lpstStartdate : this.startdate,
+        lpstEndtdate : this.enddate,
+        scheduleFlag : this.SCHEDULE_FLAG,
+        scheduleTime : SCHEDULE
 			})
 
       myObj.getPPSService.addPlanData(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if (res.code == 200) {
           this.PLANSET_EDITION = undefined;
           this.ICPDATA = undefined;
           this.HISICP = undefined;
@@ -730,7 +726,7 @@ export class PPSI220Component implements AfterViewInit {
           this.CHOICE_machine = undefined;
           this.CHOICE_sort = undefined;
 
-          this.sucessMSG("已建立規劃案", `規劃案版本：${res[0].PlanVer}`);
+          this.sucessMSG("已建立規劃案", `規劃案版本：${res.data[0].planEdition}`);
           this.getPlanDataList();
           this.isVisibleStart = false;
         }
@@ -764,23 +760,23 @@ export class PPSI220Component implements AfterViewInit {
 
   // 修改已建立規劃案資料：僅調整排程時間&MO區間
   updPlanData(data) {
-    if(data.PLAN_STATU === 'Plan') {
+    if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可修改");
     } else {
       this.isVisibleUpd = true;
-      this.show_PLAN_EDITION = data.PLAN_EDITION;
-      this.upd_PLAN_EDITION = data.PLAN_EDITION;
-      this.upd_oldPLANSET_EDITION = data.PLANSET_EDITION;
-      this.upd_SCHEDULE_FLAG = data.SCHEDULE_FLAG;
-      this.upd_LPSTDATA = data.LPST_FLAG;
+      this.show_PLAN_EDITION = data.planEdition;
+      this.upd_PLAN_EDITION = data.planEdition;
+      this.upd_oldPLANSET_EDITION = data.plansetEdition;
+      this.upd_SCHEDULE_FLAG = data.scheduleFlag;
+      this.upd_LPSTDATA = data.lpstFlag;
       this.LPSTchange(data.LPSTDATA, 'upd');
-      if (data.SCHEDULE_TIME !== undefined) {
-        let Yscdate = data.SCHEDULE_TIME.substring(0, 4) ;
-        let Mscdate = data.SCHEDULE_TIME.substring(5, 7)-1 ;   // month 要比实际的月份数字小 1
-        let Dscdate = data.SCHEDULE_TIME.substring(8, 10) ;
-        let HHscdate = data.SCHEDULE_TIME.substring(11, 13) ;
-        let mmscdate = data.SCHEDULE_TIME.substring(14, 16) ;
-        let ssscdate = data.SCHEDULE_TIME.substring(17, 20) ;
+      if (data.scheduleTime !== null) {
+        let Yscdate = data.scheduleTime.substring(0, 4) ;
+        let Mscdate = data.scheduleTime.substring(5, 7)-1 ;   // month 要比实际的月份数字小 1
+        let Dscdate = data.scheduleTime.substring(8, 10) ;
+        let HHscdate = data.scheduleTime.substring(11, 13) ;
+        let mmscdate = data.scheduleTime.substring(14, 16) ;
+        let ssscdate = data.scheduleTime.substring(17, 20) ;
         let date = new Date(Yscdate, Mscdate, Dscdate, HHscdate, mmscdate, ssscdate);   // 擷取字段轉型態
         let newDate = this.dateFormat(date, 2);
         this.upd_SCHEDULE_TIME = newDate;
@@ -797,31 +793,32 @@ export class PPSI220Component implements AfterViewInit {
   }
   // 取得規劃策略版次
   getPlansetVerList(_edition) {
-    console.log("getPlansetVerList    ------------------")
     this.loading = true;
     let myObj = this;
-    console.log(_edition)
     if(_edition == 'sel') {
       _edition = this.upd_oldPLANSET_EDITION;
     }
-// console.log(_edition)
     this.getPPSService.getPlansetVerList(_edition).subscribe(res => {
       console.log("plansetlist success");
-      let result:any = res ;
-      this.plansetlist = []
-      let optionListTemp = [] ;
-      for(let item of result) {
-        let temp = { label: item.PLANSET_EDITION+'_'+item.SETNAME, value:item.PLANSET_EDITION } ;
-        optionListTemp.push(temp);
-      }
-      this.plansetlist = optionListTemp ;
-
-      if(this.upd_newPLANSET_EDITION === undefined) {
-        this.upd_newPLANSET_EDITION = optionListTemp[0] ;
+      console.log(res)
+      if(res.code = 200) {
+        let result:any = res.data;
+        this.plansetlist = []
+        let optionListTemp = [] ;
+        for(let item of result) {
+          let temp = { label: item.plansetEdition+'_'+item.setName, value:item.plansetEdition } ;
+          optionListTemp.push(temp);
+        }
+        this.plansetlist = optionListTemp ;
+  
+        if(this.upd_newPLANSET_EDITION === undefined) {
+          this.upd_newPLANSET_EDITION = optionListTemp[0] ;
+        }
       }
       myObj.loading = false;
     });
   }
+
   // 確定修改規劃案
   handleOk_U() {
     let myObj = this;
@@ -856,31 +853,33 @@ export class PPSI220Component implements AfterViewInit {
     this.upd_SCHEDULE_FLAG = undefined;
     this.upd_SCHEDULE_TIME = undefined;
   }
+
   // 確定修改存檔
   upd_save() {
     let myObj = this;
 		return new Promise((resolve, reject) => {
 			let obj = {};
       let SCHEDULE = "";
-      if (this.upd_SCHEDULE_TIME === undefined) SCHEDULE = "";  else SCHEDULE = this.upd_SCHEDULE_TIME;
+      if (this.upd_SCHEDULE_TIME === undefined || this.upd_SCHEDULE_FLAG === '3'){
+        SCHEDULE = null;  
+      } else {
+        SCHEDULE = this.upd_SCHEDULE_TIME;
+      }
       let updPLANSET_EDITION;
       if(this.upd_newPLANSET_EDITION === undefined) updPLANSET_EDITION = this.upd_oldPLANSET_EDITION ;  else updPLANSET_EDITION = this.upd_newPLANSET_EDITION.value;
 
-      console.log(SCHEDULE)
 			_.extend(obj, {
-        PLAN_EDITION : this.upd_PLAN_EDITION,
-        updPLANSET_EDITION : updPLANSET_EDITION,
-        LPST_FLAG : this.upd_LPSTDATA,
-				LPST_STARTDATE : this.upd_startdate,
-        LPST_ENDTDATE : this.upd_enddate,
-        SCHEDULE_FLAG : this.upd_SCHEDULE_FLAG,
-        SCHEDULE_TIME : SCHEDULE,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        planEdition : this.upd_PLAN_EDITION,
+        plansetEdition : updPLANSET_EDITION,
+        lpstFlag : this.upd_LPSTDATA,
+				lpstStartdate : this.upd_startdate,
+        lpstEndtdate : this.upd_enddate,
+        scheduleFlag : this.upd_SCHEDULE_FLAG,
+        scheduleTime : SCHEDULE
 			})
 
       myObj.getPPSService.updPlanData(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.code == 200) {
           this.upd_PLAN_EDITION = undefined;
           this.upd_newPLANSET_EDITION = undefined;
           this.choicePlanset = 'A';
@@ -912,13 +911,13 @@ export class PPSI220Component implements AfterViewInit {
   // 確定修改規劃案
   Ok_Com() {
     let myObj = this;
-    if (this.oldPlanEdition === undefined) {
+    if (this.oldPlanEdition === null) {
       myObj.message.create("error", "請選擇「原公版規劃案版本」");
       return;
-    } else if (this.newPlanEdition === undefined) {
+    } else if (this.newPlanEdition === null) {
       myObj.message.create("error", "請選擇「新指定公版規劃案版本」");
       return;
-    } else if (this.commSCHEDULE_TIME === undefined) {
+    } else if (this.commSCHEDULE_TIME === null) {
       myObj.message.create("error", "請選擇「規劃案執行時間」");
       return;
     } else {
@@ -936,9 +935,9 @@ export class PPSI220Component implements AfterViewInit {
   }
   Cancel_Com(): void {
     this.isCommon = false;
-    this.oldPlanEdition = undefined;
-    this.newPlanEdition = undefined;
-    this.commSCHEDULE_TIME = undefined;
+    this.oldPlanEdition = null;
+    this.newPlanEdition = null;
+    this.commSCHEDULE_TIME = null;
   }
   // 取得規劃案執行版次
   getPlanVerList(_type, _flag) {
@@ -947,26 +946,28 @@ export class PPSI220Component implements AfterViewInit {
 
     this.getPPSService.getPlanVerList(_flag).subscribe(res => {
       console.log("getPlanVerList success");
-      let result:any = res ;
-      this.planlist = []
-      let optionListTemp = [] ;
-      for(let item of result) {
-        let label;
-        if (_type === 'old') {
-          label = item.RUNTIME;
-        } else {
-          label = item.PLAN_EDITION;
+      if(res.code == 200) {
+        let result:any = res.data ;
+        this.planlist = []
+        let optionListTemp = [] ;
+        for(let item of result) {
+          let label;
+          if (_type === 'old') {
+            label = item.runTime;
+          } else {
+            label = item.planEdition;
+          }
+          let temp = { label:label , value:item.planEdition, scdate:item.scheduleTime } ;
+          optionListTemp.push(temp);
         }
-        let temp = { label:label , value:item.PLAN_EDITION, scdate:item.SCHEDULE_TIME } ;
-        optionListTemp.push(temp);
-      }
-      this.planlist = optionListTemp ;
-
-      if(_type === 'old') {
-        if(this.oldPlanEdition === undefined) {
-          this.oldPlanEdition = optionListTemp[0] ;
+        this.planlist = optionListTemp ;
+  
+        if(_type === 'old') {
+          if(this.oldPlanEdition === null) {
+            this.oldPlanEdition = optionListTemp[0] ;
+          }
+          this.setDateValue(this.oldPlanEdition.value);
         }
-        this.setDateValue(this.oldPlanEdition.value);
       }
       myObj.loading = false;
     });
@@ -993,19 +994,17 @@ export class PPSI220Component implements AfterViewInit {
 		return new Promise((resolve, reject) => {
 			let obj = {};
 			_.extend(obj, {
-        oldPLAN_EDITION : this.oldPlanEdition.value,
-        newPLAN_EDITION : this.newPlanEdition.value,
-				SCHEDULE_TIME : this.commSCHEDULE_TIME,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        oldPlanEdition : this.oldPlanEdition.value,
+        newPlanEdition : this.newPlanEdition.value,
+				scheduleTime : this.commSCHEDULE_TIME
 			})
 
       myObj.getPPSService.updSCHEDULEPlanEdition(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.code == 200) {
           this.sucessMSG("修改成功", `已將公版版本由：${this.oldPlanEdition.value} 改為：${this.newPlanEdition.value}`);
-          this.oldPlanEdition = undefined;
-          this.newPlanEdition = undefined;
-          this.commSCHEDULE_TIME = undefined;
+          this.oldPlanEdition = null;
+          this.newPlanEdition = null;
+          this.commSCHEDULE_TIME = null;
 
           this.getPlanDataList();
           this.isCommon = false;
@@ -1036,21 +1035,21 @@ export class PPSI220Component implements AfterViewInit {
 			let obj = {};
 
 			_.extend(obj, {
-        PLAN_EDITION : _value1,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        planEdition : _value1
 			})
       myObj.getPPSService.delPlanData(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
-
+        if(res.code == 200) {
           this.sucessMSG("已刪除規劃案", `規劃案版本：${_value1}`);
           this.getPlanDataList();
+        } else {
+          reject('upload fail');
+          this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
         }
       },err => {
         reject('upload fail');
         this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
-        this.LoadingPage = false;
       })
+      this.LoadingPage = false;
 		})
 
   }
@@ -1060,9 +1059,9 @@ export class PPSI220Component implements AfterViewInit {
 
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
-    console.log("StrartRun : " + data.PLAN_EDITION)
+    console.log("StrartRun : " + data.planEdition)
 
-    if(data.PLAN_STATU === 'Plan') {
+    if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可重新啟動");
     } else {
 
@@ -1077,7 +1076,7 @@ export class PPSI220Component implements AfterViewInit {
       this.CHOICE_sort = undefined;
 
       let SCHEDULE_TIME;
-      if(data.SCHEDULE_TIME === undefined) SCHEDULE_TIME = '';
+      if(data.scheduleTime === null) SCHEDULE_TIME = '';
 
       const SHOP_CODE = [];
       const MACHINE = [];
@@ -1088,7 +1087,7 @@ export class PPSI220Component implements AfterViewInit {
       }
 
       this.loading = true;
-      this.getPPSService.getShopSortingList('Q', data.SEQNO).subscribe(res => {
+      this.getPPSService.getShopSortingList('Q', data.seqNo).subscribe(res => {
         console.log("sendchoice : getShopSortingList success");
         this.ShopSortingList = res.data;
         console.log(this.ShopSortingList)
@@ -1104,15 +1103,15 @@ export class PPSI220Component implements AfterViewInit {
 
         this.ICPparam = {
           "STARTRUN_TIME" : STARTRUN_TIME,
-          "PLAN_EDITION" : data.PLAN_EDITION
+          "PLAN_EDITION" : data.planEdition
         };
 
         this.FCPplan = {
           "startRun_Time" : STARTRUN_TIME,
-          "plan_edition" : data.PLAN_EDITION,
+          "plan_edition" : data.planEdition,
           "notify_YN" : "N",
-          "startDate": data.LPST_STARTDATE,
-          "endDate": data.LPST_ENDTDATE,
+          "startDate": data.lpstStartdate,
+          "endDate": data.lpstEndtdate,
           "methodArray": "[F]",
           "method_dtlArray": "[[B,C]]",
           "move_firstStrategy": this.cellsort
@@ -1123,27 +1122,13 @@ export class PPSI220Component implements AfterViewInit {
         return new Promise((resolve, reject) => {
           let obj = {};
           _.extend(obj, {
-            STARTRUN_TIME : moment().format('YYYYMMDDHHmmss'),
-            PLAN_EDITION : data.PLAN_EDITION,
-            PLAN_START_TYPE : data.PLAN_START_TYPE,
-            SCHEDULE_FLAG : data.SCHEDULE_FLAG,
-            SCHEDULE_TIME : SCHEDULE_TIME,
-            SEQNO : data.SEQNO,
-            PLANSET_EDITION : data.PLANSET_EDITION,
-            ICP_FLAG : data.ICP_FLAG,
-            HIS_ICP_EDITION : data.HIS_ICP_EDITION,
-            MO_FLAG : data.MO_FLAG,
-            HIS_MO_EDITION : data.HIS_MO_EDITION,
-            LPST_FLAG : data.LPST_FLAG,
-            LPST_STARTDATE : data.LPST_STARTDATE,
-            LPST_ENDTDATE : data.LPST_ENDTDATE,
-            ICP_LIST : this.ICPparam,
-            PLANSET_LIST : this.FCPplan,
-            USERNAME : this.USERNAME,
-            DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+            planEdition : data.planEdition,
+            scheduleFlag : data.scheduleFlag,
+            createUser : this.USERNAME,
+            type : "A"
           });
 
-          myObj.getPPSService.StartFullRunPlan(data.PLAN_EDITION, data.SCHEDULE_FLAG, "A"+this.USERNAME).subscribe(res => {
+          myObj.getPPSService.StartFullRunPlan(obj).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
@@ -1152,7 +1137,7 @@ export class PPSI220Component implements AfterViewInit {
         });
       });
 
-      this.sucessMSG("已啟動規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+      this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
       this.getRunFCPCount();
       await this.sleep(3000);
 
@@ -1164,22 +1149,16 @@ export class PPSI220Component implements AfterViewInit {
 
   // 停止生產規劃
   async stopPlan(data) {
-    console.log(JSON.stringify(data))
-    console.log(JSON.stringify(data.STARTRUN_TIME))
     let myObj = this;
 		return new Promise((resolve, reject) => {
 			let obj = {};
-
 			_.extend(obj, {
-        STARTRUN_TIME : data.STARTRUN_TIME,
-        PLAN_EDITION : data.PLAN_EDITION,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+        startrunTime : data.startrunTime,
+        planEdition : data.planEdition
 			})
       myObj.getPPSService.stopPlanData(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
-
-          this.sucessMSG("已停止規劃案", `規劃案版本：${data.PLAN_EDITION}`);
+        if(res.code == 200) {
+          this.sucessMSG("已停止規劃案", `規劃案版本：${data.planEdition}`);
           this.getPlanDataList();
           this.getRunFCPCount();
         }
@@ -1205,10 +1184,10 @@ export class PPSI220Component implements AfterViewInit {
     this.LoadingPage = true;
 
     try{
-      const editionExistObservable$ = this.getPPSService.getFCP_EDITIONexist(fcpEdition);
+      const editionExistObservable$ = this.getPPSService.getFcpEdition(fcpEdition);
       const editionExistRes = await firstValueFrom<any>(editionExistObservable$);
-      if(editionExistRes[0].MSG === "Y") {
-
+      // if(editionExistRes[0].MSG === "Y") {
+      if(editionExistRes.data.length == 1) {
         // 根據版次獲取該表的資料
         const fcpResObservable$ = this.getPPSService.getFCPResRepoDynamic(fcpEdition);
         let fcpRes = await firstValueFrom<any>(fcpResObservable$);
@@ -1292,8 +1271,8 @@ export class PPSI220Component implements AfterViewInit {
     this.isVisibleRun = false;
     this.titleArray = [];
 		return new Promise((resolve, reject) => {
-      this.getPPSService.getFCP_EDITIONexist(data).subscribe(async res => {
-        if(res[0].MSG === "Y") {
+      this.getPPSService.getFcpEdition(data).subscribe(async res => {
+        if(res.data.length == 1) {
           // 獲取該表中英文屬性名稱(key-value)
           const excelTitleObservable$ =  this.getPPSService.getTitleName();
           const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
@@ -1616,7 +1595,7 @@ export class PPSI220Component implements AfterViewInit {
 
 
   // 發佈規劃案FCP結果到MES----------------------
-  PublishMES(data) {
+  publishData(data) {
     let myObj = this;
     this.LoadingPage = true;
 		return new Promise((resolve, reject) => {
@@ -1624,50 +1603,50 @@ export class PPSI220Component implements AfterViewInit {
       let shop_code = "shopRouting='430','431','433','420','421','422','453','452','401','411','402','403','404','405','406','410','460','461','334','450','451','470','480','490'";
 
       this.loading = true;
-      myObj.getPPSService.getFCP_EDITIONexist(data.FCP_EDITION).subscribe(res => {
-        if(res[0].MSG === "Y") {
-          myObj.getPPSService.PublishDataToMES(data.FCP_EDITION, shop_code).subscribe(res => {
+      myObj.getPPSService.getFcpEdition(data.fcpEdition).subscribe(res => {
+        if(res.data.length == 1) {
+          myObj.getPPSService.publishDataToMsh(data.fcpEdition, shop_code).subscribe(res => {
 
             if(_.get(res, 'msg') == "Y") {
               _.extend(obj, {
-                STARTRUN_TIME : data.STARTRUN_TIME,
-                PLAN_EDITION : data.PLAN_EDITION,
-                FCP_EDITION : data.FCP_EDITION,
+                STARTRUN_TIME : data.startrunTime,
+                PLAN_EDITION : data.planEdition,
+                FCP_EDITION : data.fcpEdition,
                 USERNAME : this.USERNAME,
                 DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
               })
-              myObj.getPPSService.PublishToMES(obj).subscribe(res => {
+              myObj.getPPSService.publishData(obj).subscribe(res => {
                 if(_.get(res, 'msg') == "Y") {
-                  this.sucessMSG('已發布至MES', `FCP版本：${data.FCP_EDITION}`);
+                  this.sucessMSG('已發布至MES', `FCP版本：${data.fcpEdition}`);
                   this.getPlanDataList();
                 }
                 myObj.loading = false;
                 this.LoadingPage = false;
               }, err => {
-                myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，已發布至MES，寫入 MYSQL 失敗`);
+                myObj.message.create("error", `規劃案「${data.planEdition}」，已發布至MES，寫入 MYSQL 失敗`);
                 reject('DB寫入失敗 fail');
                 myObj.loading = false;
                 this.LoadingPage = false;
               });
 
             } else {
-              myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，對應FCP版本：${data.FCP_EDITION}，Publish失敗`);
+              myObj.message.create("error", `規劃案「${data.planEdition}」，對應FCP版本：${data.fcpEdition}，Publish失敗`);
               myObj.loading = false;
               this.LoadingPage = false;
             }
           },err => {
-            myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗_FCP`);
+            myObj.message.create("error", `規劃案「${data.planEdition}」，發布至MES，失敗_FCP`);
             myObj.loading = false;
             this.LoadingPage = false;
             reject('Publish fail');
           })
         } else {
-          myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，對應FCP版本：${data.FCP_EDITION}，已逾時，不可再Publish`);
+          myObj.message.create("error", `規劃案「${data.planEdition}」，對應FCP版本：${data.fcpEdition}，已逾時，不可再Publish`);
           myObj.loading = false;
           this.LoadingPage = false;
         }
       },err => {
-        myObj.message.create("error", `規劃案「${data.PLAN_EDITION}」，發布至MES，失敗_WEB`);
+        myObj.message.create("error", `規劃案「${data.planEdition}」，發布至MES，失敗_WEB`);
         myObj.loading = false;
         this.LoadingPage = false;
         reject('Publish fail');
@@ -1759,84 +1738,6 @@ export class PPSI220Component implements AfterViewInit {
 
 
 
-
-
-
-
-
-  // // 啟動 ICP 執行--------暫不使用
-  // async callICP (plandata, ICPparam) {
-  //   let myObj = this;
-  //   let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
-
-	// 	return new Promise((resolve, reject) => {
-  //     myObj.getPPSService.StartICP(ICPparam).subscribe(async res => {
-  //       console.log("res[0].MO_Edition  : " + res)
-
-  //       const list = `${plandata.PLANSET_LIST}`;
-  //       const FCPplan = JSON.parse(list);
-  //       FCPplan.mo_version = plandata.MO_EDITION;     // for FCP 版本策略--- todo
-
-  //       let obj = {};
-  //       _.extend(obj, {
-  //         UPD_FLAG : 'ICP',
-  //         PLAN_EDITION : plandata.PLAN_EDITION,
-  //         FCPList : FCPplan,
-  //         EDITION : plandata.MO_EDITION,           // for FCP 版本策略--- todo
-  //         ICP_EDITION : plandata.ICP_EDITION,           // for FCP 版本策略--- todo
-  //         USERNAME : 'ICPOK',
-  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-  //       });
-
-  //       if(res[0].msg == "Y") {
-  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-  //           if(_.get(res, 'msg') == "UPDATE_OK") {
-  //             await this.callFCP(plandata, FCPplan);
-  //           }
-  //         },err => {
-  //           reject('update fail')
-  //         });
-  //       }
-  //     },err => {
-  //       reject('ICP fail')
-  //     });
-	// 	});
-  // }
-
-
-  // // 啟動 FCP 執行--------暫不使用
-  // async callFCP (plandata, FCPplan) {
-  //   let myObj = this;
-
-	// 	return new Promise((resolve, reject) => {
-  //     myObj.getPPSService.StartFCP(plandata.INITIALFLAG, FCPplan).subscribe(async res => {
-  //       console.log("res[0].FCP_Edition  : " + res)
-
-  //       let obj = {};
-  //       _.extend(obj, {
-  //         UPD_FLAG : 'ICP',
-  //         PLAN_EDITION : plandata.PLAN_EDITION,                  // FCP 版本策略--- todo
-  //         FCPList : `{}`,
-  //         EDITION : plandata.FCP_EDITION,
-  //         ICP_EDITION : plandata.ICP_EDITION,                    // for FCP 版本策略--- todo
-  //         USERNAME : 'FCPOK',
-  //         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-  //       });
-
-  //       if(res[0].msg == "Y") {
-  //         myObj.getPPSService.updatePlanData(obj).subscribe(async res => {
-  //           if(_.get(res, 'msg') == "UPDATE_OK") {
-  //             this.getPlanDataList();
-  //           }
-  //         },err => {
-  //           reject('update fail')
-  //         });
-  //       }
-  //     },err => {
-  //       reject('FCP fail')
-  //     });
-  //   });
-  // }
 
 
 

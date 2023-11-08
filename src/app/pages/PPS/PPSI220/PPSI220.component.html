@@ -59,45 +59,45 @@
 
             <td nzLeft="0px" style="text-align:center; font-size: 11px; padding: 4px;">
               <a [attr.disabled]="isRunFCP ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
-              <a [attr.disabled]="data.PLAN_STATU !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.PLAN_EDITION, data.PLAN_STATU)">刪除</a>
+              <a [attr.disabled]="data.planStatu !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.planEdition, data.planStatu)">刪除</a>
               <p><a disabled = false>結果表</a></p>
             </td> 
-            <td nzLeft="80px" style="font-size: 13px; padding: 4px;"><a (click)="updPlanData(data)">{{data.PLAN_EDITION}}</a><p> {{data.PLAN_START_TYPE_NA}}</td>
+            <td nzLeft="80px" style="font-size: 13px; padding: 4px;"><a (click)="updPlanData(data)">{{data.planEdition}}</a><p> {{data.planStartTypeNa}}</td>
             <td nzLeft="200px" style="font-size: 11px; padding: 4px;">
-              <p> {{ data.PLAN_STATU_NA}}
-                  <nz-tag *ngIf="data.PLAN_STATU === 'Plan'" nzColor="processing">
+              <p> {{ data.planStatuNa}}
+                  <nz-tag *ngIf="data.planStatu === 'Plan'" nzColor="processing">
                     <span nz-icon nzType="sync" nzSpin></span>
                     <span>執行中</span>
                   </nz-tag>
-                  <nz-tag *ngIf="data.PLAN_STATU === 'Fail'" nzColor="error">
+                  <nz-tag *ngIf="data.planStatu === 'Fail'" nzColor="error">
                     <span nz-icon nzType="close-circle"></span>
                     <span>執行失敗</span>
                   </nz-tag>
-                  <nz-tag *ngIf="data.PLAN_STATU !== 'Create'" nzColor="success">{{ data.CREATE_USER }}</nz-tag>
-                  <a *ngIf="byUserShow && data.PLAN_STATU === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
+                  <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
+                  <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
               </p>
-              <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">
+              <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
                 <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
-              <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.PLAN_STATU === 'Publish' ">
+              <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
                 <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
               &nbsp;&nbsp;
-              <label *ngIf="data.FCP_EDITION === undefined"></label>
-              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.FCP_EDITION)">
-                <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.FCP_EDITION }}</a> &nbsp;&nbsp;
+              <label *ngIf="data.fcpEdition === null"></label>
+              <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.fcpEdition)">
+                <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.fcpEdition }}</a> &nbsp;&nbsp;
 
-              <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.PLAN_EDITION)">
+              <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.planEdition)">
                 <span nz-icon nzType="history" nzTheme="outline"></span>  歷程</label>
             </td>
-            <td style="font-size: 11px; padding: 4px;">{{data.SCHEDULE_FLAG_NA}} <p>{{dateFormat(data.SCHEDULE_TIME, '1')}}<label *ngIf="data.SCHEDULE_TIME !== undefined"><br><label *ngIf="data.SCHEDULE_DONE !== 'Y'">(下次執行時間)</label></label></p></td>
-            <td style="font-size: 11px; padding: 4px;">{{data.MO_EDITION_NA}}<p> MO 區間：{{data.LPST_FLAG_NA}} </td>
-            <td style="font-size: 11px; padding: 4px;">{{data.ICP_EDITION_NA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.PLANSET_EDITION}} <br> {{ data.SETNAME}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.INITIALFLAG}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.MOSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.CELLSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px; display:none;">{{data.NEXTSHOPSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px; display:none;">{{data.MACHINESORTNA}}</td>
-            <td style="text-align:center; font-size: 11px; padding: 4px;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
+            <td style="font-size: 11px; padding: 4px;">{{data.scheduleFlagNa}} <p>{{dateFormat(data.scheduleTime, '1')}}<label *ngIf="data.scheduleTime !== null"><br><label *ngIf="data.scheduleDone !== 'Y'">(下次執行時間)</label></label></p></td>
+            <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+            <td style="font-size: 11px; padding: 4px;">{{data.icpEditionNa}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.plansetEdition}} <br> {{ data.setName}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.initialFlag}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.moSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.cellSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.nextShopSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.machineSortNa}}</td>
+            <td style="text-align:center; font-size: 11px; padding: 4px;"><a (click)="openSorting(data.seqNo)">明細</a></td>
           </tr>
 
         </tbody>
@@ -111,86 +111,88 @@
 
 
 
-<nz-modal
-  [(nzVisible)]="isVisibleRun"
-  [nzTitle]="planLogTitle"
-  [nzContent]="planLogContent"
-  [nzFooter]="planLogFooter"
-  (nzOnCancel)="Run_cancel()"
-  [nzWidth]="1000"
->
+<nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
+  <nz-modal
+    [(nzVisible)]="isVisibleRun"
+    [nzTitle]="planLogTitle"
+    [nzContent]="planLogContent"
+    [nzFooter]="planLogFooter"
+    (nzOnCancel)="Run_cancel()"
+    [nzWidth]="1000"
+  >
 
-  <ng-template #planLogTitle>規劃案執行紀錄</ng-template>
-  <ng-template #planLogContent>
-    <div>
+    <ng-template #planLogTitle>規劃案執行紀錄</ng-template>
+    <ng-template #planLogContent>
+      <div>
 
-      <nz-table #RunTable nzBordered [nzData]="PlanDataDtlList" [nzPageSize]="20" [nzScroll]="{ x: '2000px', y: '400px' }">
-        <thead>
-          <tr>
-            <th nzWidth="6%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
-            <th nzWidth="16%" nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
-            <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
-            <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
-            <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
-            <th nzWidth="9%" colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
-          </tr>
-          <tr>
-            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
-            <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
-          </tr>
-        </thead>
-        <tbody>
+        <nz-table #RunTable nzBordered [nzData]="PlanDataDtlList" [nzPageSize]="20" [nzScroll]="{ x: '2000px', y: '400px' }">
+          <thead>
+            <tr>
+              <th nzWidth="6%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
+              <th nzWidth="16%" nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+              <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
+              <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
+              <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
+              <th nzWidth="9%" colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+            </tr>
+            <tr>
+              <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
+              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
+              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+              <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
+              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
+            </tr>
+          </thead>
+          <tbody>
 
-          <tr *ngFor="let data of RunTable.data; let i = index" class="editable-row">
-            <td nzLeft="0px" style="font-size: 13px; padding: 4px;"><label>{{data.PLAN_EDITION}}</label><p> {{data.PLAN_START_TYPE_NA}}</td>
-            <td nzLeft="120px" style="font-size: 11px; padding: 4px;">
-              <p> {{ data.PLAN_STATU_NA}}
-                <nz-tag *ngIf="data.PLAN_STATU === 'Plan'" nzColor="processing">
-                  <span nz-icon nzType="sync" nzSpin></span>
-                  <span>執行中</span>
-                </nz-tag>
-                <nz-tag *ngIf="data.PLAN_STATU === 'Fail'" nzColor="error">
-                  <span nz-icon nzType="close-circle"></span>
-                  <span>執行失敗</span>
-                </nz-tag>
-                <nz-tag *ngIf="data.PLAN_STATU !== 'Create'" nzColor="success">{{ data.CREATE_USER }}</nz-tag>
-              </p>
-              <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.PLAN_STATU === 'Plan OK' " (click)="PublishMES(data)">
-                <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
-              <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.PLAN_STATU === 'Publish' ">
-                <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
-              &nbsp;&nbsp;
-              <label *ngIf="data.FCP_EDITION === undefined"></label>
-              <a *ngIf="data.FCP_EDITION !== undefined" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.FCP_EDITION)">
-                <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.FCP_EDITION }}</a>
-            </td>
-            <td style="font-size: 11px; padding: 4px;">{{data.SCHEDULE_FLAG_NA}} <p>{{dateFormat(data.SCHEDULE_TIME, '1')}}</p></td>
-            <td style="font-size: 11px; padding: 4px;">{{data.MO_EDITION_NA}}<p> MO 區間：{{data.LPST_FLAG_NA}} </td>
-            <td style="font-size: 11px; padding: 4px;">{{data.ICP_EDITION_NA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.PLANSET_EDITION}} <br> {{ data.SETNAME}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.INITIALFLAG}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.MOSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px;">{{data.CELLSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px; display:none;">{{data.NEXTSHOPSORTNA}}</td>
-            <td style="font-size: 11px; padding: 4px; display:none;">{{data.MACHINESORTNA}}</td>
-            <td style="text-align:center;font-size: 11px; padding: 4px;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
-          </tr>
+            <tr *ngFor="let data of RunTable.data; let i = index" class="editable-row">
+              <td nzLeft="0px" style="font-size: 13px; padding: 4px;"><label>{{data.planEdition}}</label><p> {{data.planStartTypeNa}}</td>
+              <td nzLeft="120px" style="font-size: 11px; padding: 4px;">
+                <p> {{ data.planStatuNa}}
+                  <nz-tag *ngIf="data.planStatu === 'Plan'" nzColor="processing">
+                    <span nz-icon nzType="sync" nzSpin></span>
+                    <span>執行中</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu === 'Fail'" nzColor="error">
+                    <span nz-icon nzType="close-circle"></span>
+                    <span>執行失敗</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
+                </p>
+                <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
+                  <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
+                <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
+                  <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
+                &nbsp;&nbsp;
+                <label *ngIf="data.fcpEdition === null"></label>
+                <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.fcpEdition)">
+                  <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.fcpEdition }}</a>
+              </td>
+              <td style="font-size: 11px; padding: 4px;">{{data.scheduleFlagNa}} <p>{{dateFormat(data.scheduleTime, '1')}}</p></td>
+              <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+              <td style="font-size: 11px; padding: 4px;">{{data.icpEditionNa}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.plansetEdition}} <br> {{ data.setName}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.initialFlag}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.moSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.cellSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px; display:none;">{{data.nextShopSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px; display:none;">{{data.machineSortNa}}</td>
+              <td style="text-align:center;font-size: 11px; padding: 4px;"><a (click)="openSorting(data.seqNo)">明細</a></td>
+            </tr>
 
-        </tbody>
-      </nz-table>
+          </tbody>
+        </nz-table>
 
-    </div>
-  </ng-template>
-  <ng-template #planLogFooter>
-    <button nz-button nzType="primary" (click)="Run_cancel()">關閉</button>
-  </ng-template>
+      </div>
+    </ng-template>
+    <ng-template #planLogFooter>
+      <button nz-button nzType="primary" (click)="Run_cancel()">關閉</button>
+    </ng-template>
 
-</nz-modal>
+  </nz-modal>
+</nz-spin>
 
 
 
@@ -529,7 +531,7 @@
           <td nzLeft="195px">{{data.SETNAME}}</td>
           <td>{{data.INITIALFLAG}}</td>
           <td>{{data.MOSORTNA}}</td>
-          <td>{{data.CELLSORTNA}}</td>
+          <td>{{data. CELLSORTNA}}</td>
           <td>{{data.NEXTSHOPSORTNA}}</td>
           <td>{{data.MACHINESORTNA}}</td>
           <td style="text-align:center;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
@@ -579,16 +581,16 @@
       <tbody>
         <tr *ngFor="let data of planSelectionTable.data; let i = index">
           <td nzLeft="0px" style="text-align:center;"><label nz-radio (click) = "sendPlanchoice(data)"></label></td>
-          <td nzLeft="56px">{{data.PLAN_EDITION}}<p>{{data.SCHEDULE_FLAG_NA}}&nbsp;&nbsp;{{dateFormat(data.SCHEDULE_TIME,'')}}</p></td>
-          <td>{{data.MO_EDITION_NA}}<p> MO 區間：{{data.LPST_FLAG_NA}} </td>
-          <td>{{data.ICP_EDITION_NA}}</td>
-          <td>{{data.PLANSET_EDITION}}<p>{{data.SETNAME}}</p></td>
-          <td>{{data.INITIALFLAG}}</td>
-          <td>{{data.MOSORTNA}}</td>
-          <td>{{data.CELLSORTNA}}</td>
-          <td>{{data.NEXTSHOPSORTNA}}</td>
-          <td>{{data.MACHINESORTNA}}</td>
-          <td style="text-align:center;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
+          <td nzLeft="56px">{{data.planEdition}}<p>{{data.scheduleFlagNa}}&nbsp;&nbsp;{{dateFormat(data.scheduleTime,'')}}</p></td>
+          <td>{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+          <td>{{data.icpEditionNa}}</td>
+          <td>{{data.plansetEdition}}<p>{{data.setName}}</p></td>
+          <td>{{data.initialFlag}}</td>
+          <td>{{data.moSortNa}}</td>
+          <td>{{data.cellSortNa}}</td>
+          <td>{{data.nextShopSortNa}}</td>
+          <td>{{data.machineSortNa}}</td>
+          <td style="text-align:center;"><a (click)="openSorting(data.seqNo)">明細</a></td>
         </tr>
       </tbody>
     </nz-table>
