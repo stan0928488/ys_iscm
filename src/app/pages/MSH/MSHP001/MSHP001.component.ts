@@ -1893,13 +1893,13 @@ this.handleSelectCarModal() ;
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
           let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
-          preGroupObject[key] = r 
+          preGroupObject[key] = this.selectEquipCode === 'TC' ?  arr[0] : r 
 
         }else if( key === 'TC_FREQUENCE') {  // 若果是TC_頻率 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
           let r = arr[0] + ' ~ ' + arr[arr.length - 1] ;
-          preGroupObject[key] = r 
+          preGroupObject[key] = this.selectEquipCode === 'TC' ?  arr[0] : r 
         }else if( key === 'BA1_TEMPERATURE') {  // 若果是BA_溫度 從低到高
           let arr = preGroupObject[key].toString().split(","); // 将字符串分割为一个字符数组
           arr.sort((a, b) => +a - +b); // 对数组进行从小到大排序
