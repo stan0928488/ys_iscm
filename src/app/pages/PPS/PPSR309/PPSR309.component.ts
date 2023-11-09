@@ -184,7 +184,7 @@ export class PPSR309Component implements OnInit {
             "訂單項次": (element['saleItem'] ? element['saleItem'] : null),
             "生計交期": (element['dateDeliveryPp'] ? new Date(element['dateDeliveryPp']) : null),
             "現況重量": (element['weight'] ? element['weight'] : null),
-            "PST": (element['pst'] ? element['pst'] : null),
+            "PST": (element['pst'] ? new Date(element['pst']) : null),
             "缺項群組": (element['missingGroup'] ? element['missingGroup'] : null),
             "允收截止日": (element['datePlanInStorage'] ? new Date(element['datePlanInStorage']) : null),
             "可接受交期": (element['dateAcceptable'] ? new Date(element['dateAcceptable']) : null),
