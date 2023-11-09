@@ -22,6 +22,7 @@ import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
+import { PPSCustomHeaderComponent } from './ppscustom-header.component';
 
 @Component({
   selector: 'app-MSHP001',
@@ -206,6 +207,13 @@ statisticRowData = [] ;
 statisticModalIsVisible = false ;
 //統計欄
 public statisticGridOptionsModal: GridOptions;
+
+/**头部处理开始 */
+receivedMessage: string = '';
+/**头部处理结束 */
+handleReceiveMessage($event) {
+  this.receivedMessage = $event;
+}
 
 //統計 Modal 
 handleStatisticModal(){
@@ -1245,7 +1253,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["ID"] = 0 ;
 
         let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header' }
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header', headerComponent: 'PPSCustomHeaderComponent' }
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);

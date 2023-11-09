@@ -138,6 +138,7 @@
     [rowSelection]="rowSelection"
     [animateRows]="true"
     [rowData]="rowData"
+    (messageEvent)="handleReceiveMessage($event)"
     [columnDefs]="outsideColumnDefs">
     [enableCellTextSelection]="true"
     [getRowId]="getRowId"

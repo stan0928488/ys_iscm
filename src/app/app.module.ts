@@ -187,6 +187,8 @@ import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR3
 import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_TabMenu.component';
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 
+import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -341,6 +343,7 @@ registerLocaleData(zh);
     PPSR322Child8Component,
     PPSR322Child9Component,
     PPSI210TabMenuComponent,
+    PPSCustomHeaderComponent,
   ],
   imports: [
     BrowserModule,
