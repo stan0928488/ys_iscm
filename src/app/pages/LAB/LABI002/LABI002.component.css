@@ -1,3 +1,4 @@
+@import url("../../../../standard.less");
 .wrap {
     min-height: 80px;
     background-color: white;
