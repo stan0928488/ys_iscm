@@ -886,7 +886,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', 1).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -1085,10 +1085,6 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.getPPSService.getShopSortingList('I', data.SEQNO).subscribe((res) => {
       console.log('getShopSortingList success');
       this.pickerShopList = res.data;
-
-      console.log('this.pickerShopList--->', this.pickerShopList);
-      
-
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -1190,7 +1186,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getShopSortingList('Q', _Mseqno).subscribe(async (res) => {
       console.log('getShopSortingList success');
-      this.ShopSortingList = res;
+      this.ShopSortingList = res.data;
       this.ShopSortingList.forEach(item => {
         item.MO_SORT = item.MO_SORT === undefined ? 'null_string' : item.MO_SORT;
       });
