@@ -1,40 +1,35 @@
 <nz-content style="margin:0 16px;">
-
-    <nz-breadcrumb style="margin:16px 0;">
-        <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
-        <nz-breadcrumb-item>月推移報表</nz-breadcrumb-item>
-        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+      <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+      <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+      <nz-breadcrumb-item>月推移報表</nz-breadcrumb-item>
+      <nz-breadcrumb-item>報表檢視(PPSR322)</nz-breadcrumb-item>
     </nz-breadcrumb>
 
-    <nz-collapse>
-        <nz-collapse-panel nzHeader="查詢條件">
-
-            <div nz-row>
-                <div nz-col nzSpan="24">
-                    <label style="margin-left:20px;">FCP版次</label>
-                    <nz-select
-                        style="width: 180px; margin-left:10px;"
-                        [(ngModel)]="searchObj.verList.fcpVer"
-                        nzPlaceHolder="對應FCP版本"
-                        >
-                        <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-                    </nz-select>
-                    <label style="margin-left:20px;">推移維護版次</label>
-                    <nz-select
-                        style="width: 180px; margin-left:10px;"
-                        [(ngModel)]="searchObj.verList.shiftVer"
-                        nzPlaceHolder="推移維護版本"
-                        >
-                        <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
-                    </nz-select>
-                    <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
-                        <span nz-icon nzType="search" nzTheme="outline"></span>查詢
-                    </button>
-                </div>
-            </div>
-        </nz-collapse-panel>
-    </nz-collapse>
+    <br>
+    <div nz-row>
+        <div nz-col nzSpan="24">
+            <label style="margin-left:20px;">FCP版次</label>
+            <nz-select
+                style="width: 180px; margin-left:10px;"
+                [(ngModel)]="searchObj.verList.fcpVer"
+                nzPlaceHolder="對應FCP版本"
+                >
+                <nz-option *ngFor="let abbr of selectedFcpVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+            </nz-select>
+            <label style="margin-left:20px;">推移維護版次</label>
+            <nz-select
+                style="width: 180px; margin-left:10px;"
+                [(ngModel)]="searchObj.verList.shiftVer"
+                nzPlaceHolder="推移維護版本"
+                >
+                <nz-option *ngFor="let abbr of selectedShiftVer" [nzLabel]="abbr.label" [nzValue]="abbr.value"></nz-option>
+            </nz-select>
+            <button style="margin-left:20px ; " (click)="notifyClick()" nz-button nzType="primary">
+                <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+            </button>
+        </div>
+    </div>
     <br>
 
     <nz-tabset [nzTabPosition]="'top'" [nzType]="'card'" [(nzSelectedIndex)]="breadcrumbIndex">
