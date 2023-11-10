@@ -8,6 +8,7 @@ import { CellClickedEvent, ColDef, GridReadyEvent, PreConstruct } from 'ag-grid-
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as moment from "moment";
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-PPSR309',
@@ -158,22 +159,57 @@ export class PPSR309Component implements OnInit {
 
   }
 
-  excelExport(){
-    this.isSpinning = true;
-    let headerArray = [] ;
+ excelExport() {
 
-    this.columnDefs.forEach(function(obj){
-      headerArray.push(obj['headerName']);
+    let exportData = [];
+    let postData = {};
+    postData['mo_EDITION'] = this.selectedVer_default;
+    this.PPSService.getR309Data(postData).subscribe(res =>{
+      
+      let result: any = res;
+
+      for (var i = 0; i <= result.length; i++) {
+        var element = result[i];
+        if (element) {
+          var obj =
+          {
+            "MO版本": (element['moEdition'] ? element['moEdition'] : null),
+            "廠區別": (element['plantCode'] ? element['plantCode'] : null),
+            "來源": (element['source'] ? element['source'] : null),
+            "區別": (element['areaGroup'] ? element['areaGroup'] : null),
+            "客戶簡稱": (element['custAbbreviations'] ? element['custAbbreviations'] : null),
+            "業務員": (element['sales'] ? element['sales'] : null),
+            "MO": (element['idNo'] ? element['idNo'] : null),
+            "訂單編號": (element['saleOrder'] ? element['saleOrder'] : null),
+            "訂單項次": (element['saleItem'] ? element['saleItem'] : null),
+            "生計交期": (element['dateDeliveryPp'] ? new Date(element['dateDeliveryPp']) : null),
+            "現況重量": (element['weight'] ? element['weight'] : null),
+            "PST": (element['pst'] ? new Date(element['pst']) : null),
+            "缺項群組": (element['missingGroup'] ? element['missingGroup'] : null),
+            "允收截止日": (element['datePlanInStorage'] ? new Date(element['datePlanInStorage']) : null),
+            "可接受交期": (element['dateAcceptable'] ? new Date(element['dateAcceptable']) : null),
+            "區別修正": (element['fixAreaGroup'] ? element['fixAreaGroup'] : null),
+            "異型棒": (element['isProfield'] ? element['isProfield'] : null),
+            "大棒": (element['isBigStick'] ? element['isBigStick'] : null),
+            "是否符合允收截止日": (element['isDatePlanInStorage'] ? element['isDatePlanInStorage'] : null),
+            "是否符合可接受交期": (element['isDateAcceptable'] ? element['isDateAcceptable'] : null),
+            "符合缺項": (element['isMissingGroup'] ? element['isMissingGroup'] : null),
+            "月底可入庫": (element['isEnoughBeforeEndOfMonth'] ? element['isEnoughBeforeEndOfMonth'] : null),
+            "現況MIC_NO": (element['lineupMicNo'] ? element['lineupMicNo'] : null),
+            "尺寸": (element['outDia'] ? element['outDia'] : null),
+          }
+          exportData.push(obj);
+        }
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, '出貨計畫總表')
+      XLSX.writeFile(wb, ExcelService.toExportFileName("出貨計畫總表"));
+
     });
 
-    let exportTableName = "出貨計畫彙總表"
-
-    let exportData = this.rowData;
-    this.excelService.exportAsExcelFile(exportData, exportTableName,headerArray);
-    
-    this.isSpinning = false;
-
- }
+  }
 
 }
 
