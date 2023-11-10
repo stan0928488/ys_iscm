@@ -1,8 +1,10 @@
 <nz-content style="margin:0 16px;">
-    <nz-breadcrumb style="margin:16px 0;">
-        <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
-        <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
-        <nz-breadcrumb-item><font size="4">出貨追蹤管理報表(PPSR344)</font></nz-breadcrumb-item>
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+      <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
+      <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+      <nz-breadcrumb-item>出貨追蹤管理報表(PPSR344)</nz-breadcrumb-item>
+      
+
         <!-- <nz-breadcrumb-item>
             <tr id="tab-1" style="height:30px; width:1000px; overflow-x:auto">
                 <ul>
@@ -14,23 +16,20 @@
     </nz-breadcrumb>
 
     <nz-spin [nzSize]="'large'" [nzSpinning]="isSpinning">
-
-        <nz-collapse>
-            <nz-collapse-panel nzHeader="查詢條件" nzActive="false">
-                <div nz-row>
-                    <nz-date-picker nzMode="month" [(ngModel)]="searchData.date"
-                        (ngModelChange)="onChange($event)"></nz-date-picker>
-                    <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
-                        <span nz-icon nzType="search" nzTheme="outline"></span>查詢
-                    </button>
-                    <button nz-button nzType="primary" 
-                      style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:50px; "
-                      (click)="converTBPPSRM010Data()"><span nzTheme="outline"></span>
-                      資料結轉
-                    </button>
-                </div>
-            </nz-collapse-panel>
-        </nz-collapse>
+        
+        <div nz-row>
+            <nz-date-picker nzMode="month" [(ngModel)]="searchData.date"
+                (ngModelChange)="onChange($event)"></nz-date-picker>
+            <button style="margin-left:20px ;" (click)="getDataList()" nz-button nzType="primary">
+                <span nz-icon nzType="search" nzTheme="outline"></span>查詢
+            </button>
+            <button nz-button nzType="primary" 
+              style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:50px; "
+              (click)="converTBPPSRM010Data()"><span nzTheme="outline"></span>
+              資料結轉
+            </button>
+        </div>
+        <br>
 
         <nz-table nzSize="small" [nzScroll]="{y: '600px',x:'3500px'}" nzBordered>
             <thead>
