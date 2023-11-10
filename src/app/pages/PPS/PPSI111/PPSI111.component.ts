@@ -66,6 +66,9 @@ export class PPSI111Component implements AfterViewInit {
   titleArray = ["id","tab1ID","站號","機台","combin條件"];
   importdata_repeat = [];
 
+  //類型
+  PLANT = '直棒';
+
   constructor(
     private PPSService: PPSService,
     private getPPSService: PPSService,
@@ -179,7 +182,7 @@ export class PPSI111Component implements AfterViewInit {
   getRequierList(): void {
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getOrignListData().subscribe(res => {
+    this.getPPSService.getOrignListData(this.PLANT).subscribe(res => {
       console.log("getOrignListData success");
       this.COLUMN_NAMEList = res;
 

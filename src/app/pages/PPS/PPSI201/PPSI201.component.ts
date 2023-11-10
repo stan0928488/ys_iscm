@@ -75,6 +75,9 @@ export class PPSI201Component implements AfterViewInit {
   comitENStr = "";
   queryShopAndCode = [];
 
+  // 類型
+  PLANT = '直棒'; 
+
 
   todo = [
     { value: 'I can be dragged', disabled: true },
@@ -399,7 +402,7 @@ export class PPSI201Component implements AfterViewInit {
     console.log("getOrignListData...");
 
     let myObj = this;
-    this.getPPSService.getOrignListData().subscribe(res => {
+    this.getPPSService.getOrignListData(this.PLANT).subscribe(res => {
       console.log("getOrignListData success");
       this.orginList = res;
       console.log(res);

@@ -75,6 +75,9 @@ export class PPSI201NonBarComponent implements AfterViewInit {
   comitENStr = "";
   queryShopAndCode = [];
 
+  // 類型
+  PLANT = '精整'; 
+
 
   todo = [
     { value: 'I can be dragged', disabled: true },
@@ -401,7 +404,7 @@ export class PPSI201NonBarComponent implements AfterViewInit {
     console.log("getOrignListData...");
 
     let myObj = this;
-    this.getPPSService.getOrignListData().subscribe(res => {
+    this.getPPSService.getOrignListData(this.PLANT).subscribe(res => {
       console.log("getOrignListData success");
       this.orginList = res;
       console.log(res);
@@ -468,14 +471,14 @@ export class PPSI201NonBarComponent implements AfterViewInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
       //第一位只能是
-      if (!this.checkFistRow(event.previousIndex)) {
-        this.message.error("第一位只能是「FCP下站順位」");
-        return;
-      }
-      if (!this.checkEPSTOrLPSTExist(event.previousIndex)) {
-        this.message.error("PST 、 EPST 或者 LPST 每組排序只能存在其一");
-        return;
-      }
+      // if (!this.checkFistRow(event.previousIndex)) {
+      //   this.message.error("第一位只能是「FCP下站順位」");
+      //   return;
+      // }
+      // if (!this.checkEPSTOrLPSTExist(event.previousIndex)) {
+      //   this.message.error("PST 、 EPST 或者 LPST 每組排序只能存在其一");
+      //   return;
+      // }
 
       transferArrayItem(event.previousContainer.data,
         event.container.data,

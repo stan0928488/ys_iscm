@@ -758,11 +758,12 @@ export class PPSService {
   }
 
   //Get getOrignListData 建立規劃策略
-  getOrignListData() {
+  getOrignListData(plant : string) {
     console.log('api service getOrignListData');
+    const httpParams = new HttpParams().set('plant', plant);
     let queryUrl = this.APINEWURL + '/FCP/I201/getOrignListData';
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { params: httpParams });
   }
   getPickerShopEQUIPNEW(_type, _ShopArr) {
     console.log('api service getPickerShopEQUIP');

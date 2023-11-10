@@ -13,9 +13,11 @@
       ><span nz-icon nzType="save" nzTheme="outline"></span>
         建立策略
       </button>&nbsp;&nbsp;
+
+      <!-- *ngIf="!isRunFCP"-->
       <button
         nz-button
-        *ngIf="!isRunFCP"
+        
         style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
         nzType="primary"
         [nzSize]="'large'"
@@ -106,7 +108,7 @@
         <td>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <nz-radio-group [(ngModel)]="cellValue" (click) = "changeValue('cellValue')">
-            <label nz-radio nzValue="1">站別 (by routing), TB (時間近到遠), 機台 (負荷量最高)</label>
+            <label nzDisabled="true" nz-radio nzValue="1">站別 (by routing), TB (時間近到遠), 機台 (負荷量最高)</label>
             <label nz-radio nzValue="2">TB (時間近到遠), 站別 (by routing), 機台 (負荷量最高)</label>
           </nz-radio-group>
         </td>
@@ -139,7 +141,7 @@
         <th>FCP下站合併天數</th>    <!-- 解決前後違反問題 -->
         <td>
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <nz-input-number nzPlaceHolder = "天數" [(ngModel)]="FROZAN_GROUP" [nzMin]="0" [nzMax]="10000" [nzStep]="1"></nz-input-number>
+          <nz-input-number nzDisabled="true" nzPlaceHolder = "天數" [(ngModel)]="FROZAN_GROUP" [nzMin]="0" [nzMax]="10000" [nzStep]="1"></nz-input-number>
         </td>
       </tr>
 
@@ -224,13 +226,13 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-input-number style="width: 40px;"  nzPlaceHolder = "集批天數" [(ngModel)]="data.INTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('1', i, data.INTERVAL)"></nz-input-number>
+                  <nz-input-number nzDisabled="true" style="width: 40px;"  nzPlaceHolder = "集批天數" [(ngModel)]="data.INTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('1', i, data.INTERVAL)"></nz-input-number>
                 </div>
               </td>
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-select style="max-width: 150px; width: 100%;" nzPlaceHolder = "集批條件" [(ngModel)]="data.REQUIREMENT" (click)="getRequierList('1', data.SORTING, '　', i)" (blur)="stopEdit('')">
+                  <nz-select nzDisabled="true" style="max-width: 150px; width: 100%;" nzPlaceHolder = "集批條件" [(ngModel)]="data.REQUIREMENT" (click)="getRequierList('1', data.SORTING, '　', i)" (blur)="stopEdit('')">
                     <nz-option *ngFor="let s of REQUIREList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
                   </nz-select>
                 </div>
@@ -238,7 +240,7 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-radio-group style="width: 90px;" [(ngModel)]="data.ISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('1', i, data.ISCOMBINE)">
+                  <nz-radio-group nzDisabled="true" style="width: 90px;" [(ngModel)]="data.ISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('1', i, data.ISCOMBINE)">
                     <label nz-radio-button nzValue="Y">Y</label>
                     <label nz-radio-button nzValue="N">N</label>
                   </nz-radio-group>
@@ -247,13 +249,14 @@
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-input-number  style="width: 65px;" nzPlaceHolder = "交期範圍" [(ngModel)]="data.COMBINE_RANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('1', i, data.COMBINE_RANGE)"></nz-input-number>
+                  <nz-input-number nzDisabled="true" style="width: 65px;" nzPlaceHolder = "交期範圍" [(ngModel)]="data.COMBINE_RANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('1', i, data.COMBINE_RANGE)"></nz-input-number>
                 </div>
               </td>
 
               <td style="text-align:center; padding: 5px; height: 60px;">
                 <div class="editable-cell" (click)="startEdit(data.id)">
-                  <nz-select 
+                  <nz-select
+                    nzDisabled="true"
                     nzPlaceHolder="平衡設定" 
                     style="max-width: 150px; width: 100%;" 
                     [(ngModel)]="data.MO_SORT" 
@@ -271,11 +274,12 @@
                 </div>
               </td>
 
+              <!-- 原來的 [nzDisabled]="data.isOffloadStartDateDisabled" -->
               <td style="text-align:center; padding: 5px; height: 60px;">
-                <nz-date-picker 
+                <nz-date-picker
                   [(ngModel)]="data.OFFLOAD_DATE_START"
                   nzPlaceHolder="平移日期-起"
-                  [nzDisabled]="data.isOffloadStartDateDisabled"
+                  [nzDisabled]="true"
                   nz-tooltip
                   [nzTooltipTitle]="data.offloadStartDateDisabledTooltip"
                   [nzDisabledDate]="disabledOffloadStartDate"
@@ -283,11 +287,13 @@
                 </nz-date-picker>
               </td>
 
+              <!-- 原來的 [nzDisabled]="data.isOffloadEndDateDisabled"-->
               <td style="text-align:center; padding: 5px; height: 60px;">
-                <nz-date-picker 
+                <nz-date-picker
+                  nzDisabled
                   [(ngModel)]="data.OFFLOAD_DATE_END"
                   nzPlaceHolder="平移日期-迄"
-                  [nzDisabled]="data.isOffloadEndDateDisabled"
+                  [nzDisabled]="true"
                   nz-tooltip
                   [nzTooltipTitle]="data.offloadEndDateDisabledTooltip"
                   [nzDisabledDate]="disabledOffloadEndDate(data.OFFLOAD_DATE_START)"
@@ -370,13 +376,13 @@
 
           <td style="text-align:center; padding: 5px; height: 60px;">
             <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
-              <nz-input-number nzPlaceHolder = "集批天數" [(ngModel)]="dtldata.dtlINTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('2', j, dtldata.dtlINTERVAL)"></nz-input-number>
+              <nz-input-number nzDisabled="true" nzPlaceHolder = "集批天數" [(ngModel)]="dtldata.dtlINTERVAL" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliINTERVAL('2', j, dtldata.dtlINTERVAL)"></nz-input-number>
             </div>
           </td>
 
           <td style="text-align:center; padding: 5px; height: 60px;">
             <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
-              <nz-select style="width: 100px;" nzPlaceHolder = "集批條件" [(ngModel)]="dtldata.dtlREQUIREMENT" (click)="getRequierList('2', dtldata.dtlSORTING, '　', j)" (blur)="stopEdit('')">
+              <nz-select nzDisabled="true" style="width: 100px;" nzPlaceHolder = "集批條件" [(ngModel)]="dtldata.dtlREQUIREMENT" (click)="getRequierList('2', dtldata.dtlSORTING, '　', j)" (blur)="stopEdit('')">
                 <nz-option *ngFor="let s of REQUIREList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
               </nz-select>
             </div>
@@ -384,7 +390,7 @@
 
           <td style="text-align:center; padding: 5px; height: 60px;">
             <div class="editable-cell" (click)="startEdit(dtldata.dtlid)">
-              <nz-radio-group [(ngModel)]="dtldata.dtlISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('2', j, dtldata.dtlISCOMBINE)">
+              <nz-radio-group nzDisabled="true" [(ngModel)]="dtldata.dtlISCOMBINE" nzButtonStyle="solid" (ngModelChange)="changeCtrl('2', j, dtldata.dtlISCOMBINE)">
                 <label nz-radio-button nzValue="Y">Y</label>
                 <label nz-radio-button nzValue="N">N</label>
               </nz-radio-group>
@@ -393,7 +399,7 @@
 
           <td style="text-align:center; padding: 5px; height: 60px;">
             <div  class="editable-cell" (click)="startEdit(dtldata.dtlid)">
-              <nz-input-number nzPlaceHolder = "交期範圍" [(ngModel)]="dtldata.dtlRANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('2', j, dtldata.dtlRANGE)"></nz-input-number>
+              <nz-input-number nzDisabled="true" nzPlaceHolder = "交期範圍" [(ngModel)]="dtldata.dtlRANGE" [nzMin]="0" [nzMax]="10000" [nzStep]="1" (ngModelChange)="cliRange('2', j, dtldata.dtlRANGE)"></nz-input-number>
             </div>
           </td>
 

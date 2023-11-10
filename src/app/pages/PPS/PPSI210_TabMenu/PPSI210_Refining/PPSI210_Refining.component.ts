@@ -461,7 +461,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
               let Sorting = [];
               this.SortList = [];
               if (_type.length === 1) {
-                this.listOfData[_idx].REQUIREMENT = '';
+                this.listOfData[_idx].REQUIREMENT = null;
               }
               for (let i = 0; i < this.pickerSortingList.length; i++) {
                 Sorting.push(this.pickerSortingList[i].DATALIST);
@@ -471,7 +471,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
               let MachineSorting = [];
               this.MachineSortList = [];
               if (_type.length === 1) {
-                this.listOfData_dtl[_idx].dtlREQUIREMENT = '';
+                this.listOfData_dtl[_idx].dtlREQUIREMENT = null;
               }
               for (let i = 0; i < this.pickerSortingList.length; i++) {
                 MachineSorting.push(this.pickerSortingList[i].DATALIST);
@@ -535,17 +535,18 @@ export class PPSI210RefiningComponent implements AfterViewInit {
 
   // 外層 table (站別優先順序) ------------------------------
   addRow(): void {
+      //-- Disabled的輸入欄位資料內容都設定為null傳給後端
     this.listOfData = [
       ...this.listOfData,
       {
         id: `${this.i}`,
         SHOP_CODE: `　`,
         SORTING: `　`,
-        INTERVAL: `0`,
-        REQUIREMENT: `　`,
-        ISCOMBINE: `Y`,
-        COMBINE_RANGE: `3`,
-        MO_SORT : '',
+        INTERVAL: null,
+        REQUIREMENT: null,
+        ISCOMBINE: null,
+        COMBINE_RANGE: null,
+        MO_SORT : null,
         OFFLOAD_DATE_START : null,
         OFFLOAD_DATE_END : null,
         isOffloadStartDateDisabled : false, // 「平移日期-起」選取器是否禁用
@@ -611,10 +612,10 @@ export class PPSI210RefiningComponent implements AfterViewInit {
             dtlSHOP_CODE: _shopcode,
             dtlMACHINE: `　`,
             dtlSORTING: `　`,
-            dtlINTERVAL: `5`,
-            dtlREQUIREMENT: `　`,
-            dtlISCOMBINE: `Y`,
-            dtlRANGE: `3`,
+            dtlINTERVAL: null,
+            dtlREQUIREMENT: null,
+            dtlISCOMBINE: null,
+            dtlRANGE: null,
           },
         ];
         this.j++;
@@ -674,10 +675,10 @@ export class PPSI210RefiningComponent implements AfterViewInit {
               dtlSHOP_CODE: _shopcode,
               dtlMACHINE: `　`,
               dtlSORTING: `　`,
-              dtlINTERVAL: `5`,
-              dtlREQUIREMENT: `　`,
-              dtlISCOMBINE: `Y`,
-              dtlRANGE: `3`,
+              dtlINTERVAL: null,
+              dtlREQUIREMENT: null,
+              dtlISCOMBINE: null,
+              dtlRANGE: null,
             },
           ];
           this.j++;
@@ -713,6 +714,9 @@ export class PPSI210RefiningComponent implements AfterViewInit {
           this.listOfData_dtl[i].dtlREQUIREMENT === '　' ||
           this.listOfData_dtl[i].dtlREQUIREMENT === undefined)
       ) {
+
+        console.log('this.listOfData_dtl[i]--->', this.listOfData_dtl[i]);
+        
         this.message.create(
           'error',
           '有選機台且有集批天數，卻未設定「集批條件」，請檢查！'
@@ -832,6 +836,19 @@ export class PPSI210RefiningComponent implements AfterViewInit {
   // 內層 table (機台優先順序) ------------------------------
   add_dtlRow(_shopcode): void {
     console.log(_shopcode);
+
+    // 原始初始設定
+    // {
+    //   dtlid: `${this.j}`,
+    //   dtlSHOP_CODE: _shopcode,
+    //   dtlMACHINE: `　`,
+    //   dtlSORTING: `　`,
+    //   dtlINTERVAL: `5`,
+    //   dtlREQUIREMENT: `　`,
+    //   dtlISCOMBINE: `Y`,
+    //   dtlRANGE: `3`,
+    // },
+
     this.listOfData_dtl = [
       ...this.listOfData_dtl,
       {
@@ -839,10 +856,10 @@ export class PPSI210RefiningComponent implements AfterViewInit {
         dtlSHOP_CODE: _shopcode,
         dtlMACHINE: `　`,
         dtlSORTING: `　`,
-        dtlINTERVAL: `5`,
-        dtlREQUIREMENT: `　`,
-        dtlISCOMBINE: `Y`,
-        dtlRANGE: `3`,
+        dtlINTERVAL: null,
+        dtlREQUIREMENT: null,
+        dtlISCOMBINE: null,
+        dtlRANGE: null,
       },
     ];
     this.j++;
@@ -914,7 +931,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', 2).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
       console.log(res);
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
@@ -968,11 +985,11 @@ export class PPSI210RefiningComponent implements AfterViewInit {
   cliINTERVAL(_type, _idx, _flag) {
     if (_type === '1') {
       if (_flag === 0) {
-        this.listOfData[_idx].REQUIREMENT = `　`;
+        this.listOfData[_idx].REQUIREMENT = null;
       }
     } else {
       if (_flag === 0) {
-        this.listOfData_dtl[_idx].dtlREQUIREMENT = `　`;
+        this.listOfData_dtl[_idx].dtlREQUIREMENT = null;
       }
     }
   }
@@ -1060,14 +1077,18 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.cellValue = data.CELLSORT;
     this.nextshopValue = data.NEXTSHOPSORT;
     this.machineValue = data.MACHINESORT;
-    this.FROZAN_GROUP = data.FROZAN_GROUP;
+    this.FROZAN_GROUP = _.isNil(data.FROZAN_GROUP) ? null : data.FROZAN_GROUP;
 
     let myObj = this;
     myObj.loading = true;
     this.isSpinning = true;
     this.getPPSService.getShopSortingList('I', data.SEQNO).subscribe((res) => {
       console.log('getShopSortingList success');
-      this.pickerShopList = res;
+      this.pickerShopList = res.data;
+
+      console.log('this.pickerShopList--->', this.pickerShopList);
+      
+
       let initdata = [];
       for (let i = 0; i < this.pickerShopList.length; i++) {
         const id = i;
@@ -1270,10 +1291,11 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     //   myObj.message.create('error', '請選擇「機台平衡策略」');
     //   return;
     // }
-    if (this.FROZAN_GROUP === undefined) {
-      myObj.message.create('error', '請輸入「FCP下站合併天數」');
-      return;
-    }
+
+    // if (this.FROZAN_GROUP === undefined) {
+    //   myObj.message.create('error', '請輸入「FCP下站合併天數」');
+    //   return;
+    // }
 
     const listOfData_cloneDeep = _.cloneDeep(this.listOfData);
 
@@ -1298,88 +1320,89 @@ export class PPSI210RefiningComponent implements AfterViewInit {
         );
         return;
       }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].INTERVAL != 0 &&
-        (listOfData_cloneDeep[i].REQUIREMENT === '' ||
-        listOfData_cloneDeep[i].REQUIREMENT === '　' ||
-        listOfData_cloneDeep[i].REQUIREMENT === undefined)
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-          listOfData_cloneDeep[i].id +
-            ' 列有集批天數，卻未設定「集批條件」，請檢查！'
-        );
-        return;
-      }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
-        listOfData_cloneDeep[i].COMBINE_RANGE === 0
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-          listOfData_cloneDeep[i].id +
-            " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
-        );
-        return;
-      }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
-        listOfData_cloneDeep[i].COMBINE_RANGE !== 0
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-          listOfData_cloneDeep[i].id +
-            " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
-        );
-        return;
-      }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].INTERVAL != 0 &&
+      //   (listOfData_cloneDeep[i].REQUIREMENT === '' ||
+      //   listOfData_cloneDeep[i].REQUIREMENT === '　' ||
+      //   listOfData_cloneDeep[i].REQUIREMENT === undefined)
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //     listOfData_cloneDeep[i].id +
+      //       ' 列有集批天數，卻未設定「集批條件」，請檢查！'
+      //   );
+      //   return;
+      // }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
+      //   listOfData_cloneDeep[i].COMBINE_RANGE === 0
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //     listOfData_cloneDeep[i].id +
+      //       " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
+      //   );
+      //   return;
+      // }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
+      //   listOfData_cloneDeep[i].COMBINE_RANGE !== 0
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //     listOfData_cloneDeep[i].id +
+      //       " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
+      //   );
+      //   return;
+      // }
 
-      if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
-        myObj.message.create(
-          'error',
-          `
-          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-          必須選擇指定平衡設定，請檢查！ 
-          `
-        );
-        return;
-      }
+      // if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
+      //   myObj.message.create(
+      //     'error',
+      //     `
+      //     「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+      //     必須選擇指定平衡設定，請檢查！ 
+      //     `
+      //   );
+      //   return;
+      // }
 
-      // 平衡設定選擇 offload-psuh 必須選擇「平移日期-起」與「平移日期-迄」
-      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
+      // // 平衡設定選擇 offload-psuh 必須選擇「平移日期-起」與「平移日期-迄」
+      // if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
 
-          const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
+      //     const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
 
-          if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
-            myObj.message.create(
-              'error',
-              `
-              「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-              平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
-              `
-            );
-            return;
-          }
+      //     if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
+      //       myObj.message.create(
+      //         'error',
+      //         `
+      //         「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+      //         平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
+      //         `
+      //       );
+      //       return;
+      //     }
 
-          if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
-            myObj.message.create(
-              'error',
-              `
-              「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-              平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
-              `
-            );
-            return;
-          }
+      //     if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
+      //       myObj.message.create(
+      //         'error',
+      //         `
+      //         「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+      //         平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
+      //         `
+      //       );
+      //       return;
+      //     }
           
-      }
-      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
+      // }
+
+      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' || _.isNil(listOfData_cloneDeep[i].MO_SORT) || _.isEmpty(listOfData_cloneDeep[i].MO_SORT) ? null : listOfData_cloneDeep[i].MO_SORT;
 
       // 如果指定平衡設定為「策略預設」或「Push(C)」
       // 「平移日期-起」與「平移日期-迄」畫面顯示當天日期，
@@ -1434,6 +1457,9 @@ export class PPSI210RefiningComponent implements AfterViewInit {
 		}
     */
 
+    console.log('listOfData_cloneDeep--->', listOfData_cloneDeep);
+    console.log('this.listOfData_dtl--->', this.listOfData_dtl);
+    
     this.loading = true;
     this.isSpinning = true;
     return new Promise((resolve, reject) => {
@@ -1475,16 +1501,24 @@ export class PPSI210RefiningComponent implements AfterViewInit {
               (this.cellValue = undefined),
               (this.nextshopValue = undefined),
               (this.machineValue = undefined),
-              (this.FROZAN_GROUP = 0),
+              (this.FROZAN_GROUP = null),
               (this.listOfData = [
                 {
                   id: `${this.i}`,
                   SHOP_CODE: `　`,
                   SORTING: `　`,
-                  INTERVAL: `0`,
-                  REQUIREMENT: `　`,
-                  ISCOMBINE: `Y`,
-                  COMBINE_RANGE: `3`,
+                  INTERVAL: null,
+                  REQUIREMENT: null,
+                  ISCOMBINE: null,
+                  COMBINE_RANGE: null,
+                  MO_SORT : null,
+                  OFFLOAD_DATE_START : null,
+                  isOffloadStartDateDisabled : false, // 「平移日期-起」選取器是否禁用
+                  offloadStartDateDisabledTooltip : '', // 「平移日期-起」選取器被禁用的說明訊息
+                  OFFLOAD_DATE_END : null,
+                  isOffloadEndDateDisabled : false, // 「平移日期-迄」選取器是否禁用
+                  offloadEndDateDisabledTooltip : '', // 「平移日期-迄」選取器被禁用的說明訊息
+                  moSortPrevSelected : null // 紀錄上一個選擇的平衡設定選項
                 },
               ]);
             this.listOfData_dtl = [
@@ -1493,10 +1527,10 @@ export class PPSI210RefiningComponent implements AfterViewInit {
                 dtlSHOP_CODE: `　`,
                 dtlMACHINE: `　`,
                 dtlSORTING: `　`,
-                dtlINTERVAL: `5`,
-                dtlREQUIREMENT: `　`,
-                dtlISCOMBINE: `Y`,
-                dtlRANGE: `3`,
+                dtlINTERVAL: null,
+                dtlREQUIREMENT: null,
+                dtlISCOMBINE: null,
+                dtlRANGE: null,
               },
             ];
             this.realMachineList = [];
@@ -1544,18 +1578,18 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       myObj.message.create('error', '請選擇「Cell處理順序」');
       return;
     }
-    if (this.nextshopValue === undefined) {
-      myObj.message.create('error', '請選擇「相臨站別平衡策略」');
-      return;
-    }
-    if (this.machineValue === undefined) {
-      myObj.message.create('error', '請選擇「機台平衡策略」');
-      return;
-    }
-    if (this.FROZAN_GROUP === undefined) {
-      myObj.message.create('error', '請輸入「FCP下站合併天數」');
-      return;
-    }
+    // if (this.nextshopValue === undefined) {
+    //   myObj.message.create('error', '請選擇「相臨站別平衡策略」');
+    //   return;
+    // }
+    // if (this.machineValue === undefined) {
+    //   myObj.message.create('error', '請選擇「機台平衡策略」');
+    //   return;
+    // }
+    // if (this.FROZAN_GROUP === undefined) {
+    //   myObj.message.create('error', '請輸入「FCP下站合併天數」');
+    //   return;
+    // }
     
     const listOfData_cloneDeep = _.cloneDeep(this.listOfData);
     
@@ -1580,89 +1614,89 @@ export class PPSI210RefiningComponent implements AfterViewInit {
         );
         return;
       }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].INTERVAL != 0 &&
-        (listOfData_cloneDeep[i].REQUIREMENT === '' ||
-          listOfData_cloneDeep[i].REQUIREMENT === '　' ||
-          listOfData_cloneDeep[i].REQUIREMENT === undefined)
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-            listOfData_cloneDeep[i].id +
-            ' 列有集批天數，卻未設定「集批條件」，請檢查！'
-        );
-        return;
-      }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
-        listOfData_cloneDeep[i].COMBINE_RANGE === 0
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-            listOfData_cloneDeep[i].id +
-            " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
-        );
-        return;
-      }
-      if (
-        listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
-        listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
-        listOfData_cloneDeep[i].COMBINE_RANGE !== 0
-      ) {
-        myObj.message.create(
-          'error',
-          '「站別策略設定」，第 ' +
-            listOfData_cloneDeep[i].id +
-            " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
-        );
-        return;
-      }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].INTERVAL != 0 &&
+      //   (listOfData_cloneDeep[i].REQUIREMENT === '' ||
+      //     listOfData_cloneDeep[i].REQUIREMENT === '　' ||
+      //     listOfData_cloneDeep[i].REQUIREMENT === undefined)
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //       listOfData_cloneDeep[i].id +
+      //       ' 列有集批天數，卻未設定「集批條件」，請檢查！'
+      //   );
+      //   return;
+      // }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].ISCOMBINE === 'Y' &&
+      //   listOfData_cloneDeep[i].COMBINE_RANGE === 0
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //       listOfData_cloneDeep[i].id +
+      //       " 列 COMBINE='Y'，「交期範圍」不可為 0，請檢查！"
+      //   );
+      //   return;
+      // }
+      // if (
+      //   listOfData_cloneDeep[i].SHOP_CODE !== '　' &&
+      //   listOfData_cloneDeep[i].ISCOMBINE === 'N' &&
+      //   listOfData_cloneDeep[i].COMBINE_RANGE !== 0
+      // ) {
+      //   myObj.message.create(
+      //     'error',
+      //     '「站別策略設定」，第 ' +
+      //       listOfData_cloneDeep[i].id +
+      //       " 列 COMBINE='N'，「交期範圍」應為 0，請檢查！"
+      //   );
+      //   return;
+      // }
       
-      if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
-        myObj.message.create(
-          'error',
-          `
-          「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-          必須選擇指定平衡設定，請檢查！ 
-          `
-        );
-        return;
-      }
+      // if(_.isEmpty(listOfData_cloneDeep[i].MO_SORT)){
+      //   myObj.message.create(
+      //     'error',
+      //     `
+      //     「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+      //     必須選擇指定平衡設定，請檢查！ 
+      //     `
+      //   );
+      //   return;
+      // }
 
       // 平衡設定選擇 offload-psuh 必須選擇「平移日期-起」與「平移日期-迄」
-      if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
+    //   if(_.isEqual(listOfData_cloneDeep[i].MO_SORT, 'F')) {
 
-        const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
+    //     const moSortLabel = this.moSortListOfOption.filter(item => _.isEqual(item.method, listOfData_cloneDeep[i].MO_SORT))[0].notesChinese;
 
-        if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
-          myObj.message.create(
-            'error',
-            `
-            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-            平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
-            `
-          );
-          return;
-        }
+    //     if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_START)){
+    //       myObj.message.create(
+    //         'error',
+    //         `
+    //         「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+    //         平衡設定選擇「${moSortLabel}」必須選擇「平移日期-起」，請檢查！ 
+    //         `
+    //       );
+    //       return;
+    //     }
 
-        if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
-          myObj.message.create(
-            'error',
-            `
-            「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
-            平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
-            `
-          );
-          return;
-        }
+    //     if(_.isNil(listOfData_cloneDeep[i].OFFLOAD_DATE_END)){
+    //       myObj.message.create(
+    //         'error',
+    //         `
+    //         「站別策略設定」，第 ${listOfData_cloneDeep[i].id} 列，
+    //         平衡設定選擇「${moSortLabel}」必須選擇「平移日期-迄」，請檢查！ 
+    //         `
+    //       );
+    //       return;
+    //     }
         
-    }
+    // }
 
-      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string' ? null : listOfData_cloneDeep[i].MO_SORT;
+      listOfData_cloneDeep[i].MO_SORT = listOfData_cloneDeep[i].MO_SORT === 'null_string'  || _.isNil(listOfData_cloneDeep[i].MO_SORT) ? null : listOfData_cloneDeep[i].MO_SORT;
       
       // 如果指定平衡設定為「策略預設」或「Push(C)」
       // 「平移日期-起」與「平移日期-迄」畫面顯示當天日期，
@@ -1726,17 +1760,17 @@ export class PPSI210RefiningComponent implements AfterViewInit {
               (this.cellValue = undefined),
               (this.nextshopValue = undefined),
               (this.machineValue = undefined),
-              (this.FROZAN_GROUP = 0),
+              (this.FROZAN_GROUP = null),
               (this.listOfData = [
                 {
                   id: `${this.i}`,
                   SHOP_CODE: `　`,
                   SORTING: `　`,
-                  INTERVAL: `0`,
-                  REQUIREMENT: `　`,
-                  ISCOMBINE: `Y`,
-                  COMBINE_RANGE: `3`,
-                  MO_SORT : '',
+                  INTERVAL: null,
+                  REQUIREMENT: null,
+                  ISCOMBINE: null,
+                  COMBINE_RANGE: null,
+                  MO_SORT : null,
                   OFFLOAD_DATE_START : null,
                   isOffloadStartDateDisabled : false, // 「平移日期-起」選取器是否禁用
                   offloadStartDateDisabledTooltip : '', // 「平移日期-起」選取器被禁用的說明訊息
@@ -1752,10 +1786,10 @@ export class PPSI210RefiningComponent implements AfterViewInit {
                 dtlSHOP_CODE: `　`,
                 dtlMACHINE: `　`,
                 dtlSORTING: `　`,
-                dtlINTERVAL: `5`,
-                dtlREQUIREMENT: `　`,
-                dtlISCOMBINE: `Y`,
-                dtlRANGE: `3`,
+                dtlINTERVAL: null,
+                dtlREQUIREMENT: null,
+                dtlISCOMBINE: null,
+                dtlRANGE: null,
               },
             ];
             this.realMachineList = [];
