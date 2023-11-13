@@ -1600,7 +1600,8 @@ export class PPSI220Component implements AfterViewInit {
     this.LoadingPage = true;
 		return new Promise((resolve, reject) => {
 			let obj = {};
-      let shop_code = "shopRouting='430','431','433','420','421','422','453','452','401','411','402','403','404','405','406','410','460','461','334','450','451','470','480','490'";
+      const shopRoutingArray: string[] = ['430','431','433','420','421','422','453','452','401','411','402','403','404','405','406','410','460','461','334','450','451','470','480','490'];
+      const shop_code: string = shopRoutingArray.map(route => encodeURIComponent(route)).join('%2C');
 
       this.loading = true;
       myObj.getPPSService.getFcpEdition(data.fcpEdition).subscribe(res => {
@@ -1609,21 +1610,19 @@ export class PPSI220Component implements AfterViewInit {
 
             if(_.get(res, 'msg') == "Y") {
               _.extend(obj, {
-                STARTRUN_TIME : data.startrunTime,
-                PLAN_EDITION : data.planEdition,
-                FCP_EDITION : data.fcpEdition,
-                USERNAME : this.USERNAME,
-                DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+                startrunTime : data.startrunTime,
+                planEdition : data.planEdition,
+                fcpEdition : data.fcpEdition
               })
               myObj.getPPSService.publishData(obj).subscribe(res => {
-                if(_.get(res, 'msg') == "Y") {
-                  this.sucessMSG('已發布至MES', `FCP版本：${data.fcpEdition}`);
+                if(res.code = 200) {
+                  this.sucessMSG('已發佈至工廠排程', `FCP版本：${data.fcpEdition}`);
                   this.getPlanDataList();
                 }
                 myObj.loading = false;
                 this.LoadingPage = false;
               }, err => {
-                myObj.message.create("error", `規劃案「${data.planEdition}」，已發布至MES，寫入 MYSQL 失敗`);
+                myObj.message.create("error", `規劃案「${data.planEdition}」，已發佈至工廠排程，寫入 MYSQL 失敗`);
                 reject('DB寫入失敗 fail');
                 myObj.loading = false;
                 this.LoadingPage = false;
@@ -1635,7 +1634,7 @@ export class PPSI220Component implements AfterViewInit {
               this.LoadingPage = false;
             }
           },err => {
-            myObj.message.create("error", `規劃案「${data.planEdition}」，發布至MES，失敗_FCP`);
+            myObj.message.create("error", `規劃案「${data.planEdition}」，已發佈至工廠排程，失敗_FCP`);
             myObj.loading = false;
             this.LoadingPage = false;
             reject('Publish fail');
@@ -1646,7 +1645,7 @@ export class PPSI220Component implements AfterViewInit {
           this.LoadingPage = false;
         }
       },err => {
-        myObj.message.create("error", `規劃案「${data.planEdition}」，發布至MES，失敗_WEB`);
+        myObj.message.create("error", `規劃案「${data.planEdition}」，已發佈至工廠排程，失敗_WEB`);
         myObj.loading = false;
         this.LoadingPage = false;
         reject('Publish fail');
