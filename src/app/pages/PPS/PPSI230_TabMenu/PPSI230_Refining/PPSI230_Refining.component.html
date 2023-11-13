@@ -1,0 +1,152 @@
+<nz-content style="margin:0 16px;">
+
+  <div style="padding:24px; background: rgb(255, 255, 255); min-height: 500px;">
+
+    <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+
+    <table width="100%">
+      <tr style="height: 30px;">
+        <td style="width: 50px; text-align:right; background-color: #3689c0; border-bottom: 1px #3689c0 ridge; font-size: 14px;" colspan="2">資料與策略</td>
+        <td style="width: 120px; text-align:center; background-color: #3689c0;" rowspan = "2">規劃案版本：{{PLAN_EDITION}}</td>
+        <td style="width: 250px; text-align:center; background-color: #3689c0;" rowspan = "2">執行狀態</td>
+      </tr>
+
+      <tr style="height: 30px;">
+        <td style="width: 80px; text-align:left; background-color: #3689c0; border-top: 1px #3689c0 ridge; font-size: 14px;" colspan="2">&nbsp;&nbsp;版本</td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;開始時間與狀態</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{PLAN_STATU_NA}}</td>
+        <td style="width: 250px; vertical-align:text-top; font-size: 18px;" rowspan = "12">
+          <p></p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;生產規劃啟動： {{ PLANSTARTVER }}</p>
+          <p *ngIf = "RES_S != 'OK' && RES_S != ''">&nbsp;&nbsp;失敗：{{ RES_S }}<p>
+          <nz-progress [nzPercent]="S_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;取 MO 資料： {{ MOVER }}</p>
+          <p *ngIf = "RES_M != 'OK' && RES_M != ''">&nbsp;&nbsp;失敗：{{ RES_M }}<p>
+          <nz-progress [nzPercent]="M_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;工時計算： {{ DATAVER }}</p>
+          <p *ngIf = "RES_I != 'OK' && RES_I != ''">&nbsp;&nbsp;失敗：{{ RES_I }}<p>
+          <nz-progress [nzPercent]="I_PENT"></nz-progress>
+
+          <p></p>
+          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;ICP&FCP 計算： {{ FCPVER }}
+            <p style="font-weight: bold; color: #2638db;" *ngIf = "RES_F != 'OK' && RES_F != ''">&nbsp;&nbsp;失敗：{{ RES_F }}<p>
+            <nz-progress [nzPercent]="F_PENT"></nz-progress>
+          </p>
+
+
+        </td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;靜態資料</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{ICP_EDITION_NA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;" colspan="2">&nbsp;&nbsp;MO</td>
+        <td style="width: 120px;" >&nbsp;&nbsp;{{MO_EDITION_NA}}</td>
+      </tr>
+      <tr>
+        <td style="width: 5px;" rowspan="9">&nbsp;&nbsp;策<br>&nbsp;&nbsp;略</td>
+      </tr>
+
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;策略版本及名稱</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{PLANSET_EDITION}}&nbsp;-&nbsp;{{SETNAME}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;INITIAL PST</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{INITIALFLAG}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;MO平衡<br>&nbsp;&nbsp;搬移順序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{MOSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;Cell平衡排序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{CELLSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px; display:none;">
+        <td style="width: 50px;">&nbsp;&nbsp;相臨站別<br>&nbsp;&nbsp;平衡排序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{NEXTSHOPSORTNA}}</td>
+      </tr>
+      <tr style="height: 50px; display:none;">
+        <td style="width: 50px;">&nbsp;&nbsp;機台平衡策略</td>
+        <td style="width: 120px;">&nbsp;&nbsp;{{MACHINESORTNA}}</td>
+      </tr>
+      <tr style="height: 50px;">
+        <td style="width: 50px;">&nbsp;&nbsp;規劃優先順序</td>
+        <td style="width: 120px;">&nbsp;&nbsp;<a [class.disabled-a-link]="!isExistProposal" (click)="openSorting(MSEQNO)">明細</a></td>
+      </tr>
+
+    </table>
+    <p><p>
+    <label style="color: rgb(19, 168, 166); font-weight: bold;">※ 此頁面 30 秒刷新一次</label>
+
+
+
+  </nz-spin>
+
+  </div>
+</nz-content>
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSorting"
+  [nzTitle]="shopSortTitle"
+  [nzContent]="shopSortContent"
+  [nzFooter]="null"
+  [nzWidth]="1400"
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
+  <ng-template #shopSortContent>
+    <nz-spin style="z-index:9999;" nzTip="站別優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "shopSortLoading">
+      <ag-grid-angular
+          style="width:100%; height: 550px"
+          class="ag-theme-alpine ag-theme-PPSI230-custom"
+          [rowData]="ShopSortingList"
+          [columnDefs]="shopSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [context]="agGridContext"
+          [pagination]="true"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin>
+  </ng-template>
+</nz-modal>
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleMachine"
+  [nzTitle]="MachineSortTitle"
+  [nzContent]="MachineSortContent"
+  [nzFooter]="null"
+  (nzOnCancel)="handleCancel_M()"
+  [nzWidth]="1300"
+>
+  <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
+  <ng-template #MachineSortContent>
+    <nz-spin style="z-index:9999;" nzTip="站別機台優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "machineSortLoading">
+      <ag-grid-angular
+          style="width:100%; height:450px;"
+          class="ag-theme-alpine ag-theme-PPSI230-custom"
+          [rowData]="MachineSortingList"
+          [columnDefs]="machineSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [pagination]="true"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin> 
+  </ng-template>
+</nz-modal>
+
+

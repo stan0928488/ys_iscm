@@ -89,7 +89,7 @@ import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.compon
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
 import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
-import { PPSI230Component } from './pages/PPS/PPSI230/PPSI230.component';
+import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
 import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
@@ -186,6 +186,8 @@ import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR3
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
 import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_TabMenu.component';
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
+import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
+import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 
 registerLocaleData(zh);
 
@@ -254,6 +256,7 @@ registerLocaleData(zh);
     PPSI210RefiningComponent,
     PPSI220Component,
     PPSI230Component,
+    PPSI230RefiningComponent,
     PPSR301Component,
     PPSR302Component,
     PPSR302_coilComponent,
@@ -341,6 +344,7 @@ registerLocaleData(zh);
     PPSR322Child8Component,
     PPSR322Child9Component,
     PPSI210TabMenuComponent,
+    PPSI230TabMenuComponent,
   ],
   imports: [
     BrowserModule,

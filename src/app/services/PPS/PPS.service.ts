@@ -1431,10 +1431,10 @@ export class PPSService {
   // ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
   //Get getNewPlanData 啟動規劃案歷程
-  getLogPlanData(_startrun, _plan) {
+  getLogPlanData(_startrun, _plan, plantType) {
     console.log('api service getLogPlanData');
     let queryUrl =
-      this.APINEWURL + `/FCP/I230/getLogPlanData/${_startrun}/${_plan}`;
+      this.APINEWURL + `/FCP/I230/getLogPlanData/${_startrun}/${_plan}/${plantType}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }

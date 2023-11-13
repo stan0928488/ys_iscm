@@ -10,7 +10,7 @@ import * as moment from 'moment';
 
 import * as _ from "lodash";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { OpenMachineRendererComponent } from "../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
+import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 import { firstValueFrom } from "rxjs";
 
 @Component({
@@ -34,6 +34,7 @@ export class PPSI230Component implements AfterViewInit {
   ShopSortingList;    // 站別排序
   tmpArr;
   MachineSortingList;    // 機台排序
+  PLANT = '直棒'; //類型
 
   STARTRUN_TIME;
   PLAN_EDITION;
@@ -277,7 +278,7 @@ export class PPSI230Component implements AfterViewInit {
     console.log("getLogPlanData...");
 
     let myObj = this;
-    this.getPPSService.getLogPlanData("N", "N").subscribe(res => {
+    this.getPPSService.getLogPlanData("N", "N", this.PLANT).subscribe(res => {
       console.log("getLogPlanData success");
       this.planListData = res.data;
       console.log(" ------ res ------ ");

@@ -1,4 +1,4 @@
-@import url("../../../../standard.less");
+@import url("../../../../../standard.less");
 .example-form {
   min-width: 150px;
   max-width: 500px;
@@ -201,6 +201,11 @@ example-box.cdk-drag-disabled {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
+.disabled-a-link{ 
+  color: gray;
+  pointer-events: none;
+}
+
 ::ng-deep .ag-theme-PPSI230-custom .ag-header-cell-label {
 	justify-content: center;
 }
@@ -225,3 +230,4 @@ example-box.cdk-drag-disabled {
 ::ng-deep .ag-theme-PPSI230-custom .wrap-header-Text{
   white-space : pre-wrap;
 }
+
