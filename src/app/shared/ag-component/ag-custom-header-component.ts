@@ -3,32 +3,23 @@ import { IHeaderAngularComp } from 'ag-grid-angular';
 import { ColumnPinnedType, IFilter, IHeaderParams,ITextFilterParams ,IFilterComp,TextFilterModel} from 'ag-grid-community';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { map } from 'lodash';
-import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
 
 @Component({
-  selector: 'custom-header',
+  selector: 'ag-custom-header',
   template: `
     <div class="custom-header">
       <span>{{ params.displayName }}</span>
-      <span style='margin-left:5px;'  nz-icon nzType="lock" nzTheme="outline" (click)='handleClick()'   ></span>
+      <span style='margin-left:5px;' nz-icon nzType="lock" nzTheme="outline" (click)='handleClick()'   ></span>
       <!-- <button style='margin-left:5px;'  nz-button nzType="primary"   [nzPopoverContent]="contentTemplate" nzPopoverTrigger="click" >
       <span nz-icon nzType="filter"></span>
       </button> -->
 
       <span style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-down"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-up"   (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
-     
-      <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' nz-icon nzType="arrow-down"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
+      <span style='margin-left:5px;' nz-icon nzType="arrow-up"   (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
       <br>
-      <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
-      <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
-      <nz-select [ngModel]="'equals'">
-        <nz-option [nzLabel]="'包含'" [nzValue]="'contains'"></nz-option>
-        <nz-option [nzLabel]="'等於'" [nzValue]="'equals'"></nz-option>
-      </nz-select>
-      <input type="text"  nz-input  nzSize="small" style='width:100px;' [(ngModel)]="filterValue" (input)="onFilterChanged()" />
-      </nz-input-group> -->
+      <input type="text"  nz-input  *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
 
       <nz-drawer
       [nzClosable]="false"
@@ -41,8 +32,8 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
       <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" [nzFrontPagination]="false" [nzShowPagination]="false">
       <thead>
         <tr>
-          <th>狀態</th>
-          <th>欄位</th>
+          <th>Name</th>
+          <th>Address</th>
         </tr>
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -64,7 +55,7 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
     </div>
   `,
 })
-export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
+export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   public params!: IHeaderParams;
   visible = false ;
   listOfData = null ;
@@ -74,17 +65,12 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   isAscendingUp: boolean = true;
   isAscendingDown: boolean = true;
   isFilter: boolean = false;
-  @Input() type: string = '4'  ; 
-
-  customParams: AgCustomHeaderParams;
 
   agInit(params: IHeaderParams): void {
     this.params = params;
     this.column = params.column;
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
-    //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
-    
   }
 
   refresh(params: IHeaderParams) {
@@ -157,7 +143,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
     const filterComponent = this.params.api.getFilterInstance(colId) as IFilterComp ;
     // 處理過濾邏輯
    // this.params.filterChangedCallback();
-   if (filterComponent) {  //equals contains
+   if (filterComponent) {  // equals contains
     const filterModel: TextFilterModel = { type: 'contains', filter: this.filterValue };
     filterComponent.setModel(filterModel);
     this.params.api.onFilterChanged();

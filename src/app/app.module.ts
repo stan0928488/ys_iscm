@@ -188,6 +188,8 @@ import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Tab
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
+import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+
 
 registerLocaleData(zh);
 
@@ -344,6 +346,7 @@ registerLocaleData(zh);
     PPSR322Child9Component,
     PPSI210TabMenuComponent,
     PPSCustomHeaderComponent,
+    AGCustomHeaderComponent,
   ],
   imports: [
     BrowserModule,
