@@ -99,6 +99,9 @@ export class PPSI220Component implements AfterViewInit {
 
   plant = '直棒'; // 工廠別
 
+  scrollWid : string = null;
+  nzWidthConfigs : string[] = [];
+  thWidths = [60, 80, 200, 100, 60, 70, 120, 50, 50, 100, 40];
 
   timer = new Date();
   commSCHEDULE_TIME;
@@ -281,10 +284,24 @@ export class PPSI220Component implements AfterViewInit {
     this.agGridContext = {
       componentParent: this,
     };
+
+   
+
   }
 
   async ngAfterViewInit() {
     console.log("ngAfterViewChecked");
+
+    let totalWidth = 0;
+    let widthConfigs : string[] = [];
+    this.thWidths.forEach(item => {
+      totalWidth += item;
+      widthConfigs.push(`${item}px`);
+    });
+    totalWidth += Math.ceil(totalWidth/2);
+    this.scrollWid = `${totalWidth}px`;
+    this.nzWidthConfigs = widthConfigs;
+
     this.getPlanDataList();
     this.getRunFCPCount();
     await this.getMoSortList();
@@ -293,6 +310,8 @@ export class PPSI220Component implements AfterViewInit {
        this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084' || this.USERNAME === 'UR11118') {
       this.byUserShow = true;
     }
+
+
 
   }
 
