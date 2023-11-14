@@ -14,7 +14,7 @@ import * as XLSX from 'xlsx';
 import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { OpenMachineRendererComponent } from "../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
+import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 registerLocaleData(zh);
 
 
@@ -102,6 +102,10 @@ export class PPSI220Component implements AfterViewInit {
   scrollWid : string = null;
   nzWidthConfigs : string[] = [];
   thWidths = [60, 80, 200, 100, 60, 70, 120, 50, 50, 100, 40];
+
+  scrollWidForRunList : string = null;
+  nzWidthConfigsForRunList : string[] = [];
+  thWidthsForRunList = [80, 200, 100, 60, 70, 120, 50, 50, 100, 40];
 
   timer = new Date();
   commSCHEDULE_TIME;
@@ -301,6 +305,16 @@ export class PPSI220Component implements AfterViewInit {
     totalWidth += Math.ceil(totalWidth/2);
     this.scrollWid = `${totalWidth}px`;
     this.nzWidthConfigs = widthConfigs;
+
+    totalWidth = 0;
+    widthConfigs = [];
+    this.thWidthsForRunList.forEach(item => {
+      totalWidth += item;
+      widthConfigs.push(`${item}px`);
+    });
+    totalWidth += Math.ceil(totalWidth/2);
+    this.scrollWidForRunList = `${totalWidth}px`;
+    this.nzWidthConfigsForRunList = widthConfigs;
 
     this.getPlanDataList();
     this.getRunFCPCount();
