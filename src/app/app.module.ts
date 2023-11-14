@@ -15,9 +15,7 @@ import {
 } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 
-///////////////////
 import { NgxEchartsModule } from 'ngx-echarts';
-//////////////////
 
 import { LoginComponent } from './login/login.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -189,6 +187,10 @@ import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Re
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 
+import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
+import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -345,6 +347,8 @@ registerLocaleData(zh);
     PPSR322Child9Component,
     PPSI210TabMenuComponent,
     PPSI230TabMenuComponent,
+    PPSCustomHeaderComponent,
+    AGCustomHeaderComponent,
   ],
   imports: [
     BrowserModule,

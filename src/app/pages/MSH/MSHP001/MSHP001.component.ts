@@ -11,7 +11,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   RowDragLeaveEvent,
   RowDragMoveEvent,
   RowDoubleClickedEvent,
-  GridOptions
+  GridOptions 
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import { CellDoubleClickedEvent } from 'ag-grid-community/dist/lib/events';
@@ -22,6 +22,8 @@ import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
+import { PPSCustomHeaderComponent } from './ppscustom-header.component';
+import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
 
 @Component({
   selector: 'app-MSHP001',
@@ -206,6 +208,13 @@ statisticRowData = [] ;
 statisticModalIsVisible = false ;
 //統計欄
 public statisticGridOptionsModal: GridOptions;
+
+/**头部处理开始 */
+receivedMessage: string = '';
+/**头部处理结束 */
+handleReceiveMessage($event) {
+  this.receivedMessage = $event;
+}
 
 //統計 Modal 
 handleStatisticModal(){
@@ -1244,8 +1253,8 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header' }
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header',sortable: true }
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header'}
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);
@@ -1260,7 +1269,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["END_DATE_C"] = 0 ;
         if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1' ) {
         // 411 CARID
-        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
+        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 , headerComponent: PPSCustomHeaderComponent}
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
         this.outsideColumnDefs.push(index5);
@@ -1268,14 +1277,14 @@ this.handleSelectCarModal() ;
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
         // 411 CAREPST
-        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
+        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 , headerComponent: PPSCustomHeaderComponent}
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
         this.outsideColumnDefs.push(index6);
         //数据类型
         this.columKeyType["CAR_EPST_ADD"] = 0 ;
         // 411 CARLPST
-        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
+        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80, headerComponent: PPSCustomHeaderComponent }
         exportHeader.push("CARLPST")
         this.columnDefs.push(index7);
         this.outsideColumnDefs.push(index7);
@@ -1283,7 +1292,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
 
          // 411 CARLPST
-         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
          exportHeader.push("ORIGINAL_OP_CODE")
          this.columnDefs.push(index8);
          this.outsideColumnDefs.push(index8);
@@ -1291,7 +1300,7 @@ this.handleSelectCarModal() ;
          this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
 
          //411 車重
-         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80 }
+         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80, headerComponent: PPSCustomHeaderComponent }
          exportHeader.push("車重")
          this.columnDefs.push(index9);
          this.outsideColumnDefs.push(index9);
@@ -1299,14 +1308,14 @@ this.handleSelectCarModal() ;
          this.columKeyType["CAR_WEIGHT_ADD"] = 0 ;
          // 411 PST_MACHINE_ADD
 
-         let index10 = {headerName:'固定機台',field:'PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         let index10 = {headerName:'固定機台',field:'PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
          exportHeader.push("固定機台")
          this.columnDefs.push(index10);
          this.outsideColumnDefs.push(index10);
          //数据类型
          this.columKeyType["PST_MACHINE_ADD"] = 0 ;
           // 411 ORIGINAL_CAR_ID_ADD
-          let index12 = {headerName:'ORIGINAL_CAR_ID_ADD',field:'ORIGINAL_CAR_ID_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+          let index12 = {headerName:'ORIGINAL_CAR_ID_ADD',field:'ORIGINAL_CAR_ID_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
           exportHeader.push("ORIGINAL_CAR_ID_ADD")
           this.columnDefs.push(index12);
           this.outsideColumnDefs.push(index12);
@@ -1315,7 +1324,7 @@ this.handleSelectCarModal() ;
         
       }
        //ORIGINAL_PST_MACHINE_ADD
-       let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let index11 = {headerName:'原始機台',field:'ORIGINAL_PST_MACHINE_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
        exportHeader.push("原始機台")
        this.columnDefs.push(index11);
        this.outsideColumnDefs.push(index11);
@@ -1324,14 +1333,14 @@ this.handleSelectCarModal() ;
 
        // TIMEDIFFFLAG_ADD 添加跳時間
 
-       let index12 = {headerName:'NEWEPST修正',field:'TIMEDIFFFLAG_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let index12 = {headerName:'NEWEPST修正',field:'TIMEDIFFFLAG_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
        exportHeader.push("NEWEPST修正")
        this.columnDefs.push(index12);
        this.outsideColumnDefs.push(index12);
        //数据类型
        this.columKeyType["TIMEDIFFFLAG_ADD"] = 0 ;
       //顏色標記 COLORFLAG
-      let indexColor = {headerName:'搜尋',field:'COLORFLAG',rowDrag: false,resizable:true,width:80,hide: true }
+      let indexColor = {headerName:'搜尋',field:'COLORFLAG',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
       exportHeader.push("搜尋")
       this.columnDefs.push(indexColor);
       this.outsideColumnDefs.push(indexColor);
@@ -1339,48 +1348,48 @@ this.handleSelectCarModal() ;
       this.columKeyType["COLORFLAG"] = 0 ;
 
        //可替换机台 1 ，2， 3
-       let indexMachine1 = {headerName:'替換機台1',field:'MACHINE1_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let indexMachine1 = {headerName:'替換機台1',field:'MACHINE1_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
        exportHeader.push("替換機台1")
        this.columnDefs.push(indexMachine1);
        this.outsideColumnDefs.push(indexMachine1);
        //数据类型
        this.columKeyType["MACHINE1_ADD"] = 0 ;
-       let indexMachine2 = {headerName:'替換機台2',field:'MACHINE2_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let indexMachine2 = {headerName:'替換機台2',field:'MACHINE2_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
        exportHeader.push("替換機台2")
        this.columnDefs.push(indexMachine2);
        this.outsideColumnDefs.push(indexMachine2);
        //数据类型
        this.columKeyType["MACHINE2_ADD"] = 0 ;
        /***Machine3 start  */
-       let indexMachine3 = {headerName:'替換機台1',field:'MACHINE3_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let indexMachine3 = {headerName:'替換機台1',field:'MACHINE3_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
        exportHeader.push("替換機台3")
        this.columnDefs.push(indexMachine3);
        this.outsideColumnDefs.push(indexMachine3);
        this.columKeyType["MACHINE3_ADD"] = 0 ;
       /***Machine3 end */
        /***Machine4 start */
-      let indexMachineADD4 = {headerName:'替換機台ADD4',field:'MACHINE4_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+      let indexMachineADD4 = {headerName:'替換機台ADD4',field:'MACHINE4_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
        exportHeader.push("替換機台ADD4")
        this.columnDefs.push(indexMachineADD4);
        this.outsideColumnDefs.push(indexMachineADD4);
        this.columKeyType["MACHINE4_ADD"] = 0 ;
       /***Machine4 end */
         /***Machine5 start */
-        let indexMachineADD5 = {headerName:'替換機台ADD5',field:'MACHINE5_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+        let indexMachineADD5 = {headerName:'替換機台ADD5',field:'MACHINE5_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
         exportHeader.push("替換機台ADD5")
         this.columnDefs.push(indexMachineADD5);
         this.outsideColumnDefs.push(indexMachineADD5);
         this.columKeyType["MACHINE5_ADD"] = 0 ;
        /***Machine5 end */
          /***Machine6 start */
-      let indexMachineADD6 = {headerName:'替換機台ADD6',field:'MACHINE6_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+      let indexMachineADD6 = {headerName:'替換機台ADD6',field:'MACHINE6_ADD',rowDrag: false,resizable:true,width:80,hide: true, headerComponent: PPSCustomHeaderComponent }
       exportHeader.push("替換機台ADD4")
       this.columnDefs.push(indexMachineADD6);
       this.outsideColumnDefs.push(indexMachineADD6);
       this.columKeyType["MACHINE6_ADD"] = 0 ;
      /***Machine6 end */
        /***Machine7 start */
-       let indexMachineADD7 = {headerName:'替換機台ADD7',field:'MACHINE7_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+       let indexMachineADD7 = {headerName:'替換機台ADD7',field:'MACHINE7_ADD',rowDrag: false,resizable:true,width:80,hide: true , headerComponent: PPSCustomHeaderComponent}
        exportHeader.push("替換機台ADD7")
        this.columnDefs.push(indexMachineADD7);
        this.outsideColumnDefs.push(indexMachineADD7);
@@ -1405,7 +1414,7 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true, headerComponent: PPSCustomHeaderComponent}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1413,7 +1422,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true, headerComponent: PPSCustomHeaderComponent }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {

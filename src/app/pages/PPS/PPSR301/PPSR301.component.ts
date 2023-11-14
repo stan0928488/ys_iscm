@@ -4,7 +4,15 @@ import {NzMessageService} from "ng-zorro-antd/message"
 import { AppComponent } from "src/app/app.component";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { NzModalService } from "ng-zorro-antd/modal";
-import { CellClickedEvent, ColDef, GridReadyEvent } from 'ag-grid-community';
+import { CellClickedEvent, ColDef, GridReadyEvent, GetRowIdFunc, GetRowIdParams ,
+  ColumnApi,
+  GridApi,
+  RowDragEndEvent,
+  RowDragEnterEvent,
+  RowDragLeaveEvent,
+  RowDragMoveEvent,
+  RowDoubleClickedEvent,
+  GridOptions  } from 'ag-grid-community';
 import zh from '@angular/common/locales/zh';
 registerLocaleData(zh);
 import * as moment from 'moment';
@@ -12,6 +20,7 @@ import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs/dist/exceljs.min.js';
 import * as FileSaver from 'file-saver';
 import * as _ from "lodash";
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface data {
   fcpEdition: String,
@@ -732,36 +741,36 @@ export class PPSR301Component implements OnInit {
 
   
   columnDefs: ColDef<data>[] = [
-    { headerName: '站別' ,field: 'schShopCode' , filter: false,width: 100 },
-    { headerName: '現況站別',field: 'sfcShopCode' , filter: false,width: 100 },
-    { headerName: '銷售區別' ,field: 'saleAreaGroup' , filter: false,width: 120 },
-    { headerName: '客戶名稱',field: 'custAbbreviations' , filter: false,width: 120},
-    { headerName: 'MO',field: 'idNo' , filter: false,width: 120 },
-    { headerName: '訂單號碼' ,field: 'saleOrder' , filter: false,width: 100 },
-    { headerName: '訂單項次' ,field: 'saleItem' , filter: false,width: 100 },
-    { headerName: '交期',field: 'dateDeliveryPP' , filter: false,width: 120 },
-    { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 120 },
-    { headerName: '現況流程' ,field: 'lineupProcess' , filter: false,width: 150},
-    { headerName: 'FINAL_生產流程',field: 'finalProcess' , filter: false,width: 150 },
-    { headerName: '抽數別', field:'scheType', filter:false, width:120},
-    { headerName: '計畫重量' ,field: 'planWeightI' , filter: false,width: 100 },
-    { headerName: '訂單長度' ,field: 'saleItemLength' , filter: false,width: 120 },
-    { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 100 },
-    { headerName: 'CYCLE_NO',field: 'cycleNo' , filter: false,width: 120 },
-    { headerName: '合併單號',field: 'mergeNo' , filter: false,width: 120 },
-    { headerName: '投入尺寸' ,field: 'inputDia' , filter: false,width: 100 },
-    { headerName: '產出尺寸',field: 'outDia' , filter: false,width: 100 },
-    { headerName: '允收截止日' ,field: 'datePlanInStorage' , filter: false,width: 120 },
-    { headerName: '入庫日的備註' ,field: 'remarkPlanInStorage' , filter: false,width: 120 },
-    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 },
-    { headerName: 'LOCK值' ,field: 'lock' , filter: false,width: 100 }
+    { headerName: '站別' ,field: 'schShopCode' ,filter:true, width: 100 , headerComponent: AGCustomHeaderComponent },
+    { headerName: '現況站別',field: 'sfcShopCode' ,filter:true, width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '銷售區別' ,field: 'saleAreaGroup' ,filter:true, width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '客戶名稱',field: 'custAbbreviations' ,filter:true, width: 120, headerComponent: AGCustomHeaderComponent},
+    { headerName: 'MO',field: 'idNo' , width: 120,filter:true, headerComponent: AGCustomHeaderComponent },
+    { headerName: '訂單號碼' ,field: 'saleOrder' ,filter:true,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '訂單項次' ,field: 'saleItem' , filter:true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '交期',field: 'dateDeliveryPP' ,filter:true, width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '鋼種' ,field: 'steelType' ,width: 120,filter:true , headerComponent: AGCustomHeaderComponent},
+    { headerName: '現況流程' ,field: 'lineupProcess' , width: 150,filter:true , headerComponent: AGCustomHeaderComponent},
+    { headerName: 'FINAL_生產流程',field: 'finalProcess' , filter: true,width: 150 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '抽數別', field:'scheType', filter:false, width:120, headerComponent: AGCustomHeaderComponent},
+    { headerName: '計畫重量' ,field: 'planWeightI' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '訂單長度' ,field: 'saleItemLength' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '實際長度' ,field: 'actualLength' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: 'CYCLE_NO',field: 'cycleNo' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '合併單號',field: 'mergeNo' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '投入尺寸' ,field: 'inputDia' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '產出尺寸',field: 'outDia' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '允收截止日' ,field: 'datePlanInStorage' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '入庫日的備註' ,field: 'remarkPlanInStorage' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '產品種類' ,field: 'kindType' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
+    { headerName: 'LOCK值' ,field: 'lock' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent}
   ];
   
   rowData: data[] = [];    
 
   public defaultColDef: ColDef = {
-    sortable: true,
-    filter: true,
+    // sortable: true,
+    // filter: true,
     resizable: true,
   };
 
