@@ -10,14 +10,14 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
   template: `
     <div class="custom-header">
       <span>{{ params.displayName }}</span>
-      <span style='margin-left:5px;'  nz-icon nzType="lock" nzTheme="outline" (click)='handleClick()'   ></span>
+      <span style='margin-left:5px;'   [ngClass]="{ 'active': !isLock }" nz-icon nzType="lock" nzTheme="outline" (click)='handleLockClick()'   ></span>
       <!-- <button style='margin-left:5px;'  nz-button nzType="primary"   [nzPopoverContent]="contentTemplate" nzPopoverTrigger="click" >
       <span nz-icon nzType="filter"></span>
       </button> -->
 
       <span style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-down"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-up"   (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
+      <span style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
+      <span style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
       <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
@@ -63,6 +63,11 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
 
     </div>
   `,
+  styles: [`
+    .active {
+      /*background-color: #0db87a;  Set your desired color for the active state */
+    }
+  `]
 })
 export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   public params!: IHeaderParams;
@@ -73,6 +78,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   originalData: any[];
   isAscendingUp: boolean = true;
   isAscendingDown: boolean = true;
+  isLock: boolean = true;
   isFilter: boolean = false;
   @Input() type: string = '4'  ; 
 
@@ -118,11 +124,11 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
     }
   }
 
-  handleClick() {
+  handleLockClick() {
     if (this.params) {
     const currentColumn = this.params.column;
     const allDisplayedColumns = this.params.columnApi.getAllDisplayedColumns();
-    console.log("pin 狀態" + this.params.column.getPinned()) ;
+   // console.log("pin 狀態" + this.params.column.getPinned()) ;
     const pined = this.params.column.getPinned() ;
     let setPin :ColumnPinnedType = 'left'
     if(pined === null) {
