@@ -189,6 +189,7 @@ import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Re
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+import { ACCP100component } from './pages/ACC/ACCP100component';
 
 
 registerLocaleData(zh);
@@ -198,7 +199,7 @@ registerLocaleData(zh);
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
-
+    ACCP100component,
     ORPV101Component,
     ORPP100Component,
     ORPP101Component,

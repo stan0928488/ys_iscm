@@ -132,6 +132,7 @@ import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Tab
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
+import { ACCP100component } from './pages/ACC/ACCP100component';
 
 const routes: Routes = [
   {
@@ -522,6 +523,11 @@ const routes: Routes = [
       { path: 'P003', component: POMP003Component },
     ],
     canActivate: [AuthGuard],
+  },
+  {
+    path: "ACCSetting",
+    component: ACCP100component,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
