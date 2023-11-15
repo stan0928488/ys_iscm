@@ -15,9 +15,7 @@ import {
 } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 
-///////////////////
 import { NgxEchartsModule } from 'ngx-echarts';
-//////////////////
 
 import { LoginComponent } from './login/login.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -190,6 +188,11 @@ import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Tab
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
 
+import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
+import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+import { ACCP100component } from './pages/ACC/ACCP100component';
+
+
 registerLocaleData(zh);
 
 @NgModule({
@@ -197,7 +200,7 @@ registerLocaleData(zh);
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
-
+    ACCP100component,
     ORPV101Component,
     ORPP100Component,
     ORPP101Component,
@@ -347,6 +350,8 @@ registerLocaleData(zh);
     PPSI210TabMenuComponent,
     PPSI230TabMenuComponent,
     PPSI220TabMenuComponent,
+    PPSCustomHeaderComponent,
+    AGCustomHeaderComponent,
   ],
   imports: [
     BrowserModule,
