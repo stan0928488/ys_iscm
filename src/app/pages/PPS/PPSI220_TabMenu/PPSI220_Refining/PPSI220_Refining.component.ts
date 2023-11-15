@@ -294,11 +294,11 @@ export class PPSI220RefiningComponent implements AfterViewInit {
 
     // 因應預設工時計算選擇「取得新工時計算」，
     // 設定對應的資料
-     this.ICPchange(this.ICPDATA);
+     this.ICPchange('1');
 
     // 因應MO落於LPST區間指定為「全部」，
     // 設定對應的資料
-    this.LPSTchange(this.LPSTDATA, 'ins')
+    this.LPSTchange('3', 'ins');
 
   }
 
