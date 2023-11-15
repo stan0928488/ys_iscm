@@ -1,80 +1,81 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
-import { PPSService } from "src/app/services/PPS/PPS.service";
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-PPSR322-child7',
   templateUrl: './PPSR322-child7.component.html',
   styleUrls: ['./PPSR322-child7.component.css'],
-  providers:[NzMessageService]
+  providers: [NzMessageService],
 })
 export class PPSR322Child7Component implements OnInit {
-
   listOfData: ItemData[] = [];
   searchData = {} as SearchData;
 
   constructor(
-    private ppsr322EvnetBusComponent:PPSR322EvnetBusComponent,
+    private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private PPSService: PPSService,
     private message: NzMessageService
   ) {}
 
-  ngOnInit(){
-    
-    this.ppsr322EvnetBusComponent.on("ppsr322search", (data: any) => {
-
+  ngOnInit() {
+    this.ppsr322EvnetBusComponent.on('ppsr322search', (data: any) => {
       if (data.data) {
         this.searchData.verList = data.data.verList;
       }
       this.getR322Data(this.searchData);
+    });
 
-    })
-
-    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any
-    this.searchData.verList = tempObj.verList; 
+    let tempObj = this.ppsr322EvnetBusComponent.searchObj as any;
+    this.searchData.verList = tempObj.verList;
     this.getR322Data(this.searchData);
-
   }
 
   ngOnDestroy(): void {
     this.ppsr322EvnetBusComponent.unsubscribe();
   }
 
-  getR322Data(postData){
-    postData['tabType'] = 7
+  getR322Data(postData) {
+    postData['tabType'] = 7;
     this.PPSService.getR322Data(postData).subscribe({
       next: (res) => {
         let result: any = res;
 
-        if(result[0]){
-          this.listOfData = result.map((itemData)=> itemData as ItemData) as ItemData[]
-        }else{
+        if (result[0]) {
+          this.listOfData = result.map(
+            (itemData) => itemData as ItemData
+          ) as ItemData[];
+        } else {
           this.listOfData = [];
         }
+        this.sendData(6);
       },
       error: (e) => {
         this.message.error('網絡請求失敗');
       },
-      complete: () => {}
+      complete: () => {},
     });
-    
   }
 
+  sendData(index: number) {
+    const dataToSend = this.listOfData;
+    this.ppsr322EvnetBusComponent.updateSharedData(index, dataToSend);
+  }
 }
 
 interface ItemData {
-  seq:number;
-  kindType:string;
-  process:string;
-  planWeightI:number;
+  seq: number;
+  kindType: string;
+  process: string;
+  planWeightI: number;
   rowspanSize: number;
 }
 
 interface SearchData {
   tabType: Number;
   verList: {
-    fcpVer: String,
-    shiftVer: String
+    fcpVer: String;
+    shiftVer: String;
   };
 }
