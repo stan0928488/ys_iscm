@@ -1299,15 +1299,19 @@ export class PPSService {
   // ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
   //Get getCreatePlanDataList 取得規劃清單(僅建立)
-  getCreatePlanDataList() {
+  getCreatePlanDataList(plantType : string) {
+    const httpParams = new HttpParams().set('plantType', plantType);
     let queryUrl = this.APINEWURL + `/FCP/I220/getCreatedPlanEditionData`; 
-    return this.http.get<any>(queryUrl);
+    return this.http.get<any>(queryUrl, { params: httpParams });
   }
+  
   //Get getPlanDataList 取得規劃清單(含執行-最大一筆)
-  getPlanDataList() {
+  getPlanDataList(plantType : string) {
+    const httpParams = new HttpParams().set('plantType', plantType)
     let queryUrl = this.APINEWURL + '/FCP/I220/getNowPlanDataList'
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { params: httpParams });
   }
+  
   //Get getPlanDataListByPlan 取得規劃清單(取得該版次已執行過內容)
   getPlanDataListByPlan(_Plan) {
     let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
@@ -1397,6 +1401,11 @@ export class PPSService {
     return this.http.get<any>(queryUrl);
   }
 
+  getICPMOVerListForRefining() {
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionDataForRefining`;
+    return this.http.get<any>(queryUrl);
+  }
+
   //getICPVerList (共用)
   getICPVerList() {
     // let queryUrl = this.APIURL + '/FCP/I220/ICPVerList';
@@ -1406,16 +1415,18 @@ export class PPSService {
   }
 
   //getPlansetVerList 規劃策略版本-排除目前資料 (共用)
-  getPlansetVerList(_edition) {
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList?edition=${_edition}`;
-    return this.http.get<any>(queryUrl);
+  getPlansetVerList(_edition, plantType:string) {
+    const httpParams = new HttpParams().set('edition', _edition).set('plantType', plantType);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList`;
+    return this.http.get<any>(queryUrl , { params: httpParams });
   }
 
   //getPlanVerList 規劃案執行版本 (共用)
-  getPlanVerList(_flag) {
+  getPlanVerList(_flag, plantType:string) {
+    const httpParams = new HttpParams().set('flag', _flag).set('plantType', plantType);
     // let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList?flag=${_flag}`;
-    return this.http.get<any>(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList`;
+    return this.http.get<any>(queryUrl, { params: httpParams });
   }
 
   

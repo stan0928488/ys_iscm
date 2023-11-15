@@ -70,7 +70,7 @@
                   <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
                   <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
               </p>
-              <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
+              <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
                 <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
               <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
                 <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
@@ -244,13 +244,19 @@
               <label nz-radio nzValue="1" (click) = "MOchange('1')" >取得新 MO 資料
               </label>&nbsp;&nbsp;
               <label nz-radio nzValue="2" (click) = "MOchange('2')" >歷史 MO 資料
-                <nz-select nzShowSearch nzPlaceHolder="Select his MO version" style="width: 180px;" [(ngModel)]="HISMO" (nzOpenChange) = "getMOVerList()">
+                <nz-select nzShowSearch nzPlaceHolder="Select his MO version" style="width: 180px;" [(ngModel)]="HISMO" (nzOpenChange) = "getMOVerListForRefining()">
                   <nz-option *ngFor="let option of listOfMOOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                  <nz-option *ngIf="moDataLoading" nzDisabled nzCustomContent>
+                    <span nz-icon nzType="loading" class="loading-icon"></span>
+                    載入中...
+                </nz-option>
                 </nz-select>
               </label>
             </nz-radio-group>
             <br>
-            &nbsp;
+
+            <!-- 精整型態的「MO落於LPST區間」指定為全部-->
+            <!-- &nbsp;
             <nz-radio-group [(ngModel)]="LPSTDATA">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <label nz-radio nzValue="1" (click) = "LPSTchange('1', 'ins')" >當月
@@ -263,7 +269,7 @@
               </label>
               <label nz-radio nzValue="3" (click) = "LPSTchange('3', 'ins')" >全部
               </label>
-            </nz-radio-group>
+            </nz-radio-group> -->
           </td>
         </tr>
 
@@ -273,12 +279,13 @@
             <nz-radio-group [(ngModel)]="ICPDATA">
               &nbsp;&nbsp;
               <label nz-radio nzValue="1" (click) = "ICPchange('1')" >取得新工時計算
-              </label>&nbsp;&nbsp;
+              </label>
+               <!-- &nbsp;&nbsp;
               <label nz-radio nzValue="2" (click) = "ICPchange('2')" >歷史工時計算
                 <nz-select nzShowSearch nzPlaceHolder="Select his ICP version" style="width: 180px;" [(ngModel)]="HISICP" (nzOpenChange) = "getICPVerList()">
                   <nz-option *ngFor="let option of listOfICPOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
                 </nz-select>
-              </label>
+              </label> -->
             </nz-radio-group>
           </td>
         </tr>
@@ -368,7 +375,7 @@
           </td>
         </tr>
 
-        <tr>
+        <!-- <tr>
           <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;MO 區間</td>
             <td colspan="3">&nbsp;
             <nz-radio-group [(ngModel)]="upd_LPSTDATA">
@@ -385,7 +392,7 @@
               </label>
             </nz-radio-group>
           </td>
-        </tr>
+        </tr> -->
 
         <tr>
           <td style = "width: 60px; height: 36px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃案排程型態</td>

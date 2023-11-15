@@ -20,13 +20,13 @@ registerLocaleData(zh);
 
 @Component({
   selector: "app-PPSI220",
-  templateUrl: "./PPSI220.component.html",
-  styleUrls: ["./PPSI220.component.scss"],
+  templateUrl: "./PPSI220_Refining.component.html",
+  styleUrls: ["./PPSI220_Refining.component.scss"],
   providers:[DatePipe,NzMessageService,NzModalService]
 })
 
 
-export class PPSI220Component implements AfterViewInit {
+export class PPSI220RefiningComponent implements AfterViewInit {
 	loading = false; //loaging data flag
   isRunFCP = false; // 如為true則不可異動
   moSortList : any[] = []; // 平衡設定選項選項
@@ -79,12 +79,12 @@ export class PPSI220Component implements AfterViewInit {
   listOfICPOption;  //ICP歷史版本LIST
   plansetValue;   // 規劃策略版本
   ICPVER;         // 定義 ICP 版本
-  ICPDATA;        // 靜態資料 (1:新版 2:歷史)
+  ICPDATA = '1';  // 靜態資料 (1:新版 2:歷史)
   HISICP;         // 歷史靜態資料版本
   MOVER;          // 定義 MO 版本
-  MODATA;         // MO資料 (1:新版 2:歷史)
+  MODATA = '1';    // MO資料 (1:新版 2:歷史)
   HISMO;          // MO歷史資料版本
-  LPSTDATA;       // 交期小於LPST
+  LPSTDATA = '3'; // 交期小於LPST(預設為全部)
   startdate;      // LPST區間起始
   enddate;        // LPST區間結束
   SCHEDULE_FLAG;  // 規劃案排程型態
@@ -97,7 +97,10 @@ export class PPSI220Component implements AfterViewInit {
   choicePlanset = 'A';  // 不更換策略版本
   plansetlist;    // 規劃策略版本清單
 
-  PLANT = '直棒'; // 工廠別
+  PLANT = '精整'; // 工廠別
+
+  moDataLoading = false; //歷史 MO 資料是否顯示載入中
+
 
   scrollWid : string = null;
   nzWidthConfigs : string[] = [];
@@ -289,7 +292,13 @@ export class PPSI220Component implements AfterViewInit {
       componentParent: this,
     };
 
-   
+    // 因應預設工時計算選擇「取得新工時計算」，
+    // 設定對應的資料
+     this.ICPchange(this.ICPDATA);
+
+    // 因應MO落於LPST區間指定為「全部」，
+    // 設定對應的資料
+    this.LPSTchange(this.LPSTDATA, 'ins')
 
   }
 
@@ -480,10 +489,11 @@ export class PPSI220Component implements AfterViewInit {
 
 
   // MO 歷史版本拉選
-  getMOVerList(){
+  getMOVerListForRefining(){
     this.loading = true;
+    this.moDataLoading = true;
     let myObj = this;
-    this.getPPSService.getICPMOVerList().subscribe(res => {
+    this.getPPSService.getICPMOVerListForRefining().subscribe(res => {
       if(res.code = 200) {
         this.MOverList = res.data;
         const children: Array<{ label: string; value: string }> = [];
@@ -493,6 +503,7 @@ export class PPSI220Component implements AfterViewInit {
         this.listOfMOOption = children;
         console.log(this.listOfMOOption)
         myObj.loading = false;
+        myObj.moDataLoading = false;
       } 
     });
   }
@@ -705,10 +716,10 @@ export class PPSI220Component implements AfterViewInit {
       return;
     }
 
-    if (this.enddate === undefined) {
-      myObj.message.create("error", "請選擇「MO 要落於LPST哪個區間」");
-      return;
-    }
+    // if (this.enddate === undefined) {
+    //   myObj.message.create("error", "請選擇「MO 要落於LPST哪個區間」");
+    //   return;
+    // }
     if (this.SCHEDULE_FLAG === undefined) {
       myObj.message.create("error", "請選擇「規劃案排程型態」");
       return;
@@ -856,10 +867,11 @@ export class PPSI220Component implements AfterViewInit {
   // 確定修改規劃案
   handleOk_U() {
     let myObj = this;
-    if (this.upd_enddate === undefined) {
-      myObj.message.create("error", "請選擇「MO 要落於LPST哪個區間」");
-      return;
-    } else if (this.upd_SCHEDULE_FLAG === undefined) {
+    // if (this.upd_enddate === undefined) {
+    //   myObj.message.create("error", "請選擇「MO 要落於LPST哪個區間」");
+    //   return;
+    // } 
+    if (this.upd_SCHEDULE_FLAG === undefined) {
       myObj.message.create("error", "請選擇「規劃案排程型態」");
       return;
     } else if ((this.upd_SCHEDULE_FLAG === '1' || this.upd_SCHEDULE_FLAG === '2') && this.upd_SCHEDULE_TIME === undefined) {
@@ -901,6 +913,10 @@ export class PPSI220Component implements AfterViewInit {
       }
       let updPLANSET_EDITION;
       if(this.upd_newPLANSET_EDITION === undefined) updPLANSET_EDITION = this.upd_oldPLANSET_EDITION ;  else updPLANSET_EDITION = this.upd_newPLANSET_EDITION.value;
+
+      // 因應MO落於LPST區間指定為「全部」
+      // 呼叫對應方方法傳入寫死的參數修改this.upd_enddate的值
+      this.LPSTchange('3', 'upd');
 
 			_.extend(obj, {
         planEdition : this.upd_PLAN_EDITION,
@@ -1095,6 +1111,13 @@ export class PPSI220Component implements AfterViewInit {
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
     console.log("StrartRun : " + data.planEdition)
+    
+    this.Modal.warning({
+			nzTitle: '開發中',
+			nzContent: `開發中`
+		});
+
+    return;
 
     if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可重新啟動");

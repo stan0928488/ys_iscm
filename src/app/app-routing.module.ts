@@ -134,6 +134,7 @@ import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Tab
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
+import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 
 const routes: Routes = [
   {
@@ -276,6 +277,7 @@ const routes: Routes = [
         path: 'P201_TabMenu', 
         component: PPSI210TabMenuComponent,
         children: [
+          { path: '', redirectTo: '/FCPBarData/P201_TabMenu/P201', pathMatch: 'full' },
           {
             path: 'P201',
             component: PPSI210Component
@@ -290,13 +292,14 @@ const routes: Routes = [
         path: 'P202_TabMenu', 
         component: PPSI220TabMenuComponent,
         children: [
+          { path: '', redirectTo: '/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
           { 
             path: 'P202', 
             component: PPSI220Component 
           },
           { 
             path: 'P202_Refining', 
-            component: null 
+            component: PPSI220RefiningComponent 
           },
         ]
       },
@@ -304,6 +307,7 @@ const routes: Routes = [
         path: 'P203_TabMenu', 
         component: PPSI230TabMenuComponent,
         children: [
+          { path: '', redirectTo: '/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
           { 
             path: 'P203', 
             component: PPSI230Component 

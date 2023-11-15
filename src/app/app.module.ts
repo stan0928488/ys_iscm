@@ -187,6 +187,7 @@ import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Re
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
@@ -259,6 +260,7 @@ registerLocaleData(zh);
     PPSI210Component,
     PPSI210RefiningComponent,
     PPSI220Component,
+    PPSI220RefiningComponent,
     PPSI230Component,
     PPSI230RefiningComponent,
     PPSR301Component,
