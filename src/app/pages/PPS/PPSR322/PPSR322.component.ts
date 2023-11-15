@@ -285,7 +285,11 @@ export class PPSR322Component implements OnInit, AfterViewInit {
           sheetName: '目標量總量',
           headers: ['產品別', '製程', '入庫量'],
           fields: ['kindType', 'process', 'planWeightI'],
-          fieldMapping: {},
+          fieldMapping: {
+            kindType: '產品別',
+            process: '製程',
+            planWeightI: '入庫量',
+          },
         },
         {
           sheetName: '日推移報表',
