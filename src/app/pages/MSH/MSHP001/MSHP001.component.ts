@@ -11,7 +11,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams ,
   RowDragLeaveEvent,
   RowDragMoveEvent,
   RowDoubleClickedEvent,
-  GridOptions
+  GridOptions 
 } from 'ag-grid-community';
 import { CellClickedEvent } from 'ag-grid-community/dist/lib/events';
 import { CellDoubleClickedEvent } from 'ag-grid-community/dist/lib/events';
@@ -22,6 +22,8 @@ import { isDataSource } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
+import { PPSCustomHeaderComponent } from './ppscustom-header.component';
+import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
 
 @Component({
   selector: 'app-MSHP001',
@@ -206,6 +208,13 @@ statisticRowData = [] ;
 statisticModalIsVisible = false ;
 //統計欄
 public statisticGridOptionsModal: GridOptions;
+
+/**头部处理开始 */
+receivedMessage: string = '';
+/**头部处理结束 */
+handleReceiveMessage($event) {
+  this.receivedMessage = $event;
+}
 
 //統計 Modal 
 handleStatisticModal(){
@@ -1244,8 +1253,8 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header' }
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header' }
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header',sortable: true }
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header'}
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);
@@ -1405,7 +1414,7 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1413,7 +1422,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:110,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
