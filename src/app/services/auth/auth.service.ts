@@ -35,7 +35,9 @@ export class AuthService {
       this.isAuth = false;
       this.USERNAME = "";
     }
-    this.ACCService.getplantACC100List().subscribe();
+    if(this.isAuth){
+      this.ACCService.getplantACC100List().subscribe();
+    }
     return this.isAuth;
   }
 
