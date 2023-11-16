@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import * as _ from "lodash";
 import { Observable, Subject } from "rxjs";
 import { CookieService } from "../config/cookie.service";
+import { ACCService } from "src/app/services/ACC/ACC.service";
 
 @Injectable({
   providedIn: "root"
@@ -18,6 +19,7 @@ export class AuthService {
   checkTime: string;
   CAS_URL = "https://cas.walsin.com:8889/";
   constructor(
+    private ACCService: ACCService,
     private cookieService: CookieService,
     private router: Router,
     private http: HttpClient
@@ -33,6 +35,7 @@ export class AuthService {
       this.isAuth = false;
       this.USERNAME = "";
     }
+    this.ACCService.getplantACC100List().subscribe();
     return this.isAuth;
   }
 
