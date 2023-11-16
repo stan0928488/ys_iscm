@@ -155,6 +155,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   onFilterClick(){
     this.isFilter = !this.isFilter ;
     this.filterValue = ''
+    this.onFilterChanged() ;
   }
 
   onFilterChanged(){
