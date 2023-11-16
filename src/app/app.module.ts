@@ -5,7 +5,7 @@ import { ZorroCompomentModule } from './shared/zorro-compoment/zorro-compoment.m
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {
@@ -190,12 +190,15 @@ import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Re
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
 import { ACCP100component } from './pages/ACC/ACCP100component';
+import { JwtInterceptor } from './services/config/jwt.interceptor';
+import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 
 
 registerLocaleData(zh);
 
 @NgModule({
   declarations: [
+    AccessDinedPageComponent,
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
@@ -378,6 +381,7 @@ registerLocaleData(zh);
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: NZ_I18N, useValue: zh_TW },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
 })
