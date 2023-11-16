@@ -11,6 +11,7 @@ import { ConfigService } from '../config/config.service';
 })
 export class CommonService {
   APIURL: string = '';
+  APINEWURL: string = '';
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
@@ -22,6 +23,7 @@ export class CommonService {
     private Modal: NzModalService
   ) {
     this.APIURL = this.configService.getAPIURL();
+    this.APINEWURL = this.configService.getAPIURL('1');
   }
 
   //getRunFCPCount 取得目前正在執行的FCP (所有靜態資料、執行策略皆共用)
@@ -79,7 +81,7 @@ export class CommonService {
   // }
   casLogin(_username, _password, _env) {
     _password = encodeURIComponent(_password);
-    let queryUrl = `${this.APIURL}/Login/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
+    let queryUrl = `${this.APINEWURL}/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
     return this.http.get(queryUrl);
   }
 
