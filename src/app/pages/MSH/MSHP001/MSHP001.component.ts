@@ -1253,15 +1253,15 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header',sortable: true }
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header'}
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header',sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header',sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header' }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header',filter:true,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
@@ -1269,7 +1269,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["END_DATE_C"] = 0 ;
         if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1' ) {
         // 411 CARID
-        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80 }
+        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
         this.outsideColumnDefs.push(index5);
@@ -1277,14 +1277,14 @@ this.handleSelectCarModal() ;
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
         // 411 CAREPST
-        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80 }
+        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
         this.outsideColumnDefs.push(index6);
         //数据类型
         this.columKeyType["CAR_EPST_ADD"] = 0 ;
         // 411 CARLPST
-        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 }
+        let index7 = {headerName:'CARLPST',field:'CAR_LPST_ADD',rowDrag: false,resizable:true,width:80 ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
         exportHeader.push("CARLPST")
         this.columnDefs.push(index7);
         this.outsideColumnDefs.push(index7);
@@ -1292,7 +1292,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["CAR_LPST_ADD"] = 0 ;
 
          // 411 CARLPST
-         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true }
+         let index8 = {headerName:'ORIGINAL_OP_CODE',field:'ORIGINAL_OP_CODE_ADD',rowDrag: false,resizable:true,width:80,hide: true ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
          exportHeader.push("ORIGINAL_OP_CODE")
          this.columnDefs.push(index8);
          this.outsideColumnDefs.push(index8);
@@ -1300,7 +1300,7 @@ this.handleSelectCarModal() ;
          this.columKeyType["ORIGINAL_OP_CODE"] = 0 ;
 
          //411 車重
-         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80 }
+         let index9 = {headerName:'車重',field:'CAR_WEIGHT_ADD',rowDrag: false,resizable:true,width:80,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
          exportHeader.push("車重")
          this.columnDefs.push(index9);
          this.outsideColumnDefs.push(index9);
@@ -1414,7 +1414,7 @@ this.handleSelectCarModal() ;
           //放入导出头部
           exportHeader.push(item.columLabel) ;
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1422,7 +1422,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,filter: true }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
