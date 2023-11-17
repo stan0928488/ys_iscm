@@ -135,8 +135,14 @@ import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Re
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
+import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 
 const routes: Routes = [
+  {
+    path: "AccessDined",
+    component: AccessDinedPageComponent,
+    canActivate: [AuthGuard],
+  },
   {
     path: 'login',
     component: LoginComponent,

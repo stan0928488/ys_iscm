@@ -118,15 +118,20 @@ export class LoginComponent implements OnInit {
     this.commonService.casLogin(username, password, env).subscribe(
       (res) => {
         if (_.get(res, 'isAuth')) {
-          console.log('login success');
+          console.log("login success");
           this.authFail = false;
 
-          this.cookieService.setCookie('USERNAME', username, 2);
-          this.cookieService.setCookie('plantCode', plantCode, 2);
+          this.cookieService.setCookie("USERNAME", username, 2);
+          this.cookieService.setCookie("plantCode", plantCode, 2);
           this.authService.emitAuthState();
-          this.router.navigateByUrl('/FCPBarData/P202');
+          this.router.navigateByUrl("/ORPInput/V101");
           this.isLogining = false;
           // window.location.reload();
+
+          // 儲存 JWT token 到 localStorage
+          localStorage.setItem('jwtToken', _.get(res, "jwtToken"));
+          let jwtToken = localStorage.getItem('jwtToken');
+          console.log("jwtToken:" + jwtToken);
         } else {
           console.log('login fail err');
           console.log(res);

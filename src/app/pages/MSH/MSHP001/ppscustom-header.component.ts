@@ -65,7 +65,7 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
   `,
   styles: [`
     .active {
-      /*background-color: #0db87a;  Set your desired color for the active state */
+       background-color: #0db87a; /* Set your desired color for the active state  */
     }
   `]
 })
@@ -110,6 +110,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
       // Restore to the original data state when clicked the second time
      // this.params.api.setRowData([...this.originalData]);
      this.isAscendingUp = true;
+     this.isAscendingDown = true;
      this.params.setSort(null, false);
     }
   }
@@ -120,6 +121,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
       this.isAscendingDown = false;
     } else {
       this.isAscendingDown = true;
+      this.isAscendingUp = true;
       this.params.setSort(null, false);
     }
   }
@@ -155,6 +157,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   onFilterClick(){
     this.isFilter = !this.isFilter ;
     this.filterValue = ''
+    this.onFilterChanged() ;
   }
 
   onFilterChanged(){
