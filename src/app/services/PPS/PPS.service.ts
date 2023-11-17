@@ -1196,8 +1196,8 @@ export class PPSService {
   }
 
   //getRunFCPCount 取得目前正在執行的FCP (所有靜態資料、執行策略皆共用)
-  getRunFCPCount() {
-    let queryUrl = this.APIURL + '/FCP/I210/getRunFCPCount';
+  getRunFCPCount(plant:string = '直棒') {
+    let queryUrl = this.APINEWURL + `/FCP/I210/getRunFCPCount/${plant}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1385,6 +1385,7 @@ export class PPSService {
     // _type: A手動啟動、B排程啟動
     // let queryUrl = this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
     let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
+    //let queryUrl = this.APINEWURL + `/FCP/I220/runPlanFcp`; 
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   

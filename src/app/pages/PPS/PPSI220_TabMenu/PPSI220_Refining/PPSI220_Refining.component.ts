@@ -342,7 +342,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
     let myObj = this;
-    this.getPPSService.getRunFCPCount().subscribe(res => {
+    this.getPPSService.getRunFCPCount(this.PLANT).subscribe(res => {
       console.log("getRunFCPCount success");
       if(res > 0) this.isRunFCP = true;
     });
@@ -1111,11 +1111,11 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
     console.log("StrartRun : " + data.planEdition)
-    
+
     this.Modal.warning({
-			nzTitle: '開發中',
-			nzContent: `開發中`
-		});
+      nzTitle: '開發中',
+      nzContent: `開發中`
+    });
 
     return;
 
