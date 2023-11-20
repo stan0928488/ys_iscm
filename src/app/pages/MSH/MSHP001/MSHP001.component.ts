@@ -62,6 +62,8 @@ export class MSHP001Component implements OnInit {
 
 //識別來源 A來自FCP（庭葦） B來自暫存 T 無效 M 已送入MES
 category = '' ;
+// lockLoading
+lockLoading = false ;
 
 
 //public getRowId: GetRowIdFunc = (params: GetRowIdParams) => params.data.id;
@@ -1515,8 +1517,9 @@ this.handleSelectCarModal() ;
   }
 
   lockFcpBtn(){
-
+    this.lockLoading = true ;
     this.mshService.checkDataStatus().subscribe(res=>{
+      this.lockLoading = false ;
       let result:any = res ;
       let message = result.message ;
     this.modal.confirm({
