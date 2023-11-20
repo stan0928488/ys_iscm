@@ -7,7 +7,7 @@
       <nz-collapse-panel [nzHeader]="panels1.name" [nzActive]="panels1.active">
         <p>
           
-          <button *ngIf="showLockBtn" style=" background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" (click)="lockFcpBtn()">鎖定版本</button>
+          <button *ngIf="showLockBtn" style=" background-color: #d9534f; border-color: #d43f3a;  color: #fff;" nz-button nzType="primary" [nzLoading] = "lockLoading"  (click)="lockFcpBtn()">鎖定版本</button>
 
           <button *ngIf="!showLockBtn && selectFcpVer !=='' " style=" background-color: #FF9900; border-color: #FF9900;  color: #fff;" nz-button nzType="primary" (click)="queryFcpVerStatusBtn()">查看狀態</button>
           <nz-select style="width:200px;"  nzPlaceHolder="請選擇版本號" [(ngModel)]="selectFcpVer"  (ngModelChange)="changeFcpVer()">
