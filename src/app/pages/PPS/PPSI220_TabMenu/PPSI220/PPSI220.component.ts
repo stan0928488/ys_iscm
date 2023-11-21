@@ -359,7 +359,7 @@ export class PPSI220Component implements AfterViewInit {
   //Get Data
   getPlanDataListByPlan(_Plan) {
     this.LoadingPage = true;
-    this.getPPSService.getPlanDataListByPlan(_Plan).subscribe(res => {
+    this.getPPSService.getPlanDataListByPlan(_Plan, this.PLANT).subscribe(res => {
       console.log("getPlanDataListByPlan success");
       if(res.code == 200) {
         this.PlanDataDtlList = res.data;
@@ -1164,7 +1164,7 @@ export class PPSI220Component implements AfterViewInit {
             plant : this.PLANT
           });
 
-          myObj.getPPSService.StartFullRunPlan(obj).subscribe(res => {
+          myObj.getPPSService.newStartFullRunPlan(obj).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");

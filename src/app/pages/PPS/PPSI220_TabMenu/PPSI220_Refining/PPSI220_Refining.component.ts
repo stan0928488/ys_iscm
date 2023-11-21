@@ -342,7 +342,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
     let myObj = this;
-    this.getPPSService.getRunFCPCount().subscribe(res => {
+    this.getPPSService.getRunFCPCount(this.PLANT).subscribe(res => {
       console.log("getRunFCPCount success");
       if(res > 0) this.isRunFCP = true;
     });
@@ -368,7 +368,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   //Get Data
   getPlanDataListByPlan(_Plan) {
     this.LoadingPage = true;
-    this.getPPSService.getPlanDataListByPlan(_Plan).subscribe(res => {
+    this.getPPSService.getPlanDataListByPlan(_Plan, this.PLANT).subscribe(res => {
       console.log("getPlanDataListByPlan success");
       if(res.code == 200) {
         this.PlanDataDtlList = res.data;
@@ -1111,13 +1111,6 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
     console.log("StrartRun : " + data.planEdition)
-    
-    this.Modal.warning({
-			nzTitle: '開發中',
-			nzContent: `開發中`
-		});
-
-    return;
 
     if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可重新啟動");
@@ -1187,17 +1180,20 @@ export class PPSI220RefiningComponent implements AfterViewInit {
             plant : this.PLANT
           });
 
-          myObj.getPPSService.StartFullRunPlan(obj).subscribe(res => {
+          myObj.getPPSService.newStartFullRunPlan(obj).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
             this.LoadingPage = false;
           });
+          this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
+          setTimeout(()=> {
+            this.getRunFCPCount();
+          }, 1000);
         });
       });
 
-      this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
-      this.getRunFCPCount();
+      
       await this.sleep(3000);
 
       myObj.loading = false;
@@ -1674,7 +1670,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
                 fcpEdition : data.fcpEdition
               })
               myObj.getPPSService.publishData(obj).subscribe(res => {
-                if(res.code = 200) {
+                if(res.code == 200) {
                   this.sucessMSG('已發佈至工廠排程', `FCP版本：${data.fcpEdition}`);
                   this.getPlanDataList();
                 }
