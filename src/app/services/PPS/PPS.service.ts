@@ -1313,9 +1313,10 @@ export class PPSService {
   }
   
   //Get getPlanDataListByPlan 取得規劃清單(取得該版次已執行過內容)
-  getPlanDataListByPlan(_Plan) {
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
-    return this.http.get<any>(queryUrl);
+  getPlanDataListByPlan(_Plan, plant:string) {
+    const httpParams = new HttpParams().set('planEdition', _Plan).set('plant', plant);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan`; 
+    return this.http.get<any>(queryUrl,  { params: httpParams });
   }
   //addPlanData 建立規劃清單insert
   addPlanData(_result) {
@@ -1385,7 +1386,15 @@ export class PPSService {
     // _type: A手動啟動、B排程啟動
     // let queryUrl = this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
     let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
-    //let queryUrl = this.APINEWURL + `/FCP/I220/runPlanFcp`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
+
+  //StartFullRunPlan 啟動規劃案--->Full Run
+  newStartFullRunPlan(body) {
+    // _type: A手動啟動、B排程啟動
+    // let queryUrl = this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
+    //let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
+    let queryUrl = this.APINEWURL + `/FCP/I220/runPlanFcp`; 
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   

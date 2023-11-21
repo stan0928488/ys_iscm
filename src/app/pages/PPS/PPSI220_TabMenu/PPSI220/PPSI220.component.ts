@@ -359,7 +359,7 @@ export class PPSI220Component implements AfterViewInit {
   //Get Data
   getPlanDataListByPlan(_Plan) {
     this.LoadingPage = true;
-    this.getPPSService.getPlanDataListByPlan(_Plan).subscribe(res => {
+    this.getPPSService.getPlanDataListByPlan(_Plan, this.PLANT).subscribe(res => {
       console.log("getPlanDataListByPlan success");
       if(res.code == 200) {
         this.PlanDataDtlList = res.data;
