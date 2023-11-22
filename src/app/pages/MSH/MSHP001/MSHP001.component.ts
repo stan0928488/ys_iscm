@@ -24,6 +24,7 @@ import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
 import { PPSCustomHeaderComponent } from './ppscustom-header.component';
 import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 @Component({
   selector: 'app-MSHP001',
@@ -1424,7 +1425,7 @@ this.handleSelectCarModal() ;
             widthTemp = 130 ;
           }
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1432,7 +1433,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {

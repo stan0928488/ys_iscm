@@ -14,9 +14,9 @@ import { map } from 'lodash';
       <span nz-icon nzType="filter"></span>
       </button> -->
 
-      <span style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
+      <span *ngIf='openFilter'  style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
       <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
@@ -81,12 +81,17 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   isFilter: boolean = false;
   @Input() type: string = '4'  ; 
 
+  openFilter = false ;
+  openSort = false ;
+
   agInit(params: IHeaderParams): void {
     this.params = params;
     this.column = params.column;
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
     //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
+    this.openFilter = this.params.column.getColDef().filter ;
+    this.openSort = this.params.column.getColDef().sortable
     
   }
 
