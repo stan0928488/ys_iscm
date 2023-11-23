@@ -1361,6 +1361,12 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+   // 獲取 tbppsm112 欄位的中英文對照
+   getTbppsm112ColumnName() {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getTbppsm112ColumnName`;
+    return this.http.get(queryUrl);
+  }
+
   // getFCPResRepo 取得表內容
   getFCPResRepo(_data) {
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
@@ -1370,6 +1376,13 @@ export class PPSService {
   // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
   getFCPResRepoDynamic(_data) {
     let queryUrl = this.APINEWURL + `/FCP/I220/exportExcelFcp16/${_data}`;
+    return this.http.get(queryUrl, { responseType: 'arraybuffer' });
+  }
+
+  
+  // 根據fcpEdition取得精整FCP執行結果資料
+  getRefiningFcpResult( fcpEdition:string, batchSize:number = 3000) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpResult/${batchSize}/${fcpEdition}`;
     return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
@@ -1402,6 +1415,12 @@ export class PPSService {
   getFcpEdition(fcpEdition) {
     let queryUrl = this.APINEWURL + `/FCP/I220/getFcpEdition?edition=${fcpEdition}`; 
     return this.http.get<any>(queryUrl);
+  }
+
+    //getFcpEdition 檢誤是否有FCP版次
+  getRefiningFcpEdition(fcpEdition) {
+      let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpEdition?fcpEdition=${fcpEdition}`; 
+      return this.http.get<any>(queryUrl);
   }
   
   //getICPMOVerList (共用)

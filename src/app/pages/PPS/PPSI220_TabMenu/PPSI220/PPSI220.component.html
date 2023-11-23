@@ -25,7 +25,7 @@
 
     <p><p>
 
-    <nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
+    <nz-spin [nzTip]="spinningTip" [nzSpinning]="LoadingPage">
       <nz-table #editRowTable nzBordered [nzData]="PlanDataList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigs" [nzScroll]="{ x:scrollWid, y: '400px' }">
         <thead>
           <tr>

@@ -25,7 +25,7 @@
 
     <p><p>
 
-    <nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
+    <nz-spin [nzTip]="spinningTip" [nzSpinning]="LoadingPage">
       <nz-table #editRowTable nzBordered [nzData]="PlanDataList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigs" [nzScroll]="{ x:scrollWid, y: '400px' }">
         <thead>
           <tr>
@@ -157,7 +157,8 @@
                   <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
                   <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
                 </p>
-                <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
+                <!-- color: darkslateblue;-->
+                <a style="font-size: 15px; font-weight: bolder; color: gray; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px; pointer-events: none;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
                   <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
                 <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
                   <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>

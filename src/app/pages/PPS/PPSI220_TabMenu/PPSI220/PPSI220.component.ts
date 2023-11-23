@@ -28,6 +28,7 @@ registerLocaleData(zh);
 
 export class PPSI220Component implements AfterViewInit {
 	loading = false; //loaging data flag
+  spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
   moSortList : any[] = []; // 平衡設定選項選項
   shopSortLoading = false; // 站別優先順序明細表是否載入中
@@ -1217,6 +1218,7 @@ export class PPSI220Component implements AfterViewInit {
 
   async exportExcel(fcpEdition : string){
 
+    this.spinningTip = '資料量大，請稍待幾分鐘..';
     this.LoadingPage = true;
 
     try{
@@ -1277,7 +1279,7 @@ export class PPSI220Component implements AfterViewInit {
         XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
         XLSX.writeFileXLSX(
           workBook,
-          `FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+          `[${this.PLANT}]FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
         );
 
         // 刪除在後端產生的檔案避免佔用容量
@@ -1291,6 +1293,7 @@ export class PPSI220Component implements AfterViewInit {
         this.errorMSG('獲取檔案發生異常', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
     }
     finally{
+      this.spinningTip = 'Loading...';
       this.LoadingPage = false;
     }
 

@@ -28,6 +28,7 @@ registerLocaleData(zh);
 
 export class PPSI220RefiningComponent implements AfterViewInit {
 	loading = false; //loaging data flag
+  spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
   moSortList : any[] = []; // 平衡設定選項選項
   shopSortLoading = false; // 站別優先順序明細表是否載入中
@@ -1236,15 +1237,16 @@ export class PPSI220RefiningComponent implements AfterViewInit {
 
   async exportExcel(fcpEdition : string){
 
+    this.spinningTip = '資料量大，請稍待幾分鐘..';
     this.LoadingPage = true;
 
     try{
-      const editionExistObservable$ = this.getPPSService.getFcpEdition(fcpEdition);
+      const editionExistObservable$ = this.getPPSService.getRefiningFcpEdition(fcpEdition);
       const editionExistRes = await firstValueFrom<any>(editionExistObservable$);
-      // if(editionExistRes[0].MSG === "Y") {
-      if(editionExistRes.data.length == 1) {
+
+      if(!_.isEmpty(editionExistRes.data)) {
         // 根據版次獲取該表的資料
-        const fcpResObservable$ = this.getPPSService.getFCPResRepoDynamic(fcpEdition);
+        const fcpResObservable$ = this.getPPSService.getRefiningFcpResult(fcpEdition);
         let fcpRes = await firstValueFrom<any>(fcpResObservable$);
         const decoder = new TextDecoder('utf-8');
         fcpRes = decoder.decode(fcpRes);
@@ -1278,7 +1280,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
         }
 
         // 獲取該表中英文屬性名稱(key-value)
-        const excelTitleObservable$ =  this.getPPSService.getTitleName();
+        const excelTitleObservable$ =  this.getPPSService.getTbppsm112ColumnName();
         const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
 
         // 擷取出英文的屬性名稱放到firstRow
@@ -1296,9 +1298,9 @@ export class PPSI220RefiningComponent implements AfterViewInit {
         XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
         XLSX.writeFileXLSX(
           workBook,
-          `FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+          `[${this.PLANT}]FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
         );
-
+        
         // 刪除在後端產生的檔案避免佔用容量
         const deleteFileObservable$ = this.getPPSService.deleteFcp16File(fileName);
         firstValueFrom<any>(deleteFileObservable$);
@@ -1310,6 +1312,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
         this.errorMSG('獲取檔案發生異常', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
     }
     finally{
+      this.spinningTip = 'Loading...';
       this.LoadingPage = false;
     }
 
