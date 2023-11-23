@@ -24,6 +24,7 @@ import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
 import { PPSCustomHeaderComponent } from './ppscustom-header.component';
 import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 @Component({
   selector: 'app-MSHP001',
@@ -33,6 +34,7 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
 
 })
 export class MSHP001Component implements OnInit {
+  // headerComponentFramework:TEST PPSCustomHeaderComponent
   private gridApi: GridApi<any>;
   private gridColumnApi!: ColumnApi;
   // 外層拖拽表格
@@ -1415,8 +1417,15 @@ this.handleSelectCarModal() ;
         this.allColumList.forEach((item,index,array) => {
           //放入导出头部
           exportHeader.push(item.columLabel) ;
+          let widthTemp = 110 ; 
+          if (item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS') {
+            widthTemp = 150 ;
+          }
+          if(item.columValue === 'DATE_DELIVERY_PP') {
+            widthTemp = 130 ;
+          }
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1424,7 +1433,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: item.columValue === 'PST' || item.columValue === 'FINAL_PROCESS' ? 150 : 110 ,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {

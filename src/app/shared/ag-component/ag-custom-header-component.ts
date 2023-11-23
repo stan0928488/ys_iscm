@@ -5,21 +5,29 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { map } from 'lodash';
 
 @Component({
-  selector: 'ag-custom-header',
+  selector: 'custom-header',
   template: `
     <div class="custom-header">
       <span>{{ params.displayName }}</span>
-      <span style='margin-left:5px;' nz-icon nzType="lock" nzTheme="outline" (click)='handleClick()'   ></span>
+      <span style='margin-left:5px;'   [ngClass]="{ 'active': !isLock }" nz-icon nzType="lock" nzTheme="outline" (click)='handleLockClick()'   ></span>
       <!-- <button style='margin-left:5px;'  nz-button nzType="primary"   [nzPopoverContent]="contentTemplate" nzPopoverTrigger="click" >
       <span nz-icon nzType="filter"></span>
       </button> -->
 
-      <span style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
-      <span style='margin-left:5px;' nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
-      <span style='margin-left:5px;' nz-icon nzType="arrow-down"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
-      <span style='margin-left:5px;' nz-icon nzType="arrow-up"   (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
+      <span *ngIf='openFilter'  style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
+     
+      <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
-      <input type="text"  nz-input  *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
+      <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
+      <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
+      <nz-select [ngModel]="'equals'">
+        <nz-option [nzLabel]="'包含'" [nzValue]="'contains'"></nz-option>
+        <nz-option [nzLabel]="'等於'" [nzValue]="'equals'"></nz-option>
+      </nz-select>
+      <input type="text"  nz-input  nzSize="small" style='width:100px;' [(ngModel)]="filterValue" (input)="onFilterChanged()" />
+      </nz-input-group> -->
 
       <nz-drawer
       [nzClosable]="false"
@@ -32,8 +40,8 @@ import { map } from 'lodash';
       <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" [nzFrontPagination]="false" [nzShowPagination]="false">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Address</th>
+          <th>狀態</th>
+          <th>欄位</th>
         </tr>
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -54,6 +62,11 @@ import { map } from 'lodash';
 
     </div>
   `,
+  styles: [`
+    .active {
+       background-color: #0db87a; /* Set your desired color for the active state  */
+    }
+  `]
 })
 export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   public params!: IHeaderParams;
@@ -64,13 +77,22 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   originalData: any[];
   isAscendingUp: boolean = true;
   isAscendingDown: boolean = true;
+  isLock: boolean = true;
   isFilter: boolean = false;
+  @Input() type: string = '4'  ; 
+
+  openFilter = false ;
+  openSort = false ;
 
   agInit(params: IHeaderParams): void {
     this.params = params;
     this.column = params.column;
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
+    //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
+    this.openFilter = this.params.column.getColDef().filter ;
+    this.openSort = this.params.column.getColDef().sortable
+    
   }
 
   refresh(params: IHeaderParams) {
@@ -90,6 +112,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       // Restore to the original data state when clicked the second time
      // this.params.api.setRowData([...this.originalData]);
      this.isAscendingUp = true;
+     this.isAscendingDown = true;
      this.params.setSort(null, false);
     }
   }
@@ -100,15 +123,16 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       this.isAscendingDown = false;
     } else {
       this.isAscendingDown = true;
+      this.isAscendingUp = true;
       this.params.setSort(null, false);
     }
   }
 
-  handleClick() {
+  handleLockClick() {
     if (this.params) {
     const currentColumn = this.params.column;
     const allDisplayedColumns = this.params.columnApi.getAllDisplayedColumns();
-    console.log("pin 狀態" + this.params.column.getPinned()) ;
+   // console.log("pin 狀態" + this.params.column.getPinned()) ;
     const pined = this.params.column.getPinned() ;
     let setPin :ColumnPinnedType = 'left'
     if(pined === null) {
@@ -135,6 +159,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   onFilterClick(){
     this.isFilter = !this.isFilter ;
     this.filterValue = ''
+    this.onFilterChanged() ;
   }
 
   onFilterChanged(){
@@ -143,7 +168,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     const filterComponent = this.params.api.getFilterInstance(colId) as IFilterComp ;
     // 處理過濾邏輯
    // this.params.filterChangedCallback();
-   if (filterComponent) {  // equals contains
+   if (filterComponent) {  //equals contains
     const filterModel: TextFilterModel = { type: 'contains', filter: this.filterValue };
     filterComponent.setModel(filterModel);
     this.params.api.onFilterChanged();

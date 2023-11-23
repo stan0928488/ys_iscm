@@ -233,7 +233,6 @@ const routes: Routes = [
       { path: 'I110', component: PPSI110Component },
       { path: 'I110_NonBar', component: PPSI110_NonBarComponent },
       { path: 'I111', component: PPSI111Component },
-      { path: 'I112', component: PPSI112Component },
       { path: 'I111_NonBar', component: PPSI111_NonBarComponent },
       { path: 'I200', component: PPSI200Component },
     ],
@@ -256,6 +255,7 @@ const routes: Routes = [
     path: 'PlanSet',
     children: [
       { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
+      { path: 'I112', component: PPSI112Component },
       {
         path: 'I202_TabMenu',
         component: PPSI202TabMenuComponent,
