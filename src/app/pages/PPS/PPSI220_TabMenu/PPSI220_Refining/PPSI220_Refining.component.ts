@@ -1298,7 +1298,7 @@ export class PPSI220RefiningComponent implements AfterViewInit {
         XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
         XLSX.writeFileXLSX(
           workBook,
-          `[${this.PLANT}]FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+          `${this.PLANT}_FCP結果表_${moment().format('YYYYMMDDHHmmss')}.xlsx`
         );
         
         // 刪除在後端產生的檔案避免佔用容量
