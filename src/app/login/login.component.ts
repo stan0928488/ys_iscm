@@ -112,7 +112,6 @@ export class LoginComponent implements OnInit {
       password,
       env,
     };
-    this.router.navigateByUrl('/FCPBarData/P202_TabMenu/P202');
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
     this.commonService.casLogin(username, password, env).subscribe(
