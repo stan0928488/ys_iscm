@@ -118,19 +118,21 @@ export class LoginComponent implements OnInit {
       (res) => {
         if (_.get(res, 'isAuth')) {
           console.log("login success");
-          this.authFail = false;
-
+          
           this.cookieService.setCookie("USERNAME", username, 2);
           this.cookieService.setCookie("plantCode", plantCode, 2);
           this.authService.emitAuthState();
-          this.router.navigateByUrl("/FCPBarData/P202_TabMenu/P202");
-          this.isLogining = false;
-          // window.location.reload();
-
+          
           // 儲存 JWT token 到 localStorage
           localStorage.setItem('jwtToken', _.get(res, "jwtToken"));
           let jwtToken = localStorage.getItem('jwtToken');
           console.log("jwtToken:" + jwtToken);
+          
+          this.authFail = false;
+          this.isLogining = false;
+          
+          this.router.navigateByUrl("/FCPBarData/P202_TabMenu/P202");
+          
         } else {
           console.log('login fail err');
           console.log(res);
