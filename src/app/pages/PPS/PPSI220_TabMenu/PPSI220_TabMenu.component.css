@@ -1,0 +1,9 @@
+@import url("../../../../standard.less");
+
+a {
+    color :gray;
+}
+
+.active {
+    color: inherit;
+}

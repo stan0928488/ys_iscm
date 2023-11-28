@@ -1,10 +1,4 @@
 <nz-content style="margin:0 16px;">
-  <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
-    <nz-breadcrumb-item>規劃策略清單(PPSI220)</nz-breadcrumb-item>
-  </nz-breadcrumb>
-
   <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
     <button
       nz-button
@@ -31,26 +25,26 @@
 
     <p><p>
 
-    <nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
-      <nz-table #editRowTable nzBordered [nzData]="PlanDataList" [nzPageSize]="20" [nzScroll]="{ x: '2000px', y: '400px' }">
+    <nz-spin [nzTip]="spinningTip" [nzSpinning]="LoadingPage">
+      <nz-table #editRowTable nzBordered [nzData]="PlanDataList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigs" [nzScroll]="{ x:scrollWid, y: '400px' }">
         <thead>
           <tr>
-            <th nzWidth="4%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">Action</th>
-            <th nzWidth="6%" nzLeft="80px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
-            <th nzWidth="16%" nzLeft="200px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
-            <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
-            <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
-            <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
-            <th nzWidth="9%" colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+            <th nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">Action</th>
+            <th nzLeft="80px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
+            <th nzLeft="200px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
+            <th colspan = "5" style="padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
           </tr>
           <tr>
-            <th nzWidth="5%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
-            <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
           </tr>
         </thead>
         <tbody>
@@ -125,24 +119,24 @@
     <ng-template #planLogContent>
       <div>
 
-        <nz-table #RunTable nzBordered [nzData]="PlanDataDtlList" [nzPageSize]="20" [nzScroll]="{ x: '2000px', y: '400px' }">
+        <nz-table #RunTable nzBordered [nzData]="PlanDataDtlList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigsForRunList" [nzScroll]="{ x:scrollWidForRunList, y: '400px' }">
           <thead>
             <tr>
-              <th nzWidth="6%" nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
-              <th nzWidth="16%" nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
-              <th nzWidth="7%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
-              <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
-              <th nzWidth="6%" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
-              <th nzWidth="9%" colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+              <th nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
+              <th nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
+              <th colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
             </tr>
             <tr>
-              <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
-              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
-              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
-              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
-              <th nzWidth="3%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
-              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
-              <th nzWidth="1%" style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
             </tr>
           </thead>
           <tbody>
@@ -206,6 +200,7 @@
   [nzContent]="createPlanContent"
   [nzFooter]="createPlanooter"
   [nzWidth]="800"
+  (nzOnCancel)="handleCancel_S()"
 >
   <ng-template #createPlanTitle>建立規劃案</ng-template>
   <ng-template #createPlanContent>
@@ -338,6 +333,7 @@
   [nzContent]="updPlanContent"
   [nzFooter]="updPlanFooter"
   [nzWidth]="900"
+  (nzOnCancel)="handleCancel_U()"
 >
   <ng-template #updPlanTitle>修改規劃案內容</ng-template>
   <ng-template #updPlanContent>

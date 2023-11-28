@@ -1,0 +1,120 @@
+<nz-content style="margin:0 16px;">
+  <nz-breadcrumb style="margin:16px 0;">
+    <nz-breadcrumb-item>設定</nz-breadcrumb-item>
+    <nz-breadcrumb-item><font size="4">權限設定(ACCP100)</font></nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning"></nz-spin>
+
+  <!-- 下拉式選單區塊 -->
+  <table class="query">
+  <!-- 下拉式選單: 第一區 -->
+    <tr>
+      <!-- 下拉式選單: 廠區 -->
+      <td style = "width: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;廠區</td>
+      <td style = "width: 300px;">
+        <nz-select [nzDisabled]="disable_plant" nzPlaceHolder="選擇廠區" style="width: 300px; margin-left:10px;" 
+        [(ngModel)]="plant" nzShowSearch nzAllowClear (nzOpenChange) = "getplantList()">
+          <nz-option *ngFor="let plant of plantlistOfOption" [nzLabel]="plant" [nzValue]="plant"></nz-option>
+        </nz-select>
+      </td>
+    </tr>
+    <!-- 空白行 -->
+    <tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+      <!-- 下拉式選單: 部門 -->
+      <td style = "width: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;部門</td>
+      <td style = "width: 300px;">
+        <nz-select [nzDisabled]="disable_deptName" nzPlaceHolder="選擇部門" style="width: 300px; margin-left:10px;" 
+        [(ngModel)]="deptName" nzShowSearch nzAllowClear (nzOpenChange) = "getdeptList()">
+          <nz-option *ngFor="let deptName of deptlistOfOption" [nzLabel]="deptName" [nzValue]="deptName"></nz-option>
+        </nz-select>
+      </td>
+    </tr>
+    <!-- 空白行 -->
+    <tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+      <!-- 下拉式選單: 職務代碼 -->
+      <td style = "width: 10%; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;職務代碼</td>
+      <td style = "width: 300px;">
+        <nz-select [nzDisabled]="disable_pnf" nzPlaceHolder="選擇職務代碼" style="width: 300px; margin-left:10px;"
+        [(ngModel)]="pnf" nzShowSearch nzAllowClear (nzOpenChange)= "getpnfList()" >
+          <nz-option *ngFor="let pnf of pnflistOfOption" [nzLabel]="pnf" [nzValue]="pnf"></nz-option>
+        </nz-select>
+      </td>
+    </tr>
+    <!-- 空白行 -->
+    <tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+    <!-- 空白行 -->
+    <tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+  </table>
+
+
+  <button (click)="searchrouteList()">查詢權限</button>
+  <!-- 空白行 -->
+  <tr>
+    <td colspan="2">&nbsp;</td>
+  </tr>
+  <!-- 儲存設定按鈕 -->
+  <div class="button-container">
+    <button (click)="moveAllToRight()">全選</button>
+    <button (click)="moveAllToLeft()">清除</button>
+    <button (click)="saveSelection()">儲存</button>
+  </div>
+  <!-- 選擇列表區塊 -->
+  <div class="selection-container">
+    <div class="selection-wrapper">
+      <div class="left">
+        <h2>未設定權限頁面</h2>
+        <ul>
+          <li *ngFor="let route of notallowroutelistOfOption" (click)="toggleSelection2(route, true)">
+            {{ route.description }}
+          </li>
+        </ul>
+      </div>
+      <div class="right">
+        <h2>已設定權限頁面</h2>
+        <ul>
+          <li *ngFor="let route of allowroutelistOfOption" (click)="toggleSelection2(route, false)">
+            {{ route.description }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- <div class="selection-container">
+    <div class="selection-wrapper">
+      <div class="left">
+        <h2>頁面列表</h2>
+        <ul>
+          <li *ngFor="let route of notallowroutelistOfOption" (click)="toggleSelection(route, true)">
+            {{ route.description }}
+          </li>
+        </ul>
+      </div>
+      <div class="right">
+        <h2>可用列表</h2>
+        <ul>
+          <li *ngFor="let route of allowroutelistOfOption" (click)="toggleSelection(route, false)">
+            {{ route.description }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div> -->
+  
+  
+  
+
+</nz-content>
+  

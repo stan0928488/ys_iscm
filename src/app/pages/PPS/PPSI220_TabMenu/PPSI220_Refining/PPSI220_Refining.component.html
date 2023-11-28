@@ -1,0 +1,663 @@
+<nz-content style="margin:0 16px;">
+  <div style="margin-top: 15px ; min-height: 600px; background-color: #F7FAFD;">
+    <button
+      nz-button
+      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+      nzType="primary"
+      [nzSize]="'large'"
+      (click)="openChkStrart()"
+    ><span nz-icon nzType="plus" nzTheme="outline"></span>
+      新增規劃案
+    </button>
+    &nbsp;&nbsp;
+
+    <button
+      nz-button
+      style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color:rgb(63, 141, 214); border:2px blue none;"
+      nzType="primary"
+      [nzSize]="'large'"
+      (click)="openPlanCommon()"
+    >
+    <span nz-icon nzType="setting" nzTheme="outline"></span>
+    設定規劃案公版
+    </button>
+    <label style="font-weight:bold; font-size: large; color: rgb(214, 63, 63);" *ngIf="isRunFCP"> ※ 目前 FCP 執行中，不可再次啟動！ </label>
+
+    <p><p>
+
+    <nz-spin [nzTip]="spinningTip" [nzSpinning]="LoadingPage">
+      <nz-table #editRowTable nzBordered [nzData]="PlanDataList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigs" [nzScroll]="{ x:scrollWid, y: '400px' }">
+        <thead>
+          <tr>
+            <th nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">Action</th>
+            <th nzLeft="80px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
+            <th nzLeft="200px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
+            <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
+            <th colspan = "5" style="padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+          </tr>
+          <tr>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
+            <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr *ngFor="let data of editRowTable.data; let i = index" class="editable-row">
+
+            <td nzLeft="0px" style="text-align:center; font-size: 11px; padding: 4px;">
+              <a [attr.disabled]="isRunFCP ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
+              <a [attr.disabled]="data.planStatu !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.planEdition, data.planStatu)">刪除</a>
+              <p><a disabled = false>結果表</a></p>
+            </td> 
+            <td nzLeft="80px" style="font-size: 13px; padding: 4px;"><a (click)="updPlanData(data)">{{data.planEdition}}</a><p> {{data.planStartTypeNa}}</td>
+            <td nzLeft="200px" style="font-size: 11px; padding: 4px;">
+              <p> {{ data.planStatuNa}}
+                  <nz-tag *ngIf="data.planStatu === 'Plan'" nzColor="processing">
+                    <span nz-icon nzType="sync" nzSpin></span>
+                    <span>執行中</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu === 'Fail'" nzColor="error">
+                    <span nz-icon nzType="close-circle"></span>
+                    <span>執行失敗</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
+                  <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
+              </p>
+              <!-- color: darkslateblue;-->
+              <a style="font-size: 15px; font-weight: bolder; color: gray; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px; pointer-events: none;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
+                <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
+              <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
+                <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
+              &nbsp;&nbsp;
+              <label *ngIf="data.fcpEdition === null"></label>
+              <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.fcpEdition)">
+                <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.fcpEdition }}</a> &nbsp;&nbsp;
+
+              <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.planEdition)">
+                <span nz-icon nzType="history" nzTheme="outline"></span>  歷程</label>
+            </td>
+            <td style="font-size: 11px; padding: 4px;">{{data.scheduleFlagNa}} <p>{{dateFormat(data.scheduleTime, '1')}}<label *ngIf="data.scheduleTime !== null"><br><label *ngIf="data.scheduleDone !== 'Y'">(下次執行時間)</label></label></p></td>
+            <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+            <td style="font-size: 11px; padding: 4px;">{{data.icpEditionNa}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.plansetEdition}} <br> {{ data.setName}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.initialFlag}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.moSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px;">{{data.cellSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.nextShopSortNa}}</td>
+            <td style="font-size: 11px; padding: 4px; display:none;">{{data.machineSortNa}}</td>
+            <td style="text-align:center; font-size: 11px; padding: 4px;"><a (click)="openSorting(data.seqNo)">明細</a></td>
+          </tr>
+
+        </tbody>
+      </nz-table>
+
+    </nz-spin>
+
+  </div>
+
+</nz-content>
+
+
+
+<nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
+  <nz-modal
+    [(nzVisible)]="isVisibleRun"
+    [nzTitle]="planLogTitle"
+    [nzContent]="planLogContent"
+    [nzFooter]="planLogFooter"
+    (nzOnCancel)="Run_cancel()"
+    [nzWidth]="1000"
+  >
+
+    <ng-template #planLogTitle>規劃案執行紀錄</ng-template>
+    <ng-template #planLogContent>
+      <div>
+
+        <nz-table #RunTable nzBordered [nzData]="PlanDataDtlList" [nzPageSize]="20" [nzWidthConfig]="nzWidthConfigsForRunList" [nzScroll]="{ x:scrollWidForRunList, y: '400px' }">
+          <thead>
+            <tr>
+              <th nzLeft="0px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案版本</th>
+              <th nzLeft="120px" rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">開始執行時間與狀態</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">規劃案型態<br>計畫執行時間</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">MO 資料</th>
+              <th rowspan = "2" style="height:min-content; padding: 0px; text-align:center; background-color: rgb(179, 179, 179); font-size: 11px;">工時計算</th>
+              <th colspan = "5" style="height:30px; padding: 0px; text-align:center; background-color: rgb(179, 179, 179);">策略</th>
+            </tr>
+            <tr>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">策略版本</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">INITIAL PST</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">MO平衡<br>搬移順序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179);">Cell<br>平衡排序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">相臨站別<br>平衡排序</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 11px; background-color: rgb(179, 179, 179); display:none;">機台<br>平衡策略</th>
+              <th style="text-align:center; height:min-content; padding: 0px; font-size: 10px; background-color: rgb(179, 179, 179);">站別<br>策略設定</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr *ngFor="let data of RunTable.data; let i = index" class="editable-row">
+              <td nzLeft="0px" style="font-size: 13px; padding: 4px;"><label>{{data.planEdition}}</label><p> {{data.planStartTypeNa}}</td>
+              <td nzLeft="120px" style="font-size: 11px; padding: 4px;">
+                <p> {{ data.planStatuNa}}
+                  <nz-tag *ngIf="data.planStatu === 'Plan'" nzColor="processing">
+                    <span nz-icon nzType="sync" nzSpin></span>
+                    <span>執行中</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu === 'Fail'" nzColor="error">
+                    <span nz-icon nzType="close-circle"></span>
+                    <span>執行失敗</span>
+                  </nz-tag>
+                  <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
+                  <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
+                </p>
+                <!-- color: darkslateblue;-->
+                <a style="font-size: 15px; font-weight: bolder; color: gray; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px; pointer-events: none;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
+                  <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
+                <a style="font-size: 15px; font-weight: bolder; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" disabled = false *ngIf = "data.planStatu === 'Publish' ">
+                  <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
+                &nbsp;&nbsp;
+                <label *ngIf="data.fcpEdition === null"></label>
+                <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.fcpEdition)">
+                  <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.fcpEdition }}</a>
+              </td>
+              <td style="font-size: 11px; padding: 4px;">{{data.scheduleFlagNa}} <p>{{dateFormat(data.scheduleTime, '1')}}</p></td>
+              <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+              <td style="font-size: 11px; padding: 4px;">{{data.icpEditionNa}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.plansetEdition}} <br> {{ data.setName}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.initialFlag}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.moSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px;">{{data.cellSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px; display:none;">{{data.nextShopSortNa}}</td>
+              <td style="font-size: 11px; padding: 4px; display:none;">{{data.machineSortNa}}</td>
+              <td style="text-align:center;font-size: 11px; padding: 4px;"><a (click)="openSorting(data.seqNo)">明細</a></td>
+            </tr>
+
+          </tbody>
+        </nz-table>
+
+      </div>
+    </ng-template>
+    <ng-template #planLogFooter>
+      <button nz-button nzType="primary" (click)="Run_cancel()">關閉</button>
+    </ng-template>
+
+  </nz-modal>
+</nz-spin>
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleStart"
+  [nzTitle]="createPlanTitle"
+  [nzContent]="createPlanContent"
+  [nzFooter]="createPlanooter"
+  [nzWidth]="800"
+  (nzOnCancel)="handleCancel_S()"
+>
+  <ng-template #createPlanTitle>建立規劃案</ng-template>
+  <ng-template #createPlanContent>
+    <div>
+
+      <table>
+        <tr>
+          <td colspan="2">
+            <button
+              nz-button
+              nzType="primary"
+              class="opButton"
+              (click)="selPlanSet()"
+            >
+              選擇現有策略內容
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button
+              nz-button
+              nzType="primary"
+              class="opButton"
+              (click)="selPlan()"
+            >
+              複製已建立規劃案
+            </button>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃策略版本</td>
+          <td style = "width: 600px;">&nbsp;
+            <input style="width: 22%; color: darkblue;" nz-input [disabled]="true" [(ngModel)]="PLANSET_EDITION" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;MO 資料</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-radio-group [(ngModel)]="MODATA">
+              &nbsp;&nbsp;
+              <label nz-radio nzValue="1" (click) = "MOchange('1')" >取得新 MO 資料
+              </label>&nbsp;&nbsp;
+              <label nz-radio nzValue="2" (click) = "MOchange('2')" >歷史 MO 資料
+                <nz-select nzShowSearch nzPlaceHolder="Select his MO version" style="width: 180px;" [(ngModel)]="HISMO" (nzOpenChange) = "getMOVerListForRefining()">
+                  <nz-option *ngFor="let option of listOfMOOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                  <nz-option *ngIf="moDataLoading" nzDisabled nzCustomContent>
+                    <span nz-icon nzType="loading" class="loading-icon"></span>
+                    載入中...
+                </nz-option>
+                </nz-select>
+              </label>
+            </nz-radio-group>
+            <br>
+
+            <!-- 精整型態的「MO落於LPST區間」指定為全部-->
+            <!-- &nbsp;
+            <nz-radio-group [(ngModel)]="LPSTDATA">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <label nz-radio nzValue="1" (click) = "LPSTchange('1', 'ins')" >當月
+              </label>
+              <label style="color: chocolate;" *ngIf = "LPSTDATA === '1'" >( ~ {{ enddate }} )&nbsp;&nbsp;
+              </label>
+              <label nz-radio nzValue="2" (click) = "LPSTchange('2', 'ins')" >未來兩個月
+              </label>
+              <label style="color: chocolate;" *ngIf = "LPSTDATA === '2'" >( ~ {{ enddate }} )&nbsp;&nbsp;
+              </label>
+              <label nz-radio nzValue="3" (click) = "LPSTchange('3', 'ins')" >全部
+              </label>
+            </nz-radio-group> -->
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;工時計算</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-radio-group [(ngModel)]="ICPDATA">
+              &nbsp;&nbsp;
+              <label nz-radio nzValue="1" (click) = "ICPchange('1')" >取得新工時計算
+              </label>
+               <!-- &nbsp;&nbsp;
+              <label nz-radio nzValue="2" (click) = "ICPchange('2')" >歷史工時計算
+                <nz-select nzShowSearch nzPlaceHolder="Select his ICP version" style="width: 180px;" [(ngModel)]="HISICP" (nzOpenChange) = "getICPVerList()">
+                  <nz-option *ngFor="let option of listOfICPOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                </nz-select>
+              </label> -->
+            </nz-radio-group>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; height:36px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃案執行型態</td>
+          <td style = "width: 600px;">&nbsp;
+            <nz-radio-group [(ngModel)]="SCHEDULE_FLAG">
+              &nbsp;&nbsp;
+              <label nz-radio nzValue="1" [nzDisabled] = "SCHEDULEVER" (click)="SCHEDULEchange('1', 'ins')" >公版
+              </label>&nbsp;&nbsp;
+              <label nz-radio nzValue="2" (click)="SCHEDULEchange('2', 'ins')" >特殊版
+              </label>&nbsp;&nbsp;
+              <label nz-radio nzValue="3" (click)="SCHEDULEchange('3', 'ins')" >手動版
+              </label>&nbsp;&nbsp;
+            </nz-radio-group>
+
+            <label *ngIf = "SCHEDULE_FLAG === '1' || SCHEDULE_FLAG === '2' ">&nbsp;&nbsp;規劃案執行時間
+              <nz-date-picker
+                nzFormat="yyyy-MM-dd HH:mm"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 15 }"
+                [(ngModel)]="SCHEDULE_TIME"
+                (ngModelChange)="SC_Change($event, 'ins')"
+                (nzOnOk)="SC_Ok($event, 'ins')"
+              ></nz-date-picker>
+            </label>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 110px; background-color: #FFF; font-weight: bold; border-radius: 5px;" colspan="2">
+            <label style="color: hotpink;">※ MO 每站的 LPST 如落在所選區間，則該 MO 須列入</label>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </ng-template>
+  <ng-template #createPlanooter>
+    <button nz-button nzType="default" (click)="handleCancel_S()">取消建立</button>
+    <button nz-button nzType="primary" (click)="handleOk_S()">確定</button>
+  </ng-template>
+</nz-modal>
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleUpd"
+  [nzTitle]="updPlanTitle"
+  [nzContent]="updPlanContent"
+  [nzFooter]="updPlanFooter"
+  [nzWidth]="900"
+  (nzOnCancel)="handleCancel_U()"
+>
+  <ng-template #updPlanTitle>修改規劃案內容</ng-template>
+  <ng-template #updPlanContent>
+    <div>
+
+      <table>
+        <tr>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃案版本</td>
+          <td style="width: 0px;">&nbsp;
+            <input style="width: 160px; color: darkblue;" nz-input [disabled]="true" [(ngModel)]="upd_PLAN_EDITION" />
+          </td>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;目前規劃策略版本</td>
+          <td style = "width: 150px;">&nbsp;
+            <input style="width: 160px; color: darkblue;" nz-input [disabled]="true" [(ngModel)]="upd_oldPLANSET_EDITION" />
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃策略版本</td>
+          <td style = "width: 0px;">&nbsp;&nbsp;
+            <nz-radio-group [(ngModel)]="choicePlanset" [nzButtonStyle]="'solid'" (ngModelChange)="changePlanset(choicePlanset);">
+              <label nz-radio-button nzValue="A">不更換策略</label>
+              <label nz-radio-button nzValue="B">更換策略</label>
+            </nz-radio-group>
+          </td>
+          <td *ngIf="choicePlanset === 'A'" colspan="3">
+          </td>
+          <td *ngIf="choicePlanset === 'B'" colspan="3">
+            <nz-select [nzDropdownMatchSelectWidth]="false"  nzPlaceHolder="請選擇新策略版本" [(ngModel)]="upd_newPLANSET_EDITION">
+              <nz-option *ngFor="let option of plansetlist" [nzLabel]="option.label" [nzValue]="option"></nz-option>
+            </nz-select>
+          </td>
+        </tr>
+
+        <!-- <tr>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;MO 區間</td>
+            <td colspan="3">&nbsp;
+            <nz-radio-group [(ngModel)]="upd_LPSTDATA">
+              &nbsp;
+              <label nz-radio nzValue="1" (click) = "LPSTchange('1', 'upd')" >當月
+              </label>
+              <label style="color: chocolate; font-weight: bold;" *ngIf = "upd_LPSTDATA === '1'" >( ~ {{ upd_enddate }} )&nbsp;&nbsp;
+              </label>
+              <label nz-radio nzValue="2" (click) = "LPSTchange('2', 'upd')" >未來兩個月
+              </label>
+              <label style="color: chocolate; font-weight: bold;" *ngIf = "upd_LPSTDATA === '2'" >( ~ {{ upd_enddate }} )&nbsp;&nbsp;
+              </label>
+              <label nz-radio nzValue="3" (click) = "LPSTchange('3', 'upd')" >全部
+              </label>
+            </nz-radio-group>
+          </td>
+        </tr> -->
+
+        <tr>
+          <td style = "width: 60px; height: 36px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃案排程型態</td>
+          <td colspan="3">&nbsp;
+            <nz-radio-group [(ngModel)]="upd_SCHEDULE_FLAG">
+              &nbsp;&nbsp;
+              <label nz-radio nzValue="1" [nzDisabled] = "SCHEDULEVER" (click)="SCHEDULEchange('1', 'upd')" >公版
+              </label>&nbsp;&nbsp;
+              <label nz-radio nzValue="2" (click)="SCHEDULEchange('2', 'upd')" >特殊版
+              </label>&nbsp;&nbsp;
+              <label nz-radio nzValue="3" (click)="SCHEDULEchange('3', 'upd')" >手動版
+              </label>&nbsp;&nbsp;
+            </nz-radio-group>
+
+            <label *ngIf = "upd_SCHEDULE_FLAG === '1' || upd_SCHEDULE_FLAG === '2' ">&nbsp;&nbsp;規劃案執行時間
+              <nz-date-picker
+                nzFormat="yyyy-MM-dd HH:mm"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 15 }"
+                [(ngModel)]="upd_SCHEDULE_TIME"
+                (ngModelChange)="SC_Change($event, 'upd')"
+                (nzOnOk)="SC_Ok($event, 'upd')"
+              ></nz-date-picker>
+            </label>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 80px; background-color: #FFF; font-weight: bold; border-radius: 5px;" colspan="5">
+            <label style="color: hotpink;">※ MO 每站的 LPST 如落在所選區間，則該 MO 須列入</label>
+          </td>
+        </tr>
+
+
+      </table>
+
+    </div>
+
+  </ng-template>
+  <ng-template #updPlanFooter>
+    <button nz-button nzType="default" (click)="handleCancel_U()">取消修改</button>
+    <button nz-button nzType="primary" (click)="handleOk_U()">確定</button>
+  </ng-template>
+
+</nz-modal>
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isCommon"
+  [nzTitle]="CommonTitle"
+  [nzContent]="CommonContent"
+  [nzFooter]="CommonFooter"
+  (nzOnCancel)="Cancel_Com()"
+  [nzWidth]="800"
+>
+  <ng-template #CommonTitle>規劃案公版</ng-template>
+  <ng-template #CommonContent>
+    <table>
+      <tr>
+        <td style = "width: 80px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;原公版規劃案版本</td>
+        <td style = "width: 300px;">
+
+          <nz-select nzShowSearch nzPlaceHolder="請選擇原公版規劃案版本號" style="width: 300px; margin-left:10px;" [(ngModel)]="oldPlanEdition" nzAllowClear (nzOpenChange) = "getPlanVerList('old', '1')">
+            <nz-option *ngFor="let option of planlist" [nzLabel]="option.label" [nzValue]="option"></nz-option>
+          </nz-select>
+        </td>
+      </tr>
+      <tr>
+        <td style = "width: 80px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;新指定公版規劃案版本</td>
+        <td style = "width: 300px;">
+          <nz-select nzShowSearch nzPlaceHolder="請選擇新公版規劃案版本號" style="width: 200px; margin-left:10px;" [(ngModel)]="newPlanEdition" (nzOpenChange) = "getPlanVerList('new', '2')">
+            <nz-option *ngFor="let option of planlist" [nzLabel]="option.label" [nzValue]="option"></nz-option>
+          </nz-select>
+        </td>
+      </tr>
+      <tr>
+        <td style = "width: 80px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;規劃案執行時間</td>
+        <td style = "width: 300px;">&nbsp;
+          <!--
+          <nz-time-picker [(ngModel)]="time_E" nzFormat="HH:mm"
+                            [nzMinuteStep]="10" nzPlaceHolder="停機時間(迄)" (click) = "checktimer()">
+          </nz-time-picker>
+          -->
+          <nz-date-picker
+            nzFormat="yyyy-MM-dd HH:mm"
+            [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 30 }"
+            [(ngModel)]="commSCHEDULE_TIME"
+            (ngModelChange)="SC_Change($event, 'common')"
+            (nzOnOk)="SC_Ok($event, 'common')"
+          ></nz-date-picker>
+        </td>
+      </tr>
+
+    </table>
+  </ng-template>
+
+  <ng-template #CommonFooter>
+    <button nz-button nzType="default" (click)="Cancel_Com()">關閉</button>
+    <button nz-button nzType="primary" (click)="Ok_Com()">確定</button>
+  </ng-template>
+
+</nz-modal>
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSelPlanSet"
+  [nzTitle]="PlanSetTitle"
+  [nzContent]="PlanSetContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="plansethandleCancel()"
+>
+
+<ng-container>
+  <ng-template #PlanSetTitle>現有規劃策略明細表</ng-template>
+  <ng-template #PlanSetContent>
+    <nz-table #setSelectionTable [nzShowPagination]="false" [nzScroll]="{ x: '1300px', y: '350px' }" [nzData]="planSetDataList">
+      <tbody>
+      <thead>
+        <tr>
+          <th nzWidth="1%" nzLeft="0px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">點選</th>
+          <th nzWidth="3%" nzLeft="50px" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">策略版本</th>
+          <th nzWidth="5%" nzLeft="195px" style="text-align:center;background-color: #eee; padding: 0px; height: 55px;">策略名稱</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Initial PST</th>
+          <th nzWidth="3%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">MO<br>平衡搬移順序</th>
+          <th nzWidth="5%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">Cell 處理順序</th>
+          <th nzWidth="4%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">相臨站別<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">機台<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">站別<br>策略設定</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let data of setSelectionTable.data; let i = index">
+          <td nzLeft="0px"><label nz-radio (click) = "sendchoice(data.PLANSET_EDITION)"></label></td>
+          <td nzLeft="50px">{{data.PLANSET_EDITION}}</td>
+          <td nzLeft="195px">{{data.SETNAME}}</td>
+          <td>{{data.INITIALFLAG}}</td>
+          <td>{{data.MOSORTNA}}</td>
+          <td>{{data. CELLSORTNA}}</td>
+          <td>{{data.NEXTSHOPSORTNA}}</td>
+          <td>{{data.MACHINESORTNA}}</td>
+          <td style="text-align:center;"><a (click)="openSorting(data.SEQNO)">明細</a></td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+
+</ng-container>
+</nz-modal>
+
+
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSelPlan"
+  [nzTitle]="isPlanTitle"
+  [nzContent]="isPlanContent"
+  [nzFooter]="null"
+  (nzOnCancel)="planhandleCancel()"
+  [nzFooter]="null"
+  [nzWidth]="1200"
+>
+
+<ng-container>
+  <ng-template #isPlanTitle>已建立規劃案明細表</ng-template>
+  <ng-template #isPlanContent>
+    <nz-table #planSelectionTable [nzShowPagination]="false" [nzScroll]="{ x: '1600px', y: '300px' }" [nzData]="selPlanDataList">
+      <thead>
+        <tr>
+          <th nzWidth="1%" nzLeft="0px" style="text-align:center; background-color: #eee">點選</th>
+          <th nzWidth="3%" nzLeft="56px" style="text-align:center; background-color: #eee">規劃案版本</th>
+          <th nzWidth="3%" style="text-align:center; background-color: #eee">MO資料</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee">工時計算</th>
+          <th nzWidth="4%" style="text-align:center; background-color: #eee">策略版本<br>策略名稱</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee">Initial PST</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee">MO 平衡<br>搬移順序</th>
+          <th nzWidth="4%" style="text-align:center; background-color: #eee">Cell 處理順序</th>
+          <th nzWidth="4%" style="text-align:center; background-color: #eee">相臨站別<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee">機台<br>平衡策略</th>
+          <th nzWidth="2%" style="text-align:center; background-color: #eee">站別<br>策略設定</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let data of planSelectionTable.data; let i = index">
+          <td nzLeft="0px" style="text-align:center;"><label nz-radio (click) = "sendPlanchoice(data)"></label></td>
+          <td nzLeft="56px">{{data.planEdition}}<p>{{data.scheduleFlagNa}}&nbsp;&nbsp;{{dateFormat(data.scheduleTime,'')}}</p></td>
+          <td>{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+          <td>{{data.icpEditionNa}}</td>
+          <td>{{data.plansetEdition}}<p>{{data.setName}}</p></td>
+          <td>{{data.initialFlag}}</td>
+          <td>{{data.moSortNa}}</td>
+          <td>{{data.cellSortNa}}</td>
+          <td>{{data.nextShopSortNa}}</td>
+          <td>{{data.machineSortNa}}</td>
+          <td style="text-align:center;"><a (click)="openSorting(data.seqNo)">明細</a></td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+  </ng-template>
+</ng-container>
+</nz-modal>
+
+
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleSorting"
+  [nzTitle]="shopSortTitle"
+  [nzContent]="shopSortContent"
+  [nzFooter]="null"
+  [nzWidth]="1000"
+  (nzOnCancel)="handleCancel()"
+>
+
+  <ng-template #shopSortTitle>站別優先順序明細表</ng-template>
+  <ng-template #shopSortContent>
+    <nz-spin style="z-index:9999;" nzTip="站別優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "shopSortLoading">
+      <ag-grid-angular
+          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          class="ag-theme-alpine ag-theme-PPSI220-custom"
+          [rowData]="ShopSortingList"
+          [columnDefs]="shopSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [context]="agGridContext"
+          [pagination]="true"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin>
+  </ng-template>
+</nz-modal>
+
+
+<nz-modal
+  [(nzVisible)]="isVisibleMachine"
+  [nzTitle]="MachineSortTitle"
+  [nzContent]="MachineSortContent"
+  [nzFooter]="null"
+  (nzOnCancel)="handleCancel_M()"
+  [nzWidth]="1000"
+>
+  <ng-template #MachineSortTitle>站別機台優先順序明細表</ng-template>
+  <ng-template #MachineSortContent>
+    <nz-spin style="z-index:9999;" nzTip="站別機台優先順序明細表..." [nzSize]="'large'" [nzSpinning] = "machineSortLoading">
+      <ag-grid-angular
+          style="width:100%; height:500px; margin-bottom: 200px; margin-top: 10px"
+          class="ag-theme-alpine ag-theme-PPSI220-custom"
+          [rowData]="MachineSortingList"
+          [columnDefs]="machineSortingColumnDefs"
+          [gridOptions]="gridOptions"
+          [pagination]="true"
+          [paginationPageSize]="20">
+      </ag-grid-angular>
+    </nz-spin> 
+  </ng-template>
+</nz-modal>
+
+
+

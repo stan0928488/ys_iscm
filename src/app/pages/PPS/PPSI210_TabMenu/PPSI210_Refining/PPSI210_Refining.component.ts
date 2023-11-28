@@ -331,7 +331,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
     let myObj = this;
-    this.getPPSService.getRunFCPCount().subscribe((res) => {
+    this.getPPSService.getRunFCPCount(this.plant).subscribe((res) => {
       console.log('getRunFCPCount success');
       if (res > 0) this.isRunFCP = true;
     });

@@ -57,7 +57,7 @@ import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
 import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
-import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
+import { PPSI220Component } from './pages/PPS/PPSI220_TabMenu/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
@@ -132,8 +132,17 @@ import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Tab
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
+import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+import { ACCP100component } from './pages/ACC/ACCP100component';
+import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
+import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 
 const routes: Routes = [
+  {
+    path: "AccessDined",
+    component: AccessDinedPageComponent,
+    canActivate: [AuthGuard],
+  },
   {
     path: 'login',
     component: LoginComponent,
@@ -224,7 +233,6 @@ const routes: Routes = [
       { path: 'I110', component: PPSI110Component },
       { path: 'I110_NonBar', component: PPSI110_NonBarComponent },
       { path: 'I111', component: PPSI111Component },
-      { path: 'I112', component: PPSI112Component },
       { path: 'I111_NonBar', component: PPSI111_NonBarComponent },
       { path: 'I200', component: PPSI200Component },
     ],
@@ -247,6 +255,7 @@ const routes: Routes = [
     path: 'PlanSet',
     children: [
       { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
+      { path: 'I112', component: PPSI112Component },
       {
         path: 'I202_TabMenu',
         component: PPSI202TabMenuComponent,
@@ -274,6 +283,7 @@ const routes: Routes = [
         path: 'P201_TabMenu', 
         component: PPSI210TabMenuComponent,
         children: [
+          { path: '', redirectTo: '/FCPBarData/P201_TabMenu/P201', pathMatch: 'full' },
           {
             path: 'P201',
             component: PPSI210Component
@@ -284,11 +294,26 @@ const routes: Routes = [
           }
         ]
       },
-      { path: 'P202', component: PPSI220Component },
+      { 
+        path: 'P202_TabMenu', 
+        component: PPSI220TabMenuComponent,
+        children: [
+          { path: '', redirectTo: '/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
+          { 
+            path: 'P202', 
+            component: PPSI220Component 
+          },
+          { 
+            path: 'P202_Refining', 
+            component: PPSI220RefiningComponent 
+          },
+        ]
+      },
       { 
         path: 'P203_TabMenu', 
         component: PPSI230TabMenuComponent,
         children: [
+          { path: '', redirectTo: '/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
           { 
             path: 'P203', 
             component: PPSI230Component 
@@ -522,6 +547,11 @@ const routes: Routes = [
       { path: 'P003', component: POMP003Component },
     ],
     canActivate: [AuthGuard],
+  },
+  {
+    path: "ACCSetting",
+    component: ACCP100component,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',

@@ -5,7 +5,7 @@ import { ZorroCompomentModule } from './shared/zorro-compoment/zorro-compoment.m
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {
@@ -86,7 +86,7 @@ import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
 import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
-import { PPSI220Component } from './pages/PPS/PPSI220/PPSI220.component';
+import { PPSI220Component } from './pages/PPS/PPSI220_TabMenu/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
@@ -186,19 +186,25 @@ import { PPSI210TabMenuComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Tab
 import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/PPSI210_Refining.component';
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
+import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+import { ACCP100component } from './pages/ACC/ACCP100component';
+import { JwtInterceptor } from './services/config/jwt.interceptor';
+import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 
 
 registerLocaleData(zh);
 
 @NgModule({
   declarations: [
+    AccessDinedPageComponent,
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
-
+    ACCP100component,
     ORPV101Component,
     ORPP100Component,
     ORPP101Component,
@@ -257,6 +263,7 @@ registerLocaleData(zh);
     PPSI210Component,
     PPSI210RefiningComponent,
     PPSI220Component,
+    PPSI220RefiningComponent,
     PPSI230Component,
     PPSI230RefiningComponent,
     PPSR301Component,
@@ -347,6 +354,7 @@ registerLocaleData(zh);
     PPSR322Child9Component,
     PPSI210TabMenuComponent,
     PPSI230TabMenuComponent,
+    PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
   ],
@@ -377,6 +385,7 @@ registerLocaleData(zh);
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: NZ_I18N, useValue: zh_TW },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
 })

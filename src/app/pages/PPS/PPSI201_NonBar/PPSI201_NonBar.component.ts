@@ -546,11 +546,11 @@ export class PPSI201NonBarComponent implements AfterViewInit {
         this.message.error(" 前三位只能是 EPST/LPST、SORT群組或FCP下站順位，請您調整");
         this.saveCheckFg = false ;
       }
-      */
       if (index === 0 && value.column_name !== "FROZAN_GROUP") {
         this.message.error("FCP下站順位必須在第一位,請您調整");
         this.saveCheckFg = false;
       }
+      */
 
       /** TODO  先拿掉，後面再補
       else if(index === 1 && value.column_name !== "SORT_GROUP") {

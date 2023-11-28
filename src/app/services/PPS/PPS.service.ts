@@ -407,7 +407,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
-      this.APIURL + `/FCP/I108` + nonbarUrl + `/insertI108Tab1Save`;
+      this.APIURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I108 updateI108Save
@@ -416,7 +416,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
-      this.APIURL + `/FCP/I108` + nonbarUrl + `/updateI108Tab1Save`;
+      this.APIURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I108 delI108Data 刪除資料
@@ -424,7 +424,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
-      this.APIURL + `/FCP/I108` + nonbarUrl + `/delI108Tab1Data/${_ID}`;
+      this.APIURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I108 importI108Excel EXCEL匯入
@@ -1196,8 +1196,8 @@ export class PPSService {
   }
 
   //getRunFCPCount 取得目前正在執行的FCP (所有靜態資料、執行策略皆共用)
-  getRunFCPCount() {
-    let queryUrl = this.APIURL + '/FCP/I210/getRunFCPCount';
+  getRunFCPCount(plant:string = '直棒') {
+    let queryUrl = this.APINEWURL + `/FCP/I210/getRunFCPCount/${plant}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1299,19 +1299,24 @@ export class PPSService {
   // ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
   //Get getCreatePlanDataList 取得規劃清單(僅建立)
-  getCreatePlanDataList() {
+  getCreatePlanDataList(plantType : string) {
+    const httpParams = new HttpParams().set('plantType', plantType);
     let queryUrl = this.APINEWURL + `/FCP/I220/getCreatedPlanEditionData`; 
-    return this.http.get<any>(queryUrl);
+    return this.http.get<any>(queryUrl, { params: httpParams });
   }
+  
   //Get getPlanDataList 取得規劃清單(含執行-最大一筆)
-  getPlanDataList() {
+  getPlanDataList(plantType : string) {
+    const httpParams = new HttpParams().set('plantType', plantType)
     let queryUrl = this.APINEWURL + '/FCP/I220/getNowPlanDataList'
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, { params: httpParams });
   }
+  
   //Get getPlanDataListByPlan 取得規劃清單(取得該版次已執行過內容)
-  getPlanDataListByPlan(_Plan) {
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan?planEdition=${_Plan}`; 
-    return this.http.get<any>(queryUrl);
+  getPlanDataListByPlan(_Plan, plant:string) {
+    const httpParams = new HttpParams().set('planEdition', _Plan).set('plant', plant);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanDataListByPlan`; 
+    return this.http.get<any>(queryUrl,  { params: httpParams });
   }
   //addPlanData 建立規劃清單insert
   addPlanData(_result) {
@@ -1356,6 +1361,12 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
+   // 獲取 tbppsm112 欄位的中英文對照
+   getTbppsm112ColumnName() {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getTbppsm112ColumnName`;
+    return this.http.get(queryUrl);
+  }
+
   // getFCPResRepo 取得表內容
   getFCPResRepo(_data) {
     let queryUrl = this.APIURL + `/FCP/I220/getFCPResRepo/${_data}`;
@@ -1365,6 +1376,13 @@ export class PPSService {
   // getFCPResRepoDynamic 取得表內容(資料會隨著資料表有變更欄位而變更)
   getFCPResRepoDynamic(_data) {
     let queryUrl = this.APINEWURL + `/FCP/I220/exportExcelFcp16/${_data}`;
+    return this.http.get(queryUrl, { responseType: 'arraybuffer' });
+  }
+
+  
+  // 根據fcpEdition取得精整FCP執行結果資料
+  getRefiningFcpResult( fcpEdition:string, batchSize:number = 3000) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpResult/${batchSize}/${fcpEdition}`;
     return this.http.get(queryUrl, { responseType: 'arraybuffer' });
   }
 
@@ -1383,17 +1401,37 @@ export class PPSService {
     let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
+  //StartFullRunPlan 啟動規劃案--->Full Run
+  newStartFullRunPlan(body) {
+    // _type: A手動啟動、B排程啟動
+    // let queryUrl = this.APIURL + `/FCP/Run/StartFullRunPlan/${_plan}/${_flag}/${_type}`;
+    //let queryUrl = this.APINEWURL + `/FCP/I220/startRunPlan`; 
+    let queryUrl = this.APINEWURL + `/FCP/I220/runPlanFcp`; 
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
+  }
   
   //getFcpEdition 檢誤是否有FCP版次
   getFcpEdition(fcpEdition) {
     let queryUrl = this.APINEWURL + `/FCP/I220/getFcpEdition?edition=${fcpEdition}`; 
     return this.http.get<any>(queryUrl);
   }
+
+    //getFcpEdition 檢誤是否有FCP版次
+  getRefiningFcpEdition(fcpEdition) {
+      let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpEdition?fcpEdition=${fcpEdition}`; 
+      return this.http.get<any>(queryUrl);
+  }
   
   //getICPMOVerList (共用)
   getICPMOVerList() {
     // let queryUrl = this.APIURL + '/FCP/I220/ICPMOVerList';
     let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionData`;
+    return this.http.get<any>(queryUrl);
+  }
+
+  getICPMOVerListForRefining() {
+    let queryUrl = this.APINEWURL + `/FCP/I220/getHisMoEditionDataForRefining`;
     return this.http.get<any>(queryUrl);
   }
 
@@ -1406,16 +1444,18 @@ export class PPSService {
   }
 
   //getPlansetVerList 規劃策略版本-排除目前資料 (共用)
-  getPlansetVerList(_edition) {
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList?edition=${_edition}`;
-    return this.http.get<any>(queryUrl);
+  getPlansetVerList(_edition, plantType:string) {
+    const httpParams = new HttpParams().set('edition', _edition).set('plantType', plantType);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlansetVerList`;
+    return this.http.get<any>(queryUrl , { params: httpParams });
   }
 
   //getPlanVerList 規劃案執行版本 (共用)
-  getPlanVerList(_flag) {
+  getPlanVerList(_flag, plantType:string) {
+    const httpParams = new HttpParams().set('flag', _flag).set('plantType', plantType);
     // let queryUrl = this.APIURL + `/FCP/I220/getPlanVerList/${_flag}`;
-    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList?flag=${_flag}`;
-    return this.http.get<any>(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getPlanVerList`;
+    return this.http.get<any>(queryUrl, { params: httpParams });
   }
 
   

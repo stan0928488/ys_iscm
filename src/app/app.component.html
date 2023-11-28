@@ -204,9 +204,6 @@
                     <a [routerLink]="['/commonData/I110']"> 產能維護 </a>
                   </li>
                   <li nz-menu-item>
-                    <a [routerLink]="['/commonData/I112']"> 累計生產 </a>
-                  </li>
-                  <li nz-menu-item>
                     <a [routerLink]="['/commonData/I111']"> combine資料設定 </a>
                   </li>
                   <li nz-menu-item>
@@ -251,6 +248,9 @@
               <li nz-submenu nzTitle="策略基礎設定">
                 <ul>
                   <li nz-menu-item>
+                    <a [routerLink]="['/PlanSet/I112']"> 累計生產 </a>
+                  </li>
+                  <li nz-menu-item>
                     <a [routerLink]="['/PlanSet/I202_TabMenu']"> 定修計畫 </a>
                   </li>
                   <li nz-menu-item>
@@ -272,7 +272,7 @@
                 <a [routerLink]="['/FCPBarData/P201_TabMenu']"> 建立規劃策略 </a>
               </li>
               <li nz-menu-item>
-                <a [routerLink]="['/FCPBarData/P202']"> 規劃策略清單 </a>
+                <a [routerLink]="['/FCPBarData/P202_TabMenu']"> 規劃策略清單 </a>
               </li>
               <li nz-menu-item>
                 <a [routerLink]="['/FCPBarData/P203_TabMenu']"> 生產規劃執行 </a>
@@ -404,7 +404,16 @@
           </li>
         </ul>
       </li>
-
+      
+      <li nz-submenu nzTitle="設定" nzIcon="setting">
+        <ul>
+          <li nz-menu-item>
+            <a [routerLink]="['/ACCSetting']">
+              權限設定
+            </a>
+          </li>
+        </ul>
+      </li>
 <!--  20231011-煙台拿掉
       <li nz-submenu nzTitle="煙台" nzIcon="file-search">
         <ul>

@@ -46,6 +46,7 @@ export class PPSR302Component implements OnInit {
     this.getWeekData();
   }
 
+  isSpinning = false;
   gridApi: GridApi;
   params: GridReadyEvent;
 
@@ -638,9 +639,10 @@ export class PPSR302Component implements OnInit {
       tableLeftList: this.tableSplitData,
       searchData:this.searchData
     }
+    this.isSpinning = true;
   myObj.getPPSService.getR302DataList("", paramete).subscribe(res => {
     //console.log("comitData :" + JSON.stringify(res)) ;
-
+    this.isSpinning = false;
     let result:any = res ;
     this.tbodyList = [] ;
     if(result.code === 200) {
@@ -663,6 +665,7 @@ export class PPSR302Component implements OnInit {
 
 
   },err => {
+    this.isSpinning = false;
     this.message.error('網絡請求失敗');
   })
   }

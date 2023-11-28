@@ -15,9 +15,9 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
       <span nz-icon nzType="filter"></span>
       </button> -->
 
-      <span style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
-      <span style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
+      <span *ngIf='openFilter' style='margin-left:5px;' nz-icon nzType="filter" (click)='onFilterClick()'   nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
+      <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
       <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
@@ -65,7 +65,7 @@ import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-
   `,
   styles: [`
     .active {
-      /*background-color: #0db87a;  Set your desired color for the active state */
+       background-color: #0db87a; /* Set your desired color for the active state  */
     }
   `]
 })
@@ -82,6 +82,9 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   isFilter: boolean = false;
   @Input() type: string = '4'  ; 
 
+  openFilter = false ;
+  openSort = false ;
+
   customParams: AgCustomHeaderParams;
 
   agInit(params: IHeaderParams): void {
@@ -90,7 +93,11 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
     //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
-    
+    //console.log("test")
+    //console.log(this.params.column.getColDef().filter)
+    this.openFilter = this.params.column.getColDef().filter ;
+    this.openSort = this.params.column.getColDef().sortable
+    //console.log(this.params.columnApi.getColumn(this.params.column.getColId()).getColDef().sortable)
   }
 
   refresh(params: IHeaderParams) {
@@ -110,6 +117,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
       // Restore to the original data state when clicked the second time
      // this.params.api.setRowData([...this.originalData]);
      this.isAscendingUp = true;
+     this.isAscendingDown = true;
      this.params.setSort(null, false);
     }
   }
@@ -120,6 +128,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
       this.isAscendingDown = false;
     } else {
       this.isAscendingDown = true;
+      this.isAscendingUp = true;
       this.params.setSort(null, false);
     }
   }
@@ -155,6 +164,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   onFilterClick(){
     this.isFilter = !this.isFilter ;
     this.filterValue = ''
+    this.onFilterChanged() ;
   }
 
   onFilterChanged(){
@@ -172,7 +182,7 @@ export class PPSCustomHeaderComponent implements IHeaderAngularComp  {
   }
   onMenuColumClick(){
     this.handleClose();
-    // console.log(this.listOfData)
+   console.log(this.listOfData )
     // console.log(this.params.columnApi.getAllDisplayedColumns())
   }
   handleClose(){

@@ -14,7 +14,7 @@ import * as XLSX from 'xlsx';
 import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { OpenMachineRendererComponent } from "../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
+import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 registerLocaleData(zh);
 
 
@@ -28,6 +28,7 @@ registerLocaleData(zh);
 
 export class PPSI220Component implements AfterViewInit {
 	loading = false; //loaging data flag
+  spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
   moSortList : any[] = []; // 平衡設定選項選項
   shopSortLoading = false; // 站別優先順序明細表是否載入中
@@ -97,8 +98,15 @@ export class PPSI220Component implements AfterViewInit {
   choicePlanset = 'A';  // 不更換策略版本
   plansetlist;    // 規劃策略版本清單
 
-  plant = '直棒'; // 工廠別
+  PLANT = '直棒'; // 工廠別
 
+  scrollWid : string = null;
+  nzWidthConfigs : string[] = [];
+  thWidths = [60, 80, 200, 100, 60, 70, 120, 50, 50, 100, 40];
+
+  scrollWidForRunList : string = null;
+  nzWidthConfigsForRunList : string[] = [];
+  thWidthsForRunList = [80, 200, 100, 60, 70, 120, 50, 50, 100, 40];
 
   timer = new Date();
   commSCHEDULE_TIME;
@@ -281,10 +289,34 @@ export class PPSI220Component implements AfterViewInit {
     this.agGridContext = {
       componentParent: this,
     };
+
+   
+
   }
 
   async ngAfterViewInit() {
     console.log("ngAfterViewChecked");
+
+    let totalWidth = 0;
+    let widthConfigs : string[] = [];
+    this.thWidths.forEach(item => {
+      totalWidth += item;
+      widthConfigs.push(`${item}px`);
+    });
+    totalWidth += Math.ceil(totalWidth/2);
+    this.scrollWid = `${totalWidth}px`;
+    this.nzWidthConfigs = widthConfigs;
+
+    totalWidth = 0;
+    widthConfigs = [];
+    this.thWidthsForRunList.forEach(item => {
+      totalWidth += item;
+      widthConfigs.push(`${item}px`);
+    });
+    totalWidth += Math.ceil(totalWidth/2);
+    this.scrollWidForRunList = `${totalWidth}px`;
+    this.nzWidthConfigsForRunList = widthConfigs;
+
     this.getPlanDataList();
     this.getRunFCPCount();
     await this.getMoSortList();
@@ -293,6 +325,8 @@ export class PPSI220Component implements AfterViewInit {
        this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084' || this.USERNAME === 'UR11118') {
       this.byUserShow = true;
     }
+
+
 
   }
 
@@ -311,7 +345,7 @@ export class PPSI220Component implements AfterViewInit {
   getPlanDataList() {
     this.LoadingPage = true;
 
-    this.getPPSService.getPlanDataList().subscribe(res => {
+    this.getPPSService.getPlanDataList(this.PLANT).subscribe(res => {
       console.log("getPlanDataList success");
       let result: any = res;
       this.PlanDataList = result.data;
@@ -326,7 +360,7 @@ export class PPSI220Component implements AfterViewInit {
   //Get Data
   getPlanDataListByPlan(_Plan) {
     this.LoadingPage = true;
-    this.getPPSService.getPlanDataListByPlan(_Plan).subscribe(res => {
+    this.getPPSService.getPlanDataListByPlan(_Plan, this.PLANT).subscribe(res => {
       console.log("getPlanDataListByPlan success");
       if(res.code == 200) {
         this.PlanDataDtlList = res.data;
@@ -561,10 +595,10 @@ export class PPSI220Component implements AfterViewInit {
     this.isVisibleSelPlanSet = true;
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getPlanSetData(this.plant).subscribe(res => {     // 取規劃策略
+    this.getPPSService.getPlanSetData(this.PLANT).subscribe(res => {     // 取規劃策略
       console.log("getPlanSetInitstData success");
       if(res.length <= 0){
-        this.message.success(`目前${this.plant}尚無任何規劃策略內容`)
+        this.message.success(`目前${this.PLANT}尚無任何規劃策略內容`)
         myObj.loading = false;
         return;
       }
@@ -592,7 +626,7 @@ export class PPSI220Component implements AfterViewInit {
     this.loading = true;
 
     let myObj = this;
-    this.getPPSService.getCreatePlanDataList().subscribe(res => {
+    this.getPPSService.getCreatePlanDataList(this.PLANT).subscribe(res => {
       if(res.code == 200) {
         this.selPlanDataList = res.data;
         this.selPlanDataList.forEach(data => {
@@ -697,6 +731,7 @@ export class PPSI220Component implements AfterViewInit {
 			_.extend(obj, {
         planStartType : 'F',      // full run
         plansetEdition : this.PLANSET_EDITION,
+        plant : this.PLANT,
 				icpFlag : this.ICPDATA,
 				hisIcpEdition : ICP,
 				moFlag : this.MODATA,
@@ -798,7 +833,7 @@ export class PPSI220Component implements AfterViewInit {
     if(_edition == 'sel') {
       _edition = this.upd_oldPLANSET_EDITION;
     }
-    this.getPPSService.getPlansetVerList(_edition).subscribe(res => {
+    this.getPPSService.getPlansetVerList(_edition, this.PLANT).subscribe(res => {
       console.log("plansetlist success");
       console.log(res)
       if(res.code = 200) {
@@ -944,7 +979,7 @@ export class PPSI220Component implements AfterViewInit {
     this.loading = true;
     let myObj = this;
 
-    this.getPPSService.getPlanVerList(_flag).subscribe(res => {
+    this.getPPSService.getPlanVerList(_flag, this.PLANT).subscribe(res => {
       console.log("getPlanVerList success");
       if(res.code == 200) {
         let result:any = res.data ;
@@ -1035,7 +1070,8 @@ export class PPSI220Component implements AfterViewInit {
 			let obj = {};
 
 			_.extend(obj, {
-        planEdition : _value1
+        planEdition : _value1,
+        plant : this.PLANT
 			})
       myObj.getPPSService.delPlanData(obj).subscribe(res => {
         if(res.code == 200) {
@@ -1125,10 +1161,11 @@ export class PPSI220Component implements AfterViewInit {
             planEdition : data.planEdition,
             scheduleFlag : data.scheduleFlag,
             createUser : this.USERNAME,
-            type : "A"
+            type : "A",
+            plant : this.PLANT
           });
 
-          myObj.getPPSService.StartFullRunPlan(obj).subscribe(res => {
+          myObj.getPPSService.newStartFullRunPlan(obj).subscribe(res => {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
@@ -1181,6 +1218,7 @@ export class PPSI220Component implements AfterViewInit {
 
   async exportExcel(fcpEdition : string){
 
+    this.spinningTip = '資料量大，請稍待幾分鐘..';
     this.LoadingPage = true;
 
     try{
@@ -1241,7 +1279,7 @@ export class PPSI220Component implements AfterViewInit {
         XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
         XLSX.writeFileXLSX(
           workBook,
-          `FCP結果表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+          `${this.PLANT}_FCP結果表_${moment().format('YYYYMMDDHHmmss')}.xlsx`
         );
 
         // 刪除在後端產生的檔案避免佔用容量
@@ -1255,6 +1293,7 @@ export class PPSI220Component implements AfterViewInit {
         this.errorMSG('獲取檔案發生異常', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
     }
     finally{
+      this.spinningTip = 'Loading...';
       this.LoadingPage = false;
     }
 
