@@ -68,7 +68,10 @@
                     <span>執行失敗</span>
                   </nz-tag>
                   <nz-tag *ngIf="data.planStatu !== 'Create'" nzColor="success">{{ data.createUser }}</nz-tag>
-                  <a *ngIf="byUserShow && data.planStatu === 'Plan'"><button nz-button style="margin-left: 10px;" nzType="primary" [nzSize]="'small'" (click)="stopPlan(data)" nzDanger><span nz-icon nzType="stop" ></span></button></a>    
+                  <a style="font-weight: bolder; color: red; border: 1px solid gray; padding: 3px;"  *ngIf="byUserShow && data.planStatu === 'Plan'" (click)="stopPlan(data)" >
+                    <span nz-icon nzType="stop" ></span>
+                    停止執行
+                </a> 
               </p>
               <a style="font-size: 15px; font-weight: bolder; color: darkslateblue; border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" *ngIf = "data.planStatu === 'Plan OK' " (click)="publishData(data)">
                 <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>  Publish</a>
