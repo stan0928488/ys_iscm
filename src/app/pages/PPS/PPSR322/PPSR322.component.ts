@@ -40,15 +40,16 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   breadcrumbIndex: number = 0;
   clickSubject: Subject<any> = new Subject();
 
-  receivedData1: any;
-  receivedData2: any;
-  receivedData3: any;
-  receivedData4: any;
-  receivedData5: any;
-  receivedData6: any;
-  receivedData7: any;
-  receivedData8: any;
-  receivedData9: any;
+  receivedData1: any[] = [];
+  receivedData2: any[] = [];
+  receivedData3: any[] = [];
+  receivedData4: any[] = [];
+  receivedData5: any[] = [];
+  receivedData6: any[] = [];
+  receivedData7: any[] = [];
+  receivedData8: any[] = [];
+  receivedData9: any[] = [];
+  receivedData10: any[] = [];
 
   searchObj = {
     verList: {
@@ -121,7 +122,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.ppsr332child5.getR322Data(searchData);
     this.ppsr332child6.getR322Data(searchData);
     this.ppsr332child7.getR322Data(searchData);
-    // this.ppsr332child8.getR322Data(searchData);
+    this.ppsr332child8.getR322Data(searchData);
+    this.ppsr332child9.getR322Data(searchData);
     this.getExcelData();
   }
 
@@ -152,7 +154,19 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         this.receivedData7 = data.data;
       } else if (data.index == 7) {
         this.receivedData8 = data.data;
+      } else if (data.index == 8) {
+        this.receivedData9 = data.data;
       }
+      for (let i = 0; i < this.receivedData8.length; i++) {
+        this.receivedData10 = this.receivedData8.map((item) => item.children);
+      }
+      // for (let j = 0; j< this.receivedData10.length; j++){
+      //   if (this.receivedData10[i]['schShopCodeDisplay'] == '334'){
+      //     this.receivedData10.push({
+      //       data: this.receivedData8[i]['children'],
+      //     });
+      //   }
+      // }
       this.dataSet = [
         this.receivedData1 || [],
         this.receivedData2 || [],
@@ -161,13 +175,27 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         this.receivedData5 || [],
         this.receivedData6 || [],
         this.receivedData7 || [],
-        this.receivedData8 || [],
+        // this.receivedData10 || [],
       ];
     });
   }
 
   dataSet: any[];
   exportExcel() {
+    const array = [
+      { key: 'a', value: 1 },
+      { key: 'b', value: 2 },
+    ];
+
+    const object = array.reduce((acc, item) => {
+      acc[item.key] = item.value;
+      return acc;
+    }, {});
+
+    console.log(object);
+
+    console.log(array);
+    console.log(this.receivedData9);
     console.log(this.dataSet);
     this.excelService.multiSheet(
       this.dataSet,
@@ -291,12 +319,12 @@ export class PPSR322Component implements OnInit, AfterViewInit {
             planWeightI: '入庫量',
           },
         },
-        {
-          sheetName: '日推移報表',
-          headers: [],
-          fields: [],
-          fieldMapping: {},
-        },
+        // {
+        //   sheetName: '日推移報表',
+        //   headers: ['機台'],
+        //   fields: ['pstMachine'],
+        //   fieldMapping: { pstMachine: '機台' },
+        // },
       ],
       '月推移報表'
     );
