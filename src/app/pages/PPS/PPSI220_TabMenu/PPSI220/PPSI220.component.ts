@@ -15,8 +15,9 @@ import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
-import { WebSocketStompService } from "src/app/services/webSocket/webSocketStompService";
+
 import { ConfigService } from "src/app/services/config/config.service";
+import { FcpStatusWebSocketStomp } from "src/app/pages/PPS/PPSI220_TabMenu/webSocket/fcpSatusWebSocketStomp";
 registerLocaleData(zh);
 
 
@@ -120,7 +121,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
   gridColumnApi : ColumnApi;
   agGridContext : any;
 
-  webSocketStompService : WebSocketStompService = null;
+  fcpStatusWebSocketStomp : FcpStatusWebSocketStomp = null;
 
   gridOptions = {
     defaultColDef: {
@@ -296,9 +297,9 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
     };
 
      // 接收後端FCP開始執行與執行結束的通知
-     this.webSocketStompService = new WebSocketStompService(configService);
-     this.webSocketStompService.connect(this.PLANT, 'barFcpStatus');
-      this.webSocketStompService.getMessages().subscribe( message => {
+     this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService);
+     this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--直棒收到後端FCP執行狀態的通知--");
           this.getRunFCPCount();
           this.getPlanDataList();
@@ -306,7 +307,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.webSocketStompService.disconnect();
+    this.fcpStatusWebSocketStomp.disconnect();
   }
 
   async ngAfterViewInit() {
@@ -1112,10 +1113,10 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
     this.LoadingPage = true;
 
     // 如果與後端web socket沒有連線了就重新連線 
-    if(!this.webSocketStompService.connectedStatus()){
+    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
       // 接收後端FCP開始執行與執行結束的通知
-      this.webSocketStompService.connect(this.PLANT, 'barFcpStatus');
-      this.webSocketStompService.getMessages().subscribe( message => {
+      this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--直棒收到後端FCP執行狀態的通知--");
           this.getRunFCPCount();
           this.getPlanDataList();

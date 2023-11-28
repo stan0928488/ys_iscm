@@ -2,13 +2,10 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { ConfigService } from "../config/config.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
-
-@Injectable({
-   providedIn: 'root',
-  })
-export class WebSocketStompService {
+export class FcpStatusWebSocketStomp
+ {
 
     private stompClient :  Stomp.Client;;
     private subject$: Subject<any> = new Subject<any>();
