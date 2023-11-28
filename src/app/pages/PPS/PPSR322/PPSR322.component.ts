@@ -157,16 +157,33 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       } else if (data.index == 8) {
         this.receivedData9 = data.data;
       }
-      for (let i = 0; i < this.receivedData8.length; i++) {
-        this.receivedData10 = this.receivedData8.map((item) => item.children);
-      }
-      // for (let j = 0; j< this.receivedData10.length; j++){
-      //   if (this.receivedData10[i]['schShopCodeDisplay'] == '334'){
-      //     this.receivedData10.push({
-      //       data: this.receivedData8[i]['children'],
-      //     });
-      //   }
-      // }
+      this.receivedData8.forEach((itemA) => {
+        const itemB: receivedData10 = {
+          schShopCodeDisplay: itemA.schShopCodeDisplay,
+          dateTotal: itemA.dateTotal,
+        };
+
+        if (
+          itemA.children &&
+          itemA.children.length > 0 &&
+          itemA.children[0].dateList
+        ) {
+          // 遍歷 dateList
+          itemA.children[0].dateList.forEach((dateListItem) => {
+            // 檢查 dateListItem 是否有 planWeightI
+            if (dateListItem.planWeightI !== undefined) {
+              // 將 dateListItem 的 planWeightI 加入 itemB 的 planWeightI
+              if (!itemB.planWeightI) {
+                itemB.planWeightI = [];
+              }
+              itemB.planWeightI.push(dateListItem.planWeightI);
+            }
+          });
+        }
+
+        // 將新的 receivedData10 對象加入 b 數組
+        this.receivedData10.push(itemB);
+      });
       this.dataSet = [
         this.receivedData1 || [],
         this.receivedData2 || [],
@@ -182,21 +199,10 @@ export class PPSR322Component implements OnInit, AfterViewInit {
 
   dataSet: any[];
   exportExcel() {
-    const array = [
-      { key: 'a', value: 1 },
-      { key: 'b', value: 2 },
-    ];
-
-    const object = array.reduce((acc, item) => {
-      acc[item.key] = item.value;
-      return acc;
-    }, {});
-
-    console.log(object);
-
-    console.log(array);
-    console.log(this.receivedData9);
-    console.log(this.dataSet);
+    // console.log(this.receivedData8);
+    // console.log(this.receivedData9);
+    // console.log(this.receivedData10);
+    // console.log(this.dataSet);
     this.excelService.multiSheet(
       this.dataSet,
       [
@@ -335,4 +341,28 @@ interface SheetConfig {
   sheetName: string;
   headers?: string[];
   fields: string[];
+}
+
+interface receivedData10 {
+  schShopCodeDisplay?: string;
+  pstMachine?: string;
+  planWeightI?: number[];
+  dateTotal?: number;
+  kindType?: string;
+}
+
+interface ItemData {
+  dateTotal: number;
+  schShopCode: string;
+  schShopCodeDisplay: string;
+  pstMachine: string;
+  modelType: string;
+  backgroupColor: string;
+  pst?: Date;
+  planWeightI?: number;
+  level?: number;
+  expand?: boolean;
+  children?: ItemData[];
+  parent?: ItemData;
+  dateList?: ItemData[];
 }
