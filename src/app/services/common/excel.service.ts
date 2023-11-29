@@ -245,37 +245,83 @@ export class ExcelService {
       const sheetConfig = sheetConfigs[i];
       const dataToExport = this.extractFields(
         dataSet[i],
-        sheetConfig.fields,
-        sheetConfig.fieldMapping
+        sheetConfig.fieldMapping // Pass fieldMapping directly
       );
+
+      // 生成動態列名
+      const dynamicColumnNames = this.getDynamicColumnNames(dataToExport);
+
+      // 合併所有欄位名稱
+      const header = [...dynamicColumnNames];
+
+      // 添加一個工作表，指定欄位名稱
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport, {
-        header: sheetConfig.headers,
+        header,
       });
+
+      XLSX.utils.sheet_to_json(ws, { header: header });
 
       XLSX.utils.book_append_sheet(wb, ws, sheetConfig.sheetName);
     }
+
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
 
-  private extractFields(
-    data: any[],
-    fields: string[],
-    fieldMapping: { [key: string]: string }
-  ): any[] {
-    return data.map((item) => {
-      const newItem: any = {};
-      fields.forEach((field) => {
-        const mappedFieldName = fieldMapping[field] || field;
-        newItem[mappedFieldName] = item[field];
+  private getDynamicColumnNames(dataToExport: any[]): string[] {
+    // 从所有行中找到所有 planWeightI 的索引
+    const planWeightIndices = dataToExport.reduce((indices, row) => {
+      return indices.concat(
+        Object.keys(row)
+          .filter((key) => key.startsWith('planWeightI'))
+          .map((key) => parseInt(key.replace('planWeightI', ''), 10))
+          .filter((index) => !isNaN(index))
+      );
+    }, []);
+
+    // 如果没有动态欄位，直接返回空陣列
+    if (planWeightIndices.length === 0) {
+      return [];
+    }
+
+    // 找到最大索引，这就是动态列的数量
+    const maxIndex = Math.max(...planWeightIndices, 0);
+
+    // 生成动态列名数组
+    return Array.from(
+      { length: maxIndex + 1 },
+      (_, i) => `planWeightI${i + 1}`
+    );
+  }
+
+  public extractFields(data: any, fieldMapping: any): any[] {
+    if (!data || data.length === 0) {
+      console.error('Input data is undefined, null, or an empty array.');
+      return [];
+    }
+
+    const extractedData: any[] = [];
+
+    data.forEach((item) => {
+      const extractedItem: any = {};
+
+      // 以 fieldMapping 的鍵 (即欄位名稱) 作為順序依據
+      Object.keys(fieldMapping).forEach((fieldName) => {
+        // 檢查欄位是否存在
+        if (item.hasOwnProperty(fieldName)) {
+          const mappedFieldName = fieldMapping[fieldName];
+          const value = item[fieldName];
+          extractedItem[mappedFieldName] = value !== '' ? value : null;
+        }
       });
-      return newItem;
+
+      extractedData.push(extractedItem);
     });
+
+    return extractedData;
   }
 }
 
 interface SheetConfig {
   sheetName: string;
-  headers: string[];
-  fields: string[];
   fieldMapping: { [key: string]: string };
 }
