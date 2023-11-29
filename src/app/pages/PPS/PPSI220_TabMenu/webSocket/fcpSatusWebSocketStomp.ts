@@ -14,7 +14,7 @@ export class FcpStatusWebSocketStomp
     router : Router = null;
     jwtToken : string = null;
     originalXMLHttpRequestOpen : any = null;
-    webSocketEndpointPrefix = 'webSocketEndpoint';
+    webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint';
     isAddHeaders = false;
     
 
@@ -38,7 +38,7 @@ export class FcpStatusWebSocketStomp
         }
 
         // 關閉消息的打印
-        //this.stompClient.debug = null
+        this.stompClient.debug = null
         this.stompClient.connect(header, (frame) => {
           console.log('STOMP: Connected', frame);
           this.stompClient.subscribe(`/topic/${myTopic}`, (message) => {
