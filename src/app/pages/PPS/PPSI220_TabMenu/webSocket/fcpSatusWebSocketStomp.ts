@@ -33,8 +33,7 @@ export class FcpStatusWebSocketStomp
         this.stompClient = Stomp.over(socket);
 
         const header = {
-          // Authorization: `Bearer ${this.jwtToken}`,
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVUjEwMzY5IiwicG9zdE5vRmlyc3QiOiJPMUlNMDFCNjAwIn0.vmP23DGHWDRAj40Mn-57HC06cAgW9cLq7Hemi3ZjUrQ`,
+          Authorization: `Bearer ${this.jwtToken}`,
           CurrentRoute : this.router.url
         }
 
