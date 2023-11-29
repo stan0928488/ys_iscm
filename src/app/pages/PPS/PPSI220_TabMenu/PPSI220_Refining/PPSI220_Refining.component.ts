@@ -1131,7 +1131,6 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
       this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
       this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--精整收到後端FCP執行狀態的通知--");
-          this.LoadingPage = true;
           this.getRunFCPCount();
           this.getPlanDataList();
       });
@@ -1140,14 +1139,9 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
     await this.getRunFCPCount();
     if(this.isRunFCP){
       this.getPlanDataList();
-      this.message.create("error", "已有規劃案執行中，無法啟動111，請等待執行結束");
+      this.message.create("error", "已有規劃案執行中，無法啟動，請等待執行結束");
       this.LoadingPage = false;
       return;
-    }
-
-    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
-      this.errorMSG("系統異常", "sorry，目前無法自動更新執行狀態，需自行重整頁面查看最新狀態");
-      this.LoadingPage = false;
     }
 
     if(data.planStatu === 'Plan') {
@@ -1226,6 +1220,12 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
           this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
         });
       });
+
+      if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+        this.errorMSG("系統異常", "sorry，目前無法自動提示已完成執行，需自行重整頁面更新狀態");
+        this.LoadingPage = true;
+        await this.sleep(5000);
+      }
     }
   }
 
@@ -1259,6 +1259,7 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
   sleep(millisecond) {
     return new Promise(resolve => {
         setTimeout(() => {
+          this.getRunFCPCount();
           this.getPlanDataList();
         }, millisecond)
     })

@@ -1131,11 +1131,6 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
       return;
     }
 
-    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
-      this.errorMSG("系統異常", "sorry，目前無法自動更新執行狀態，需自行重整頁面查看最新狀態");
-      this.LoadingPage = false;
-    }
-
     if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可重新啟動");
       this.LoadingPage = false;
@@ -1213,10 +1208,14 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
             this.LoadingPage = false;
           });
+          this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
         });
       });
-
-      this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
+      if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+        this.errorMSG("系統異常", "sorry，目前無法自動提示已完成執行，需自行重整頁面更新狀態");
+        this.LoadingPage = true;
+        await this.sleep(5000);
+      }
     }
   }
 
@@ -1250,6 +1249,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
   sleep(millisecond) {
     return new Promise(resolve => {
         setTimeout(() => {
+          this.getRunFCPCount();
           this.getPlanDataList();
         }, millisecond)
     })
