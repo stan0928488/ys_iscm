@@ -307,7 +307,7 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
     this.LPSTchange('3', 'ins');
 
     // 接收後端FCP開始執行與執行結束的通知
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService);
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService, router);
     this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
       this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--精整收到後端FCP執行狀態的通知--");
@@ -1143,6 +1143,11 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
       this.message.create("error", "已有規劃案執行中，無法啟動111，請等待執行結束");
       this.LoadingPage = false;
       return;
+    }
+
+    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+      this.errorMSG("系統異常", "sorry，目前無法自動更新執行狀態，需自行重整頁面查看最新狀態");
+      this.LoadingPage = false;
     }
 
     if(data.planStatu === 'Plan') {

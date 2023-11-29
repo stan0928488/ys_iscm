@@ -3,6 +3,7 @@ import * as SockJS from 'sockjs-client';
 import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { ConfigService } from "../../../../services/config/config.service";
+import { Router } from '@angular/router';
 
 export class FcpStatusWebSocketStomp
  {
@@ -10,18 +11,36 @@ export class FcpStatusWebSocketStomp
     private stompClient :  Stomp.Client;;
     private subject$: Subject<any> = new Subject<any>();
     APINEWURL : string = null;
+    router : Router = null;
+    jwtToken : string = null;
+    originalXMLHttpRequestOpen : any = null;
+    webSocketEndpointPrefix = 'webSocketEndpoint';
+    isAddHeaders = false;
+    
 
     constructor(
       private configService: ConfigService,
+      private _router : Router
     ) {
       this.APINEWURL = this.configService.getAPIURL('1');
+      this.router = this._router;
+      this.jwtToken = localStorage.getItem('jwtToken');
     }
   
     public connect(plantType:string, myTopic: string): void {
-        const socket = new SockJS(`${this.APINEWURL}/webSocketEndpoint/${plantType}`);
+        this.addHeaderForStompHttpRequest();
+        const socket = new SockJS(`${this.APINEWURL}/${this.webSocketEndpointPrefix}/${plantType}`);
         this.stompClient = Stomp.over(socket);
 
-        this.stompClient.connect({}, (frame) => {
+        const header = {
+          // Authorization: `Bearer ${this.jwtToken}`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVUjEwMzY5IiwicG9zdE5vRmlyc3QiOiJPMUlNMDFCNjAwIn0.vmP23DGHWDRAj40Mn-57HC06cAgW9cLq7Hemi3ZjUrQ`,
+          CurrentRoute : this.router.url
+        }
+
+        // 關閉消息的打印
+        //this.stompClient.debug = null
+        this.stompClient.connect(header, (frame) => {
           console.log('STOMP: Connected', frame);
           this.stompClient.subscribe(`/topic/${myTopic}`, (message) => {
             this.subject$.next(message);
@@ -32,6 +51,7 @@ export class FcpStatusWebSocketStomp
     public disconnect(){
       if(this.stompClient && this.stompClient.connected){
         this.stompClient.disconnect(() =>{
+          XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
           console.log('STOMP: DisConnected');
         });
       }
@@ -57,6 +77,22 @@ export class FcpStatusWebSocketStomp
   
     public getMessages(): Observable<any> {
       return this.subject$.asObservable();
+    }
+
+    addHeaderForStompHttpRequest(){
+      const originalOpen = XMLHttpRequest.prototype.open;
+      this.originalXMLHttpRequestOpen = originalOpen;
+      const regex = new RegExp(`\\S+?\\/${this.webSocketEndpointPrefix}\\/\\S+`);
+      const _this = this;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        originalOpen.apply(this, arguments);
+        if(regex.test(url)){
+          this.setRequestHeader('Authorization', `Bearer ${_this.jwtToken}`);
+          this.setRequestHeader('CurrentRoute', _this.router.url);
+          // 已設定過Header不能再設定了
+          this.setRequestHeader = function() {};
+        }
+      };
     }
 
   }
