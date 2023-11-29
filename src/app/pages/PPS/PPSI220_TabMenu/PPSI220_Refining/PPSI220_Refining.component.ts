@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone } from "@angular/core";
+import { Component, AfterViewInit, NgZone, OnDestroy } from "@angular/core";
 import { registerLocaleData, DatePipe } from '@angular/common';
 import { CookieService } from "src/app/services/config/cookie.service";
 import { AppComponent } from "src/app/app.component";
@@ -15,6 +15,8 @@ import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
+import { FcpStatusWebSocketStomp } from "src/app/pages/PPS/PPSI220_TabMenu/webSocket/fcpSatusWebSocketStomp";
+import { ConfigService } from "src/app/services/config/config.service";
 registerLocaleData(zh);
 
 
@@ -26,7 +28,7 @@ registerLocaleData(zh);
 })
 
 
-export class PPSI220RefiningComponent implements AfterViewInit {
+export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
 	loading = false; //loaging data flag
   spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
@@ -120,6 +122,8 @@ export class PPSI220RefiningComponent implements AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
   agGridContext : any;
+
+  fcpStatusWebSocketStomp : FcpStatusWebSocketStomp = null;
 
   gridOptions = {
     defaultColDef: {
@@ -285,7 +289,8 @@ export class PPSI220RefiningComponent implements AfterViewInit {
     private datePipe : DatePipe,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private configService: ConfigService,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -301,6 +306,17 @@ export class PPSI220RefiningComponent implements AfterViewInit {
     // 設定對應的資料
     this.LPSTchange('3', 'ins');
 
+    // 接收後端FCP開始執行與執行結束的通知
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService);
+    this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+          console.log("--精整收到後端FCP執行狀態的通知--");
+          this.getRunFCPCount();
+          this.getPlanDataList();
+      });
+  }
+  ngOnDestroy(): void {
+    this.fcpStatusWebSocketStomp.disconnect();
   }
 
   async ngAfterViewInit() {
@@ -341,13 +357,11 @@ export class PPSI220RefiningComponent implements AfterViewInit {
 
 
   // 取得是否有正在執行的FCP
-  getRunFCPCount() {
-    let myObj = this;
-    this.getPPSService.getRunFCPCount(this.PLANT).subscribe(res => {
-      console.log("getRunFCPCount success");
-      if(res > 0) this.isRunFCP = true;
-    });
-    
+  async getRunFCPCount() {
+    const runFCPCountObservable$ = this.getPPSService.getRunFCPCount(this.PLANT);
+    const construnFCPCountRes = await firstValueFrom<any>(runFCPCountObservable$);
+    if(construnFCPCountRes > 0)this.isRunFCP = true;
+    else this.isRunFCP = false;
   }
 
   //Get Data
@@ -1106,20 +1120,39 @@ export class PPSI220RefiningComponent implements AfterViewInit {
 
   }
 
-
-
-
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
+    this.LoadingPage = true;
     console.log("StrartRun : " + data.planEdition)
+
+     // 如果與後端web socket沒有連線了就重新連線 
+     if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+      // 接收後端FCP開始執行與執行結束的通知
+      this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+          console.log("--精整收到後端FCP執行狀態的通知--");
+          this.LoadingPage = true;
+          this.getRunFCPCount();
+          this.getPlanDataList();
+      });
+    }
+
+    await this.getRunFCPCount();
+    if(this.isRunFCP){
+      this.getPlanDataList();
+      this.message.create("error", "已有規劃案執行中，無法啟動111，請等待執行結束");
+      this.LoadingPage = false;
+      return;
+    }
 
     if(data.planStatu === 'Plan') {
       this.message.create("error", "規劃案執行中，不可重新啟動");
+      this.LoadingPage = false;
     } else {
 
       let myObj = this;
-      let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
 
+      let STARTRUN_TIME = moment().format('YYYYMMDDHHmmss');
       this.ShopSortingList = undefined;
       this.cellsort = undefined;
       this.CHOICE_plansetlist = undefined;
@@ -1138,7 +1171,6 @@ export class PPSI220RefiningComponent implements AfterViewInit {
         this.cellsort = 'machine, TB'
       }
 
-      this.loading = true;
       this.getPPSService.getShopSortingList('Q', data.seqNo).subscribe(res => {
         console.log("sendchoice : getShopSortingList success");
         this.ShopSortingList = res.data;
@@ -1185,19 +1217,10 @@ export class PPSI220RefiningComponent implements AfterViewInit {
           },err => {
             reject('upload fail');
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
-            this.LoadingPage = false;
           });
           this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
-          setTimeout(()=> {
-            this.getRunFCPCount();
-          }, 1000);
         });
       });
-
-      
-      await this.sleep(3000);
-
-      myObj.loading = false;
     }
   }
 
@@ -1210,13 +1233,14 @@ export class PPSI220RefiningComponent implements AfterViewInit {
 			let obj = {};
 			_.extend(obj, {
         startrunTime : data.startrunTime,
-        planEdition : data.planEdition
+        planEdition : data.planEdition,
+        plant : this.PLANT
 			})
       myObj.getPPSService.stopPlanData(obj).subscribe(res => {
         if(res.code == 200) {
           this.sucessMSG("已停止規劃案", `規劃案版本：${data.planEdition}`);
-          this.getPlanDataList();
-          this.getRunFCPCount();
+          // this.getPlanDataList();
+          // this.getRunFCPCount();
         }
       },err => {
         reject('upload fail');
