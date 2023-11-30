@@ -17,7 +17,7 @@ import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, Val
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 
 import { ConfigService } from "src/app/services/config/config.service";
-import { FcpStatusWebSocketStomp } from "src/app/pages/PPS/PPSI220_TabMenu/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
 registerLocaleData(zh);
 
 
@@ -297,7 +297,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
     };
 
      // 接收後端FCP開始執行與執行結束的通知
-     this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService);
+     this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService, router);
      this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
       this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--直棒收到後端FCP執行狀態的通知--");
@@ -1208,10 +1208,14 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
             this.errorMSG("啟動失敗", "後台啟動錯誤，請聯繫系統工程師");
             this.LoadingPage = false;
           });
+          this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
         });
       });
-
-      this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
+      if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+        this.errorMSG("系統異常", "sorry，目前無法自動提示已完成執行，需自行重整頁面更新狀態");
+        this.LoadingPage = true;
+        await this.sleep(5000);
+      }
     }
   }
 
@@ -1245,6 +1249,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
   sleep(millisecond) {
     return new Promise(resolve => {
         setTimeout(() => {
+          this.getRunFCPCount();
           this.getPlanDataList();
         }, millisecond)
     })

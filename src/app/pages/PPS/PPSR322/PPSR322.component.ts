@@ -14,6 +14,7 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { ExcelService } from 'src/app/services/common/excel.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-PPSR322',
@@ -29,6 +30,7 @@ import { ExcelService } from 'src/app/services/common/excel.service';
     PPSR322Child7Component,
     PPSR322Child8Component,
     PPSR322Child9Component,
+    DatePipe,
   ],
 })
 export class PPSR322Component implements OnInit, AfterViewInit {
@@ -49,7 +51,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   receivedData7: any[] = [];
   receivedData8: any[] = [];
   receivedData9: any[] = [];
-  receivedData10: any[] = [];
+  receivedData10: netItem[] = [];
 
   searchObj = {
     verList: {
@@ -72,7 +74,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     private ppsr332child9: PPSR322Child9Component,
     private PPSService: PPSService,
     private router: Router,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private datePipe: DatePipe
   ) {}
 
   ngOnInit() {
@@ -137,6 +140,19 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   }
 
   getExcelData() {
+    this.receivedData1 = [];
+    this.receivedData2 = [];
+    this.receivedData3 = [];
+    this.receivedData4 = [];
+    this.receivedData5 = [];
+    this.receivedData6 = [];
+    this.receivedData7 = [];
+    this.receivedData8 = [];
+    this.receivedData9 = [];
+    this.receivedData10 = [];
+    this.dataSet = [];
+    this.listDate = [];
+
     this.ppsr322EvnetBusComponent.sharedData$.subscribe((data) => {
       if (data.index == 0) {
         this.receivedData1 = data.data;
@@ -157,59 +173,105 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       } else if (data.index == 8) {
         this.receivedData9 = data.data;
       }
-      this.receivedData8.forEach((itemA) => {
-        const itemB: receivedData10 = {
-          schShopCodeDisplay: itemA.schShopCodeDisplay,
-          dateTotal: itemA.dateTotal,
-        };
-
-        if (
-          itemA.children &&
-          itemA.children.length > 0 &&
-          itemA.children[0].dateList
-        ) {
-          // 遍歷 dateList
-          itemA.children[0].dateList.forEach((dateListItem) => {
-            // 檢查 dateListItem 是否有 planWeightI
-            if (dateListItem.planWeightI !== undefined) {
-              // 將 dateListItem 的 planWeightI 加入 itemB 的 planWeightI
-              if (!itemB.planWeightI) {
-                itemB.planWeightI = [];
-              }
-              itemB.planWeightI.push(dateListItem.planWeightI);
-            }
-          });
-        }
-
-        // 將新的 receivedData10 對象加入 b 數組
-        this.receivedData10.push(itemB);
-      });
-      this.dataSet = [
-        this.receivedData1 || [],
-        this.receivedData2 || [],
-        this.receivedData3 || [],
-        this.receivedData4 || [],
-        this.receivedData5 || [],
-        this.receivedData6 || [],
-        this.receivedData7 || [],
-        // this.receivedData10 || [],
-      ];
     });
   }
 
+  listDate: string[] = [];
   dataSet: any[];
   exportExcel() {
-    // console.log(this.receivedData8);
-    // console.log(this.receivedData9);
-    // console.log(this.receivedData10);
-    // console.log(this.dataSet);
+    console.log(this.receivedData8);
+    for (let i = 0; i < this.receivedData8.length; i++) {
+      const children = this.receivedData8[i]['children'];
+      const dataList = this.receivedData8[i]['dateList'];
+
+      if (dataList && dataList.length > 0) {
+        const newData = {
+          schShopCodeDisplay: dataList[0].schShopCodeDisplay,
+          dateTotal: this.receivedData8[i].dateTotal,
+        };
+
+        for (let k = 0; k < dataList.length; k++) {
+          const dynamicPropertyName = `planWeightI${k + 1}`;
+          newData[dynamicPropertyName] = dataList[k]['planWeightI'];
+          if (i == 0) {
+            this.listDate.push(
+              this.datePipe.transform(dataList[k]['pst'], 'yyyy-MM-dd')
+            );
+          }
+        }
+
+        this.receivedData10.push(newData);
+      }
+
+      if (children && children.length > 0) {
+        for (let j = 0; j < children.length; j++) {
+          const newData = {
+            pstMachine: children[j]['pstMachine'],
+          };
+
+          for (let k = 0; k < children[j]['dateList'].length; k++) {
+            const dynamicPropertyName = `planWeightI${k + 1}`;
+            newData[dynamicPropertyName] =
+              children[j]['dateList'][k]['planWeightI'];
+          }
+
+          this.receivedData10.push(newData);
+        }
+      }
+    }
+
+    for (let i = 0; i < this.receivedData9.length; i++) {
+      const children = this.receivedData9[i]['children'];
+      const dataList = this.receivedData9[i]['dateList'];
+
+      if (dataList && dataList.length > 0) {
+        const newData = {
+          schShopCodeDisplay: dataList[0].schShopCodeDisplay,
+          dateTotal: this.receivedData9[i].dateTotal,
+        };
+
+        for (let k = 0; k < dataList.length; k++) {
+          const dynamicPropertyName = `planWeightI${k + 1}`;
+          newData[dynamicPropertyName] = dataList[k]['planWeightI'];
+        }
+
+        this.receivedData10.push(newData);
+      }
+
+      if (children && children.length > 0) {
+        for (let j = 0; j < children.length; j++) {
+          const newData = {
+            pstMachine: children[j]['kindType'],
+          };
+
+          for (let k = 0; k < children[j]['dateList'].length; k++) {
+            const dynamicPropertyName = `planWeightI${k + 1}`;
+            newData[dynamicPropertyName] =
+              children[j]['dateList'][k]['planWeightI'];
+          }
+
+          this.receivedData10.push(newData);
+        }
+      }
+    }
+
+    this.dataSet = [
+      this.receivedData1 || [],
+      this.receivedData2 || [],
+      this.receivedData3 || [],
+      this.receivedData4 || [],
+      this.receivedData5 || [],
+      this.receivedData6 || [],
+      this.receivedData7 || [],
+      this.receivedData10 || [],
+    ];
+    console.log(this.dataSet);
+    console.log(this.listDate);
     this.excelService.multiSheet(
       this.dataSet,
       [
         {
           sheetName: '預計入庫資訊',
-          headers: ['分類', '目標量(MT)', '預計入庫量(MT)'],
-          fields: ['kindType', 'goalWeight', 'weight'],
           fieldMapping: {
             kindType: '分類',
             goalWeight: '目標量(MT)',
@@ -218,14 +280,6 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         },
         {
           sheetName: '特殊鋼種量',
-          headers: ['產品分類', '鋼種', '尺寸(MM)', '過機量', '本月過機量'],
-          fields: [
-            'kindType',
-            'gradeNo',
-            'diaRange',
-            'passMachineWeightNow',
-            'passMachineWeight',
-          ],
           fieldMapping: {
             kindType: '產品分類',
             gradeNo: '鋼種',
@@ -236,14 +290,6 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         },
         {
           sheetName: '頭份預計回廠日',
-          headers: ['回廠日期', '交期', '尺寸', '鋼種', '重量'],
-          fields: [
-            'rollDateStr',
-            'dateDeliveryPpStr',
-            'inputDia',
-            'steelType',
-            'weight',
-          ],
           fieldMapping: {
             rollDateStr: '回廠日期',
             dateDeliveryPpStr: '交期',
@@ -254,22 +300,6 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         },
         {
           sheetName: '退火生產資訊',
-          headers: [
-            '站別',
-            '機台',
-            '當月訂單生產結束時間',
-            '鋼種族群',
-            '總退火量',
-            '次月交期退火量',
-          ],
-          fields: [
-            'schShopCode',
-            'pstMachine',
-            'pstStr',
-            'gradeGroup',
-            'aWeight',
-            'bWeight',
-          ],
           fieldMapping: {
             schShopCode: '站別',
             pstMachine: '機台',
@@ -281,30 +311,10 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         },
         {
           sheetName: '排程生產原則說明',
-          headers: [],
-          fields: [],
           fieldMapping: {},
         },
         {
           sheetName: '各產線目標量',
-          headers: [
-            '產品別',
-            '機台',
-            '尺寸(起)',
-            '尺寸(迄)',
-            '過機量',
-            '型態',
-            '過機日均',
-          ],
-          fields: [
-            'kindType',
-            'pstMachine',
-            'optimalDiaMin',
-            'optimalDiaMax',
-            'passWeight',
-            'outputShape',
-            'avgPassWeight',
-          ],
           fieldMapping: {
             kindType: '產品別',
             pstMachine: '機台',
@@ -317,52 +327,66 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         },
         {
           sheetName: '目標量總量',
-          headers: ['產品別', '製程', '入庫量'],
-          fields: ['kindType', 'process', 'planWeightI'],
           fieldMapping: {
             kindType: '產品別',
             process: '製程',
             planWeightI: '入庫量',
           },
         },
-        // {
-        //   sheetName: '日推移報表',
-        //   headers: ['機台'],
-        //   fields: ['pstMachine'],
-        //   fieldMapping: { pstMachine: '機台' },
-        // },
+        {
+          sheetName: '日推移報表',
+          fieldMapping: {
+            schShopCodeDisplay: '站台',
+            pstMachine: '機台 / 產品別',
+            planWeightI1: this.listDate[0],
+            planWeightI2: this.listDate[1],
+            planWeightI3: this.listDate[2],
+            planWeightI4: this.listDate[3],
+            planWeightI5: this.listDate[4],
+            planWeightI6: this.listDate[5],
+            planWeightI7: this.listDate[6],
+            planWeightI8: this.listDate[7],
+            planWeightI9: this.listDate[8],
+            planWeightI10: this.listDate[9],
+            planWeightI11: this.listDate[10],
+            planWeightI12: this.listDate[11],
+            planWeightI13: this.listDate[12],
+            planWeightI14: this.listDate[13],
+            planWeightI15: this.listDate[14],
+            planWeightI16: this.listDate[15],
+            planWeightI17: this.listDate[16],
+            planWeightI18: this.listDate[17],
+            planWeightI19: this.listDate[18],
+            planWeightI20: this.listDate[19],
+            planWeightI21: this.listDate[20],
+            planWeightI22: this.listDate[21],
+            planWeightI23: this.listDate[22],
+            planWeightI24: this.listDate[23],
+            planWeightI25: this.listDate[24],
+            planWeightI26: this.listDate[25],
+            planWeightI27: this.listDate[26],
+            planWeightI28: this.listDate[27],
+            planWeightI29: this.listDate[28],
+            planWeightI30: this.listDate[29],
+            planWeightI31: this.listDate[30],
+            dateTotal: '總計',
+          },
+        },
       ],
       '月推移報表'
     );
   }
+
+  formatDate(pre: any): string {
+    const date = new Date(pre);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份是從 0 開始的，需要加 1
+    const day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
 }
 
-interface SheetConfig {
-  sheetName: string;
-  headers?: string[];
-  fields: string[];
-}
-
-interface receivedData10 {
-  schShopCodeDisplay?: string;
-  pstMachine?: string;
-  planWeightI?: number[];
-  dateTotal?: number;
-  kindType?: string;
-}
-
-interface ItemData {
-  dateTotal: number;
-  schShopCode: string;
-  schShopCodeDisplay: string;
-  pstMachine: string;
-  modelType: string;
-  backgroupColor: string;
-  pst?: Date;
-  planWeightI?: number;
-  level?: number;
-  expand?: boolean;
-  children?: ItemData[];
-  parent?: ItemData;
-  dateList?: ItemData[];
+interface netItem {
+  [key: string]: string;
 }
