@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone, OnDestroy } from "@angular/core";
+import { Component, AfterViewInit, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { registerLocaleData, DatePipe } from '@angular/common';
 import { CookieService } from "src/app/services/config/cookie.service";
 import { AppComponent } from "src/app/app.component";
@@ -28,7 +28,7 @@ registerLocaleData(zh);
 })
 
 
-export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
+export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestroy {
 	loading = false; //loaging data flag
   spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
@@ -298,6 +298,8 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
       componentParent: this,
     };
 
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+
     // 因應預設工時計算選擇「取得新工時計算」，
     // 設定對應的資料
      this.ICPchange('1');
@@ -305,18 +307,17 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
     // 因應MO落於LPST區間指定為「全部」，
     // 設定對應的資料
     this.LPSTchange('3', 'ins');
-
-    // 接收後端FCP開始執行與執行結束的通知
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService, router);
-    this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
-      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
-          console.log("--精整收到後端FCP執行狀態的通知--");
-          this.getRunFCPCount();
-          this.getPlanDataList();
-      });
   }
+
+  async ngOnInit(): Promise<void> {
+     // 接收後端FCP開始執行與執行結束的通知
+    await this.ftpStatusUpdateWebSocketConnect();
+  } 
+
   ngOnDestroy(): void {
-    this.fcpStatusWebSocketStomp.disconnect();
+    if(!_.isNil(this.fcpStatusWebSocketStomp)){
+      this.fcpStatusWebSocketStomp.disconnect();
+    }
   }
 
   async ngAfterViewInit() {
@@ -376,6 +377,9 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
         if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
       });
 
+      this.LoadingPage = false;
+    },
+		err => {
       this.LoadingPage = false;
     });
   }
@@ -1120,22 +1124,36 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
 
   }
 
+ async ftpStatusUpdateWebSocketConnect(){
+    // 如果與後端web socket沒有連線了就重新連線 
+    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+      try{
+        this.LoadingPage = true;
+        // 接收後端FCP開始執行與執行結束的通知
+        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
+        this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+          console.log("--精整收到後端FCP執行狀態的通知--");
+          this.getRunFCPCount();
+          this.getPlanDataList();
+        });
+      }
+      catch(error){
+        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線");
+        await this.sleep(5000);
+      }
+      finally{
+        this.LoadingPage = false;
+      }
+    }
+  }
+
   // 啟動規劃案(Full Run)----------------------
   async StrartRun(data) {
     this.LoadingPage = true;
     console.log("StrartRun : " + data.planEdition)
 
-     // 如果與後端web socket沒有連線了就重新連線 
-     if(!this.fcpStatusWebSocketStomp.connectedStatus()){
-      // 接收後端FCP開始執行與執行結束的通知
-      this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
-      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
-          console.log("--精整收到後端FCP執行狀態的通知--");
-          this.getRunFCPCount();
-          this.getPlanDataList();
-      });
-    }
-
+    await this.ftpStatusUpdateWebSocketConnect();
+  
     await this.getRunFCPCount();
     if(this.isRunFCP){
       this.getPlanDataList();
@@ -1220,12 +1238,6 @@ export class PPSI220RefiningComponent implements AfterViewInit, OnDestroy {
           this.sucessMSG("已啟動規劃案", `規劃案版本：${data.planEdition}`);
         });
       });
-
-      if(!this.fcpStatusWebSocketStomp.connectedStatus()){
-        this.errorMSG("系統異常", "sorry，目前無法自動提示已完成執行，需自行重整頁面更新狀態");
-        this.LoadingPage = true;
-        await this.sleep(5000);
-      }
     }
   }
 
