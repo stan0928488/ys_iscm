@@ -14,6 +14,7 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { ExcelService } from 'src/app/services/common/excel.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-PPSR322',
@@ -29,6 +30,7 @@ import { ExcelService } from 'src/app/services/common/excel.service';
     PPSR322Child7Component,
     PPSR322Child8Component,
     PPSR322Child9Component,
+    DatePipe,
   ],
 })
 export class PPSR322Component implements OnInit, AfterViewInit {
@@ -59,9 +61,6 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     schShop: [],
   };
 
-  searchDate: string;
-  preDate: Date;
-
   constructor(
     private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private ppsr332child1: PPSR322Child1Component,
@@ -75,7 +74,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     private ppsr332child9: PPSR322Child9Component,
     private PPSService: PPSService,
     private router: Router,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private datePipe: DatePipe
   ) {}
 
   ngOnInit() {
@@ -151,6 +151,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.receivedData9 = [];
     this.receivedData10 = [];
     this.dataSet = [];
+    this.listDate = [];
 
     this.ppsr322EvnetBusComponent.sharedData$.subscribe((data) => {
       if (data.index == 0) {
@@ -175,11 +176,10 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     });
   }
 
+  listDate: string[] = [];
   dataSet: any[];
   exportExcel() {
-    console.log(this.receivedData9);
-    this.preDate = new Date(this.receivedData8[0]['dateList'][0]['pst']);
-    this.searchDate = this.formatDate(this.preDate);
+    console.log(this.receivedData8);
     for (let i = 0; i < this.receivedData8.length; i++) {
       const children = this.receivedData8[i]['children'];
       const dataList = this.receivedData8[i]['dateList'];
@@ -193,6 +193,11 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         for (let k = 0; k < dataList.length; k++) {
           const dynamicPropertyName = `planWeightI${k + 1}`;
           newData[dynamicPropertyName] = dataList[k]['planWeightI'];
+          if (i == 0) {
+            this.listDate.push(
+              this.datePipe.transform(dataList[k]['pst'], 'yyyy-MM-dd')
+            );
+          }
         }
 
         this.receivedData10.push(newData);
@@ -261,6 +266,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       this.receivedData10 || [],
     ];
     console.log(this.dataSet);
+    console.log(this.listDate);
     this.excelService.multiSheet(
       this.dataSet,
       [
@@ -332,97 +338,37 @@ export class PPSR322Component implements OnInit, AfterViewInit {
           fieldMapping: {
             schShopCodeDisplay: '站台',
             pstMachine: '機台 / 產品別',
-            planWeightI1: this.searchDate,
-            planWeightI2: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI3: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI4: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI5: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI6: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI7: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI8: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI9: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI10: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI11: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI12: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI13: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI14: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI15: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI16: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI17: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI18: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI19: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI20: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI21: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI22: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI23: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI24: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI25: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI26: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI27: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI28: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI29: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI30: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
-            planWeightI31: this.formatDate(
-              this.preDate.setDate(this.preDate.getDate() + 1)
-            ),
+            planWeightI1: this.listDate[0],
+            planWeightI2: this.listDate[1],
+            planWeightI3: this.listDate[2],
+            planWeightI4: this.listDate[3],
+            planWeightI5: this.listDate[4],
+            planWeightI6: this.listDate[5],
+            planWeightI7: this.listDate[6],
+            planWeightI8: this.listDate[7],
+            planWeightI9: this.listDate[8],
+            planWeightI10: this.listDate[9],
+            planWeightI11: this.listDate[10],
+            planWeightI12: this.listDate[11],
+            planWeightI13: this.listDate[12],
+            planWeightI14: this.listDate[13],
+            planWeightI15: this.listDate[14],
+            planWeightI16: this.listDate[15],
+            planWeightI17: this.listDate[16],
+            planWeightI18: this.listDate[17],
+            planWeightI19: this.listDate[18],
+            planWeightI20: this.listDate[19],
+            planWeightI21: this.listDate[20],
+            planWeightI22: this.listDate[21],
+            planWeightI23: this.listDate[22],
+            planWeightI24: this.listDate[23],
+            planWeightI25: this.listDate[24],
+            planWeightI26: this.listDate[25],
+            planWeightI27: this.listDate[26],
+            planWeightI28: this.listDate[27],
+            planWeightI29: this.listDate[28],
+            planWeightI30: this.listDate[29],
+            planWeightI31: this.listDate[30],
             dateTotal: '總計',
           },
         },
