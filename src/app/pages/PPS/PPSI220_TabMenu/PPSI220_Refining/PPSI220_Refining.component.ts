@@ -15,7 +15,7 @@ import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
-import { FcpStatusWebSocketStomp } from "src/app/pages/PPS/PPSI220_TabMenu/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
 import { ConfigService } from "src/app/services/config/config.service";
 registerLocaleData(zh);
 

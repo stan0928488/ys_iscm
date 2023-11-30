@@ -1,7 +1,7 @@
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Observable, Subject } from "rxjs";
-import { ConfigService } from "../../../../services/config/config.service";
+import { ConfigService } from "../config/config.service";
 import { Router } from '@angular/router';
 import * as _ from "lodash";
 

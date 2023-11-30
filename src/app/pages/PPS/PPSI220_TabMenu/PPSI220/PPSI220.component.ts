@@ -17,7 +17,7 @@ import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, Val
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 
 import { ConfigService } from "src/app/services/config/config.service";
-import { FcpStatusWebSocketStomp } from "src/app/pages/PPS/PPSI220_TabMenu/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
 registerLocaleData(zh);
 
 
