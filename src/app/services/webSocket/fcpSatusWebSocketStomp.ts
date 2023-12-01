@@ -52,7 +52,7 @@ export class FcpStatusWebSocketStomp
             console.log("發生web socket連線到一半的情況，進行重新連接!");
             this.autoReconnect(1); 
         }
-      }, this.reConnectMillisecond-3000)
+      }, this.reConnectMillisecond/2)
     }
 
      public async connect(_plantType:string, _myTopic: string): Promise<boolean> {
@@ -76,7 +76,7 @@ export class FcpStatusWebSocketStomp
           // 為了處理連線到一半處於不是成功也不是失敗但未連上的問題
           this.reConnectPhaseMessage = message;
           this.reConnectTime =  new Date().getTime();
-      
+          
           // 偵測到斷線事件重新連線
           if (message.includes('Lost connection') && !this.isUserHandle){
             this.autoReconnect(this.reConnectMillisecond);
