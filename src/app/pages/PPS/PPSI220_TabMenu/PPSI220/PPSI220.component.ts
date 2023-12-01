@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone, OnDestroy } from "@angular/core";
+import { Component, AfterViewInit, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { registerLocaleData, DatePipe } from '@angular/common';
 import { CookieService } from "src/app/services/config/cookie.service";
 import { AppComponent } from "src/app/app.component";
@@ -29,7 +29,7 @@ registerLocaleData(zh);
 })
 
 
-export class PPSI220Component implements AfterViewInit, OnDestroy {
+export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
 	loading = false; //loaging data flag
   spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
@@ -295,19 +295,18 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
     this.agGridContext = {
       componentParent: this,
     };
-
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+    
+  }
+  async ngOnInit(): Promise<void> {
      // 接收後端FCP開始執行與執行結束的通知
-     this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(configService, router);
-     this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
-      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
-          console.log("--直棒收到後端FCP執行狀態的通知--");
-          this.getRunFCPCount();
-          this.getPlanDataList();
-      });
+     await this.ftpStatusUpdateWebSocketConnect();
   }
 
   ngOnDestroy(): void {
-    this.fcpStatusWebSocketStomp.disconnect();
+    if(!_.isNil(this.fcpStatusWebSocketStomp)){
+      this.fcpStatusWebSocketStomp.disconnect();
+    }
   }
 
   async ngAfterViewInit() {
@@ -367,6 +366,8 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
         if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
       });
 
+      this.LoadingPage = false;
+    },err => {
       this.LoadingPage = false;
     });
   }
@@ -1104,6 +1105,27 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
 
   }
 
+  async ftpStatusUpdateWebSocketConnect(){
+    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
+      try {
+        this.LoadingPage = true;
+        // 接收後端FCP開始執行與執行結束的通知
+        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
+        this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+            console.log("--直棒收到後端FCP執行狀態的通知--");
+            this.getRunFCPCount();
+            this.getPlanDataList();
+        });
+      }
+      catch (error) {
+        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線");
+        await this.sleep(5000);
+      }
+      finally{
+        this.LoadingPage = false;
+      }
+    }
+  }
 
 
 
@@ -1113,15 +1135,7 @@ export class PPSI220Component implements AfterViewInit, OnDestroy {
     this.LoadingPage = true;
 
     // 如果與後端web socket沒有連線了就重新連線 
-    if(!this.fcpStatusWebSocketStomp.connectedStatus()){
-      // 接收後端FCP開始執行與執行結束的通知
-      this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
-      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
-          console.log("--直棒收到後端FCP執行狀態的通知--");
-          this.getRunFCPCount();
-          this.getPlanDataList();
-      });
-    }
+    await this.ftpStatusUpdateWebSocketConnect();
 
     await this.getRunFCPCount();
     if(this.isRunFCP){
