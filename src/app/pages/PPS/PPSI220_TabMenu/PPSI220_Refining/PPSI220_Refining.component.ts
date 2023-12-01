@@ -1138,7 +1138,8 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         });
       }
       catch(error){
-        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線");
+        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
+        this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
         await this.sleep(5000);
       }
       finally{

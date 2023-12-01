@@ -1,10 +1,10 @@
-import { zh_TW } from 'ng-zorro-antd/i18n';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Observable, Subject } from "rxjs";
 import { ConfigService } from "../config/config.service";
 import { Router } from '@angular/router';
 import * as _ from "lodash";
+
 
 export class FcpStatusWebSocketStomp
  {
@@ -18,12 +18,19 @@ export class FcpStatusWebSocketStomp
     originalXMLHttpRequestSetHeader : any = null;
     currentXMLHttpRequestInstancing : any = null;
 
-    webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint';
+    webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint-ef356691-27e5-49c1-8245-9f028f882886';
     intervalId : any = null;
-    autoReconnectIntervalId: any = null;
     plantType : string = null;
     myTopic : string = null;
-    isReconnect = false;
+    isFirstLostConnection = true;
+    reConnectTime : number = null;
+    reConnectPhaseMessage : string = null;
+    connectingHandlerIntervalId : any = null;
+    autoReconnectTimeOutId : any = null;
+    reConnectMillisecond = 5000;
+    isFinishReConnect = false;
+    isUserHandle = false;
+
 
     constructor(
       private configService: ConfigService,
@@ -33,7 +40,21 @@ export class FcpStatusWebSocketStomp
       this.router = this._router;
       this.jwtToken = localStorage.getItem('jwtToken');
     }
-  
+
+    // 處理連線到一半處於不是成功也不是失敗但未連上的問題
+    connectingHandler(){
+      this.connectingHandlerIntervalId = setInterval(() => {
+        if(_.isNil(this.reConnectTime) || _.isNil(this.reConnectPhaseMessage)) {
+          return;
+        }
+        if(new Date().getTime() - this.reConnectTime > this.reConnectMillisecond + 2000
+          && !this.reConnectPhaseMessage.includes('SUBSCRIBE')){
+            console.log("發生web socket連線到一半的情況，進行重新連接!");
+            this.autoReconnect(1); 
+        }
+      }, this.reConnectMillisecond-3000)
+    }
+
      public async connect(_plantType:string, _myTopic: string): Promise<boolean> {
       return new Promise((resolve, reject) => { 
         this.plantType = _plantType;
@@ -50,16 +71,15 @@ export class FcpStatusWebSocketStomp
         // 關閉消息的打印
         //this.stompClient.debug = null
         this.stompClient.debug = async (message) => {
-          // 偵測到斷線事件
-          if (message.includes('Lost connection') && !this.isReconnect) {
-              console.log('已與伺服器web scoket斷開連線');
-              this.isReconnect = true;
-              await this.autoReconnect();
-          }
-          else if(message.includes('connected to server') || this.connectedStatus()){
-            if(this.autoReconnectIntervalId) clearInterval(this.autoReconnectIntervalId);
-            this.isReconnect = false;
-            console.log("連線web scoket成功!!");
+
+          // 紀錄重新連線的時間
+          // 為了處理連線到一半處於不是成功也不是失敗但未連上的問題
+          this.reConnectPhaseMessage = message;
+          this.reConnectTime =  new Date().getTime();
+      
+          // 偵測到斷線事件重新連線
+          if (message.includes('Lost connection') && !this.isUserHandle){
+            this.autoReconnect(this.reConnectMillisecond);
           }
         };
 
@@ -67,22 +87,55 @@ export class FcpStatusWebSocketStomp
           this.stompClient.subscribe(`/topic/${_myTopic}`, (message) => {
             this.subject$.next(message);
           });
+
+          if(!_.isNil(this.connectingHandlerIntervalId)){
+            clearInterval(this.connectingHandlerIntervalId);
+            this.connectingHandlerIntervalId = null;
+          }
+          this.isFirstLostConnection = true;
+
           this.restoreXMLHttpRequest();
           console.log('STOMP: Connected', frame);
           resolve(true);
-        }, (error) => {
+        }, async (error) => {
+          console.log('STOMP: Connected Eror');
+          if(this.isFirstLostConnection){
+            this.isFirstLostConnection = false;
+            this.connectingHandler();
+          }
           reject(false);
         });
       }) //end new Promise
     }
 
+    // 使用者有切換頁面了，關閉自動機制
+    public noAutoReconnectUserHandler(){
+
+      // 不自動重連的條件
+      this.isUserHandle = true;
+
+      // 關閉有連但沒連上的尷尬情況的處理
+      if(!_.isNil(this.connectingHandlerIntervalId)){
+        clearInterval(this.connectingHandlerIntervalId);
+        this.connectingHandlerIntervalId = null;
+      }
+
+      // 關閉正在重連的執行
+      if(!_.isNil(this.autoReconnectTimeOutId )){
+        clearTimeout(this.autoReconnectTimeOutId );
+      }
+      if(!_.isNil(this.originalXMLHttpRequestOpen)){
+        XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
+      }
+    }
+
     public disconnect(){
       if(this.stompClient && this.stompClient.connected){
         this.stompClient.disconnect(() =>{
-          XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
           console.log('STOMP: DisConnected');
         });
       }
+      this.noAutoReconnectUserHandler();
     }
 
     public connectedStatus() : boolean{
@@ -107,19 +160,20 @@ export class FcpStatusWebSocketStomp
       return this.subject$.asObservable();
     }
 
-    public async autoReconnect() {
-
-      this.autoReconnectIntervalId = setInterval( async () => {
+    autoReconnect(millisecond) {
+      this.autoReconnectTimeOutId = setTimeout( async () => {
         if(!_.isEmpty(this.plantType) && !_.isEmpty(this.myTopic)){
           try{
-            this.isReconnect = true;
+            console.log("連線web scoket中..");
             await this.connect(this.plantType, this.myTopic);
+            this.isFinishReConnect = true;
+            this.isFirstLostConnection = false;
           }
           catch(error){
-            console.log("嘗試連線web scoket中..");
+            console.log("web scoket連線異常，重新連線..");
           }
         }
-      }, 10000);
+      }, millisecond);
     }
 
     addHeaderForStompHttpRequest(){
