@@ -198,9 +198,9 @@ export class PPSI200Component implements AfterViewInit {
     console.log("select :"+value) ;
   }
   // edit function
-  weekEditFunc(id,index){
+  weekEditFunc(item,index){
     console.log("weekEditFunc  :" + index);
-    this.weekData[index].editStatus = true ;
+    item.editStatus = true ;
     console.log("default data :" + JSON.stringify(this.selectOptionWeekDay));
     //this.selectOptionWeekDay =  {label: '星期五', value: 4} ;
     this.selectOptionWeekDay = this.selectOptionWeek[index] ;
@@ -210,12 +210,12 @@ export class PPSI200Component implements AfterViewInit {
     console.log("select option :" + this.selectOptionWeek[index]);
   }
 
-  weekSaveEdit(id,index){
+  weekSaveEdit(item,index){
     console.log("weekSaveEdit  :" + index);
     // let myObj = this;
     console.log("select value: " + JSON.stringify(this.selectOptionWeekDay)) ;
     let obj =  {
-      ID          : this.weekData[index].ID,
+      ID          : item.ID,
       WEEK_NAME   : this.selectOptionWeekDay.label,
       WEEK_INDEX  : this.selectOptionWeekDay.value,
       USERNAME    : this.USERNAME,
@@ -253,8 +253,8 @@ export class PPSI200Component implements AfterViewInit {
       });
   }
 
-  weekCancelEdit( id, index){
-    this.weekData[index].editStatus = false ;
+  weekCancelEdit(item, index){
+    item.editStatus = false ;
   }
   //get week number
   getFCPTB16List() {
@@ -359,7 +359,30 @@ export class PPSI200Component implements AfterViewInit {
   
   // ---- tab 5 begin ---------
   insertTab5(){
+    let myObj = this;
+    this.LoadingPage = true;
+    return new Promise((resolve, reject) => {
 
+      let postData = 
+      {
+        "STATUS":"1",
+        "USERNAME":this.USERNAME,
+        "DATETIME":moment().format('YYYY-MM-DD HH:mm:ss'),
+        'PICKER_DATE':this.tab5DateOf_DD_ForAdd
+      }
+      myObj.getPPSService.insertTab5Save(postData).subscribe(res => {
+        if(res[0].MSG === "Y") {
+
+          this.sucessMSG("修改成功", ``);
+          this.getFCPTB16StatusList();
+          this.LoadingPage = false;
+        }
+      },err => {
+        reject('upload fail');
+        this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+        this.LoadingPage = false;
+      })
+    });
   }
 
   FCPDayChange(value){
@@ -417,10 +440,10 @@ export class PPSI200Component implements AfterViewInit {
     });
   }
   // edit function
-  statusEditFunc(id,index){
+  statusEditFunc(item,index){
     console.log("statusEditFunc  :" + index);
-    this.FCPRSData[index].editStatus = true ;
-    this.tab5Switch = this.FCPRSData[index].statusFlag;
+    item.editStatus = true ;
+    this.tab5Switch = item.statusFlag;
   }
 
   // delStatusID(id,index){
@@ -428,7 +451,7 @@ export class PPSI200Component implements AfterViewInit {
   //   this.FCPRSData[index].editStatus = true ;
 
   // }
-  statusSaveEdit(id,index){
+  statusSaveEdit(item,index){
     console.log("statusSaveEdit  :" + index);
     // let myObj = this;
     let statusVal;
@@ -440,10 +463,10 @@ export class PPSI200Component implements AfterViewInit {
     }
     console.log('statusVal:' + statusVal);
 
-    console.log("switch value: " + JSON.stringify(this.FCPRSData[index].statusFlag)) ;
+    console.log("switch value: " + JSON.stringify(item.statusFlag)) ;
     let obj =  {
-      ID          :  this.FCPRSData[index].id,
-      SETDATE     :  this.FCPRSData[index].setDate,
+      ID          :  item.id,
+      SETDATE     :  item.setDate,
       STATUS      :  statusVal,
       USERNAME    :  this.USERNAME,
       DATETIME    :  moment().format('YYYY-MM-DD HH:mm:ss')
@@ -480,8 +503,8 @@ export class PPSI200Component implements AfterViewInit {
       });
   }
 
-  statusCancelEdit( id, index){
-    this.FCPRSData[index].editStatus = false ;
+  statusCancelEdit(item, index){
+    item.editStatus = false ;
   }
 
   // 刪除資料
