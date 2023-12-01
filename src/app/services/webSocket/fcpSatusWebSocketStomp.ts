@@ -44,6 +44,7 @@ export class FcpStatusWebSocketStomp
     // 處理連線到一半處於不是成功也不是失敗但未連上的問題
     connectingHandler(){
       this.connectingHandlerIntervalId = setInterval(() => {
+        
         if(_.isNil(this.reConnectTime) || _.isNil(this.reConnectPhaseMessage)) {
           return;
         }
@@ -79,6 +80,9 @@ export class FcpStatusWebSocketStomp
           
           // 偵測到斷線事件重新連線
           if (message.includes('Lost connection') && !this.isUserHandle){
+            if(_.isNil(this.connectingHandlerIntervalId)){
+              this.connectingHandler();
+            }
             this.autoReconnect(this.reConnectMillisecond);
           }
         };
@@ -99,10 +103,10 @@ export class FcpStatusWebSocketStomp
           resolve(true);
         }, async (error) => {
           console.log('STOMP: Connected Eror');
-          if(this.isFirstLostConnection){
-            this.isFirstLostConnection = false;
-            this.connectingHandler();
-          }
+          // if(this.isFirstLostConnection){
+          //   this.isFirstLostConnection = false;
+          //   this.connectingHandler();
+          // }
           reject(false);
         });
       }) //end new Promise
