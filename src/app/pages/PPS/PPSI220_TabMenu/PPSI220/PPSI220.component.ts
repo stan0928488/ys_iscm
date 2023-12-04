@@ -1789,16 +1789,21 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       const res = await firstValueFrom<any>(resObservable$);
 
       if(res.code !== 200){
+        // this.errorMSG(
+        //   '獲取平衡設定選項資料失敗',
+        //   `請聯繫系統工程師。`
+        // );
         location.reload(); // 设置为 true 表示强制从服务器加载页面
         return;
       }
       this.moSortList = res.data;
     }
     catch (error) {
-      this.errorMSG(
-        '獲取平衡設定選項資料失敗',
-        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
-      );
+      location.reload(); // 设置为 true 表示强制从服务器加载页面
+      // this.errorMSG(
+      //   '獲取平衡設定選項資料失敗',
+      //   `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      // );
     } finally {
       this.shopSortLoading = false;
     }
