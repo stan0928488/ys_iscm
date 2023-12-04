@@ -264,10 +264,11 @@ export class PPSI200Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPPSFCPTB16List().subscribe(res => {
       console.log("getFCPTB16List success");
-      this.FCPTB16List = res;
+      let data:any = res;
+      this.FCPTB16List = data.data;
       console.log(this.FCPTB16List);
       for(let i = 0; i<this.FCPTB16List.length; i++){
-        let id = this.FCPTB16List[i].ID;
+        let id = this.FCPTB16List[i].id;
         let mon = this.FCPTB16List[i].month;
         let WI = this.FCPTB16List[i].week_index;
         let WN = this.FCPTB16List[i].week_name;
@@ -397,15 +398,16 @@ export class PPSI200Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPPSFCPTB16RSSetList().subscribe(res => {
       console.log("getPPSFCPTB16RSSetList success");
-      this.FCPTB16StatusList = res;
+      let data:any = res;
+      this.FCPTB16StatusList = data.data;
       console.log(this.FCPTB16StatusList);
       for(let i = 0; i<this.FCPTB16StatusList.length; i++){
-        let id      = this.FCPTB16StatusList[i].ID;
-        let setDate = this.FCPTB16StatusList[i].SET_DATE;
-        let mon     = this.FCPTB16StatusList[i].SET_DATE;
-        let tmpSt   = (this.FCPTB16StatusList[i].STATUS==="1")? '啟用': '停用';
-        let rdoSt   = (this.FCPTB16StatusList[i].STATUS==="1")?  true : false;
-        let st      = this.FCPTB16StatusList[i].STATUS;
+        let id      = this.FCPTB16StatusList[i].id;
+        let setDate = this.FCPTB16StatusList[i].set_DATE;
+        let mon     = this.FCPTB16StatusList[i].set_DATE;
+        let tmpSt   = (this.FCPTB16StatusList[i].status==="1")? '啟用': '停用';
+        let rdoSt   = (this.FCPTB16StatusList[i].status==="1")?  true : false;
+        let st      = this.FCPTB16StatusList[i].status;
 
         let weekObj ={} ;;
         //this.selectOptionWeek.push(weekObj) ;
@@ -649,7 +651,7 @@ export class PPSI200Component implements AfterViewInit {
       return new Promise((resolve, reject) => {
         let obj = {};
         obj =  {
-          ID          : this.weekData[_id].ID,
+          ID          : this.weekData[_id].id,
           MONTH       : this.weekData[_id].month,
           WEEK_NAME   : this.weekData[_id].week_name,
           WEEK_INDEX  : this.weekData[_id].week_index,
