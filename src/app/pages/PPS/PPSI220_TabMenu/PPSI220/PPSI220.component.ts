@@ -295,7 +295,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.agGridContext = {
       componentParent: this,
     };
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT, 'barFcpStatus');
     
   }
   async ngOnInit(): Promise<void> {
@@ -1110,7 +1110,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       try {
         this.LoadingPage = true;
         // 接收後端FCP開始執行與執行結束的通知
-        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
+        await this.fcpStatusWebSocketStomp.connect();
         this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
             console.log("--直棒收到後端FCP執行狀態的通知--");
             this.getRunFCPCount();

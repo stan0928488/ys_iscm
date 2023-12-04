@@ -298,7 +298,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
       componentParent: this,
     };
 
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT, 'refiningFcpStatus');
 
     // 因應預設工時計算選擇「取得新工時計算」，
     // 設定對應的資料
@@ -1130,7 +1130,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
       try{
         this.LoadingPage = true;
         // 接收後端FCP開始執行與執行結束的通知
-        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
+        await this.fcpStatusWebSocketStomp.connect();
         this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--精整收到後端FCP執行狀態的通知--");
           this.getRunFCPCount();

@@ -22,6 +22,7 @@ export class FcpStatusWebSocketStomp
     intervalId : any = null;
     plantType : string = null;
     myTopic : string = null;
+    header : any = null;
     isFirstLostConnection = true;
     reConnectTime : number = null;
     reConnectPhaseMessage : string = null;
@@ -34,89 +35,92 @@ export class FcpStatusWebSocketStomp
 
     constructor(
       private configService: ConfigService,
-      private _router : Router
+      private _router : Router,
+      _plantType:string,
+      _myTopic: string
     ) {
       this.APINEWURL = this.configService.getAPIURL('1');
+      this.plantType = _plantType;
+      this.myTopic = _myTopic;
       this.router = this._router;
       this.jwtToken = localStorage.getItem('jwtToken');
+      this.header = {
+        Authorization: `Bearer ${this.jwtToken}`,
+        CurrentRoute : this.router.url
+      }
     }
 
     // 處理連線到一半處於不是成功也不是失敗但未連上的問題
     connectingHandler(){
       this.connectingHandlerIntervalId = setInterval(() => {
         
-        if(_.isNil(this.reConnectTime) || _.isNil(this.reConnectPhaseMessage)) {
+        if(_.isNil(this.reConnectTime) || _.isNil(this.reConnectPhaseMessage) || this.isUserHandle) {
           return;
         }
         if(new Date().getTime() - this.reConnectTime > this.reConnectMillisecond + 2000
-          && !this.reConnectPhaseMessage.includes('SUBSCRIBE')){
+          && !this.connectedStatus()){
             console.log("發生web socket連線到一半的情況，進行重新連接!");
             this.autoReconnect(1); 
         }
-      }, this.reConnectMillisecond/2)
+      }, this.reConnectMillisecond)
     }
 
-     public async connect(_plantType:string, _myTopic: string): Promise<boolean> {
-      return new Promise((resolve, reject) => { 
-        this.plantType = _plantType;
-        this.myTopic = _myTopic;
-        this.addHeaderForStompHttpRequest();
-        const socket = new SockJS(`${this.APINEWURL}/${this.webSocketEndpointPrefix}/${_plantType}`);
-        this.stompClient = Stomp.over(socket);
+    public async connect(): Promise<boolean> {
+    return new Promise((resolve, reject) => { 
+      this.addHeaderForStompHttpRequest();
+      const socket = new SockJS(`${this.APINEWURL}/${this.webSocketEndpointPrefix}/${this.plantType}`);
+      this.stompClient = Stomp.over(socket);
 
-        const header = {
-          Authorization: `Bearer ${this.jwtToken}`,
-          CurrentRoute : this.router.url
+      // 關閉消息的打印
+      //this.stompClient.debug = null
+      this.stompClient.debug = (message) => {
+
+        // 紀錄重新連線的時間
+        // 為了處理連線到一半處於不是成功也不是失敗但未連上的問題
+        this.reConnectPhaseMessage = message;
+        this.reConnectTime =  new Date().getTime();
+        
+        // 偵測到斷線事件重新連線
+        if (message.includes('Lost connection') && this.isFirstLostConnection){
+          this.connectingHandler();
+          this.autoReconnect(this.reConnectMillisecond);
+        }
+      };
+
+      this.stompClient.connect(this.header, async (frame) => {
+        this.stompClient.subscribe(`/topic/${this.myTopic}`, (message) => {
+          this.subject$.next(message);
+        });
+
+        if(!_.isNil(this.connectingHandlerIntervalId)){
+          clearInterval(this.connectingHandlerIntervalId);
+          this.connectingHandlerIntervalId = null;
         }
 
-        // 關閉消息的打印
-        //this.stompClient.debug = null
-        this.stompClient.debug = async (message) => {
+        // 正常連線之後重置為true
+        // 讓之後再斷線可以執行重連
+        this.isFirstLostConnection = true;
 
-          // 紀錄重新連線的時間
-          // 為了處理連線到一半處於不是成功也不是失敗但未連上的問題
-          this.reConnectPhaseMessage = message;
-          this.reConnectTime =  new Date().getTime();
-          
-          // 偵測到斷線事件重新連線
-          if (message.includes('Lost connection') && !this.isUserHandle){
-            if(_.isNil(this.connectingHandlerIntervalId)){
-              this.connectingHandler();
-            }
-            this.autoReconnect(this.reConnectMillisecond);
-          }
-        };
-
-        this.stompClient.connect(header, async (frame) => {
-          this.stompClient.subscribe(`/topic/${_myTopic}`, (message) => {
-            this.subject$.next(message);
-          });
-
-          if(!_.isNil(this.connectingHandlerIntervalId)){
-            clearInterval(this.connectingHandlerIntervalId);
-            this.connectingHandlerIntervalId = null;
-          }
-          this.isFirstLostConnection = true;
-
-          this.restoreXMLHttpRequest();
-          console.log('STOMP: Connected', frame);
-          resolve(true);
-        }, async (error) => {
-          console.log('STOMP: Connected Eror');
-          // if(this.isFirstLostConnection){
-          //   this.isFirstLostConnection = false;
-          //   this.connectingHandler();
-          // }
-          reject(false);
-        });
-      }) //end new Promise
-    }
+        console.log('STOMP: Connected', frame);
+        this.restoreXMLHttpRequest();
+        resolve(true);
+      }, async (error) => {
+        console.log('STOMP: Connected Eror');
+        this.restoreXMLHttpRequest();
+        reject(false);
+      });
+    }) //end new Promise
+  }
 
     // 使用者有切換頁面了，關閉自動機制
     public noAutoReconnectUserHandler(){
 
       // 不自動重連的條件
       this.isUserHandle = true;
+
+      // 正常連線之後重置為true
+      // 讓之後再斷線可以執行重連
+      this.isFirstLostConnection = true;
 
       // 關閉有連但沒連上的尷尬情況的處理
       if(!_.isNil(this.connectingHandlerIntervalId)){
@@ -164,17 +168,26 @@ export class FcpStatusWebSocketStomp
       return this.subject$.asObservable();
     }
 
-    autoReconnect(millisecond) {
+    autoReconnect(millisecond){
       this.autoReconnectTimeOutId = setTimeout( async () => {
         if(!_.isEmpty(this.plantType) && !_.isEmpty(this.myTopic)){
           try{
             console.log("連線web scoket中..");
-            await this.connect(this.plantType, this.myTopic);
+            await this.connect();
             this.isFinishReConnect = true;
-            this.isFirstLostConnection = false;
+            
           }
           catch(error){
             console.log("web scoket連線異常，重新連線..");
+          }
+          finally{
+            this.isFirstLostConnection = false;
+            if(!this.connectedStatus() && !this.isUserHandle){
+              if(_.isNil(this.connectingHandlerIntervalId)){
+                this.connectingHandler();
+              }
+              this.autoReconnect(this.reConnectMillisecond)
+            }
           }
         }
       }, millisecond);
