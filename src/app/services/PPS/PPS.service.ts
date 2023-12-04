@@ -674,7 +674,7 @@ export class PPSService {
   //Get getFCPTB16List 取得設定星期資料
   getPPSFCPTB16List() {
     console.log('api service getFCPTB16List');
-    let queryUrl = this.APIURL + '/FCP/I200/getPPSFCPTB16List';
+    let queryUrl = this.APINEWURL + '/FCP/I200/getPPSFCPTB16List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -682,7 +682,7 @@ export class PPSService {
   //Get getPPSFCPTB16RSSetList 取得FCP結果保留設定資料
   getPPSFCPTB16RSSetList() {
     console.log('api service getPPSFCPTB16RSSetList');
-    let queryUrl = this.APIURL + '/FCP/I200/getPPSFCPTB16RSSetList';
+    let queryUrl = this.APINEWURL + '/FCP/I200/getPPSFCPTB16RSSetList';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -707,7 +707,7 @@ export class PPSService {
   // I200 Tab4新增存檔
   insertTab4Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/insertTab4Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/insertTab4Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -715,7 +715,7 @@ export class PPSService {
   // I200 Tab5新增存檔
   insertTab5Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/insertTab5Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/insertTab5Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -723,7 +723,7 @@ export class PPSService {
   // I200 Tab4修改存檔
   updateTab4Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/updateTab4Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/updateTab4Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -731,7 +731,7 @@ export class PPSService {
   // I200 Tab5修改存檔
   updateTab5Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/updateTab5Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/updateTab5Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);

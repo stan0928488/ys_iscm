@@ -210,14 +210,14 @@
                       <ng-container *ngIf="!item.editStatus; else saveTpl">
                         <a
                           [attr.disabled]="item.disabledFlag ? true : null"
-                          (click)="weekEditFunc(item.ID, i)"
+                          (click)="weekEditFunc(item, i)"
                           >修改</a
                         >
                       </ng-container>
                       <ng-template #saveTpl>
                         <a
                           [attr.disabled]="item.disabledFlag ? true : null"
-                          (click)="weekSaveEdit(item.ID, i)"
+                          (click)="weekSaveEdit(item, i)"
                           >確認</a
                         >
 
@@ -226,7 +226,7 @@
                           nz-popconfirm
                           [attr.disabled]="item.disabledFlag ? true : null"
                           nzPopconfirmTitle="Sure to cancel?"
-                          (nzOnConfirm)="weekCancelEdit(item.id, i)"
+                          (nzOnConfirm)="weekCancelEdit(item, i)"
                           >取消</a
                         >
                       </ng-template>
@@ -348,7 +348,7 @@
                       <ng-container *ngIf="!item1.editStatus; else saveTp2">
                         <a
                           [attr.disabled]="item1.disabledFlag ? true : null"
-                          (click)="statusEditFunc(item1.id, i)"
+                          (click)="statusEditFunc(item1, i)"
                           >修改</a
                         >
 
@@ -364,7 +364,7 @@
                       <ng-template #saveTp2>
                         <a
                           [attr.disabled]="item1.disabledFlag ? true : null"
-                          (click)="statusSaveEdit(item1.id, i)"
+                          (click)="statusSaveEdit(item1, i)"
                           >確認</a
                         >
 
@@ -373,7 +373,7 @@
                           nz-popconfirm
                           [attr.disabled]="item1.disabledFlag ? true : null"
                           nzPopconfirmTitle="Sure to cancel?"
-                          (nzOnConfirm)="statusCancelEdit(item1.id, i)"
+                          (nzOnConfirm)="statusCancelEdit(item1, i)"
                           >取消</a
                         >
                       </ng-template>
