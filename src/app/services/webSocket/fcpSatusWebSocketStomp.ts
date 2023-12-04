@@ -1,5 +1,5 @@
 import * as Stomp from 'stompjs';
-import * as SockJS from 'sockjs-client';
+import * as SockJS from 'sockjs-client/dist/sockjs.min.js';
 import { Observable, Subject } from "rxjs";
 import { ConfigService } from "../config/config.service";
 import { Router } from '@angular/router';
