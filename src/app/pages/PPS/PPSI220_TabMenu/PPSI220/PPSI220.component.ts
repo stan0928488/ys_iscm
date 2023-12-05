@@ -17,7 +17,7 @@ import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, Val
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 
 import { ConfigService } from "src/app/services/config/config.service";
-import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
 registerLocaleData(zh);
 
 
@@ -295,7 +295,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.agGridContext = {
       componentParent: this,
     };
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT, 'barFcpStatus');
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT);
     
   }
   async ngOnInit(): Promise<void> {

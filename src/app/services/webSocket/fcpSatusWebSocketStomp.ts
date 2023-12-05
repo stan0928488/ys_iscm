@@ -8,7 +8,6 @@ import * as _ from "lodash";
 
 export class FcpStatusWebSocketStomp
  {
-
     private stompClient :  Stomp.Client;;
     private subject$: Subject<any> = new Subject<any>();
     APINEWURL : string = null;
@@ -37,17 +36,17 @@ export class FcpStatusWebSocketStomp
       private configService: ConfigService,
       private _router : Router,
       _plantType:string,
-      _myTopic: string
     ) {
       this.APINEWURL = this.configService.getAPIURL('1');
       this.plantType = _plantType;
-      this.myTopic = _myTopic;
+      this.myTopic = this.plantType === '直棒' ? 'barFcpStatus' : 'refiningFcpStatus';
       this.router = this._router;
       this.jwtToken = localStorage.getItem('jwtToken');
       this.header = {
         Authorization: `Bearer ${this.jwtToken}`,
         CurrentRoute : this.router.url
       }
+
     }
 
     // 處理連線到一半處於不是成功也不是失敗但未連上的問題

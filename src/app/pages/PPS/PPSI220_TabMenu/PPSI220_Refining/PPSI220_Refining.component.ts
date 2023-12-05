@@ -15,7 +15,7 @@ import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
-import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
 import { ConfigService } from "src/app/services/config/config.service";
 registerLocaleData(zh);
 
@@ -298,7 +298,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
       componentParent: this,
     };
 
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT, 'refiningFcpStatus');
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT);
 
     // 因應預設工時計算選擇「取得新工時計算」，
     // 設定對應的資料

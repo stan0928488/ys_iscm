@@ -14,6 +14,9 @@ import { PPSI210RefiningOpenSortRendererComponent } from './open-sort-renderer-c
 import { PPSI210RefiningSendChoiceRendererComponent } from './send-choice-renderer-component';
 import { firstValueFrom } from 'rxjs';
 import { PPSI210RefiningOpenMachineRendererComponent } from './open-machine-renderer-component';
+import { FcpStatusWebSocketStomp } from 'src/app/services/webSocket/FcpSatusWebSocketStomp';
+import { ConfigService } from 'src/app/services/config/config.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-PPSI210-Refining',
@@ -91,6 +94,8 @@ export class PPSI210RefiningComponent implements AfterViewInit {
 
   // 工廠別
   plant = '精整';
+  // 更新FCP執行狀態的web socket
+  fcpStatusWebSocketStomp : FcpStatusWebSocketStomp = null;
 
   i = 1;
   j = 1;
@@ -313,13 +318,16 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     private _ngZone: NgZone,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private configService: ConfigService,
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.agGridContext = {
       componentParent: this,
     };
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.plant);
   }
   async ngAfterViewInit() {
     console.log('ngAfterViewChecked');
@@ -334,6 +342,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.getPPSService.getRunFCPCount(this.plant).subscribe((res) => {
       console.log('getRunFCPCount success');
       if (res > 0) this.isRunFCP = true;
+      else this.isRunFCP = false;
     });
   }
 
@@ -392,7 +401,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPickerShopData(this.plant).subscribe((res) => {
       console.log('getPickerShopData success');
-      this.pickerShopList = res;
+      this.pickerShopList = JSON.parse(res.data);
       const SchShopCode = [];
       this.listOfData[_idx].SORTING = '';
       this.listOfData[_idx].REQUIREMENT = '';
@@ -415,7 +424,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPickerMachineData(this.plant, _shop).subscribe((res) => {
       console.log('getPickerMachineData success');
-      this.pickerMachineList = res;
+      this.pickerMachineList = JSON.parse(res.data);
       const machine = [];
 
       if (_type === 'C') this.listOfData_dtl[_idx].dtlSORTING = ''; // 下拉機台清空sorting
@@ -455,7 +464,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
           .getPickerSortData(this.plant, _shopcode, _machine)
           .subscribe((res) => {
             console.log('getPickerSortData success');
-            this.pickerSortingList = res;
+            this.pickerSortingList = JSON.parse(res.data);
 
             if (newtype === '1') {
               let Sorting = [];
@@ -505,7 +514,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       const _newSort = _sort.split('. ');
       this.getPPSService.getRequierList(_newSort[0]).subscribe((res) => {
         console.log('getRequierList success');
-        this.REQUIREList = res;
+        this.REQUIREList = JSON.parse(res.data);
       });
     }
   }
@@ -513,7 +522,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
   getRequierNAME(_value) {
     this.getPPSService.getRequierNAME(_value).subscribe((res) => {
       console.log('getRequierNAME success');
-      this.REQUIREList = res;
+      this.REQUIREList = JSON.parse(res.data);
     });
   }
 
@@ -529,8 +538,24 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     }
   }
 
-  ngOnInit(): void {
+ async ngOnInit(): Promise<void> {
     this.addRow();
+    try{
+      this.isSpinning = true;
+      // 接收後端FCP開始執行與執行結束的通知
+      await this.fcpStatusWebSocketStomp.connect();
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+        console.log("--精整收到後端FCP執行狀態的通知--");
+        this.getRunFCPCount();
+      });
+    }
+    catch(error){
+      this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
+      this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
+    }
+    finally{
+      this.isSpinning = false;
+    }
   }
 
   // 外層 table (站別優先順序) ------------------------------
@@ -1049,12 +1074,13 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.getPPSService.getPlanSetData(this.plant).subscribe((res) => {
       // 取規劃策略
       console.log('getPlanSetData success');
-      if(res.length <= 0){
+      const resultDataList = JSON.parse(res.data);
+      if(resultDataList.length <= 0){
         this.message.success(`目前${this.plant}尚無任何規劃策略內容`)
         myObj.planSetLoading = false;
         return;
       }
-      this.planSetDataList = res;
+      this.planSetDataList = resultDataList;
       myObj.planSetLoading = false;
     });
   }
@@ -1452,9 +1478,6 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       }
 		}
     */
-
-    console.log('listOfData_cloneDeep--->', listOfData_cloneDeep);
-    console.log('this.listOfData_dtl--->', this.listOfData_dtl);
     
     this.loading = true;
     this.isSpinning = true;
@@ -1483,7 +1506,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       });
       myObj.getPPSService.addPlanSetData(obj).subscribe(
         (res) => {
-          if (_.get(res, 'msg') == 'Y') {
+          if (_.get(res, 'message') == 'Y') {
             this.sucessMSG(
               '已建立規劃策略',
               `規劃案版本：${this.PLANSET_EDITION}，名稱：${setname}`
@@ -1531,6 +1554,12 @@ export class PPSI210RefiningComponent implements AfterViewInit {
             ];
             this.realMachineList = [];
             this.pickerREQUIREList = [];
+            this.loading = false;
+            this.isSpinning = false;
+          }
+          else{
+            reject('upload fail');
+            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
             this.loading = false;
             this.isSpinning = false;
           }
@@ -1742,7 +1771,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       });
       myObj.getPPSService.updPlanSetData(obj).subscribe(
         (res) => {
-          if (_.get(res, 'msg') == 'Y') {
+          if (_.get(res, 'message') == 'Y') {
             this.sucessMSG(
               '已修改規劃策略',
               `規劃案版本：${this.PLANSET_EDITION}，名稱：${setname}`
@@ -1793,6 +1822,12 @@ export class PPSI210RefiningComponent implements AfterViewInit {
             this.loading = false;
             this.isSpinning = false;
           }
+          else{
+            reject('upload fail');
+            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+            this.loading = false;
+            this.isSpinning = false;
+          }
         },
         (err) => {
           reject('upload fail');
@@ -1810,7 +1845,7 @@ export class PPSI210RefiningComponent implements AfterViewInit {
       const resObservable$  = this.getPPSService.deletePlanSetData(rowData.PLANSET_EDITION);
       const response = await firstValueFrom<any>(resObservable$);
       
-      if(response.code === 1){
+      if(response.code === 200){
 
         if(response.data.updatedRows > 0){
    
