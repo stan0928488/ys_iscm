@@ -506,13 +506,13 @@ export class PPSI105Component implements AfterViewInit {
     var upload_data = [];
     for(let i=0 ; i < _data.length ; i++) {
       upload_data.push({
-        EQUIP_CODE: _data[i]['機台'],
-        DIA_MIN: _data[i]['產出尺寸最小值'],
-        DIA_MAX: _data[i]['產出尺寸最大值'],
-        SHAPE_TYPE: _data[i]['產出型態'],
-        BIG_ADJUST_CODE: _data[i]['大調機代碼'],
-        SMALL_ADJUST_TOLERANCE: _data[i]['小調機公差標準'],
-        FURANCE_BATCH_QTY: _data[i]['爐批數量']
+        EQUIP_CODE: _data[i]['機台'].toString(),
+        DIA_MIN: _data[i]['產出尺寸最小值'].toString(),
+        DIA_MAX: _data[i]['產出尺寸最大值'].toString(),
+        SHAPE_TYPE: _data[i]['產出型態'].toString(),
+        BIG_ADJUST_CODE: _data[i]['大調機代碼'].toString(),
+        SMALL_ADJUST_TOLERANCE: _data[i]['小調機公差標準'].toString(),
+        FURANCE_BATCH_QTY: _data[i]['爐批數量'].toString()
       })
     }
     
