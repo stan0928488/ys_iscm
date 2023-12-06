@@ -40,7 +40,7 @@ export class PPSR302Component implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.specialBarDisable = true;
+    this.specialBarDisable = false;
     this.getVerList();
     this.getAreaGroup();
     this.getWeekData();
@@ -300,6 +300,8 @@ export class PPSR302Component implements OnInit {
       searchData: this.searchData
     }
     this.isMesSpin = true;
+    
+    console.log(paramete)
     myObj.getPPSService.getR302MesDtlList(paramete).subscribe(res => {              
       let result:any = res ;
       let tw = 0 ; //总重
@@ -924,12 +926,12 @@ this.firstModalTableAppendList = [] ;
   }
 
   onChangekindType(result:any): void {
-    if(result !== 'ALL'){
-      this.specialBarDisable = false;
-    } else {
-      this.searchData.specialBar = undefined;
-      this.specialBarDisable = true;
-    }
+    // if(result !== 'ALL'){
+    //   this.specialBarDisable = false;
+    // } else {
+      // this.searchData.specialBar = undefined;
+      // this.specialBarDisable = true;
+    // }
   }
 
   

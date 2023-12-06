@@ -94,6 +94,12 @@
           <nz-option  *ngFor="let option of areaGroup" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
           </nz-select> -->
 
+          <!-- 
+          PL -> 只有大棒
+          BTB->大棒/異形
+          CTB->異形 
+          -->
+
           <nz-select nzPlaceHolder="選擇高附加" style="width: 120px; margin-left:10px;" [(ngModel)]="searchData.specialBar"  nzShowSearch nzAllowClear>
             <nz-option nzValue="" nzLabel="ALL" [nzDisabled]="specialBarDisable"></nz-option>
             <nz-option nzValue="CODE490" nzLabel="異型" [nzDisabled]="specialBarDisable"></nz-option>
