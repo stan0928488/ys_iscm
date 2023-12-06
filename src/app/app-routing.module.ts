@@ -113,9 +113,6 @@ import { PPSR321Detail0302CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321
 import { PPSR321Detail0303Component } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321-detail0303.component';
 import { PPSR322Child7Component } from './pages/PPS/PPSR322/PPSR322-child7/PPSR322-child7.component';
 import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321_DetailTabMenu/PPSR321_Detail0303/PPSR321Detail0301CanDeactivateGuard';
-import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component';
-import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
-import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
 import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
@@ -470,23 +467,6 @@ const routes: Routes = [
       { path: 'R001', component: PPSR344Component },
       // { path: 'R002', component: PPSR343Component },       // 先關閉預估周入庫計畫表
       { path: 'R002', component: ErrorPageComponent },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'maintenance',
-    children: [
-      { path: '', redirectTo: '/maintenance/M001', pathMatch: 'full' },
-      { path: 'M001', component: PPSR330YwComponent },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'report',
-    children: [
-      { path: '', redirectTo: '/report/R002', pathMatch: 'full' },
-      { path: 'R001', component: PPSR331YwComponent },
-      { path: 'R002', component: PPSR332YwComponent },
     ],
     canActivate: [AuthGuard],
   },

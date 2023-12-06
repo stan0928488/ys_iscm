@@ -27,7 +27,6 @@ export class PPSService {
   ) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
-    this.APIYW = this.configService.getAPIURL('2');
   }
 
   //Get getPPSINP13List
