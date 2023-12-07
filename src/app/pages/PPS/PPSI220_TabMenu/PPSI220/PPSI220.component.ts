@@ -17,7 +17,7 @@ import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, Val
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 
 import { ConfigService } from "src/app/services/config/config.service";
-import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
 registerLocaleData(zh);
 
 
@@ -295,7 +295,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.agGridContext = {
       componentParent: this,
     };
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT);
     
   }
   async ngOnInit(): Promise<void> {
@@ -1110,7 +1110,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       try {
         this.LoadingPage = true;
         // 接收後端FCP開始執行與執行結束的通知
-        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'barFcpStatus');
+        await this.fcpStatusWebSocketStomp.connect();
         this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
             console.log("--直棒收到後端FCP執行狀態的通知--");
             this.getRunFCPCount();
@@ -1118,7 +1118,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       catch (error) {
-        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線");
+        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
+        this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
         await this.sleep(5000);
       }
       finally{
@@ -1789,19 +1790,21 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       const res = await firstValueFrom<any>(resObservable$);
 
       if(res.code !== 200){
-        this.errorMSG(
-          '獲取平衡設定選項資料失敗',
-          `請聯繫系統工程師。錯誤訊息 : ${res.message}`
-        );
+        // this.errorMSG(
+        //   '獲取平衡設定選項資料失敗',
+        //   `請聯繫系統工程師。`
+        // );
+        location.reload(); // 设置为 true 表示强制从服务器加载页面
         return;
       }
       this.moSortList = res.data;
     }
     catch (error) {
-      this.errorMSG(
-        '獲取平衡設定選項資料失敗',
-        `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
-      );
+      location.reload(); // 设置为 true 表示强制从服务器加载页面
+      // this.errorMSG(
+      //   '獲取平衡設定選項資料失敗',
+      //   `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      // );
     } finally {
       this.shopSortLoading = false;
     }

@@ -27,7 +27,6 @@ export class PPSService {
   ) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
-    this.APIYW = this.configService.getAPIURL('2');
   }
 
   //Get getPPSINP13List
@@ -625,7 +624,7 @@ export class PPSService {
   getTbppsm013List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/getTbppsm013List`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/getTbppsm013List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -634,7 +633,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -643,7 +642,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/updateSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -651,7 +650,7 @@ export class PPSService {
   delI106Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/delData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I106 importI106Excel EXCEL匯入
@@ -674,7 +673,7 @@ export class PPSService {
   //Get getFCPTB16List 取得設定星期資料
   getPPSFCPTB16List() {
     console.log('api service getFCPTB16List');
-    let queryUrl = this.APIURL + '/FCP/I200/getPPSFCPTB16List';
+    let queryUrl = this.APINEWURL + '/FCP/I200/getPPSFCPTB16List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -682,7 +681,7 @@ export class PPSService {
   //Get getPPSFCPTB16RSSetList 取得FCP結果保留設定資料
   getPPSFCPTB16RSSetList() {
     console.log('api service getPPSFCPTB16RSSetList');
-    let queryUrl = this.APIURL + '/FCP/I200/getPPSFCPTB16RSSetList';
+    let queryUrl = this.APINEWURL + '/FCP/I200/getPPSFCPTB16RSSetList';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -707,7 +706,7 @@ export class PPSService {
   // I200 Tab4新增存檔
   insertTab4Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/insertTab4Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/insertTab4Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -715,7 +714,7 @@ export class PPSService {
   // I200 Tab5新增存檔
   insertTab5Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/insertTab5Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/insertTab5Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -723,7 +722,7 @@ export class PPSService {
   // I200 Tab4修改存檔
   updateTab4Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/updateTab4Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/updateTab4Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -731,7 +730,7 @@ export class PPSService {
   // I200 Tab5修改存檔
   updateTab5Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/updateTab5Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/updateTab5Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -1205,7 +1204,7 @@ export class PPSService {
   //Get getPlanSetData 規劃策略清單 (I210-I220 共用)
   getPlanSetData(_plant) {
     console.log('api service getPlanSetData');
-    let queryUrl = this.APIURL + `/FCP/I210/getPlanSetData/${_plant}`;
+    let queryUrl = this.APINEWURL + `/FCP/I210/getPlanSetData/${_plant}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }
@@ -1233,7 +1232,7 @@ export class PPSService {
     const httpParams = new HttpParams().set('planSetEdition', planSetEdition);
 
     console.log('api service deletePlanSetData');
-    const queryUrl = this.APIURL + `/FCP/I210/deletePlanSetData`;
+    const queryUrl = this.APINEWURL + `/FCP/I210/deletePlanSetData`;
     console.log(`刪除策略API --> ${queryUrl}`);
     console.log(`刪除策略API參數 --> ${planSetEdition}`);
     return this.http.delete(queryUrl, { params: httpParams });
@@ -1255,36 +1254,36 @@ export class PPSService {
   }
   //Get getPickerShopData sorting表的站別
   getPickerShopData(_plant) {
-    let queryUrl = `${this.APIURL}/FCP/I210/getPickerShopData/${_plant}`;
-    return this.http.get(queryUrl);
+    let queryUrl = `${this.APINEWURL}/FCP/I210/getPickerShopData/${_plant}`;
+    return this.http.get<any>(queryUrl);
   }
   //Get getPickerMachineData 下拉機台 by 站別
   getPickerMachineData(_plant, _shop) {
-    let queryUrl = this.APIURL + `/FCP/I210/getPickerMachineData/${_plant}/${_shop}`;
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I210/getPickerMachineData/${_plant}/${_shop}`;
+    return this.http.get<any>(queryUrl);
   }
   //Get getPickerSortData sorting表的排序 by 站別
   getPickerSortData(_plant, _shop, _machine) {
     let queryUrl =
-      this.APIURL + `/FCP/I210/getPickerSortData/${_plant}/${_shop}/${_machine}`;
-    return this.http.get(queryUrl);
+      this.APINEWURL + `/FCP/I210/getPickerSortData/${_plant}/${_shop}/${_machine}`;
+    return this.http.get<any>(queryUrl);
   }
   //Get getRequierList sorting內的 集批條件
   getRequierList(_sort) {
-    let queryUrl = this.APIURL + `/FCP/I210/getRequierList/${_sort}`;
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I210/getRequierList/${_sort}`;
+    return this.http.get<any>(queryUrl);
   }
   //Get getRequierNAME 集批條件中文顯示
   getRequierNAME(_value) {
-    let queryUrl = this.APIURL + `/FCP/I210/getRequierNAME/${_value}`;
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I210/getRequierNAME/${_value}`;
+    return this.http.get<any>(queryUrl);
   }
   //addPlanSetData 上傳規劃策略insert
   addPlanSetData(_result) {
     console.log('api service addPlanSetData');
     const body = JSON.stringify(_result);
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I210/addPlanSetData';
+    let queryUrl = this.APINEWURL + '/FCP/I210/addPlanSetData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //updPlanSetData 修改規劃策略update
@@ -1292,7 +1291,7 @@ export class PPSService {
     console.log('api service updPlanSetData');
     const body = JSON.stringify(_result);
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I210/updPlanSetData';
+    let queryUrl = this.APINEWURL + '/FCP/I210/updPlanSetData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 

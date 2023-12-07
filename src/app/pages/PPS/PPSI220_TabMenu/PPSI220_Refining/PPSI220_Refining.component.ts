@@ -15,7 +15,7 @@ import zh from '@angular/common/locales/zh';
 import { firstValueFrom } from "rxjs";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
-import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/fcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
 import { ConfigService } from "src/app/services/config/config.service";
 registerLocaleData(zh);
 
@@ -298,7 +298,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
       componentParent: this,
     };
 
-    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router);
+    this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.PLANT);
 
     // 因應預設工時計算選擇「取得新工時計算」，
     // 設定對應的資料
@@ -1130,7 +1130,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
       try{
         this.LoadingPage = true;
         // 接收後端FCP開始執行與執行結束的通知
-        await this.fcpStatusWebSocketStomp.connect(this.PLANT, 'refiningFcpStatus');
+        await this.fcpStatusWebSocketStomp.connect();
         this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
           console.log("--精整收到後端FCP執行狀態的通知--");
           this.getRunFCPCount();
@@ -1138,7 +1138,8 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         });
       }
       catch(error){
-        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線");
+        this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
+        this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
         await this.sleep(5000);
       }
       finally{

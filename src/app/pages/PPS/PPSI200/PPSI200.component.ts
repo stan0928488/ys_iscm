@@ -198,9 +198,9 @@ export class PPSI200Component implements AfterViewInit {
     console.log("select :"+value) ;
   }
   // edit function
-  weekEditFunc(id,index){
+  weekEditFunc(item,index){
     console.log("weekEditFunc  :" + index);
-    this.weekData[index].editStatus = true ;
+    item.editStatus = true ;
     console.log("default data :" + JSON.stringify(this.selectOptionWeekDay));
     //this.selectOptionWeekDay =  {label: '星期五', value: 4} ;
     this.selectOptionWeekDay = this.selectOptionWeek[index] ;
@@ -210,12 +210,12 @@ export class PPSI200Component implements AfterViewInit {
     console.log("select option :" + this.selectOptionWeek[index]);
   }
 
-  weekSaveEdit(id,index){
+  weekSaveEdit(item,index){
     console.log("weekSaveEdit  :" + index);
     // let myObj = this;
     console.log("select value: " + JSON.stringify(this.selectOptionWeekDay)) ;
     let obj =  {
-      ID          : this.weekData[index].ID,
+      ID          : item.ID,
       WEEK_NAME   : this.selectOptionWeekDay.label,
       WEEK_INDEX  : this.selectOptionWeekDay.value,
       USERNAME    : this.USERNAME,
@@ -253,8 +253,8 @@ export class PPSI200Component implements AfterViewInit {
       });
   }
 
-  weekCancelEdit( id, index){
-    this.weekData[index].editStatus = false ;
+  weekCancelEdit(item, index){
+    item.editStatus = false ;
   }
   //get week number
   getFCPTB16List() {
@@ -264,10 +264,11 @@ export class PPSI200Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPPSFCPTB16List().subscribe(res => {
       console.log("getFCPTB16List success");
-      this.FCPTB16List = res;
+      let data:any = res;
+      this.FCPTB16List = data.data;
       console.log(this.FCPTB16List);
       for(let i = 0; i<this.FCPTB16List.length; i++){
-        let id = this.FCPTB16List[i].ID;
+        let id = this.FCPTB16List[i].id;
         let mon = this.FCPTB16List[i].month;
         let WI = this.FCPTB16List[i].week_index;
         let WN = this.FCPTB16List[i].week_name;
@@ -359,7 +360,30 @@ export class PPSI200Component implements AfterViewInit {
   
   // ---- tab 5 begin ---------
   insertTab5(){
+    let myObj = this;
+    this.LoadingPage = true;
+    return new Promise((resolve, reject) => {
 
+      let postData = 
+      {
+        "STATUS":"1",
+        "USERNAME":this.USERNAME,
+        "DATETIME":moment().format('YYYY-MM-DD HH:mm:ss'),
+        'PICKER_DATE':this.tab5DateOf_DD_ForAdd
+      }
+      myObj.getPPSService.insertTab5Save(postData).subscribe(res => {
+        if(res[0].MSG === "Y") {
+
+          this.sucessMSG("修改成功", ``);
+          this.getFCPTB16StatusList();
+          this.LoadingPage = false;
+        }
+      },err => {
+        reject('upload fail');
+        this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+        this.LoadingPage = false;
+      })
+    });
   }
 
   FCPDayChange(value){
@@ -374,15 +398,16 @@ export class PPSI200Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPPSFCPTB16RSSetList().subscribe(res => {
       console.log("getPPSFCPTB16RSSetList success");
-      this.FCPTB16StatusList = res;
+      let data:any = res;
+      this.FCPTB16StatusList = data.data;
       console.log(this.FCPTB16StatusList);
       for(let i = 0; i<this.FCPTB16StatusList.length; i++){
-        let id      = this.FCPTB16StatusList[i].ID;
-        let setDate = this.FCPTB16StatusList[i].SET_DATE;
-        let mon     = this.FCPTB16StatusList[i].SET_DATE;
-        let tmpSt   = (this.FCPTB16StatusList[i].STATUS==="1")? '啟用': '停用';
-        let rdoSt   = (this.FCPTB16StatusList[i].STATUS==="1")?  true : false;
-        let st      = this.FCPTB16StatusList[i].STATUS;
+        let id      = this.FCPTB16StatusList[i].id;
+        let setDate = this.FCPTB16StatusList[i].set_DATE;
+        let mon     = this.FCPTB16StatusList[i].set_DATE;
+        let tmpSt   = (this.FCPTB16StatusList[i].status==="1")? '啟用': '停用';
+        let rdoSt   = (this.FCPTB16StatusList[i].status==="1")?  true : false;
+        let st      = this.FCPTB16StatusList[i].status;
 
         let weekObj ={} ;;
         //this.selectOptionWeek.push(weekObj) ;
@@ -417,10 +442,10 @@ export class PPSI200Component implements AfterViewInit {
     });
   }
   // edit function
-  statusEditFunc(id,index){
+  statusEditFunc(item,index){
     console.log("statusEditFunc  :" + index);
-    this.FCPRSData[index].editStatus = true ;
-    this.tab5Switch = this.FCPRSData[index].statusFlag;
+    item.editStatus = true ;
+    this.tab5Switch = item.statusFlag;
   }
 
   // delStatusID(id,index){
@@ -428,7 +453,7 @@ export class PPSI200Component implements AfterViewInit {
   //   this.FCPRSData[index].editStatus = true ;
 
   // }
-  statusSaveEdit(id,index){
+  statusSaveEdit(item,index){
     console.log("statusSaveEdit  :" + index);
     // let myObj = this;
     let statusVal;
@@ -440,10 +465,10 @@ export class PPSI200Component implements AfterViewInit {
     }
     console.log('statusVal:' + statusVal);
 
-    console.log("switch value: " + JSON.stringify(this.FCPRSData[index].statusFlag)) ;
+    console.log("switch value: " + JSON.stringify(item.statusFlag)) ;
     let obj =  {
-      ID          :  this.FCPRSData[index].id,
-      SETDATE     :  this.FCPRSData[index].setDate,
+      ID          :  item.id,
+      SETDATE     :  item.setDate,
       STATUS      :  statusVal,
       USERNAME    :  this.USERNAME,
       DATETIME    :  moment().format('YYYY-MM-DD HH:mm:ss')
@@ -480,8 +505,8 @@ export class PPSI200Component implements AfterViewInit {
       });
   }
 
-  statusCancelEdit( id, index){
-    this.FCPRSData[index].editStatus = false ;
+  statusCancelEdit(item, index){
+    item.editStatus = false ;
   }
 
   // 刪除資料
@@ -626,7 +651,7 @@ export class PPSI200Component implements AfterViewInit {
       return new Promise((resolve, reject) => {
         let obj = {};
         obj =  {
-          ID          : this.weekData[_id].ID,
+          ID          : this.weekData[_id].id,
           MONTH       : this.weekData[_id].month,
           WEEK_NAME   : this.weekData[_id].week_name,
           WEEK_INDEX  : this.weekData[_id].week_index,
