@@ -26,6 +26,7 @@ export class PPSR322Child8Component implements OnInit {
         this.searchData.verList = data.data.verList;
       }
       this.getR322Data(this.searchData);
+      console.log('test');
 
       let postData = {};
       postData = this.searchData;
@@ -124,6 +125,8 @@ export class PPSR322Child8Component implements OnInit {
         } else {
           this.listOfData = [];
         }
+        console.log(this.searchData.schShop);
+        console.log(this.listOfData);
         this.sendData(7);
       },
       error: (e) => {

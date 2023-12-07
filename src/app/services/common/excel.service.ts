@@ -237,9 +237,11 @@ export class ExcelService {
   public multiSheet(
     dataSet: any[],
     sheetConfigs: SheetConfig[],
-    fileName: string
+    fileName: string,
+    dataSetInfo: any[]
   ): void {
     const wb = XLSX.utils.book_new();
+    console.log(dataSetInfo);
 
     for (let i = 0; i < dataSet.length; i++) {
       const sheetConfig = sheetConfigs[i];
@@ -248,18 +250,50 @@ export class ExcelService {
         sheetConfig.fieldMapping // Pass fieldMapping directly
       );
 
-      // 生成動態列名
+      // 生成动态列名
       const dynamicColumnNames = this.getDynamicColumnNames(dataToExport);
 
-      // 合併所有欄位名稱
+      // 合并所有字段名
       const header = [...dynamicColumnNames];
 
-      // 添加一個工作表，指定欄位名稱
-      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport, {
-        header,
-      });
+      // 添加一个工作表，指定字段名
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([], { header });
 
-      XLSX.utils.sheet_to_json(ws, { header: header });
+      // 添加文本描述到工作表的开头
+      if (sheetConfig.includeDescription) {
+        console.log(dataSetInfo[i]);
+        if (dataSetInfo[i]) {
+          // 处理字符串类型的描述文字
+          if (typeof dataSetInfo[i] === 'string') {
+            XLSX.utils.sheet_add_aoa(ws, [[dataSetInfo[i]]]);
+          } else if (Array.isArray(dataSetInfo[i])) {
+            // 处理数组类型的描述文字
+            dataSetInfo[i].forEach((descriptionRow: string, index: number) => {
+              XLSX.utils.sheet_add_aoa(ws, [[descriptionRow]]);
+            });
+          } else {
+            console.error(`dataSetInfo[${i}] is not an array or string`);
+          }
+          // 将表头添加到工作表
+          XLSX.utils.sheet_add_aoa(ws, [header]);
+          // 将数据添加到工作表的下一行开始
+          XLSX.utils.sheet_add_json(ws, dataToExport, {
+            header,
+            origin: 1, // 表头和描述文字的下一行开始
+          });
+        } else {
+          console.error(`dataSetInfo[${i}] is undefined or null`);
+        }
+      } else {
+        // 如果不包含描述文字，直接将表头添加到工作表
+        XLSX.utils.sheet_add_aoa(ws, [header]);
+
+        // 将数据添加到工作表的下一行开始
+        XLSX.utils.sheet_add_json(ws, dataToExport, {
+          header,
+          origin: 0, // 表头的下一行开始
+        });
+      }
 
       XLSX.utils.book_append_sheet(wb, ws, sheetConfig.sheetName);
     }
@@ -324,4 +358,5 @@ export class ExcelService {
 interface SheetConfig {
   sheetName: string;
   fieldMapping: { [key: string]: string };
+  includeDescription?: boolean;
 }
