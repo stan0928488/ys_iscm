@@ -55,6 +55,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   childData8: any[] = [];
   childData9: any[] = [];
   childData10: netItem[] = [];
+  indexxx: any;
 
   searchObj = {
     verList: {
@@ -128,10 +129,11 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.ppsr332child4.getR322Data(searchData);
     this.ppsr332child4.getR322OtherInfo(searchData);
     this.ppsr332child5.getR322Data(searchData);
-    // this.ppsr332child5.getR322OtherInfo(searchData);
     this.ppsr332child6.getR322Data(searchData);
     this.ppsr332child7.getR322Data(searchData);
-    this.ppsr332child8.getR322Data(searchData);
+    if (this.indexxx != '7') {
+      this.ppsr332child8.getR322Data(searchData);
+    }
     this.ppsr332child9.getR322Data(searchData);
     this.getExcelData();
   }
@@ -143,10 +145,11 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       },
       this.searchObj
     );
+    this.indexxx = index;
+    // console.log(this.indexxx);
   }
 
   getExcelData() {
-    console.log('fdfdsfdsdf');
     this.childData1 = [];
     this.childData2 = [];
     this.childData3 = [];
@@ -160,34 +163,29 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.dataSet = [];
     this.listDate = [];
 
-    this.ppsr322EvnetBusComponent.sharedData$
-      .pipe(take(9))
-      .subscribe((data) => {
-        if (data.index == 0) {
-          this.childData1 = data.data;
-        } else if (data.index == 1) {
-          this.childData2 = data.data;
-        } else if (data.index == 2) {
-          this.childDataInfo3 = data.data.info;
-          this.childData3 = data.data.data;
-          console.log(data.data.info);
-          console.log(data.data);
-        } else if (data.index == 3) {
-          this.childDataInfo4 = data.data.info;
-          this.childData4 = data.data.data;
-        } else if (data.index == 4) {
-          console.log(data.data);
-          this.childData5 = data.data.data;
-        } else if (data.index == 5) {
-          this.childData6 = data.data;
-        } else if (data.index == 6) {
-          this.childData7 = data.data;
-        } else if (data.index == 7) {
-          this.childData8 = data.data;
-        } else if (data.index == 8) {
-          this.childData9 = data.data;
-        }
-      });
+    this.ppsr322EvnetBusComponent.sharedData$.subscribe((data) => {
+      if (data.index == 0) {
+        this.childData1 = data.data;
+      } else if (data.index == 1) {
+        this.childData2 = data.data;
+      } else if (data.index == 2) {
+        this.childDataInfo3 = data.data.info;
+        this.childData3 = data.data.data;
+      } else if (data.index == 3) {
+        this.childDataInfo4 = data.data.info;
+        this.childData4 = data.data.data;
+      } else if (data.index == 4) {
+        this.childData5 = data.data.data;
+      } else if (data.index == 5) {
+        this.childData6 = data.data;
+      } else if (data.index == 6) {
+        this.childData7 = data.data;
+      } else if (data.index == 7) {
+        this.childData8 = data.data;
+      } else if (data.index == 8) {
+        this.childData9 = data.data;
+      }
+    });
   }
 
   listDate: string[] = [];
@@ -293,7 +291,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       this.childDataInfo4 || [],
       this.childDataInfo5 || [],
     ];
-    console.log(this.dataSet, this.dataSetInfo);
+    // console.log(this.dataSet, this.dataSetInfo);
     this.excelService.multiSheet(
       this.dataSet,
       [

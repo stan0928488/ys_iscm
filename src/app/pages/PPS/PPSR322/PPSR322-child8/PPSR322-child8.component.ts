@@ -26,7 +26,6 @@ export class PPSR322Child8Component implements OnInit {
         this.searchData.verList = data.data.verList;
       }
       this.getR322Data(this.searchData);
-      console.log('test');
 
       let postData = {};
       postData = this.searchData;
@@ -121,13 +120,11 @@ export class PPSR322Child8Component implements OnInit {
             this.mapOfExpandedData[item.schShopCode] =
               this.convertTreeToList(item);
           });
-          // console.log(this.mapOfExpandedData);
+          this.sendData(7);
+          // console.log(this.listOfData);
         } else {
           this.listOfData = [];
         }
-        console.log(this.searchData.schShop);
-        console.log(this.listOfData);
-        this.sendData(7);
       },
       error: (e) => {
         this.message.error('網絡請求失敗');

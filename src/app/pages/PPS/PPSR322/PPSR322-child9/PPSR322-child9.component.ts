@@ -88,7 +88,6 @@ export class PPSR322Child9Component implements OnInit {
             this.mapOfExpandedData[item.schShopCode] =
               this.convertTreeToList(item);
           });
-          // console.log(this.mapOfExpandedData);
         } else {
           this.listOfData = [];
         }
