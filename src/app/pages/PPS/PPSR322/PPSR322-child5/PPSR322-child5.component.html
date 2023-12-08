@@ -1,3 +1,56 @@
-<nz-card *ngFor="let data of listOfData; index as i">
-    {{data.instructions}}
-</nz-card>
+<!-- <nz-card *ngFor="let data of listOfData; index as i">
+    <label style="white-space: pre-line;">{{data.instructions}}</label>
+</nz-card> -->
+
+
+<div class="peel" style="width:100%; margin-bottom: 30px;">
+    <h2 style="font-weight: bold;">削皮股：</h2>
+    <nz-card
+        style="width:100%;">
+        <p style="color: grey;" *ngIf="listOfData[0].instructions === ''">無資料</p>
+        <p 
+            style="white-space: pre-wrap;"
+            *ngIf="listOfData[0].instructions !== ''">
+            {{ listOfData[0].instructions }}
+        </p>
+    </nz-card>
+</div>
+
+<div class="peel" style="width:100%; margin-bottom: 30px;">
+    <h2 style="font-weight: bold;">冷抽一股：</h2>
+    <nz-card
+        style="width:100%;">
+        <p style="color: grey;" *ngIf="listOfData[1].instructions === ''">無資料</p>
+        <p 
+            style="white-space: pre-wrap;"
+            *ngIf="listOfData[1].instructions !== ''">
+            {{ listOfData[1].instructions }}
+        </p>
+    </nz-card>
+</div>
+
+<div class="peel" style="width:100%; margin-bottom: 30px;">
+    <h2 style="font-weight: bold;">冷抽二股：</h2>
+    <nz-card
+        style="width:100%;">
+        <p style="color: grey;" *ngIf="listOfData[2].instructions === ''">無資料</p>
+        <p 
+            style="white-space: pre-wrap;"
+            *ngIf="listOfData[2].instructions !== ''">
+            {{ listOfData[2].instructions }}
+        </p>
+    </nz-card>
+</div>
+
+<div class="peel" style="width:100%; margin-bottom: 30px;">
+    <h2 style="font-weight: bold;">研磨股：</h2>
+    <nz-card
+        style="width:100%;">
+        <p style="color: grey;" *ngIf="listOfData[0].instructions === ''">無資料</p>
+        <p 
+            style="white-space: pre-wrap;"
+            *ngIf="listOfData[3].instructions !== ''">
+            {{ listOfData[3].instructions }}
+        </p>
+    </nz-card>
+</div>
