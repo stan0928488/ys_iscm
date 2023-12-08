@@ -42,6 +42,7 @@ interface ItemData {
 export class PPSI110Component implements AfterViewInit {
   frameworkComponents: any;
 
+  tableHeight: string;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -146,38 +147,47 @@ export class PPSI110Component implements AfterViewInit {
   aaa() {
     this.columnDefs = [
       {
+        width: 100,
         headerName: '站別',
         field: 'schShopCode',
       },
       {
+        width: 100,
         headerName: '機台',
         field: 'equipCode',
       },
       {
+        width: 100,
         headerName: '機群',
         field: 'equipGroup',
       },
       {
+        width: 100,
         headerName: '機群設備數量',
         field: 'groupAmount',
       },
       {
+        width: 100,
         headerName: '最大管數',
         field: 'equipQuanity',
       },
       {
+        width: 100,
         headerName: '開機管數',
         field: 'bootControl',
       },
       {
+        width: 100,
         headerName: '累計天數',
         field: 'accumulateDay',
       },
       {
+        width: 100,
         headerName: '略過天數',
         field: 'dateLimit',
       },
       {
+        width: 200,
         headerName: 'Action',
         editable: false,
         cellRenderer: 'buttonRenderer',
@@ -220,6 +230,7 @@ export class PPSI110Component implements AfterViewInit {
     this.getRunFCPCount();
     this.getTbppsm013List();
     this.onInit();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
 
   // 取得是否有正在執行的FCP

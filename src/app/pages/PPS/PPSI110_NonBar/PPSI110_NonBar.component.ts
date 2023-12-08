@@ -33,6 +33,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
 
   frameworkComponents: any;
 
+  tableHeight: string;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -76,26 +77,32 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
 
   public columnDefs: (ColDef | ColGroupDef)[] = [
     {
+      width: 100,
       headerName: '站別',
       field: "schShopCode"
     },
     {
+      width: 100,
       headerName: '機台',
       field: "equipCode"
     },
     {
+      width: 100,
       headerName: '機群',
       field: "equipGroup"
     },
     {
+      width: 100,
       headerName: '機群設備數量',
       field: "groupAmount"
     },
     {
+      width: 100,
       headerName: '最大管數',
       field: "equipQuanity"
     },
     {
+      width: 200,
       headerName: 'Action',
       editable:false,
       cellRenderer: 'buttonRenderer',
@@ -196,6 +203,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getRunFCPCount();
     this.getTbppsm013List();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
   
 
@@ -210,6 +218,8 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
   }
 
   onInit() {
+    console.log("aaaaaaaaa")
+    console.log(this.tableHeight)
     this.schShopCode = '';
     this.equipCode = '';
     this.equipGroup = '';

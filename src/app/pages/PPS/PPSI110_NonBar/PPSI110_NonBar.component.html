@@ -94,8 +94,9 @@
   </nz-collapse>
 
   <ag-grid-angular
-    style="width: 100%; height: 550px; overflow: scroll"
+    style="width: 100%; overflow: scroll"
     class="ag-theme-alpine"
+    [ngStyle]="{height:tableHeight}"
     [rowData]="displayTbppsm013List"
     [columnDefs]="columnDefs"
     [pagination]="true"
