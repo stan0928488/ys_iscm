@@ -92,8 +92,6 @@ import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
 import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
 
-import { PPSR302_coilComponent } from './pages/PPS/PPSR302_coil/PPSR302_coil.component';
-
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
 import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
@@ -169,9 +167,6 @@ import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { ListSaleInputComponent } from './pages/PPS/list-sale-input/list-sale-input.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
-import { PPSR330YwComponent } from './pages/PPS/PPSR330_yw/PPSR330_yw.component';
-import { PPSR331YwComponent } from './pages/PPS/PPSR331_yw/PPSR331_yw.component';
-import { PPSR332YwComponent } from './pages/PPS/PPSR332_yw/PPSR332_yw.component';
 import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
 import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
 import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
@@ -270,7 +265,6 @@ registerLocaleData(zh);
     PPSI230RefiningComponent,
     PPSR301Component,
     PPSR302Component,
-    PPSR302_coilComponent,
     PPSR303Component,
     PPSR304Component,
     PPSR305Component,
@@ -344,9 +338,6 @@ registerLocaleData(zh);
     ListSaleInputComponent,
     PPSR340Component,
     PPSR341Component,
-    PPSR330YwComponent,
-    PPSR331YwComponent,
-    PPSR332YwComponent,
     POMP001Component,
     POMP002Component,
     POMP003Component,

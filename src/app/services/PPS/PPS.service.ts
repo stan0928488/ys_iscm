@@ -27,7 +27,6 @@ export class PPSService {
   ) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
-    this.APIYW = this.configService.getAPIURL('2');
   }
 
   //Get getPPSINP13List
@@ -625,7 +624,7 @@ export class PPSService {
   getTbppsm013List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/getTbppsm013List`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/getTbppsm013List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -634,7 +633,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -643,7 +642,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/updateSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -651,7 +650,7 @@ export class PPSService {
   delI106Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/delData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I106 importI106Excel EXCEL匯入

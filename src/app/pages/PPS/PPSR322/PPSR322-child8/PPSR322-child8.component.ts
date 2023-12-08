@@ -120,11 +120,11 @@ export class PPSR322Child8Component implements OnInit {
             this.mapOfExpandedData[item.schShopCode] =
               this.convertTreeToList(item);
           });
-          // console.log(this.mapOfExpandedData);
+          this.sendData(7);
+          // console.log(this.listOfData);
         } else {
           this.listOfData = [];
         }
-        this.sendData(7);
       },
       error: (e) => {
         this.message.error('網絡請求失敗');

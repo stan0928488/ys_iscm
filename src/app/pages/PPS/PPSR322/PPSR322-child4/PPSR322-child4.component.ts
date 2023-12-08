@@ -78,7 +78,10 @@ export class PPSR322Child4Component implements OnInit, OnDestroy {
   }
 
   sendData(index: number) {
-    const dataToSend = this.listOfData;
+    let dataToSend = {
+      data: this.listOfData,
+      info: this.otherInfo.instructions,
+    };
     this.ppsr322EvnetBusComponent.updateSharedData(index, dataToSend);
   }
 }
