@@ -310,8 +310,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   async ngOnInit(): Promise<void> {
-     // 接收後端FCP開始執行與執行結束的通知
-    await this.ftpStatusUpdateWebSocketConnect();
+    
   } 
 
   ngOnDestroy(): void {
@@ -342,7 +341,8 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
     totalWidth += Math.ceil(totalWidth/2);
     this.scrollWidForRunList = `${totalWidth}px`;
     this.nzWidthConfigsForRunList = widthConfigs;
-
+    // 接收後端FCP開始執行與執行結束的通知
+    await this.ftpStatusUpdateWebSocketConnect();
     this.getPlanDataList();
     this.getRunFCPCount();
     await this.getMoSortList();
@@ -351,9 +351,6 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
        this.USERNAME === 'UR07272' || this.USERNAME === 'UR08084' || this.USERNAME === 'UR11118') {
       this.byUserShow = true;
     }
-
-
-
   }
 
 

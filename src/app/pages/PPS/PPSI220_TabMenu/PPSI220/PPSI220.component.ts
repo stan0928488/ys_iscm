@@ -299,8 +299,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     
   }
   async ngOnInit(): Promise<void> {
-     // 接收後端FCP開始執行與執行結束的通知
-     await this.ftpStatusUpdateWebSocketConnect();
+     
   }
 
   ngOnDestroy(): void {
@@ -331,7 +330,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     totalWidth += Math.ceil(totalWidth/2);
     this.scrollWidForRunList = `${totalWidth}px`;
     this.nzWidthConfigsForRunList = widthConfigs;
-
+    // 接收後端FCP開始執行與執行結束的通知
+    await this.ftpStatusUpdateWebSocketConnect();
     this.getPlanDataList();
     this.getRunFCPCount();
     await this.getMoSortList();

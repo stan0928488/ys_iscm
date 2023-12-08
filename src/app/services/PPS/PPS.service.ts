@@ -1967,59 +1967,46 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  getTBPPSM107() {
-    let queryUrl = this.APIURL + `/FCP/I112/getTBPPSM107`;
+  getTBPPSM107(plant:string) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getTBPPSM107/${plant}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl).toPromise();
+    return this.http.get<any>(queryUrl).toPromise();
   }
 
-  insertTBPPSM107(_type, _data) {
-    const body = JSON.stringify(_data);
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/insertTBPPSM107`;
+  insertTBPPSM107(body) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/insertTBPPSM107`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
-  updateTBPPSM107(_type, _data) {
-    const body = JSON.stringify(_data);
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I112` + nonbarUrl + `/updateTBPPSM107`;
+  updateTBPPSM107(body){
+    let queryUrl = this.APINEWURL + `/FCP/I112/updateTBPPSM107`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
-  delTBPPSM107(_type, _equipCode) {
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
+  delTBPPSM107(plant : string, id : number) {
     let queryUrl =
-      this.APIURL + `/FCP/I112` + nonbarUrl + `/delTBPPSM107/${_equipCode}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+      this.APINEWURL + `/FCP/I112/delTBPPSM107/${plant}/${id}`;
+    return this.http.get<any>(queryUrl);
   }
 
-  getEquipCode(_parms) {
-    const body = JSON.stringify(_parms);
-    console.log(body);
-    let endpointUrl = this.APIURL + `/FCP/I112/getEquipCode`;
-    return this.http.post<any>(endpointUrl, body, this.httpOptions);
+  getEquipCode(plant : string, shopCode : string) {
+    let endpointUrl = this.APINEWURL + `/FCP/I112/getEquipCode/${plant}/${shopCode}`;
+    return this.http.get<any>(endpointUrl);
   }
 
-  getShopCode() {
-    let queryUrl = this.APIURL + `/FCP/I112/getShopCode`;
+  getShopCode(plant : string) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getShopCode/${plant}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
 
-  importTBPPSM107Excel(_type, _data) {
-    const body = JSON.stringify(_data);
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
+  importTBPPSM107Excel(body) {
     let queryUrl =
-      this.APIURL + `/FCP/I112` + nonbarUrl + `/importExcelPPSI112`;
+      this.APINEWURL + `/FCP/I112/importExcelPPSI112`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   getCondition() {

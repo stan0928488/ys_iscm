@@ -128,7 +128,6 @@ import { OpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/o
 import { SendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/send-choice-renderer-component';
 import { PPSI210RefiningOpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-sort-renderer-component';
 import { PPSI210RefiningSendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/send-choice-renderer-component';
-import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
 
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
@@ -194,6 +193,9 @@ import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-co
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { JwtInterceptor } from './services/config/jwt.interceptor';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
+import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
+import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
+import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
 
 
 registerLocaleData(zh);
@@ -303,6 +305,7 @@ registerLocaleData(zh);
     PPSI210RefiningOpenMachineRendererComponent,
     PPSI210RefiningSendChoiceRendererComponent,
     PPSI112Component,
+    PPSI112RefinIngComponent,
     BtnCellRendererUpdate,
     SummaryDatePickerCellEditorComponent,
     PPSR310Component,
@@ -357,6 +360,7 @@ registerLocaleData(zh);
     PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
+    PPSI112TabMenuComponent,
   ],
   imports: [
     BrowserModule,

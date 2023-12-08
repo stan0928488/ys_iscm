@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { OpenMachineRendererComponent } from './open-machine-renderer-component';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { Router } from '@angular/router';
-import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
+import { FcpStatusWebSocketStomp } from 'src/app/services/webSocket/FcpSatusWebSocketStomp';
 @Component({
   selector: 'app-PPSI210',
   templateUrl: './PPSI210.component.html',
@@ -332,6 +332,22 @@ export class PPSI210Component implements OnInit, AfterViewInit {
 
   async ngAfterViewInit() {
     console.log('ngAfterViewChecked');
+    try{
+      this.isSpinning = true;
+      // 接收後端FCP開始執行與執行結束的通知
+      await this.fcpStatusWebSocketStomp.connect();
+      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
+        console.log("--直棒收到後端FCP執行狀態的通知--");
+        this.getRunFCPCount();
+      });
+    }
+    catch(error){
+      this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
+      this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
+    }
+    finally{
+      this.isSpinning = false;
+    }
     this.getPickerShopData(0);
     this.getRunFCPCount();
     await this.getMoSortList();
@@ -539,24 +555,8 @@ export class PPSI210Component implements OnInit, AfterViewInit {
     }
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.addRow();
-    try{
-      this.isSpinning = true;
-      // 接收後端FCP開始執行與執行結束的通知
-      await this.fcpStatusWebSocketStomp.connect();
-      this.fcpStatusWebSocketStomp.getMessages().subscribe( message => {
-        console.log("--直棒收到後端FCP執行狀態的通知--");
-        this.getRunFCPCount();
-      });
-    }
-    catch(error){
-      this.errorMSG("伺服器異常", "已失去與FCP執行狀態更新的連線，請稍後重試重新整理頁面");
-      this.fcpStatusWebSocketStomp.noAutoReconnectUserHandler();
-    }
-    finally{
-      this.isSpinning = false;
-    }
   }
 
   // 外層 table (站別優先順序) ------------------------------

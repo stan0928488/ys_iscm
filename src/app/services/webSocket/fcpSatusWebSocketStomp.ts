@@ -18,7 +18,6 @@ export class FcpStatusWebSocketStomp
     currentXMLHttpRequestInstancing : any = null;
 
     webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint-ef356691-27e5-49c1-8245-9f028f882886';
-    intervalId : any = null;
     plantType : string = null;
     myTopic : string = null;
     header : any = null;
@@ -100,11 +99,11 @@ export class FcpStatusWebSocketStomp
         // 讓之後再斷線可以執行重連
         this.isFirstLostConnection = true;
 
-        console.log('STOMP: Connected', frame);
+        console.log('Web Socket: Connected', frame);
         this.restoreXMLHttpRequest();
         resolve(true);
       }, async (error) => {
-        console.log('STOMP: Connected Eror');
+        console.log('Web Socket: Connect Error');
         this.restoreXMLHttpRequest();
         reject(false);
       });
@@ -139,7 +138,7 @@ export class FcpStatusWebSocketStomp
     public disconnect(){
       if(this.stompClient && this.stompClient.connected){
         this.stompClient.disconnect(() =>{
-          console.log('STOMP: DisConnected');
+          console.log('Web Socket: DisConnected');
         });
       }
       this.noAutoReconnectUserHandler();
@@ -172,9 +171,7 @@ export class FcpStatusWebSocketStomp
         if(!_.isEmpty(this.plantType) && !_.isEmpty(this.myTopic)){
           try{
             console.log("連線web scoket中..");
-            await this.connect();
-            this.isFinishReConnect = true;
-            
+            await this.connect();  
           }
           catch(error){
             console.log("web scoket連線異常，重新連線..");
@@ -191,7 +188,7 @@ export class FcpStatusWebSocketStomp
         }
       }, millisecond);
     }
-
+    
     addHeaderForStompHttpRequest(){
       const originalOpen = XMLHttpRequest.prototype.open;
       this.originalXMLHttpRequestOpen = originalOpen;
@@ -220,17 +217,13 @@ export class FcpStatusWebSocketStomp
     }
 
     restoreXMLHttpRequest(){
-      this.intervalId = setInterval(() => {
-        // web socket已成功連線
-        if (this.connectedStatus()) {
-          // 恢復open方法
-          XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
-          // 恢復當前的的XMLHttpRequest實例的setRequestHeader函數
-          if(!_.isNil(this.currentXMLHttpRequestInstancing)){
-            this.currentXMLHttpRequestInstancing.setRequestHeader = this.originalXMLHttpRequestSetHeader;
-          }
-          clearInterval(this.intervalId);
-        }
-      }, 1);
+      // 恢復open方法
+      if(!_.isNil(this.originalXMLHttpRequestOpen)){
+        XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
+      }
+      // 恢復當前的的XMLHttpRequest實例的setRequestHeader函數
+      if(!_.isNil(this.currentXMLHttpRequestInstancing)){
+        this.currentXMLHttpRequestInstancing.setRequestHeader = this.originalXMLHttpRequestSetHeader;
+      }
     }
   }

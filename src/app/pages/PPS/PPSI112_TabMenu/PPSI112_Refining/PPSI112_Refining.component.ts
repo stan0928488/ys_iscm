@@ -19,9 +19,9 @@ import {
   RowDragEnterEvent,
   RowDragEvent,
 } from 'ag-grid-community';
-import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { TBPPSM107 } from './TBPPSM107.model';
 import { GridOptions } from 'ag-grid-community';
+import { BtnCellRenderer } from 'src/app/pages/RENDERER/BtnCellRenderer.component';
 
 interface ItemData {
   id: number;
@@ -37,11 +37,12 @@ interface ItemData {
 
 @Component({
   selector: 'app-PPSI112',
-  templateUrl: './PPSI112.component.html',
-  styleUrls: ['./PPSI112.component.scss'],
+  templateUrl: './PPSI112_Refining.component.html',
+  styleUrls: ['./PPSI112_Refining.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI112Component implements AfterViewInit {
+export class PPSI112RefinIngComponent implements AfterViewInit {
+  PLANT = '精整';
   userName: string;
   plantCode: string;
   //存放資料的陣列
@@ -225,8 +226,8 @@ export class PPSI112Component implements AfterViewInit {
   displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   async getTBPPSM107() {
-    await this.PPSService.getTBPPSM107().then((res) => {
-      this.myDataList = res;
+    await this.PPSService.getTBPPSM107(this.PLANT).then((res) => {
+      this.myDataList = res.data;
       for (let i = 0; i < this.myDataList.length; i++) {
         this.tbppsm107.push({
           id: this.myDataList[i].id,
@@ -245,6 +246,10 @@ export class PPSI112Component implements AfterViewInit {
       this.myDataList = {};
       this.loading = false;
       this.updateEditCache();
+    })
+    .catch(error=>{
+      this.errorMSG('獲取資料失敗', `後台獲取資料發生錯誤：${error.message}，請聯繫系統工程師`);
+      this.loading = false;
     });
   }
 
@@ -260,9 +265,10 @@ export class PPSI112Component implements AfterViewInit {
 
   shopCodeOptions;
   getShopCode() {
-    this.PPSService.getShopCode().subscribe((res) => {
-      const data = Object.values(res);
-      this.shopCodeOptions = data.map((item) => item.schShopCode);
+    this.PPSService.getShopCode(this.PLANT).subscribe((res) => {
+      // const data = res;
+      // this.shopCodeOptions = data.map((item) => item.schShopCode);
+      this.shopCodeOptions = res.data;
     });
   }
 
@@ -274,31 +280,29 @@ export class PPSI112Component implements AfterViewInit {
 
   equipCodeOptions;
   getEquipCode() {
-    this.preEquip = { schShopCode: this.schShopCode };
-    this.PPSService.getEquipCode(this.preEquip).subscribe((res) => {
-      const data = Object.values(res);
-      this.equipCodeOptions = res.map((item) => item.EQUIP_CODE);
+    this.PPSService.getEquipCode(this.PLANT, this.schShopCode).subscribe((res) => {
+      this.equipCodeOptions = res.data;
     });
   }
 
   // insert
   insertTab() {
-    if (this.schShopCode === '') {
+    if (_.isEmpty(this.schShopCode)) {
       this.message.create('error', '「站別」不可為空');
       return;
-    } else if (this.equipCode === '') {
+    } else if (_.isEmpty(this.equipCode)) {
       this.message.create('error', '「機台」不可為空');
       return;
-    } else if (this.cumsumType === '') {
+    } else if (_.isEmpty(this.cumsumType)) {
       this.message.create('error', '「累積單位」不可為空');
       return;
-    } else if (this.accumulation === undefined) {
+    } else if (_.isEmpty(this.accumulation)) {
       this.message.create('error', '「累積值」不可為空');
       return;
-    } else if (this.dateLimit === undefined) {
+    } else if (_.isEmpty(this.dateLimit)) {
       this.message.create('error', '「強制投產」不可為空');
       return;
-    } else if (this.useFlag === '') {
+    } else if (_.isEmpty(this.useFlag)) {
       this.message.create('error', '「是否使用」不可為空');
       return;
     } else {
@@ -321,6 +325,7 @@ export class PPSI112Component implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
+        plant: this.PLANT,
         schShopCode: this.schShopCode,
         equipCode: this.equipCode,
         cumsumType: this.cumsumType,
@@ -331,15 +336,15 @@ export class PPSI112Component implements AfterViewInit {
         userCreate: this.userName,
       });
 
-      this.PPSService.insertTBPPSM107('1', obj).subscribe(
+      this.PPSService.insertTBPPSM107(obj).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
+          if (res.code === 200) {
             this.onInit();
             this.getTBPPSM107();
             this.sucessMSG('新增成功', ``);
             this.loading = false;
           } else {
-            this.errorMSG('新增失敗', res[0].MSG);
+            this.errorMSG('新增失敗', res.message);
             this.loading = false;
           }
         },
@@ -420,6 +425,7 @@ export class PPSI112Component implements AfterViewInit {
       let obj = {};
       _.extend(obj, {
         id: rowData.id,
+        plant : this.PLANT,
         schShopCode: rowData.schShopCode,
         equipCode: rowData.equipCode,
         cumsumType: rowData.cumsumType,
@@ -428,9 +434,9 @@ export class PPSI112Component implements AfterViewInit {
         useFlag: rowData.useFlag,
         userUpdate: this.userName,
       });
-      myObj.PPSService.updateTBPPSM107('1', obj).subscribe(
+      myObj.PPSService.updateTBPPSM107(obj).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
+          if (res.code === 200) {
             this.onInit();
             this.sucessMSG('修改成功', ``);
             const index = this.displayDataList.findIndex(
@@ -440,7 +446,7 @@ export class PPSI112Component implements AfterViewInit {
             // Object.assign(this.displayDataList[index], rowData);
             // this.editCache[_equipCode].edit = false;
           } else {
-            this.errorMSG('修改失敗', res[0].MSG);
+            this.errorMSG('修改失敗', res.message);
             this.loading = false;
           }
         },
@@ -458,9 +464,9 @@ export class PPSI112Component implements AfterViewInit {
     let myObj = this;
     this.loading = true;
     return new Promise((resolve, reject) => {
-      myObj.PPSService.delTBPPSM107('1', _id).subscribe(
+      myObj.PPSService.delTBPPSM107(this.PLANT, _id).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
+          if (res.code === 200) {
             this.onInit();
             this.sucessMSG('刪除成功', ``);
             this.getTBPPSM107();
@@ -482,7 +488,7 @@ export class PPSI112Component implements AfterViewInit {
     let titleArray = [];
     if (this.displayDataList.length > 0) {
       data = this.formatDataForExcel(this.displayDataList);
-      fileName = `直棒累計生產`;
+      fileName = `精整累計生產`;
       titleArray = [
         '站別',
         '機台',
@@ -492,7 +498,7 @@ export class PPSI112Component implements AfterViewInit {
         '是否使用',
       ];
     } else {
-      this.errorMSG('匯出失敗', '直棒產能維護目前無資料');
+      this.errorMSG('匯出失敗', '精整產能維護目前無資料');
       return;
     }
     this.excelService.exportAsExcelFile(data, fileName, titleArray);
@@ -635,6 +641,7 @@ export class PPSI112Component implements AfterViewInit {
         let userCreate = this.userName.toString();
 
         this.importdata_new.push({
+          plant: this.PLANT,
           schShopCode: schShopCode,
           equipCode: equipCode,
           cumsumType: cumsumType,
@@ -654,16 +661,16 @@ export class PPSI112Component implements AfterViewInit {
           EXCELDATA: this.importdata_new,
         };
         console.log(obj);
-        myObj.PPSService.importTBPPSM107Excel('1', obj).subscribe(
+        myObj.PPSService.importTBPPSM107Excel(obj).subscribe(
           async (res) => {
-            if (res[0].MSG === 'Y') {
+            if (res.code === 200) {
               this.loading = false;
               await this.getTBPPSM107();
               this.sucessMSG('EXCCEL上傳成功', '');
               this.clearFile();
               this.onInit();
             } else {
-              this.errorMSG('匯入錯誤', res[0].MSG);
+              this.errorMSG('匯入錯誤', res.message);
               this.clearFile();
               this.importdata_new = [];
               this.loading = false;

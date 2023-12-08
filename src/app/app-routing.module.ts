@@ -85,7 +85,7 @@ import { MSHI003CanDeactivateGuard } from './pages/MSH/MSHI003/MSHI003.can.deact
 import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
-import { PPSI112Component } from './pages/PPS/PPSI112/PPSI112.component';
+import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
@@ -136,6 +136,8 @@ import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Tab
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
+import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
+import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
 
 const routes: Routes = [
   {
@@ -255,7 +257,21 @@ const routes: Routes = [
     path: 'PlanSet',
     children: [
       { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
-      { path: 'I112', component: PPSI112Component },
+      { 
+        path: 'I112_TabMenu', 
+        component: PPSI112TabMenuComponent,
+        children: [
+          { path: '', redirectTo: '/PlanSet/I112_TabMenu/I112', pathMatch: 'full' },
+          { 
+            path: 'I112', 
+            component: PPSI112Component 
+          },
+          { 
+            path: 'I112_Refining', 
+            component: PPSI112RefinIngComponent 
+          },
+        ]
+      },
       {
         path: 'I202_TabMenu',
         component: PPSI202TabMenuComponent,
