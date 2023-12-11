@@ -260,26 +260,38 @@ export class ExcelService {
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([], { header });
 
       // 添加文本描述到工作表的开头
+      let count: number;
       if (sheetConfig.includeDescription) {
         console.log(dataSetInfo[i]);
         if (dataSetInfo[i]) {
+          let descriptionArray: string[] = [];
           // 处理字符串类型的描述文字
           if (typeof dataSetInfo[i] === 'string') {
-            XLSX.utils.sheet_add_aoa(ws, [[dataSetInfo[i]]]);
+            descriptionArray = [dataSetInfo[i]];
+            // XLSX.utils.sheet_add_aoa(ws, [[dataSetInfo[i]]]);
           } else if (Array.isArray(dataSetInfo[i])) {
             // 处理数组类型的描述文字
-            dataSetInfo[i].forEach((descriptionRow: string, index: number) => {
-              XLSX.utils.sheet_add_aoa(ws, [[descriptionRow]]);
-            });
+            // dataSetInfo[i].forEach((descriptionRow: string, index: number) => {
+            //   console.log(descriptionRow);
+            //   XLSX.utils.sheet_add_aoa(ws, [[descriptionRow]]);
+            //   count = index + 1;
+            // });
+            descriptionArray = dataSetInfo[i];
           } else {
             console.error(`dataSetInfo[${i}] is not an array or string`);
+            count = 0;
           }
+
+          descriptionArray.forEach((descriptionRow: string, index: number) => {
+            XLSX.utils.sheet_add_aoa(ws, [[descriptionRow]]);
+            count = index + 1; // 對於字符串數組，將 count 設置為數組中的字符串數量
+          });
           // 将表头添加到工作表
           XLSX.utils.sheet_add_aoa(ws, [header]);
           // 将数据添加到工作表的下一行开始
           XLSX.utils.sheet_add_json(ws, dataToExport, {
             header,
-            origin: 1, // 表头和描述文字的下一行开始
+            origin: count, // 表头和描述文字的下一行开始
           });
         } else {
           console.error(`dataSetInfo[${i}] is undefined or null`);

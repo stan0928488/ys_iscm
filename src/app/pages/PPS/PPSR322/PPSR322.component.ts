@@ -45,7 +45,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   childData1: any[] = [];
   childData2: any[] = [];
   childData3: any[] = [];
-  childDataInfo3: string;
+  childDataInfo3: string[] = [];
   childData4: any[] = [];
   childDataInfo4: string;
   childData5: any[] = [];
@@ -169,10 +169,13 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       } else if (data.index == 1) {
         this.childData2 = data.data;
       } else if (data.index == 2) {
+        // this.childDataInfo3 = data.data.info.split('\n');
         this.childDataInfo3 = data.data.info;
         this.childData3 = data.data.data;
       } else if (data.index == 3) {
-        this.childDataInfo4 = data.data.info;
+        this.childDataInfo4 = data.data.info.split(/\n(?=\d+\.\s)/);
+        console.log(this.childDataInfo4);
+        console.log(data.data);
         this.childData4 = data.data.data;
       } else if (data.index == 4) {
         this.childData5 = data.data.data;
@@ -291,7 +294,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       this.childDataInfo4 || [],
       this.childDataInfo5 || [],
     ];
-    // console.log(this.dataSet, this.dataSetInfo);
+    console.log(this.dataSet, this.dataSetInfo);
     this.excelService.multiSheet(
       this.dataSet,
       [
