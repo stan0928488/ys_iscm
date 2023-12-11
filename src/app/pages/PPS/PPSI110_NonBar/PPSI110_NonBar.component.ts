@@ -92,12 +92,12 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
       field: "equipGroup"
     },
     {
-      width: 100,
+      width: 130,
       headerName: '機群設備數量',
       field: "groupAmount"
     },
     {
-      width: 100,
+      width: 110,
       headerName: '最大管數',
       field: "equipQuanity"
     },

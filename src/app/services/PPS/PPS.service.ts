@@ -658,7 +658,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I106` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I106` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
