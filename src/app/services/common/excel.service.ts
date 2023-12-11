@@ -261,7 +261,7 @@ export class ExcelService {
 
       // 添加文本描述到工作表的开头
       if (sheetConfig.includeDescription) {
-        console.log(dataSetInfo[i]);
+        // console.log(dataSetInfo[i]);
         if (dataSetInfo[i]) {
           // 处理字符串类型的描述文字
           if (typeof dataSetInfo[i] === 'string') {

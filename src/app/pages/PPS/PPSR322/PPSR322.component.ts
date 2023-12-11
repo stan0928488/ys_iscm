@@ -13,6 +13,7 @@ import { PPSR322Child9Component } from './PPSR322-child9/PPSR322-child9.componen
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
+import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { DatePipe } from '@angular/common';
 
@@ -291,7 +292,9 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       this.childDataInfo4 || [],
       this.childDataInfo5 || [],
     ];
+    // console.log("---------------------------------------------------------");
     // console.log(this.dataSet, this.dataSetInfo);
+    // console.log("---------------------------------------------------------");
     this.excelService.multiSheet(
       this.dataSet,
       [
@@ -413,7 +416,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
           includeDescription: false,
         },
       ],
-      '月推移報表',
+      `月推移報表_${moment().format('YYYYMMDDHHmmss')}`,
       this.dataSetInfo
     );
   }
