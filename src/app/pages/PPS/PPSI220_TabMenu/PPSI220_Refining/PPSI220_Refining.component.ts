@@ -628,7 +628,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         myObj.loading = false;
         return;
       }
-      this.planSetDataList = res;
+      this.planSetDataList = JSON.parse(res.data);;
       myObj.loading = false;
     });
   }

@@ -617,7 +617,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         myObj.loading = false;
         return;
       }
-      this.planSetDataList = res;
+      this.planSetDataList = JSON.parse(res.data);;
       myObj.loading = false;
     });
   }
