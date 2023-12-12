@@ -20,14 +20,11 @@ export class ConfigService {
     let APIBODY = ''; // 先連到舊的後台
     let APIBODY_OLD = '/pps/rest'; // 先連到舊的後台
     let APIBODY_NEW = '/ys-iscm'; // 改連到新的後台
-    let APIBODY_YW = '/yw-iscm-be';
 
     let hostName = window.location.hostname;
     let host = window.location.host;
     if (flag === '1') {
       APIBODY = APIBODY_NEW;
-    } else if (flag === '2') {
-      APIBODY = APIBODY_YW;
     } else {
       APIBODY = APIBODY_OLD;
     }
@@ -35,8 +32,6 @@ export class ConfigService {
     switch (hostName) {
       case 'localhost':
         if (flag === '1') {
-          this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        } else if (flag === '2') {
           this.APIURL = `http://${hostName}:8080${APIBODY}`;
         } else {
           var urlHost = 'ys-ppsapt01.walsin.corp';
