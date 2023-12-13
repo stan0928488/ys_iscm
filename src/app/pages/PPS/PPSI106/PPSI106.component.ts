@@ -8,8 +8,9 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
-
-
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { ColDef } from 'ag-grid-community'; // Column Definitions Interface
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 interface ItemData17 {
   id: string;
@@ -30,6 +31,10 @@ interface ItemData17 {
   providers:[NzMessageService]
 })
 export class PPSI106Component implements AfterViewInit {
+  
+  tableHeight: string;
+
+  frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -71,14 +76,95 @@ export class PPSI106Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP17List();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
   
- 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 100,
+      headerName: '機台',
+      field: 'EQUIP_CODE_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出尺寸最小值',
+      field: 'DIA_MIN_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出尺寸最大值',
+      field: 'DIA_MAX_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 130,
+      headerName: '產出型態',
+      field: 'SHAPE_TYPE_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '小調機代碼',
+      field: 'SMALL_ADJUST_CODE_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '小調機公差標準',
+      field: 'SMALL_ADJUST_TOLERANCE_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '爐批數量',
+      field: 'FURANCE_BATCH_QTY_17',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   PPSINP17List_tmp;
   PPSINP17List: ItemData17[] = [];
   editCache17: { [key: string]: { edit: boolean; data: ItemData17 } } = {};
@@ -176,7 +262,7 @@ export class PPSI106Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(id: any): void {
     let myObj = this;
     if (this.editCache17[id].data.EQUIP_CODE_17 === undefined || "" === this.editCache17[id].data.EQUIP_CODE_17) {
       myObj.message.create("error", "「機台」不可為空");
@@ -591,4 +677,35 @@ resetByFuranceBatchQty17() : void {
     let fileName = `小調機 - 直棒`;  
     this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'EQUIP_CODE_17');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'EQUIP_CODE_17',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData.id)
+  }
+
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.id);
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.id);
+  }
+
+}
+
+interface IRow {
+  mission: string;
+  company: string;
+  location: string;
+  date: string;
+  rocket: string;
+  price: number;
+  successful: boolean;
 }
