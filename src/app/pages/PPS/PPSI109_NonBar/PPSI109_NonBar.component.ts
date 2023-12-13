@@ -37,6 +37,8 @@ interface data {
   providers:[NzMessageService]
 })
 export class PPSI109_NonBarComponent implements AfterViewInit {
+  
+  tableHeight: string;
   frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -90,6 +92,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     this.getTbppsm012NoBarList();
     this.getI109GradeNoList();
     this.getI109ShopCodeList();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
 
   searchData= {
@@ -113,10 +116,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
         resizable: true,
         filter: true,
     },
-    api:null,
-    onCellClicked: (event: CellClickedEvent) => {
-      this.gridOptions.api.stopEditing();
-    }
+    api:null
   };
 
   public columnDefs: (ColDef | ColGroupDef)[] = [
@@ -358,12 +358,11 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   // update Save
   saveEdit(rowData:any,id: number): void {
     let myObj = this;
-    console.log(this.resultSet)
     // e.rowData.idx
-    if (this.resultSet[id].rowData.SCH_SHOP_CODE === undefined) {
+    if (rowData.SCH_SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.resultSet[id].rowData.GRADE_NO === undefined) {
+    } else if (rowData.GRADE_NO === undefined) {
       myObj.message.create("error", "「鋼種」不可為空");
       return;
     } else {

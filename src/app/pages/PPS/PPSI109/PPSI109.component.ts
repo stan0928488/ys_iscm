@@ -39,6 +39,8 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI109Component implements AfterViewInit {
+  
+  tableHeight: string;
   frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -95,6 +97,7 @@ export class PPSI109Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.gettbppsm012List();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
 
   onInit() {
@@ -127,10 +130,7 @@ export class PPSI109Component implements AfterViewInit {
         resizable: true,
         filter: true,
     },
-    api:null,
-    onCellClicked: (event: CellClickedEvent) => {
-      this.gridOptions.api.stopEditing();
-    }
+    api:null
   };
 
   public columnDefs: (ColDef | ColGroupDef)[] = [
