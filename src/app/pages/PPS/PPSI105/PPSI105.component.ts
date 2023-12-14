@@ -8,10 +8,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
-
-
-
-
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 
 interface ItemData4 {
   id: string;
@@ -33,6 +31,10 @@ interface ItemData4 {
   providers:[NzMessageService]
 })
 export class PPSI105Component implements AfterViewInit {
+
+  tableHeight: string;
+  frameworkComponents: any;
+
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -63,6 +65,85 @@ export class PPSI105Component implements AfterViewInit {
   importdata = [];
   titleArray = ["機台","產出尺寸最小值","產出尺寸最大值","產出型態","大調機代碼","小調機公差標準","爐批數量"];
   importdata_repeat = [];
+
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 100,
+      headerName: '機台',
+      field: 'EQUIP_CODE_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出尺寸最小值',
+      field: 'DIA_MIN_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出尺寸最大值',
+      field: 'DIA_MAX_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 130,
+      headerName: '產出型態',
+      field: 'SHAPE_TYPE_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '大調機代碼',
+      field: 'BIG_ADJUST_CODE_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '小調機公差標準',
+      field: 'SMALL_ADJUST_TOLERANCE_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '爐批數量',
+      field: 'FURANCE_BATCH_QTY_4',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -74,11 +155,15 @@ export class PPSI105Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP04List();
+    this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
   
  
@@ -570,6 +655,24 @@ export class PPSI105Component implements AfterViewInit {
     this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
 
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'FURANCE_BATCH_QTY_4');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'FURANCE_BATCH_QTY_4',
+    });
+  }
 
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData.id)
+  }
+
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.id);
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.id);
+  }
 
 }

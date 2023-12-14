@@ -49,8 +49,9 @@ export class PPSR322EvnetBusComponent {
   private sharedDataSubject = new BehaviorSubject<any>(null);
   sharedData$ = this.sharedDataSubject.asObservable();
 
-  updateSharedData(index: number, data: any) {
-    const preData = { index, data };
+  updateSharedData(data: any) {
+    const preData = { data };
     this.sharedDataSubject.next(preData);
+    console.log(data);
   }
 }
