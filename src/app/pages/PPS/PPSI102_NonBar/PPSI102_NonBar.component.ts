@@ -663,17 +663,18 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         WIP_MAX: _.get(item, 'wipMax'),
         EQUIP_GROUP: _.get(item, 'equipGroup'),
         MES_PUBLISH_GROUP: _.get(item, 'mesPublishGroup'),
-        VALID:
-          _.get(item, 'valid') === 'Y'
-            ? '有效'
-            : _.get(item, 'valid') === 'X'
-            ? '無效'
-            : null,
+
         WT_TYPE:
           _.get(item, 'wtType') === '1'
             ? '線速'
             : _.get(item, 'wtType') === '2'
             ? '非線速'
+            : null,
+        VALID:
+          _.get(item, 'valid') === 'Y'
+            ? '有效'
+            : _.get(item, 'valid') === 'X'
+            ? '無效'
             : null,
       });
       excelData.push(obj);

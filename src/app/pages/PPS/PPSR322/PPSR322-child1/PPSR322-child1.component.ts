@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Observable, catchError, map } from 'rxjs';
 
 @Component({
   selector: 'app-PPSR322-child1',
@@ -37,31 +38,43 @@ export class PPSR322Child1Component implements OnInit, OnDestroy {
     this.ppsr322EvnetBusComponent.unsubscribe();
   }
 
-  getR322Data(postData) {
-    postData['tabType'] = 1;
-    this.PPSService.getR322Data(postData).subscribe({
-      next: (res) => {
-        let result: any = res;
+  getR322Data(postData): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      postData['tabType'] = 1;
+      this.PPSService.getR322Data(postData).subscribe({
+        next: (res) => {
+          let result: any = res;
 
-        if (result[0]) {
-          this.listOfData = result.map(
-            (itemData) => itemData as ItemData
-          ) as ItemData[];
-        } else {
-          this.listOfData = [];
-        }
-        this.sendData(0);
-      },
-      error: (e) => {
-        this.message.error('網絡請求失敗');
-      },
-      complete: () => {},
+          if (result[0]) {
+            this.listOfData = result.map(
+              (itemData) => itemData as ItemData
+            ) as ItemData[];
+          } else {
+            this.listOfData = [];
+          }
+          resolve();
+        },
+        error: (e) => {
+          this.message.error('網絡請求失敗');
+          reject(e);
+        },
+        complete: () => {},
+      });
     });
   }
 
-  sendData(index: number) {
-    const dataToSend = this.listOfData;
-    this.ppsr322EvnetBusComponent.updateSharedData(index, dataToSend);
+  getData(postData): Observable<ItemData[]> {
+    postData['tabType'] = 1;
+    return this.PPSService.getR322Data(postData).pipe(
+      map((res) => {
+        let result: any = res;
+        return result[0] ? result.map((itemData) => itemData as ItemData) : [];
+      }),
+      catchError((error) => {
+        this.message.error('網絡請求失敗');
+        throw error;
+      })
+    );
   }
 }
 
