@@ -1,5 +1,5 @@
 import { async } from '@angular/core/testing';
-import { Component, AfterViewInit, NgZone } from '@angular/core';
+import { Component, AfterViewInit, NgZone, OnDestroy } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 //import { zh_TW, NzI18nService, NzMessageService, NzModalService  } from "ng-zorro-antd";
@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./PPSI210_Refining.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI210RefiningComponent implements AfterViewInit {
+export class PPSI210RefiningComponent implements AfterViewInit, OnDestroy {
   planSetLoading = false; // 現有規劃策略明細表是否載入中
   shopSortLoading = false; // 站別優先順序明細表是否載入中
   machineSortLoading = false // 站別機台優先順序明細表是否載入中
@@ -350,6 +350,12 @@ export class PPSI210RefiningComponent implements AfterViewInit {
     this.getPickerShopData(0);
     this.getRunFCPCount();
     await this.getMoSortList();
+  }
+
+  ngOnDestroy(): void {
+    if(!_.isNil(this.fcpStatusWebSocketStomp)){
+      this.fcpStatusWebSocketStomp.disconnect();
+    }
   }
 
   // 取得是否有正在執行的FCP

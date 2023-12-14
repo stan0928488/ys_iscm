@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone, OnInit } from '@angular/core';
+import { Component, AfterViewInit, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 //import { zh_TW, NzI18nService, NzMessageService, NzModalService  } from "ng-zorro-antd";
@@ -22,7 +22,7 @@ import { FcpStatusWebSocketStomp } from 'src/app/services/webSocket/FcpSatusWebS
   styleUrls: ['./PPSI210.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI210Component implements OnInit, AfterViewInit {
+export class PPSI210Component implements OnInit, AfterViewInit, OnDestroy {
   planSetLoading = false; // 現有規劃策略明細表是否載入中
   shopSortLoading = false; // 站別優先順序明細表是否載入中
   machineSortLoading = false // 站別機台優先順序明細表是否載入中
@@ -306,7 +306,6 @@ export class PPSI210Component implements OnInit, AfterViewInit {
       filter: true,
       sortable: false,
       resizable: true,
-      //wrapText: true,
       autoHeight: true,
     }
   };
@@ -328,6 +327,11 @@ export class PPSI210Component implements OnInit, AfterViewInit {
       componentParent: this,
     };
     this.fcpStatusWebSocketStomp = new FcpStatusWebSocketStomp(this.configService, this.router, this.plant);
+  }
+  ngOnDestroy(): void {
+    if(!_.isNil(this.fcpStatusWebSocketStomp)){
+      this.fcpStatusWebSocketStomp.disconnect();
+    }
   }
 
   async ngAfterViewInit() {
@@ -1113,9 +1117,6 @@ export class PPSI210Component implements OnInit, AfterViewInit {
         const offloadEndDateDisabledTooltip = this.pickerShopList[i].offloadEndDateDisabledTooltip;
         const moSortPrevSelected = this.pickerShopList[i].moSortPrevSelected;
 
-        if (REQUIREMENT === undefined) {
-          REQUIREMENT = `　`;
-        }
         initdata.push({
           id,
           SHOP_CODE,
@@ -1139,7 +1140,9 @@ export class PPSI210Component implements OnInit, AfterViewInit {
       this.isChooseStrategy = true;
       for (let j = 0; j < this.listOfData.length; j++) {
         this.provinceChange('13', this.listOfData[j].SHOP_CODE, '　', j);
-        this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
+        if(!_.isEmpty(this.listOfData[j].REQUIREMENT)){
+          this.getRequierNAME(this.listOfData[j].REQUIREMENT); // 取集批條件顯示
+        }
         this.moSortSelectChange(this.listOfData[j].MO_SORT, this.listOfData[j]);
       }
       // 該批策略資料載入結束
