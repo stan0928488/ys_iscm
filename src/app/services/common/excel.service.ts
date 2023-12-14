@@ -241,13 +241,13 @@ export class ExcelService {
     dataSetInfo: any[]
   ): void {
     const wb = XLSX.utils.book_new();
-    console.log(dataSetInfo);
+    // console.log(dataSetInfo);
 
     for (let i = 0; i < dataSet.length; i++) {
       const sheetConfig = sheetConfigs[i];
       const dataToExport = this.extractFields(
         dataSet[i],
-        sheetConfig.fieldMapping // Pass fieldMapping directly
+        sheetConfig.fieldMapping
       );
 
       // 生成动态列名
@@ -259,42 +259,49 @@ export class ExcelService {
       // 添加一个工作表，指定字段名
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([], { header });
 
+      let descriptionArray: string[] = [];
       // 添加文本描述到工作表的开头
-      if (sheetConfig.includeDescription) {
-        // console.log(dataSetInfo[i]);
-        if (dataSetInfo[i]) {
-          // 处理字符串类型的描述文字
-          if (typeof dataSetInfo[i] === 'string') {
-            XLSX.utils.sheet_add_aoa(ws, [[dataSetInfo[i]]]);
-          } else if (Array.isArray(dataSetInfo[i])) {
-            // 处理数组类型的描述文字
-            dataSetInfo[i].forEach((descriptionRow: string, index: number) => {
-              XLSX.utils.sheet_add_aoa(ws, [[descriptionRow]]);
-            });
-          } else {
-            console.error(`dataSetInfo[${i}] is not an array or string`);
-          }
-          // 将表头添加到工作表
-          XLSX.utils.sheet_add_aoa(ws, [header]);
-          // 将数据添加到工作表的下一行开始
-          XLSX.utils.sheet_add_json(ws, dataToExport, {
-            header,
-            origin: 1, // 表头和描述文字的下一行开始
-          });
-        } else {
-          console.error(`dataSetInfo[${i}] is undefined or null`);
-        }
-      } else {
-        // 如果不包含描述文字，直接将表头添加到工作表
-        XLSX.utils.sheet_add_aoa(ws, [header]);
+      if (sheetConfig.includeDescription && dataSetInfo[i]) {
+        // let descriptionArray: string[] = [];
 
-        // 将数据添加到工作表的下一行开始
-        XLSX.utils.sheet_add_json(ws, dataToExport, {
-          header,
-          origin: 0, // 表头的下一行开始
-        });
+        // 处理字符串类型或数组类型的描述文字
+        if (typeof dataSetInfo[i] === 'string') {
+          descriptionArray = [dataSetInfo[i]];
+        } else if (Array.isArray(dataSetInfo[i])) {
+          descriptionArray = dataSetInfo[i];
+        } else if (typeof dataSetInfo[i] === 'object') {
+          // 如果是对象，转换为数组
+          descriptionArray = Object.values(dataSetInfo[i]);
+        } else {
+          console.error(`dataSetInfo[${i}] is not an array, string, or object`);
+        }
+
+        // 将描述文字添加到工作表
+        for (let k = 0; k < descriptionArray.length; k++) {
+          const rowIndex = k + 0; // +1 是因為 A1 開始
+          const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: 0 }); // c: 0 是因為我們只添加到第一列
+          ws[cellRef] = { t: 's', v: descriptionArray[k] };
+          // console.log(descriptionArray[k]);
+        }
+
+        // 更新工作表範圍
+        if (descriptionArray.length > 0) {
+          ws['!ref'] = `A1:A${descriptionArray.length}`;
+        }
       }
 
+      // 将表头添加到工作表
+      XLSX.utils.sheet_add_aoa(ws, [header]);
+
+      // 将数据添加到工作表的下一行开始
+      XLSX.utils.sheet_add_json(ws, dataToExport, {
+        header,
+        origin: sheetConfig.includeDescription
+          ? descriptionArray.length + 1
+          : 0,
+      });
+
+      // 将工作表添加到工作簿
       XLSX.utils.book_append_sheet(wb, ws, sheetConfig.sheetName);
     }
 

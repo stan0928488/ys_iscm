@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus.component';
+import { Observable, catchError, map } from 'rxjs';
 
 @Component({
   selector: 'app-PPSR322-child8',
@@ -13,6 +14,7 @@ export class PPSR322Child8Component implements OnInit {
   searchData = {} as SearchData;
   mapOfExpandedData: { [schShopCode: string]: ItemData[] } = {};
   selectedSchShop = [{ label: '', value: '' }]; //站別選擇
+  preSend: any;
 
   constructor(
     private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
@@ -20,8 +22,8 @@ export class PPSR322Child8Component implements OnInit {
     private message: NzMessageService
   ) {}
 
-  ngOnInit() {
-    this.ppsr322EvnetBusComponent.on('ppsr322search', (data: any) => {
+  async ngOnInit() {
+    this.ppsr322EvnetBusComponent.on('ppsr322search', async (data: any) => {
       if (data.data) {
         this.searchData.verList = data.data.verList;
       }
@@ -74,10 +76,71 @@ export class PPSR322Child8Component implements OnInit {
     this.ppsr322EvnetBusComponent.unsubscribe();
   }
 
-  getR322Data(postData) {
+  getR322Data(postData): Promise<void> {
+    return new Promise<void>((resolve) => {
+      postData['tabType'] = 8;
+      this.PPSService.getR322Data(postData).subscribe({
+        next: (res) => {
+          let result: any = res;
+
+          if (result[0]) {
+            this.listOfData = result.map(
+              (itemData) => itemData as ItemData
+            ) as ItemData[];
+            //底色
+            this.listOfData.forEach(function (value) {
+              if (value.schShopCodeDisplay.indexOf('總計') != -1) {
+                value.backgroupColor = '#92D050';
+              } else if (value.schShopCodeDisplay.indexOf('合計') != -1) {
+                value.backgroupColor = '#a3efd6';
+              }
+
+              if (value.children) {
+                value.children.forEach(function (value2) {
+                  if (value2.schShopCodeDisplay.indexOf('總計') != -1) {
+                    value2.backgroupColor = '#92D050';
+                  } else if (value2.schShopCodeDisplay.indexOf('合計') != -1) {
+                    value2.backgroupColor = '#a3efd6';
+                  }
+
+                  value2.dateList.forEach(function (value3) {
+                    if (value3.modelType == 'Y') {
+                      value3.backgroupColor = '#efa5a3';
+                    }
+                  });
+                });
+              }
+
+              value.dateList.forEach(function (value2) {
+                if (value2.schShopCodeDisplay.indexOf('總計') != -1) {
+                  value2.backgroupColor = '#92D050';
+                } else if (value2.schShopCodeDisplay.indexOf('合計') != -1) {
+                  value2.backgroupColor = '#a3efd6';
+                }
+              });
+            });
+            this.listOfData.forEach((item) => {
+              this.mapOfExpandedData[item.schShopCode] =
+                this.convertTreeToList(item);
+            });
+            this.sendData();
+            resolve();
+          } else {
+            this.listOfData = [];
+          }
+        },
+        error: (e) => {
+          this.message.error('網絡請求失敗');
+        },
+        complete: () => {},
+      });
+    });
+  }
+
+  getData(postData): Observable<ItemData[]> {
     postData['tabType'] = 8;
-    this.PPSService.getR322Data(postData).subscribe({
-      next: (res) => {
+    return this.PPSService.getR322Data(postData).pipe(
+      map((res) => {
         let result: any = res;
 
         if (result[0]) {
@@ -120,17 +183,18 @@ export class PPSR322Child8Component implements OnInit {
             this.mapOfExpandedData[item.schShopCode] =
               this.convertTreeToList(item);
           });
-          this.sendData(7);
-          // console.log(this.listOfData);
+          // this.sendData(7);
+          return this.listOfData;
         } else {
           this.listOfData = [];
+          return [];
         }
-      },
-      error: (e) => {
+      }),
+      catchError((error) => {
         this.message.error('網絡請求失敗');
-      },
-      complete: () => {},
-    });
+        throw error;
+      })
+    );
   }
 
   collapse(array: ItemData[], data: ItemData, $event: boolean): void {
@@ -170,9 +234,12 @@ export class PPSR322Child8Component implements OnInit {
     return array;
   }
 
-  sendData(index: number) {
+  sendData(): Promise<void> {
     const dataToSend = this.listOfData;
-    this.ppsr322EvnetBusComponent.updateSharedData(index, dataToSend);
+    console.log(dataToSend);
+    this.preSend = dataToSend;
+    this.ppsr322EvnetBusComponent.updateSharedData(dataToSend);
+    return Promise.resolve();
   }
 }
 

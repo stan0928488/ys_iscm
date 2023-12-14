@@ -3,6 +3,7 @@ import { PPSR322EvnetBusComponent } from '../PPSR322-evnet-bus/PPSR322-evnet-bus
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import * as moment from 'moment';
+import { Observable, catchError, map, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-PPSR322-child3',
@@ -40,24 +41,78 @@ export class PPSR322Child3Component implements OnInit, OnDestroy {
     this.ppsr322EvnetBusComponent.unsubscribe();
   }
 
-  getR322OtherInfo(postData) {
-    postData['tabType'] = 3;
-    this.PPSService.getR322OtherInfo(postData).subscribe((res) => {
-      let result: any = res;
-      if (result) {
-        this.otherInfo = result as OtherInfo;
-      } else {
-        this.otherInfo = {} as OtherInfo;
-      }
+  getR322OtherInfo(postData): Promise<void> {
+    return new Promise<void>((resolve) => {
+      postData['tabType'] = 3;
+      this.PPSService.getR322OtherInfo(postData).subscribe((res) => {
+        let result: any = res;
+        if (result) {
+          this.otherInfo = result as OtherInfo;
+        } else {
+          this.otherInfo = {} as OtherInfo;
+        }
+        resolve();
+      });
     });
   }
 
-  getR322Data(postData) {
+  getInfo(postData): Observable<OtherInfo> {
     postData['tabType'] = 3;
-    this.PPSService.getR322Data(postData).subscribe({
-      next: (res) => {
+    return this.PPSService.getR322OtherInfo(postData).pipe(
+      map((res) => {
         let result: any = res;
+        if (result) {
+          this.otherInfo = result as OtherInfo;
+          return this.otherInfo;
+        } else {
+          this.otherInfo = {} as OtherInfo;
+          return this.otherInfo;
+        }
+      }),
+      catchError((error) => {
+        this.message.error('網絡請求失敗');
+        throw error;
+      })
+    );
+  }
 
+  getR322Data(postData): Promise<void> {
+    return new Promise<void>((resolve) => {
+      postData['tabType'] = 3;
+      this.PPSService.getR322Data(postData).subscribe({
+        next: (res) => {
+          let result: any = res;
+
+          if (result[0]) {
+            this.listOfData = result.map(
+              (itemData) => itemData as ItemData
+            ) as ItemData[];
+            this.listOfData.map((element) => {
+              element.dateDeliveryPpStr = moment(element.dateDeliveryPp).format(
+                'YYYY-MM-DD'
+              );
+              element.rollDateStr = moment(element.rollDate).format(
+                'YYYY-MM-DD'
+              );
+            });
+          } else {
+            this.listOfData = [];
+          }
+          resolve();
+        },
+        error: (e) => {
+          this.message.error('網絡請求失敗');
+        },
+        complete: () => {},
+      });
+    });
+  }
+
+  getData(postData): Observable<ItemData[]> {
+    postData['tabType'] = 3;
+    return this.PPSService.getR322Data(postData).pipe(
+      map((res) => {
+        let result: any = res;
         if (result[0]) {
           this.listOfData = result.map(
             (itemData) => itemData as ItemData
@@ -68,24 +123,16 @@ export class PPSR322Child3Component implements OnInit, OnDestroy {
             );
             element.rollDateStr = moment(element.rollDate).format('YYYY-MM-DD');
           });
+          return this.listOfData;
         } else {
-          this.listOfData = [];
+          return (this.listOfData = []);
         }
-        this.sendData(2);
-      },
-      error: (e) => {
+      }),
+      catchError((error) => {
         this.message.error('網絡請求失敗');
-      },
-      complete: () => {},
-    });
-  }
-
-  sendData(index: number) {
-    let dataToSend = {
-      data: this.listOfData,
-      info: this.otherInfo.instructions,
-    };
-    this.ppsr322EvnetBusComponent.updateSharedData(index, dataToSend);
+        throw error;
+      })
+    );
   }
 }
 

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { Subject, take } from 'rxjs';
+import { Subject, take, lastValueFrom, from, Subscription } from 'rxjs';
 import { PPSR322EvnetBusComponent } from './PPSR322-evnet-bus/PPSR322-evnet-bus.component';
 import { PPSR322Child1Component } from './PPSR322-child1/PPSR322-child1.component';
 import { PPSR322Child2Component } from './PPSR322-child2/PPSR322-child2.component';
@@ -16,6 +16,7 @@ import * as XLSX from 'xlsx';
 import * as moment from 'moment';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { DatePipe } from '@angular/common';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-PPSR322',
@@ -32,10 +33,12 @@ import { DatePipe } from '@angular/common';
     PPSR322Child8Component,
     PPSR322Child9Component,
     DatePipe,
+    NzMessageService,
   ],
 })
 export class PPSR322Component implements OnInit, AfterViewInit {
   @ViewChild('tabGroup') tabGroup: any;
+  @ViewChild(PPSR322Child8Component) ppsr322Child8: PPSR322Child8Component;
 
   selectedFcpVer = [{ label: '', value: '' }]; //版本选择
   selectedShiftVer = [{ label: '', value: '' }]; //版本选择
@@ -46,11 +49,13 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   childData1: any[] = [];
   childData2: any[] = [];
   childData3: any[] = [];
-  childDataInfo3: string;
+  preInfo3: OtherInfo = { instructions: '' };
+  childDataInfo3: string[] = [];
   childData4: any[] = [];
-  childDataInfo4: string;
+  preInfo4: OtherInfo = { instructions: '' };
+  childDataInfo4: string[] = [];
   childData5: any[] = [];
-  childDataInfo5: string;
+  childDataInfo5: any[] = [];
   childData6: any[] = [];
   childData7: any[] = [];
   childData8: any[] = [];
@@ -80,9 +85,11 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     private PPSService: PPSService,
     private router: Router,
     private excelService: ExcelService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private message: NzMessageService
   ) {}
 
+  private subscription: Subscription;
   ngOnInit() {
     let postData = {};
     postData['verType'] = 'fcp';
@@ -117,26 +124,91 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.searchObj = this.ppsr322EvnetBusComponent.searchObj;
   }
 
-  notifyClick() {
+  async notifyClick() {
+    this.message.info('查詢中');
+    this.childData1 = [];
+    this.childData2 = [];
+    this.childData3 = [];
+    this.childDataInfo3 = [];
+    this.childData4 = [];
+    this.childDataInfo4 = [];
+    this.childData5 = [];
+    this.childDataInfo5 = [];
+    this.childData6 = [];
+    this.childData7 = [];
+    this.childData8 = [];
+    this.childData9 = [];
+    this.childData10 = [];
+    this.dataSet = [];
+    this.listDate = [];
     this.ppsr322EvnetBusComponent.emit({
       name: 'ppsr322search',
       data: this.searchObj,
     });
-    const searchData = { verList: this.searchObj.verList };
-    this.ppsr332child1.getR322Data(searchData);
-    this.ppsr332child2.getR322Data(searchData);
-    this.ppsr332child3.getR322OtherInfo(searchData);
-    this.ppsr332child3.getR322Data(searchData);
-    this.ppsr332child4.getR322Data(searchData);
-    this.ppsr332child4.getR322OtherInfo(searchData);
-    this.ppsr332child5.getR322Data(searchData);
-    this.ppsr332child6.getR322Data(searchData);
-    this.ppsr332child7.getR322Data(searchData);
-    if (this.indexxx != '7') {
-      this.ppsr332child8.getR322Data(searchData);
+    const searchData = {
+      verList: this.searchObj.verList,
+    };
+    const promises = [
+      this.ppsr332child1.getData(searchData).toPromise(),
+      this.ppsr332child2.getData(searchData).toPromise(),
+      this.ppsr332child3.getData(searchData).toPromise(),
+      this.ppsr332child4.getData(searchData).toPromise(),
+      this.ppsr332child5.getData(searchData).toPromise(),
+      this.ppsr332child6.getData(searchData).toPromise(),
+      this.ppsr332child7.getData(searchData).toPromise(),
+      this.indexxx !== 7
+        ? this.ppsr332child8.getData(searchData).toPromise()
+        : null,
+      this.ppsr332child9.getData(searchData).toPromise(),
+    ];
+    const [
+      childData1,
+      childData2,
+      childData3,
+      childData4,
+      childData5,
+      childData6,
+      childData7,
+      childData8,
+      childData9,
+    ] = await Promise.all(promises);
+
+    const promisesInfo = [
+      this.ppsr332child3.getInfo(searchData).toPromise(),
+      this.ppsr332child4.getInfo(searchData).toPromise(),
+    ];
+
+    const [
+      childDataInfo3, // 使用 this.childDataInfo3
+      childDataInfo4,
+    ] = await Promise.all(promisesInfo);
+
+    this.childData1 = childData1;
+    this.childData2 = childData2;
+    this.childData3 = childData3;
+    this.childDataInfo3 = childDataInfo3.instructions.split('\n');
+    this.childData4 = childData4;
+    this.childDataInfo4 = childDataInfo4.instructions.split('\n');
+    this.childData5 = childData5;
+    this.childData6 = childData6;
+    this.childData7 = childData7;
+    this.childData8 = childData8;
+    this.childData9 = childData9;
+
+    if (this.indexxx === 7) {
+      this.subscription = this.ppsr322EvnetBusComponent.sharedData$.subscribe(
+        (data) => {
+          console.log(data);
+          this.childData8 = data.data;
+          console.log(this.childData8);
+        }
+      );
     }
-    this.ppsr332child9.getR322Data(searchData);
-    this.getExcelData();
+
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.message.success('查詢完成');
   }
 
   breadcrumbClick(index: number) {
@@ -147,52 +219,27 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       this.searchObj
     );
     this.indexxx = index;
-    // console.log(this.indexxx);
-  }
-
-  getExcelData() {
-    this.childData1 = [];
-    this.childData2 = [];
-    this.childData3 = [];
-    this.childData4 = [];
-    this.childData5 = [];
-    this.childData6 = [];
-    this.childData7 = [];
-    this.childData8 = [];
-    this.childData9 = [];
-    this.childData10 = [];
-    this.dataSet = [];
-    this.listDate = [];
-
-    this.ppsr322EvnetBusComponent.sharedData$.subscribe((data) => {
-      if (data.index == 0) {
-        this.childData1 = data.data;
-      } else if (data.index == 1) {
-        this.childData2 = data.data;
-      } else if (data.index == 2) {
-        this.childDataInfo3 = data.data.info;
-        this.childData3 = data.data.data;
-      } else if (data.index == 3) {
-        this.childDataInfo4 = data.data.info;
-        this.childData4 = data.data.data;
-      } else if (data.index == 4) {
-        this.childData5 = data.data.data;
-      } else if (data.index == 5) {
-        this.childData6 = data.data;
-      } else if (data.index == 6) {
-        this.childData7 = data.data;
-      } else if (data.index == 7) {
-        this.childData8 = data.data;
-      } else if (data.index == 8) {
-        this.childData9 = data.data;
-      }
-    });
   }
 
   listDate: string[] = [];
   dataSet: any[];
   dataSetInfo: any[];
   exportExcel() {
+    for (let i = 0; i < this.childData5.length; i++) {
+      const one = this.childData5[i].instructions.split(/(?=\d+\.)/);
+      for (let k = 0; k < one.length; k++) {
+        if (k === 0) {
+          this.childDataInfo5.push({
+            first: one[k],
+          });
+        } else {
+          this.childDataInfo5.push({
+            sort: one[k],
+          });
+        }
+      }
+    }
+
     for (let i = 0; i < this.childData8.length; i++) {
       const children = this.childData8[i]['children'];
       const dataList = this.childData8[i]['dateList'];
@@ -275,12 +322,30 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       }
     }
 
+    for (let i = 0; i < this.childData3.length; i++) {
+      const data = this.childData3[i].steelType;
+      if (data === '合計') {
+        this.childData3[i].dateDeliveryPpStr = null;
+        this.childData3[i].rollDateStr = null;
+      }
+    }
+
+    for (let i = 0; i < this.childData4.length; i++) {
+      const data = this.childData4[i].pstMachine.slice(-2);
+      if (data === '合計') {
+        this.childData4[i].pstStr = null;
+      }
+    }
+
+    this.childDataInfo3.unshift('說明欄位：');
+    this.childDataInfo4.unshift('說明欄位：');
+
     this.dataSet = [
       this.childData1 || [],
       this.childData2 || [],
       this.childData3 || [],
       this.childData4 || [],
-      this.childData5 || [],
+      this.childDataInfo5 || [],
       this.childData6 || [],
       this.childData7 || [],
       this.childData10 || [],
@@ -290,7 +355,6 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       '',
       this.childDataInfo3 || [],
       this.childDataInfo4 || [],
-      this.childDataInfo5 || [],
     ];
     // console.log("---------------------------------------------------------");
     // console.log(this.dataSet, this.dataSetInfo);
@@ -345,7 +409,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
         {
           sheetName: '排程生產原則說明',
           fieldMapping: {
-            instructions: '說明',
+            first: '種類',
+            sort: '事項',
           },
           includeDescription: false,
         },
@@ -433,4 +498,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
 
 interface netItem {
   [key: string]: string;
+}
+
+interface OtherInfo {
+  instructions: string;
 }
