@@ -75,14 +75,14 @@
           box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
           background-color: #4caf50;
           border: 2px blue none;
+          margin: 0 15px 0 0;
         "
         nzType="primary"
         (click)="Upload()"
       >
         <span nz-icon nzType="upload" nzTheme="outline"></span>
-        EXCEL匯入
+        E X C E L 匯入
       </button>
-      &nbsp;&nbsp;
       <button
         nz-button
         style="
@@ -94,13 +94,13 @@
         (click)="convertToExcel()"
       >
         <span nz-icon nzType="download" nzTheme="outline"></span>
-        EXCEL匯出
+        E X C E L 匯出
       </button>
     </div>
   </div>
 
   <ag-grid-angular
-    style="width: auto; height: calc(100vh - 220px)"
+    style="width: auto; height: calc(100vh - 260px)"
     class="ag-theme-alpine"
     [rowData]="rowData"
     [columnDefs]="colDefs"
