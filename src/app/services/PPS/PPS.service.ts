@@ -261,7 +261,7 @@ export class PPSService {
   getPPSINP04List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/getPPSINP04List`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/getPPSINP04List`;
     return this.http.get(queryUrl);
   }
   // I104 delI104Tab1Data 刪除資料
@@ -269,7 +269,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
-      this.APIURL + `/FCP/I104` + nonbarUrl + `/delI104Tab1Data/${_ID}`;
+      this.APINEWURL + `/FCP/I104` + nonbarUrl + `/delI104Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I104 insertI104Tab1Save
@@ -277,7 +277,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -287,7 +287,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I104/updateSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -297,7 +297,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -542,19 +542,19 @@ export class PPSService {
   //Get getPPSINP17List 取得17tab data
   getPPSINP17List() {
     console.log('api service getPPSINP17List');
-    let queryUrl = this.APIURL + '/FCP/I117/getPPSINP17List';
+    let queryUrl = this.APINEWURL + '/FCP/I117/getPPSINP17List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I117 delI117Tab1Data 刪除資料
   delI117Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I117/delI117Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/delI117Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I117 insertI117Tab1Save
   insertI117Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I117/insertI117Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/insertI117Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -562,7 +562,7 @@ export class PPSService {
   // I117 updateI117Tab1Save修改存檔
   updateI117Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I117/updateI117Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/updateI117Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -572,7 +572,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I117` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I117` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
