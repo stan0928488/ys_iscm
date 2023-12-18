@@ -239,11 +239,11 @@ export class PPSI106Component implements AfterViewInit {
   }
   
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData17): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id)
+        this.delID(rowData)
       },
       nzOnCancel: () =>
         console.log("cancel")
@@ -262,34 +262,34 @@ export class PPSI106Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: any): void {
+  saveEdit(rowData: ItemData17): void {
     let myObj = this;
-    if (this.editCache17[id].data.EQUIP_CODE_17 === undefined || "" === this.editCache17[id].data.EQUIP_CODE_17) {
+    if (rowData.EQUIP_CODE_17 === undefined || "" === rowData.EQUIP_CODE_17) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache17[id].data.DIA_MIN_17 === undefined || "" === this.editCache17[id].data.DIA_MIN_17.toString()) {
+    } else if (rowData.DIA_MIN_17 === undefined || "" === rowData.DIA_MIN_17.toString()) {
       myObj.message.create("error", "「產出尺寸最小值」不可為空");
       return;
-    } else if (this.editCache17[id].data.DIA_MAX_17 === undefined || "" === this.editCache17[id].data.DIA_MAX_17.toString()) {
+    } else if (rowData.DIA_MAX_17 === undefined || "" === rowData.DIA_MAX_17.toString()) {
       myObj.message.create("error", "「產出尺寸最大值」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SHAPE_TYPE_17 === undefined || "" === this.editCache17[id].data.SHAPE_TYPE_17) {
+    }  else if (rowData.SHAPE_TYPE_17 === undefined || "" === rowData.SHAPE_TYPE_17) {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SMALL_ADJUST_CODE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_CODE_17) {
+    }  else if (rowData.SMALL_ADJUST_CODE_17 === undefined || "" === rowData.SMALL_ADJUST_CODE_17) {
       myObj.message.create("error", "「小調機代碼」不可為空");
       return;
-    }  else if (this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17 === undefined || "" === this.editCache17[id].data.SMALL_ADJUST_TOLERANCE_17) {
+    }  else if (rowData.SMALL_ADJUST_TOLERANCE_17 === undefined || "" === rowData.SMALL_ADJUST_TOLERANCE_17) {
       myObj.message.create("error", "「小調機公差標準」不可為空");
       return;
-    }   else if (this.editCache17[id].data.FURANCE_BATCH_QTY_17 === undefined || "" === this.editCache17[id].data.FURANCE_BATCH_QTY_17.toString()) {
+    }   else if (rowData.FURANCE_BATCH_QTY_17 === undefined || "" === rowData.FURANCE_BATCH_QTY_17.toString()) {
       myObj.message.create("error", "「爐批數量」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -355,20 +355,20 @@ export class PPSI106Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData17) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache17[_id].data.tab17ID,
-        EQUIP_CODE : this.editCache17[_id].data.EQUIP_CODE_17,
-        DIA_MIN : this.editCache17[_id].data.DIA_MIN_17,
-        DIA_MAX : this.editCache17[_id].data.DIA_MAX_17,
-        SHAPE_TYPE : this.editCache17[_id].data.SHAPE_TYPE_17,
-        SMALL_ADJUST_CODE : this.editCache17[_id].data.SMALL_ADJUST_CODE_17,
-        SMALL_ADJUST_TOLERANCE : this.editCache17[_id].data.SMALL_ADJUST_TOLERANCE_17,
-        FURANCE_BATCH_QTY : this.editCache17[_id].data.FURANCE_BATCH_QTY_17,
+        ID : rowData.tab17ID,
+        EQUIP_CODE : rowData.EQUIP_CODE_17,
+        DIA_MIN : rowData.DIA_MIN_17,
+        DIA_MAX : rowData.DIA_MAX_17,
+        SHAPE_TYPE : rowData.SHAPE_TYPE_17,
+        SMALL_ADJUST_CODE : rowData.SMALL_ADJUST_CODE_17,
+        SMALL_ADJUST_TOLERANCE : rowData.SMALL_ADJUST_TOLERANCE_17,
+        FURANCE_BATCH_QTY : rowData.FURANCE_BATCH_QTY_17,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
@@ -383,9 +383,9 @@ export class PPSI106Component implements AfterViewInit {
           this.SMALL_ADJUST_TOLERANCE_17 = undefined;
           this.FURANCE_BATCH_QTY_17 = undefined;
           this.sucessMSG("修改成功", ``);
-          const index = this.PPSINP17List.findIndex(item => item.id === _id);
-          Object.assign(this.PPSINP17List[index], this.editCache17[_id].data);
-          this.editCache17[_id].edit = false;
+          const index = this.PPSINP17List.findIndex(item => item.id === rowData.id);
+          Object.assign(this.PPSINP17List[index], rowData);
+          this.editCache17[rowData.id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -400,10 +400,10 @@ export class PPSI106Component implements AfterViewInit {
 
   
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData17) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache17[_id].data.tab17ID;
+      let _ID = rowData.tab17ID;
       myObj.PPSService.delI117Tab1Data(_ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE_17 = undefined;
@@ -687,7 +687,7 @@ resetByFuranceBatchQty17() : void {
   }
 
   onBtnClick2(e) {
-    this.saveEdit(e.rowData.id)
+    this.saveEdit(e.rowData)
   }
 
   onBtnClick3(e) {
@@ -695,7 +695,7 @@ resetByFuranceBatchQty17() : void {
   }
 
   onBtnClick4(e) {
-    this.deleteRow(e.rowData.id);
+    this.deleteRow(e.rowData);
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, OnInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -11,26 +11,34 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 
-interface ItemData4 {
-  id: string;
-  tab4ID: number;
-  EQUIP_CODE_4: string;
-  DIA_MIN_4: number;
-  DIA_MAX_4: number;
-  SHAPE_TYPE_4: string;
-  BIG_ADJUST_CODE_4: string;
-  SMALL_ADJUST_TOLERANCE_4: string;
-  FURANCE_BATCH_QTY_4: number; 
-}
-
-
 @Component({
   selector: "app-PPSI105",
   templateUrl: "./PPSI105.component.html",
   styleUrls: ["./PPSI105.component.scss"],
   providers:[NzMessageService]
 })
-export class PPSI105Component implements AfterViewInit {
+export class PPSI105Component implements OnInit {
+
+  constructor(
+    private PPSService: PPSService,
+    private i18n: NzI18nService,
+    private cookieService: CookieService,
+    private message: NzMessageService,
+    private Modal: NzModalService,
+    private excelService: ExcelService,
+  ) {
+    this.i18n.setLocale(zh_TW);
+    this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
+  }
+
+  PPSINP04List_tmp;
+  PPSINP04List: ItemData4[] = [];
+  editCache4: { [key: string]: { edit: boolean; data: ItemData4 } } = {};
+  displayPPSINP04List : ItemData4[] = [];
 
   tableHeight: string;
   frameworkComponents: any;
@@ -40,7 +48,6 @@ export class PPSI105Component implements AfterViewInit {
   loading = false; //loaging data flag
   USERNAME;
   PLANT_CODE;
-
 
   // 大調機
   EQUIP_CODE_4;
@@ -144,33 +151,12 @@ export class PPSI105Component implements AfterViewInit {
     },
   ];
 
-  constructor(
-    private PPSService: PPSService,
-    private i18n: NzI18nService,
-    private cookieService: CookieService,
-    private message: NzMessageService,
-    private Modal: NzModalService,
-    private excelService: ExcelService,
-  ) {
-    this.i18n.setLocale(zh_TW);
-    this.USERNAME = this.cookieService.getCookie("USERNAME");
-    this.PLANT_CODE = this.cookieService.getCookie("plantCode");
-    this.frameworkComponents = {
-      buttonRenderer: BtnCellRenderer,
-    };
-  }
-
-  ngAfterViewInit() {
+  ngOnInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP04List();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
   }
   
- 
-  PPSINP04List_tmp;
-  PPSINP04List: ItemData4[] = [];
-  editCache4: { [key: string]: { edit: boolean; data: ItemData4 } } = {};
-  displayPPSINP04List : ItemData4[] = [];
   getPPSINP04List() {
     this.loading = true;
     let myObj = this;
@@ -193,9 +179,7 @@ export class PPSI105Component implements AfterViewInit {
         });
       }
       this.PPSINP04List = data;
-      this.displayPPSINP04List = this.PPSINP04List;
       this.updateEditCache();
-      console.log(this.PPSINP04List);
       myObj.loading = false;
     });
   }
@@ -244,11 +228,11 @@ export class PPSI105Component implements AfterViewInit {
   }
   
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData4): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id)
+        this.delID(rowData)
       },
       nzOnCancel: () =>
         console.log("cancel")
@@ -267,34 +251,34 @@ export class PPSI105Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData4): void {
     let myObj = this;
-    if (this.editCache4[id].data.EQUIP_CODE_4 === undefined || "" === this.editCache4[id].data.EQUIP_CODE_4) {
+    if (rowData.EQUIP_CODE_4 === undefined || "" === rowData.EQUIP_CODE_4) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache4[id].data.DIA_MIN_4 === undefined || "" === this.editCache4[id].data.DIA_MIN_4.toString()) {
+    } else if (rowData.DIA_MIN_4 === undefined || "" === rowData.DIA_MIN_4.toString()) {
       myObj.message.create("error", "「產出尺寸最小值」不可為空");
       return;
-    } else if (this.editCache4[id].data.DIA_MAX_4 === undefined || "" === this.editCache4[id].data.DIA_MAX_4.toString()) {
+    } else if (rowData.DIA_MAX_4 === undefined || "" === rowData.DIA_MAX_4.toString()) {
       myObj.message.create("error", "「產出尺寸最大值」不可為空");
       return;
-    } else if (this.editCache4[id].data.SHAPE_TYPE_4 === undefined || "" === this.editCache4[id].data.SHAPE_TYPE_4) {
+    } else if (rowData.SHAPE_TYPE_4 === undefined || "" === rowData.SHAPE_TYPE_4) {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
-    } else if (this.editCache4[id].data.BIG_ADJUST_CODE_4 === undefined || "" === this.editCache4[id].data.BIG_ADJUST_CODE_4) {
+    } else if (rowData.BIG_ADJUST_CODE_4 === undefined || "" === rowData.BIG_ADJUST_CODE_4) {
       myObj.message.create("error", "「大調機代碼」不可為空");
       return;
-    } else if (this.editCache4[id].data.SMALL_ADJUST_TOLERANCE_4 === undefined || "" === this.editCache4[id].data.SMALL_ADJUST_TOLERANCE_4) {
+    } else if (rowData.SMALL_ADJUST_TOLERANCE_4 === undefined || "" === rowData.SMALL_ADJUST_TOLERANCE_4) {
       myObj.message.create("error", "「小調機公差標準」不可為空");
       return;
-    } else if (this.editCache4[id].data.FURANCE_BATCH_QTY_4 === undefined || "" === this.editCache4[id].data.FURANCE_BATCH_QTY_4.toString()) {
+    } else if (rowData.FURANCE_BATCH_QTY_4 === undefined || "" === rowData.FURANCE_BATCH_QTY_4.toString()) {
       myObj.message.create("error", "「爐批數量」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -360,20 +344,20 @@ export class PPSI105Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData4) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache4[_id].data.tab4ID,
-        EQUIP_CODE : this.editCache4[_id].data.EQUIP_CODE_4,
-        DIA_MIN : this.editCache4[_id].data.DIA_MIN_4,
-        DIA_MAX : this.editCache4[_id].data.DIA_MAX_4,
-        SHAPE_TYPE : this.editCache4[_id].data.SHAPE_TYPE_4,
-        BIG_ADJUST_CODE : this.editCache4[_id].data.BIG_ADJUST_CODE_4,
-        SMALL_ADJUST_TOLERANCE : this.editCache4[_id].data.SMALL_ADJUST_TOLERANCE_4,
-        FURANCE_BATCH_QTY : this.editCache4[_id].data.FURANCE_BATCH_QTY_4,
+        ID : rowData.tab4ID,
+        EQUIP_CODE : rowData.EQUIP_CODE_4,
+        DIA_MIN : rowData.DIA_MIN_4,
+        DIA_MAX : rowData.DIA_MAX_4,
+        SHAPE_TYPE : rowData.SHAPE_TYPE_4,
+        BIG_ADJUST_CODE : rowData.BIG_ADJUST_CODE_4,
+        SMALL_ADJUST_TOLERANCE : rowData.SMALL_ADJUST_TOLERANCE_4,
+        FURANCE_BATCH_QTY : rowData.FURANCE_BATCH_QTY_4,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
@@ -389,9 +373,9 @@ export class PPSI105Component implements AfterViewInit {
 
           this.sucessMSG("修改成功", ``);
 
-          const index = this.PPSINP04List.findIndex(item => item.id === _id);
-          Object.assign(this.PPSINP04List[index], this.editCache4[_id].data);
-          this.editCache4[_id].edit = false;
+          const index = this.PPSINP04List.findIndex(item => item.id === rowData.id);
+          Object.assign(this.PPSINP04List[index], rowData);
+          this.editCache4[rowData.id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -405,10 +389,10 @@ export class PPSI105Component implements AfterViewInit {
 
   
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData4) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache4[_id].data.tab4ID;
+      let _ID = rowData.tab4ID;
       myObj.PPSService.delI104Tab1Data('1', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.EQUIP_CODE_4 = undefined;
@@ -453,91 +437,6 @@ export class PPSI105Component implements AfterViewInit {
    cancelBigAdjustInput() : void {
     this.isVisibleBigAdjust = false;
   }
-
-
-
-// ============= 過濾資料之menu ========================
-
-  // 5.(資料過濾)大調機
-  ppsInp04ListFilter(property:string, keyWord:string){
-
-    if(keyWord == ""){
-      this.displayPPSINP04List = this.PPSINP04List;
-      return;
-    }
-
-    const filterFunc = item => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP04List.filter(item => filterFunc(item));
-    this.displayPPSINP04List = data;
-  }
-    
-  // 資料過濾---大調機 --> 機台
-  searchByEquipCode4() : void{
-    this.ppsInp04ListFilter("EQUIP_CODE_4", this.searchEquipCode4Value);
-  } 
-  resetByEquipCode4() : void{
-    this.searchEquipCode4Value = '';
-    this.ppsInp04ListFilter("EQUIP_CODE_4", this.searchEquipCode4Value);
-  }
-
-  // 資料過濾---大調機 --> 產出尺寸最小值
-  searchByDiaMin4() : void{
-    this.ppsInp04ListFilter("DIA_MIN_4", this.searchDiaMin4Value);
-  } 
-  resetByDiaMin4() : void{
-    this.searchDiaMin4Value = '';
-    this.ppsInp04ListFilter("DIA_MIN_4", this.searchDiaMin4Value);
-  }
-
-  // 資料過濾---大調機 --> 產出尺寸最大值
-  searchByDiaMax4() : void{
-    this.ppsInp04ListFilter("DIA_MAX_4", this.searchDiaMax4Value);
-  } 
-  resetByDiaMax4() : void{
-    this.searchDiaMax4Value = '';
-    this.ppsInp04ListFilter("DIA_MAX_4", this.searchDiaMax4Value);
-  }
-
-  // 資料過濾---大調機 --> 產出型態
-  searchByShapeType4() : void{
-    this.ppsInp04ListFilter("SHAPE_TYPE_4", this.searchShapeType4Value);
-  } 
-  resetByShapeType4() : void{
-    this.searchShapeType4Value = '';
-    this.ppsInp04ListFilter("SHAPE_TYPE_4", this.searchShapeType4Value);
-  }
-
-  // 資料過濾---大調機 --> 大調機代碼
-  searchByBigAdjustCode4() : void{
-    this.ppsInp04ListFilter("BIG_ADJUST_CODE_4", this.searchBigAdjustCode4Value);
-  } 
-  resetByBigAdjustCode4() : void{
-    this.searchBigAdjustCode4Value = '';
-    this.ppsInp04ListFilter("BIG_ADJUST_CODE_4", this.searchBigAdjustCode4Value);
-  }
-
-  // 資料過濾---大調機 --> 小調機公差標準
-  searchBySmallAdjustTolerance4() : void{
-    this.ppsInp04ListFilter("SMALL_ADJUST_TOLERANCE_4", this.searchSmallAdjustTolerance4Value);
-  } 
-  resetBySmallAdjustTolerance4() : void{
-    this.searchSmallAdjustTolerance4Value = '';
-    this.ppsInp04ListFilter("SMALL_ADJUST_TOLERANCE_4", this.searchSmallAdjustTolerance4Value);
-  }
-
-  // 資料過濾---大調機 --> 爐批數量
-  searchByFuranceBatchQty4() : void{
-    this.ppsInp04ListFilter("FURANCE_BATCH_QTY_4", this.searchFuranceBatchQty4Value);
-  } 
-  resetByFuranceBatchQty4() : void{
-    this.searchFuranceBatchQty4Value = '';
-    this.ppsInp04ListFilter("FURANCE_BATCH_QTY_4", this.searchFuranceBatchQty4Value);
-  }
-
   
    // excel檔名
    incomingfile(event) {
@@ -664,7 +563,7 @@ export class PPSI105Component implements AfterViewInit {
   }
 
   onBtnClick2(e) {
-    this.saveEdit(e.rowData.id)
+    this.saveEdit(e.rowData)
   }
 
   onBtnClick3(e) {
@@ -672,7 +571,19 @@ export class PPSI105Component implements AfterViewInit {
   }
 
   onBtnClick4(e) {
-    this.deleteRow(e.rowData.id);
+    this.deleteRow(e.rowData);
   }
 
+}
+
+interface ItemData4 {
+  id: string;
+  tab4ID: number;
+  EQUIP_CODE_4: string;
+  DIA_MIN_4: number;
+  DIA_MAX_4: number;
+  SHAPE_TYPE_4: string;
+  BIG_ADJUST_CODE_4: string;
+  SMALL_ADJUST_TOLERANCE_4: string;
+  FURANCE_BATCH_QTY_4: number; 
 }
