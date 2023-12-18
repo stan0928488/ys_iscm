@@ -21,6 +21,7 @@ export class MSHI004Service {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'accept-user': this.cookieService.getCookie('USERNAME'),
+      'plant-code': this.cookieService.getCookie('plantCode')
     }),
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";

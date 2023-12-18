@@ -18,6 +18,7 @@ export class AppComponent {
 
   navClass = "";
   userName;
+  plantCode;
   envName;
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
@@ -43,6 +44,7 @@ export class AppComponent {
     console.log("=====>");
     this.getEnvClass();
     this.userName = this.cookieService.getCookie("USERNAME");
+    this.plantCode = this.cookieService.getCookie("plantCode");
     this.envName = this.getEnvName(hostName);
   }
 
@@ -92,7 +94,9 @@ export class AppComponent {
   onLogout() {
     console.log("onLogout");
     this.cookieService.setCookie("USERNAME", "", 1);
+    this.cookieService.setCookie("plantCode", "", 1);
     this.userName = "";
+    this.plantCode = "";
 
     this.router.navigate(["login"]);
   }
@@ -101,6 +105,7 @@ export class AppComponent {
 
   componentRemoved(_event) {
     this.userName = this.cookieService.getCookie("USERNAME");
+    this.plantCode = this.cookieService.getCookie("plantCode");
   }
 
   toggleCollapsed(): void {

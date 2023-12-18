@@ -11,11 +11,11 @@ import { CookieService } from '../config/cookie.service';
 export class PPSService {
   APIURL: string = '';
   APINEWURL: string = '';
-  APIYW: string = '';
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'accept-user': this.cookieService.getCookie('USERNAME'),
+      'plant-code': this.cookieService.getCookie('plantCode')
     }),
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
@@ -2131,6 +2131,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  // 取得虛擬訂單結果表
+  getTbppsm041(plant:string) {
+    let queryUrl = this.APINEWURL + `/FCP/I206/getTbppsm041/${plant}`;
+    return this.http.get<any>(queryUrl);
+  }
+
   getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
     const queryUrl = `${this.APINEWURL}/FCP/R311/getShipRepoEditionList`;
@@ -2559,53 +2565,6 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  postSelectTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/select-parameter`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
 
-  getBilletTypeList(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/billettype-list`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
 
-  getTBPOMM04() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/tbpomm04Data`;
-    return this.http.get(queryUrl);
-  }
-
-  getProfiles() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/profiles`;
-    return this.http.get(queryUrl);
-  }
-
-  postInsertParameter(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/insert-parameter`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  getTbpommm04Version() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/version`;
-    return this.http.get(queryUrl);
-  }
-
-  postUpdateTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/post/update-tbpomm04`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  postDeleteTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/post/delete-tbpomm04`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  getMergeResult() {
-    let queryUrl = `${this.APIYW}/iscm/pomV0rOrder/merge/result`;
-    return this.http.get(queryUrl);
-  }
 }

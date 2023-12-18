@@ -5,26 +5,15 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { ColGroupDef,CellDoubleClickedEvent, CellEditingStoppedEvent, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
-import { TBPPSM041 } from './TBPPSM041.model';
+import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { AppComponent } from 'src/app/app.component';
 
-interface ItemData {
-  id: number;
-  schShopCode: string;
-  equipCode: string;
-  cumsumType: string;
-  accumulation: number;
-  dateLimit: number;
-  useFlag: string;
-  dateUpdate: string;
-  userUpdate: string;
-}
 
+
+interface data {}
 @Component({
   selector: 'app-PPSI206',
   templateUrl: './PPSI206_RES.component.html',
@@ -32,13 +21,11 @@ interface ItemData {
   providers: [NzMessageService],
 })
 export class PPSI206RESComponent implements AfterViewInit {
-  userName: string;
-  plantCode: string;
-  //存放資料的陣列
-  tbppsm041: ItemData[] = [];
-  // 等待資料變動
+  
+  rowData: data[] = [];
+  tbppsm041 = [];
   loading = true;
-  rowData: ItemData[] = [];
+
   gridOptions = {
     defaultColDef: {
       sortable: false,
@@ -55,7 +42,6 @@ export class PPSI206RESComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private cdRef: ChangeDetectorRef,
     private appComponent: AppComponent
   ) {
     this.i18n.setLocale(zh_TW);
@@ -529,31 +515,20 @@ export class PPSI206RESComponent implements AfterViewInit {
   ];
 
   myDataList;
-  editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   async getTbppsm041() {
-    await this.PPSService.getTBPPSM107(this.plantCode).then((res) => {
-      this.myDataList = res.data;
-      for (let i = 0; i < this.myDataList.length; i++) {
-        this.tbppsm041.push({
-          id: this.myDataList[i].id,
-          schShopCode: this.myDataList[i].schShopCode,
-          equipCode: this.myDataList[i].equipCode,
-          cumsumType: this.myDataList[i].cumsumType,
-          accumulation: this.myDataList[i].accumulation,
-          dateLimit: this.myDataList[i].dateLimit,
-          useFlag: this.myDataList[i].useFlag,
-          dateUpdate: this.myDataList[i].dateUpdate,
-          userUpdate: this.myDataList[i].userUpdate,
-        });
+    this.PPSService.getTbppsm041("YS").subscribe((res) => {
+      // this.isSpinning = true;
+      let result: any = res;
+      if (result.length > 0) {
+        this.rowData = JSON.parse(JSON.stringify(result));
+        // this.rowData.forEach((item) => {
+        //   item['isEditing'] = false;
+        // });
+      } else {
+        this.message.error('無資料');
+        return;
       }
-      this.rowData = this.tbppsm041;
-      this.tbppsm041 = [];
-      this.myDataList = {};
-      this.loading = false;
-    })
-    .catch(error=>{
-      this.errorMSG('獲取資料失敗', `後台獲取資料發生錯誤：${error.message}，請聯繫系統工程師`);
-      this.loading = false;
+      // this.isSpinning = false;
     });
   }
 

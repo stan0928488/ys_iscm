@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
+import { CookieService } from '../config/cookie.service';
 
 import * as _ from "lodash";
 
@@ -10,11 +11,18 @@ import * as _ from "lodash";
 export class PPSService {
   APIURL: string = "";
   httpOptions = {
-    headers: new HttpHeaders({ "Content-Type": "application/json" })
+    headers: new HttpHeaders({ 
+      "Content-Type": "application/json",
+      'accept-user': this.cookieService.getCookie('USERNAME'),
+      'plant-code': this.cookieService.getCookie('plantCode')
+    })
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(
+    private http: HttpClient, 
+    private configService: ConfigService,
+    private cookieService: CookieService) {
     this.APIURL = this.configService.getAPIURL("1");
   }
 
