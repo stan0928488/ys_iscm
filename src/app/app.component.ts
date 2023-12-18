@@ -160,7 +160,10 @@ export class AppComponent {
       } else if (_flag == '7') {
         let date = moment(_dateString, "YYYYMMDDHHmmss").format("YYYYMMDDHHmmss");
         return date;
-      }
+      } else if (_flag == '8') {
+        let date = moment(_dateString, "MM-DD").format("MM-DD");
+        return date;
+      } 
     }
   }
 

@@ -8,20 +8,15 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { number } from 'echarts';
-import {
-  AgGridEvent,
-  CellClickedEvent,
-  ColDef,
-  ColGroupDef,
-  GridReadyEvent,
-  PreConstruct,
-  RowDragEnterEvent,
-  RowDragEvent,
-} from 'ag-grid-community';
+import { ColGroupDef,CellDoubleClickedEvent, CellEditingStoppedEvent, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
 import { TBPPSM040 } from './TBPPSM040.model';
 import { GridOptions } from 'ag-grid-community';
-import { BtnCellRenderer } from 'src/app/pages/RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AppComponent } from 'src/app/app.component';
+import { PlanItemDatePickerCellEditor } from './PlanItemDatePickerCellEditor.component';
+import { PlanItemUpdateSaveCellRenderer } from './PlanItemUpdateSaveCellRenderer.component';
+
+
 
 interface ItemData {
   id: number;
@@ -42,17 +37,28 @@ interface ItemData {
   providers: [NzMessageService],
 })
 export class PPSI206SETComponent implements AfterViewInit {
+  public editType: 'fullRow' = 'fullRow';
   PLANT = '直棒';
   userName: string;
   plantCode: string;
+  loading = false; //loaging data flag
+  LoadingPage = false;
+  isRunFCP = false; // 如為true則不可異動
+  isErrorMsg = false;
+  isEditing = false;
+  myContext: any;
+
+  tbppsm040EditCacheList: { [id: string]: { data: any } } = {};
+
   //存放資料的陣列
   tbppsm107: ItemData[] = [];
-  // 如為true則不可異動
-  isRunFCP = false;
-  // 等待資料變動
-  loading = true;
   //新增視窗開關
   isVisibleYield: boolean;
+
+  // ag grid Api物件
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext : any;
 
   preEquip;
 
@@ -67,7 +73,6 @@ export class PPSI206SETComponent implements AfterViewInit {
   userCreate: string;
   discumsumType;
 
-  isErrorMsg = false;
   isERROR = false;
   arrayBuffer: any;
   file: File;
@@ -85,6 +90,10 @@ export class PPSI206SETComponent implements AfterViewInit {
       editable: true,
       sortable: false,
       resizable: true,
+      filter: true,
+    },
+    components: {
+      PlanItemDatePickerCellEditor: PlanItemDatePickerCellEditor,
     },
     api: null,
   };
@@ -96,13 +105,14 @@ export class PPSI206SETComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private appComponent: AppComponent
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
     this.plantCode = this.cookieService.getCookie('plantCode');
-    this.frameworkComponents = {
-      buttonRenderer: BtnCellRenderer,
+    this.myContext = {
+      componentParent: this,
     };
   }
 
@@ -139,89 +149,123 @@ export class PPSI206SETComponent implements AfterViewInit {
     this.importdata_new = [];
     this.isERROR = false;
     this.errorTXT = [];
-    this.aaa();
-  }
-  columnDefs = [];
-  aaa() {
-    this.columnDefs = [
-      {
-        headerName: '站別',
-        field: 'schShopCode',
-        width: 65,
-        editable: false,
-      },
-      {
-        headerName: '機台',
-        field: 'equipCode',
-        width: 75,
-        editable: false,
-      },
-      {
-        headerName: '累積單位',
-        field: 'cumsumType',
-        width: 90,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['day', 'hour'],
-        },
-        valueFormatter: this.cumsumTypeSelect,
-        // valueGetter: this.cumsumTypeDisplay,
-      },
-      {
-        headerName: '累積值',
-        field: 'accumulation',
-        width: 75,
-      },
-      {
-        headerName: '強制投產',
-        field: 'dateLimit',
-        width: 90,
-      },
-      {
-        headerName: '是否使用',
-        field: 'useFlag',
-        width: 90,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['Y', 'N'],
-        },
-      },
-      {
-        headerName: '更新時間',
-        field: 'dateUpdate',
-        width: 180,
-        editable: false,
-      },
-      {
-        headerName: '更新者',
-        field: 'userUpdate',
-        width: 100,
-        editable: false,
-      },
-      {
-        headerName: 'Action',
-        editable: false,
-        cellRenderer: 'buttonRenderer',
-        cellRendererParams: [
-          {
-            onClick: this.onBtnClick1.bind(this),
-          },
-          {
-            onClick: this.onBtnClick2.bind(this),
-          },
-          {
-            onClick: this.onBtnClick3.bind(this),
-          },
-          {
-            onClick: this.onBtnClick4.bind(this),
-          },
-        ],
-      },
-    ];
   }
 
+  
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {
+      width: 100,
+      headerName: '序列',
+      field: 'planItem',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'MIC_NO',
+      field: 'micNo',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'ID_NO',
+      field: 'idNo',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 130,
+      headerName: '訂單編號',
+      field: 'saleOrder',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '訂單項次',
+      field: 'saleItem',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '訂單長度',
+      field: 'saleOrderLength',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: '生計交期',
+      field: 'dateDeliveryPp',
+      cellEditor: 'PlanItemDatePickerCellEditor',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'ID尺寸',
+      field: 'dia',
+      valueParser: (params: ValueParserParams): number => {
+        return Number.isNaN(Number(params.newValue))
+        ? params.oldValue
+        : Number(params.newValue);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    
+    {
+      width: 150,
+      headerName: 'CYCLE_NO',
+      field: 'cycleNo',
+      valueFormatter: this.appComponent.dateFormat(moment(), 8),
+      cellEditor: 'PlanItemDatePickerCellEditor',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 120,
+      headerName: '計畫重量',
+      field: 'planWeightI',
+      valueParser: (params: ValueParserParams): number => {
+        return Number.isNaN(Number(params.newValue))
+        ? params.oldValue
+        : Number(params.newValue);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    // {
+    //   width: 150,
+    //   headerName: '軋延日期',
+    //   field: 'millDate',
+    //   headerComponent: AGCustomHeaderComponent
+    // },
+    {
+      width: 200,
+      headerName: '備註',
+      field: 'comment',
+      editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: PlanItemUpdateSaveCellRenderer,
+      cellRendererParams: [
+        {
+          onclick: this.editOnClick.bind(this),
+        },
+        {
+          onClick: this.updateOnClick.bind(this),
+        },
+        {
+          onClick: this.calcelOnClick.bind(this),
+        },
+      ],
+    },
+  ];
+  
   // public
-
   myDataList;
   displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
@@ -285,77 +329,6 @@ export class PPSI206SETComponent implements AfterViewInit {
     });
   }
 
-  // insert
-  insertTab() {
-    if (_.isEmpty(this.schShopCode)) {
-      this.message.create('error', '「站別」不可為空');
-      return;
-    } else if (_.isEmpty(this.equipCode)) {
-      this.message.create('error', '「機台」不可為空');
-      return;
-    } else if (_.isEmpty(this.cumsumType)) {
-      this.message.create('error', '「累積單位」不可為空');
-      return;
-    } else if (_.isEmpty(this.accumulation)) {
-      this.message.create('error', '「累積值」不可為空');
-      return;
-    } else if (_.isEmpty(this.dateLimit)) {
-      this.message.create('error', '「強制投產」不可為空');
-      return;
-    } else if (_.isEmpty(this.useFlag)) {
-      this.message.create('error', '「是否使用」不可為空');
-      return;
-    } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定新增',
-        nzOnOk: () => {
-          this.insertSave();
-        },
-        nzOnCancel: () => {
-          console.log('cancel');
-          this.onInit();
-        },
-      });
-    }
-  }
-
-  // 新增資料
-  insertSave() {
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      let obj = {};
-      _.extend(obj, {
-        plant: this.PLANT,
-        schShopCode: this.schShopCode,
-        equipCode: this.equipCode,
-        cumsumType: this.cumsumType,
-        accumulation: this.accumulation,
-        dateLimit: this.dateLimit,
-        useFlag: this.useFlag,
-        userUpdate: this.userName,
-        userCreate: this.userName,
-      });
-
-      this.PPSService.insertTBPPSM107(obj).subscribe(
-        (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.getTBPPSM107();
-            this.sucessMSG('新增成功', ``);
-            this.loading = false;
-          } else {
-            this.errorMSG('新增失敗', res.message);
-            this.loading = false;
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
-          this.loading = false;
-        }
-      );
-    });
-  }
   update() {
     this.gridOptions.defaultColDef.editable = true;
   }
@@ -678,7 +651,7 @@ export class PPSI206SETComponent implements AfterViewInit {
           },
           (err) => {
             reject('upload fail');
-            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+            this.errorMSG('存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
             this.importdata_new = [];
             this.loading = false;
           }
@@ -715,42 +688,132 @@ export class PPSI206SETComponent implements AfterViewInit {
     this.message.error("待開發")
   }
 
-  //============== 新增資料之彈出視窗 =====================
-  // 新增產能維護之彈出視窗
-  openYieldInput(): void {
-    this.isVisibleYield = true;
-    this.getShopCode();
-  }
-  //取消產能維護彈出視窗
-  cancelYieldInput(): void {
-    this.onInit();
-    this.isVisibleYield = false;
+  
+
+  // 修改
+  savedtlRow(i, data) {
+    console.log('-------save_dtlRow------');
+    this.message.error("待開發")
+    ///// oldlist存放更新根據的條件(複合主鍵:IMPORTDATETIME+PLANT_CODE+ORDER_ID)
+    // this.oldlist = data;
+    // this.newlist = data;
+
+    // let importdatetime = this.newlist.IMPORTDATETIME;
+    // let plantCode = this.newlist.PLANT_CODE;
+    // let orderID = this.newlist.ORDER_ID;
+
+    // let nextShopCode = this.newlist.NEXT_SHOP_CODE;
+    // let maxDate = this.newlist.MAX_DATE;
+    // let days = this.newlist.DAYS;
+    // let startDate = this.newlist.STARTDATE;
+    // let tcFrequenceLeft = this.newlist.TC_FREQUENCE_LIFT;
+
+    // if (
+    //   importdatetime === '' ||
+    //   plantCode === '' ||
+    //   orderID === '' ||
+    //   nextShopCode === '' ||
+    //   maxDate === '' ||
+    //   days === '' ||
+    //   startDate === '' ||
+    //   tcFrequenceLeft === ''
+    // ) {
+    //   this.errorMSG('錯誤', '有欄位尚未填寫完畢，請檢查');
+    //   return;
+    // } else {
+    //   this.Modal.confirm({
+    //     nzTitle: '是否確定存檔',
+    //     nzOnOk: () => {
+    //       this.SaveOK(i), (this.EditMode[i] = true);
+    //     },
+    //     nzOnCancel: () => (this.EditMode[i] = true),
+    //   });
+    // }
   }
 
-  onBtnClick1(e) {
-    console.log(this.conditionList);
-    e.params.api.setFocusedCell(e.params.node.rowIndex, 'accumulation');
-    e.params.api.startEditingCell({
-      rowIndex: e.params.node.rowIndex,
-      colKey: 'accumulation',
-    });
+  // 確定修改存檔
+  SaveOK(col) {
+    // console.log('oldlist --> ', this.oldlist);
+    // console.log('newlist --> ', this.newlist);
+
+    // this.LoadingPage = true;
+    // let myObj = this;
+    // return new Promise((resolve, reject) => {
+    //   let obj = {};
+
+    //   _.extend(obj, {
+    //     OLDLIST: this.oldlist,
+    //     NEWList: this.newlist,
+    //     USERCODE: this.USERNAME,
+    //     DATETIME: this.datetime.format('YYYY-MM-DD HH:mm:ss'),
+    //   });
+    //   myObj.getPPSService.upd401AutoCampaignData(obj).subscribe(
+    //     (res) => {
+    //       console.log(res);
+    //       if (res[0].MSG === 'Y') {
+    //         this.LoadingPage = true;
+    //         this.EditMode[col] = false;
+    //         this.oldlist = [];
+    //         this.newlist = [];
+    //         this.getTbppsm102ListAll();
+    //         this.sucessMSG('修改存檔成功', '');
+    //         // 將編輯模式關閉
+    //         this.gridApi.getRowNode(col).data.isEditing = false;
+    //       } else {
+    //         this.errorMSG('修改存檔失敗', res[0].MSG);
+    //         this.LoadingPage = false;
+    //         this.EditMode[col] = true;
+    //       }
+    //     },
+    //     (err) => {
+    //       reject('upload fail');
+    //       this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+    //       this.oldlist = [];
+    //       this.LoadingPage = false;
+    //     }
+    //   );
+    // });
+  }
+  
+
+  updateOnClick(e) {
+    this.savedtlRow(e.index, e.rowData);
+    this.isEditing = false;
   }
 
-  onBtnClick2(e) {
-    this.saveEdit(e.rowData, e.rowData.idx);
-  }
-
-  onBtnClick3(e) {
-    this.cancelEdit(e.rowData.idx);
-  }
-
-  onBtnClick4(e) {
-    this.deleteRow(e.rowData.id);
+  calcelOnClick(e) {
+    this.rowData[e.index] = _.cloneDeep(
+      this.tbppsm040EditCacheList[e.index].data
+    );
+    this.gridApi.setRowData(this.rowData);
   }
 
   onRowClicked(event: any) {
     console.log('Row clicked:', event.node);
     this.whichRow = event.data.equipCode;
+  }
+
+  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>) {
+    event.data.isEditing = true;
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    // 排除 "isEditing" 屬性，不列入後續的資料比較
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.tbppsm040EditCacheList[event.rowIndex].data, [
+      'isEditing',
+    ]);
+    if (_.isEqual(oldValue, newValue)) {
+      event.data.isEditing = false;
+    } else {
+      event.data.isEditing = true;
+    }
+  }
+
+  editOnClick(e) {}
+  
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   cumsumTypeDisplay(params: any): string {

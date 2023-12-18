@@ -1,4 +1,5 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { CellClickedEvent, CellDoubleClickedEvent, CellEditingStartedEvent, CellEditingStoppedEvent, CellValueChangedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams, Logger } from 'ag-grid-community';
+import { Component, AfterViewInit, HostListener } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -8,6 +9,9 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
+import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
+import { number } from 'echarts';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 
 interface ItemData8 {
@@ -58,6 +62,13 @@ export class PPSI108Component implements AfterViewInit {
   importdata = [];
   titleArray = ["站號","機台","產出形狀","產出尺寸最小值","產出尺寸最大值","加工時間"];
   importdata_repeat = [];
+
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  
+  // 哪些欄位在編輯完需將其轉成數字
+  parseNumberColumnIdsMap = new Map(); 
+
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -69,11 +80,201 @@ export class PPSI108Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+
+    this.parseNumberColumnIdsMap.set('DIA_MIN_8', '產出尺寸最小值');
+    this.parseNumberColumnIdsMap.set('DIA_MAX_8', '產出尺寸最大值');
+    this.parseNumberColumnIdsMap.set('MINS_8', '加工時間');
   }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP08List();
+  }
+
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      editable: true,
+      resizable: true,
+      autoHeight: true,
+    }
+  };
+
+  ppsinp08ColumnDefs : ColDef[] = [
+    { 
+      headerName:'站號', 
+      field:'SHOP_CODE_8',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機台', 
+      field:'EQUIP_CODE_8',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出形狀', 
+      field:'SHAPE_TYPE_8',
+      width: 150,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出尺寸最小值', 
+      field:'DIA_MIN_8',
+      width: 180,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出尺寸最大值', 
+      field:'DIA_MAX_8',
+      width: 180,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'加工時間', 
+      field:'MINS_8',
+      width: 150,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action', 
+      width: 150,
+      editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: AGCustomActionCellComponent,
+      cellRendererParams:{
+        edit : this.rowEditHandler.bind(this),
+        cancelEdit: this.rowCancalEditHandler.bind(this),
+        saveEdit : this.saveEditHandler.bind(this),
+        delete : this.deleteHandler.bind(this)
+      }
+    }
+  ];
+
+  
+
+  // 首次渲染資料完畢後被調用
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，再做寬度適應的調整
+    
+  }
+
+  // 獲取ag-grid的Api函數
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  deleteHandler(params: ICellRendererParams<any, any>){
+    this.delID(params.data.tab8ID);
+  }
+
+  /**
+   * 開始編輯
+   * @param params 
+   */
+  rowEditHandler(params: ICellRendererParams<any, any>){
+    // 控制編輯按鈕的顯示切換
+    params.data.isEditing = true;
+    
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，且帶的該欄位是要可編輯的
+    params.api.startEditingCell({
+      rowIndex : params.rowIndex,
+      colKey : 'SHOP_CODE_8' 
+    });
+  }
+
+  /**
+   * 取消編輯並還原已變動的資料
+   * @param params 
+   */
+  rowCancalEditHandler(params: ICellRendererParams<any, any>){
+    params.api.stopEditing(false);
+     // 透過id取得緩存的舊資料
+     const cacheRowData = this.editCache8[params.data.id].data;
+     // 還原為原資料
+     this.displayPPSINP08List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+     // 渲染資料
+     this.gridApi.setRowData(this.displayPPSINP08List);
+     // Y軸滾動到此row的位置
+     this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
+
+  /**
+   * 儲存編輯的資料
+   * @param params 
+   */
+  async saveEditHandler(params: ICellRendererParams<any, any>){
+
+    // 關閉編輯狀態讓資料生效進到當前陣列中的某條row之中
+    params.api.stopEditing(false);
+
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache8[params.data.id].data;
+
+    // 排除非業務的資料(isEditing)進行比較
+    // 若一樣，表示使用者未修改任何資料，不給予更新
+    if(_.isEqual(_.omit(params.data, ['isEditing']), _.omit(cacheRowData, ['isEditing']))){
+       // 無法轉換提示錯誤
+       this.message.warning('無法更新，你尚未修改任何資料');
+       return;
+    }
+
+    // 若是產出尺寸最小值、產出尺寸最大值、加工時間需轉成數字
+    // 若使用者這三個欄位輸入為空或非數字字元則會得到false
+    if(!this.cellValueValidate(params)){
+      // 還原為原資料
+      this.displayPPSINP08List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+      // 重新渲染資料
+      this.gridApi.setRowData(this.displayPPSINP08List);
+      return;
+    }
+
+    // 驗證資料並執行更新
+    await this.saveEditWithValidation(params.data, params.node.rowIndex);
+    this.getPPSINP08List();
+    // Y軸滾動到此row的位置
+    this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
+
+  /**
+     * 若是產出尺寸最小值、產出尺寸最大值、加工時間需轉成數字
+     * @param params 
+     */
+  cellValueValidate (params : ICellRendererParams<any, any>) : boolean{
+    for (const item of [...this.parseNumberColumnIdsMap.keys()]) {
+      if(typeof params.data[item] !== 'number'){
+        const parsedNumber = parseFloat(params.data[item]); 
+        if (!isNaN(parsedNumber)) {
+          // 若成功轉換成數字，更新資料
+          params.data[item] = parsedNumber;
+        } else {
+          // 無法轉換提示錯誤
+          // 該欄位使用者輸入非法字元
+          this.message.error(`無法更新，${this.parseNumberColumnIdsMap.get(item)}不可為空或必須為數字`);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.editCache8[event.data.id].data, ['isEditing']);
+    
+    if(_.isEqual(newValue, oldValue)){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+    }
+    
   }
   
   PPSINP08List_tmp;
@@ -81,11 +282,11 @@ export class PPSI108Component implements AfterViewInit {
   editCache8: { [key: string]: { edit: boolean; data: ItemData8 } } = {};
   displayPPSINP08List : ItemData8[] = [];
   getPPSINP08List() {
-    this.loading = true;
+    this.LoadingPage = true;
     let myObj = this;
     this.PPSService.getPPSINP08List('1').subscribe(res => {
       console.log("getFCPTB26List success");
-      this.PPSINP08List_tmp = res;
+      this.PPSINP08List_tmp = res.data;
 
       const data = [];
       for (let i = 0; i < this.PPSINP08List_tmp.length ; i++) {
@@ -98,13 +299,14 @@ export class PPSI108Component implements AfterViewInit {
           DIA_MIN_8: this.PPSINP08List_tmp[i].DIA_MIN,
           DIA_MAX_8: this.PPSINP08List_tmp[i].DIA_MAX,
           MINS_8: this.PPSINP08List_tmp[i].MINS,
+          isEditing : false
         });
       }
       this.PPSINP08List = data;
       this.displayPPSINP08List = this.PPSINP08List;
       this.updateEditCache();
       console.log(this.PPSINP08List);
-      myObj.loading = false;
+      myObj.LoadingPage = false;   
     });
   }
   
@@ -170,39 +372,107 @@ export class PPSI108Component implements AfterViewInit {
     };
   }
 
+  async saveEditWithValidation(updateRowData : any, rowIndex : number): Promise<void> {
 
-  // update Save
-  saveEdit(id: string): void {
-    let myObj = this;
-    if (this.editCache8[id].data.SHOP_CODE_8 === undefined) {
-      myObj.message.create("error", "「站號」不可為空");
+    if (_.isEmpty(updateRowData.SHOP_CODE_8)) {
+      this.message.create("error", "「站號」不可為空");
       return;
-    } else if (this.editCache8[id].data.EQUIP_CODE_8 === undefined) {
-      myObj.message.create("error", "「機台」不可為空");
+    } else if (_.isEmpty(updateRowData.EQUIP_CODE_8)) {
+      this.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache8[id].data.SHAPE_TYPE_8 === undefined) {
-      myObj.message.create("error", "「產出型態」不可為空");
-      return;
-    } else if (this.editCache8[id].data.DIA_MIN_8 === undefined) {
-      myObj.message.create("error", "「產出尺寸最小值」不可為空");
-      return;
-    } else if (this.editCache8[id].data.DIA_MAX_8 === undefined) {
-      myObj.message.create("error", "「產出尺寸最大值」不可為空");
-      return;
-    } else if (this.editCache8[id].data.MINS_8 === undefined) {
-      myObj.message.create("error", "「每噸花時間」不可為空");
+    } else if (_.isEmpty(updateRowData.SHAPE_TYPE_8)) {
+      this.message.create("error", "「產出型態」不可為空");
       return;
     } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(id)
-        },
-        nzOnCancel: () =>
-          console.log("cancel")
-      });
+      await this.updateSave(updateRowData, rowIndex)
     }
   }
+  
+  // 修改資料
+  updateSave(updateRowData : any, rowIndex : number) :Promise<string> {
+    let myObj = this;
+    this.LoadingPage = true;
+    return new Promise((resolve, reject) => {
+      let obj = {};
+      _.extend(obj, {
+        ID : updateRowData.tab8ID,
+        SHOP_CODE : updateRowData.SHOP_CODE_8,
+        EQUIP_CODE : updateRowData.EQUIP_CODE_8,
+        SHAPE_TYPE : updateRowData.SHAPE_TYPE_8,
+        DIA_MIN : updateRowData.DIA_MIN_8,
+        DIA_MAX : updateRowData.DIA_MAX_8,
+        MINS : updateRowData.MINS_8,
+        USERNAME : this.USERNAME,
+        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+      })
+      myObj.PPSService.updateI108Save('1', obj).subscribe(res => {
+        if(res.message === "Y") {
+          this.SHOP_CODE_8 = undefined;
+          this.EQUIP_CODE_8 = undefined;
+          this.SHAPE_TYPE_8 = undefined;
+          this.DIA_MIN_8 = undefined;
+          this.DIA_MAX_8 = undefined;
+          this.MINS_8 = undefined;
+
+          this.sucessMSG("修改成功", ``);
+          resolve('upload success');
+        } else {
+          this.errorMSG("修改失敗", res.message);
+          this.restoreRowData(updateRowData, rowIndex);
+          reject('upload fail');
+        }
+        this.LoadingPage = false;
+      },err => {
+        this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+        this.restoreRowData(updateRowData, rowIndex);
+        reject('upload fail');
+        this.LoadingPage = false;
+      })
+    });
+  }
+
+  restoreRowData(rowData:any, rowIndex : number){
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache8[rowData.id].data;
+    // 還原為原資料
+    this.displayPPSINP08List[rowIndex] = _.cloneDeep(cacheRowData);
+    // 重新渲染資料
+    this.gridApi.setRowData(this.displayPPSINP08List);
+  }
+
+
+  // update Save
+  // saveEdit(id: string): void {
+  //   let myObj = this;
+  //   if (this.editCache8[id].data.SHOP_CODE_8 === undefined) {
+  //     myObj.message.create("error", "「站號」不可為空");
+  //     return;
+  //   } else if (this.editCache8[id].data.EQUIP_CODE_8 === undefined) {
+  //     myObj.message.create("error", "「機台」不可為空");
+  //     return;
+  //   } else if (this.editCache8[id].data.SHAPE_TYPE_8 === undefined) {
+  //     myObj.message.create("error", "「產出型態」不可為空");
+  //     return;
+  //   } else if (this.editCache8[id].data.DIA_MIN_8 === undefined) {
+  //     myObj.message.create("error", "「產出尺寸最小值」不可為空");
+  //     return;
+  //   } else if (this.editCache8[id].data.DIA_MAX_8 === undefined) {
+  //     myObj.message.create("error", "「產出尺寸最大值」不可為空");
+  //     return;
+  //   } else if (this.editCache8[id].data.MINS_8 === undefined) {
+  //     myObj.message.create("error", "「每噸花時間」不可為空");
+  //     return;
+  //   } else {
+  //     this.Modal.confirm({
+  //       nzTitle: '是否確定修改',
+  //       nzOnOk: () => {
+  //         this.updateSave(id)
+  //       },
+  //       nzOnCancel: () =>
+  //         console.log("cancel")
+  //     });
+  //   }
+  // }
   
 
   // update
@@ -237,7 +507,7 @@ export class PPSI108Component implements AfterViewInit {
       myObj.PPSService.insertI108Save('1', obj).subscribe(res => {
 
         console.log(res)
-        if(res[0].MSG === "Y") {
+        if(res.message === "Y") {
           this.SHOP_CODE_8 = undefined;
           this.EQUIP_CODE_8 = undefined;
           this.SHAPE_TYPE_8 = undefined;
@@ -248,7 +518,7 @@ export class PPSI108Component implements AfterViewInit {
           this.sucessMSG("新增成功", ``);
           this.isVisibleNonSpeed = false;
         } else {
-          this.errorMSG("新增失敗", res[0].MSG);
+          this.errorMSG("新增失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -259,56 +529,56 @@ export class PPSI108Component implements AfterViewInit {
   }
 
 
-  // 修改資料
-  updateSave(_id) {
-    let myObj = this;
-    this.LoadingPage = true;
-    return new Promise((resolve, reject) => {
-      let obj = {};
-      _.extend(obj, {
-        ID : this.editCache8[_id].data.tab8ID,
-        SHOP_CODE : this.editCache8[_id].data.SHOP_CODE_8,
-        EQUIP_CODE : this.editCache8[_id].data.EQUIP_CODE_8,
-        SHAPE_TYPE : this.editCache8[_id].data.SHAPE_TYPE_8,
-        DIA_MIN : this.editCache8[_id].data.DIA_MIN_8,
-        DIA_MAX : this.editCache8[_id].data.DIA_MAX_8,
-        MINS : this.editCache8[_id].data.MINS_8,
-        USERNAME : this.USERNAME,
-        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
-      })
-      myObj.PPSService.updateI108Save('1', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
-          this.SHOP_CODE_8 = undefined;
-          this.EQUIP_CODE_8 = undefined;
-          this.SHAPE_TYPE_8 = undefined;
-          this.DIA_MIN_8 = undefined;
-          this.DIA_MAX_8 = undefined;
-          this.MINS_8 = undefined;
+  // // 修改資料
+  // updateSave(_id) {
+  //   let myObj = this;
+  //   this.LoadingPage = true;
+  //   return new Promise((resolve, reject) => {
+  //     let obj = {};
+  //     _.extend(obj, {
+  //       ID : this.editCache8[_id].data.tab8ID,
+  //       SHOP_CODE : this.editCache8[_id].data.SHOP_CODE_8,
+  //       EQUIP_CODE : this.editCache8[_id].data.EQUIP_CODE_8,
+  //       SHAPE_TYPE : this.editCache8[_id].data.SHAPE_TYPE_8,
+  //       DIA_MIN : this.editCache8[_id].data.DIA_MIN_8,
+  //       DIA_MAX : this.editCache8[_id].data.DIA_MAX_8,
+  //       MINS : this.editCache8[_id].data.MINS_8,
+  //       USERNAME : this.USERNAME,
+  //       DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
+  //     })
+  //     myObj.PPSService.updateI108Save('1', obj).subscribe(res => {
+  //       if(res.message === "Y") {
+  //         this.SHOP_CODE_8 = undefined;
+  //         this.EQUIP_CODE_8 = undefined;
+  //         this.SHAPE_TYPE_8 = undefined;
+  //         this.DIA_MIN_8 = undefined;
+  //         this.DIA_MAX_8 = undefined;
+  //         this.MINS_8 = undefined;
 
-          this.sucessMSG("修改成功", ``);
+  //         this.sucessMSG("修改成功", ``);
 
-          const index = this.PPSINP08List.findIndex(item => item.id === _id);
-          Object.assign(this.PPSINP08List[index], this.editCache8[_id].data);
-          this.editCache8[_id].edit = false;
-        } else {
-          this.errorMSG("修改失敗", res[0].MSG);
-        }
-      },err => {
-        reject('upload fail');
-        this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
-        this.LoadingPage = false;
-      })
-    });
-  }
+  //         const index = this.PPSINP08List.findIndex(item => item.id === _id);
+  //         Object.assign(this.PPSINP08List[index], this.editCache8[_id].data);
+  //         this.editCache8[_id].edit = false;
+  //       } else {
+  //         this.errorMSG("修改失敗", res.message);
+  //       }
+  //     },err => {
+  //       reject('upload fail');
+  //       this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+  //       this.LoadingPage = false;
+  //     })
+  //   });
+  // }
 
   
   // 刪除資料
-  delID(_id) {
+  delID(tab8ID) {
     let myObj = this;
+    this.LoadingPage = true;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache8[_id].data.tab8ID;
-      myObj.PPSService.delI108Data('1', _ID).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      myObj.PPSService.delI108Data('1', tab8ID).subscribe(res => {
+        if(res.code === 200) {
           this.SHOP_CODE_8 = undefined;
           this.EQUIP_CODE_8 = undefined;
           this.SHAPE_TYPE_8 = undefined;
@@ -318,6 +588,7 @@ export class PPSI108Component implements AfterViewInit {
 
           this.sucessMSG("刪除成功", ``);
           this.getPPSINP08List();
+          this.LoadingPage = false;
         }
       },err => {
         reject('upload fail');
@@ -524,9 +795,8 @@ export class PPSI108Component implements AfterViewInit {
       console.log("EXCELDATA:"+ obj);
       myObj.PPSService.importI108Excel('1', obj).subscribe(res => {
         console.log("importExcelPPSI105");
-        if(res[0].MSG === "Y") { 
+        if(res.code === 200) { 
           
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -535,7 +805,7 @@ export class PPSI108Component implements AfterViewInit {
           this.getPPSINP08List()
           
         } else {
-          this.errorMSG("匯入錯誤", res[0].MSG);
+          this.errorMSG("匯入錯誤", res.message);
           this.clearFile();
           this.loading = false;
           this.LoadingPage = false;

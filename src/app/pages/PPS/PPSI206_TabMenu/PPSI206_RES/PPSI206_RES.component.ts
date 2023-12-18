@@ -8,20 +8,10 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { number } from 'echarts';
-import {
-  AgGridEvent,
-  CellClickedEvent,
-  ColDef,
-  ColGroupDef,
-  GridReadyEvent,
-  PreConstruct,
-  RowDragEnterEvent,
-  RowDragEvent,
-} from 'ag-grid-community';
+import { ColGroupDef,CellDoubleClickedEvent, CellEditingStoppedEvent, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
 import { TBPPSM041 } from './TBPPSM041.model';
-import { GridOptions } from 'ag-grid-community';
-import { BtnCellRenderer } from 'src/app/pages/RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AppComponent } from 'src/app/app.component';
 
 interface ItemData {
   id: number;
@@ -42,49 +32,18 @@ interface ItemData {
   providers: [NzMessageService],
 })
 export class PPSI206RESComponent implements AfterViewInit {
-  PLANT = '精整';
   userName: string;
   plantCode: string;
   //存放資料的陣列
-  tbppsm107: ItemData[] = [];
-  // 如為true則不可異動
-  isRunFCP = false;
+  tbppsm041: ItemData[] = [];
   // 等待資料變動
   loading = true;
-  //新增視窗開關
-  isVisibleYield: boolean;
-
-  preEquip;
-
-  schShopCode: string;
-  equipCode: string;
-  cumsumType: string;
-  accumulation: number;
-  dateLimit: number;
-  useFlag: string;
-  dateUpdate: string;
-  userUpdate: string;
-  userCreate: string;
-  discumsumType;
-
-  isErrorMsg = false;
-  isERROR = false;
-  arrayBuffer: any;
-  file: File;
-  importdata = [];
-  importdata_new = [];
-  errorTXT = [];
   rowData: ItemData[] = [];
-  whichRow;
-  conditionList: string[] = [];
-
-  frameworkComponents;
-
   gridOptions = {
     defaultColDef: {
-      editable: true,
       sortable: false,
       resizable: true,
+      filter: true,
     },
     api: null,
   };
@@ -96,140 +55,486 @@ export class PPSI206RESComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private appComponent: AppComponent
   ) {
     this.i18n.setLocale(zh_TW);
-    this.userName = this.cookieService.getCookie('USERNAME');
-    this.plantCode = this.cookieService.getCookie('plantCode');
-    this.frameworkComponents = {
-      buttonRenderer: BtnCellRenderer,
-    };
   }
 
   async ngAfterViewInit() {
-    this.getRunFCPCount();
-    await this.getTBPPSM107();
+    await this.getTbppsm041();
     this.onInit();
   }
 
-  // 取得是否有正在執行的FCP
-  getRunFCPCount() {
-    let myObj = this;
-    this.PPSService.getRunFCPCount().subscribe((res: number) => {
-      console.log('getRunFCPCount success');
-      if (res > 0) this.isRunFCP = true;
-    });
-  }
-
   onInit() {
-    this.schShopCode = '';
-    this.equipCode = '';
-    this.cumsumType = '';
-    this.accumulation = undefined;
-    this.dateLimit = undefined;
-    this.useFlag = '';
-    this.dateUpdate = '';
-    this.userUpdate = '';
-    this.userCreate = '';
-
-    this.isVisibleYield = false;
-    this.loading = false;
-    this.isErrorMsg = false;
-    this.importdata = [];
-    this.importdata_new = [];
-    this.isERROR = false;
-    this.errorTXT = [];
-    this.aaa();
   }
-  columnDefs = [];
-  aaa() {
-    this.columnDefs = [
-      {
-        headerName: '站別',
-        field: 'schShopCode',
-        width: 65,
-        editable: false,
+  
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {
+      width: 130,
+      headerName: '訂單編號',
+      field: 'saleOrder',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '訂單項次',
+      field: 'saleItem',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'ID_NO',
+      field: 'idNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '訂單尺寸',
+      field: 'saleOrderDia',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
       },
-      {
-        headerName: '機台',
-        field: 'equipCode',
-        width: 75,
-        editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'MIC_NO',
+      field: 'micNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: 'CYCLE_NO',
+      field: 'cycleNo',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 8);
       },
-      {
-        headerName: '累積單位',
-        field: 'cumsumType',
-        width: 90,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['day', 'hour'],
-        },
-        valueFormatter: this.cumsumTypeSelect,
-        // valueGetter: this.cumsumTypeDisplay,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: '生計交期',
+      field: 'dateDeliveryPp',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 2);
       },
-      {
-        headerName: '累積值',
-        field: 'accumulation',
-        width: 75,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '計畫重量',
+      field: 'planWeightI',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
       },
-      {
-        headerName: '強制投產',
-        field: 'dateLimit',
-        width: 90,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '訂單長度',
+      field: 'saleOrderLenght',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
       },
-      {
-        headerName: '是否使用',
-        field: 'useFlag',
-        width: 90,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['Y', 'N'],
-        },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '客戶名稱',
+      field: 'custAbbreviations',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '銷售區別',
+      field: 'saleAreaGroup',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '料號',
+      field: 'mtrlNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '鋼種',
+      field: 'steelType',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '合併單號',
+      field: 'megerNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'LOCK值',
+      field: 'ppBlock',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '允收截止日',
+      field: 'remarkWarehousingDate',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
       },
-      {
-        headerName: '更新時間',
-        field: 'dateUpdate',
-        width: 180,
-        editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '入庫日的備註',
+      field: 'remarkPlanInStorage',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'MIC_NO',
+      field: 'micNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'MILL產出日期',
+      field: 'millDateO',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
       },
-      {
-        headerName: '更新者',
-        field: 'userUpdate',
-        width: 100,
-        editable: false,
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'MILL開始日期',
+      field: 'millDateS',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
       },
-      {
-        headerName: 'Action',
-        editable: false,
-        cellRenderer: 'buttonRenderer',
-        cellRendererParams: [
-          {
-            onClick: this.onBtnClick1.bind(this),
-          },
-          {
-            onClick: this.onBtnClick2.bind(this),
-          },
-          {
-            onClick: this.onBtnClick3.bind(this),
-          },
-          {
-            onClick: this.onBtnClick4.bind(this),
-          },
-        ],
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'ROUTING_SEQ',
+      field: 'routingSeq',
+      headerComponent: AGCustomHeaderComponent
+    },    
+    {
+      width: 110,
+      headerName: '站別',
+      field: 'shopCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '機台',
+      field: 'equipCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '下一站站別',
+      field: 'nextShopCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '下一機台',
+      field: 'nextEquipCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '現況流程(LINEUP)',
+      field: 'lineupProcess',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'FINAL生產流程',
+      field: 'finalProcess',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '製程碼',
+      field: 'processCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'LINEUP_MIC_NO',
+      field: 'lineupMicNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'FINAL_MIC_NO',
+      field: 'finalMicNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '現況長度',
+      field: 'sfcLenght',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
       },
-    ];
-  }
-
-  // public
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '投入尺寸',
+      field: 'inputDia',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '產出尺寸',
+      field: 'outputDia',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '投入型態',
+      field: 'inputShape',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '產出型態',
+      field: 'outputShape',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '下站製程順序',
+      field: 'nextRoutingSeq',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '前站製程順序',
+      field: 'priorRoutingSeq',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'TC_溫度',
+      field: 'tcTemperature',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'TC_頻率',
+      field: 'tcFrequence',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'BA1_溫度',
+      field: 'ba1Temperature',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'BA1_頻率',
+      field: 'ba1Frequence',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '作業代碼',
+      field: 'opCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '產品種類',
+      field: 'kindType',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '抽數別',
+      field: 'scheType',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '密度',
+      field: 'density',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: 'SEQ_NO',
+      field: 'seqNo',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '產率',
+      field: 'yield',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '工廠排程的預計投入時間',
+      field: 'planDateI',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '工廠排程的預計產出時間',
+      field: 'planDateO',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '工廠排程的排程順序',
+      field: 'autoSort',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '排程凍結',
+      field: 'autoFrozen',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '固定機台',
+      field: 'fixcedEquipCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '冷抽數',
+      field: 'scheTyped',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'D製程順序',
+      field: 'upDRoutingSeq',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '最大冷抽數',
+      field: 'maxCoolDrawn',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '委外代工機台',
+      field: 'outsourcing',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '委外代工日',
+      field: 'dateSendOutsourcing',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '委外代工回廠日',
+      field: 'dateBackOutsourcing',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '委外代工註記',
+      field: 'falgOutsourcing',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '軋延日期',
+      field: 'millDate',
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return this.appComponent.dateFormat(params.value, 1);
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '重量',
+      field: 'resWeight',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },      
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '軋延重量',
+      field: 'rollWe',
+      valueFormatter: (params: ValueFormatterParams): string | undefined => {
+        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: 'FLAG_405_TEMP',
+      field: 'flag405Temp',
+      headerComponent: AGCustomHeaderComponent
+    }
+  ];
 
   myDataList;
-  displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
-  async getTBPPSM107() {
-    await this.PPSService.getTBPPSM107(this.PLANT).then((res) => {
+  async getTbppsm041() {
+    await this.PPSService.getTBPPSM107(this.plantCode).then((res) => {
       this.myDataList = res.data;
       for (let i = 0; i < this.myDataList.length; i++) {
-        this.tbppsm107.push({
+        this.tbppsm041.push({
           id: this.myDataList[i].id,
           schShopCode: this.myDataList[i].schShopCode,
           equipCode: this.myDataList[i].equipCode,
@@ -241,11 +546,10 @@ export class PPSI206RESComponent implements AfterViewInit {
           userUpdate: this.myDataList[i].userUpdate,
         });
       }
-      this.displayDataList = this.tbppsm107;
-      this.tbppsm107 = [];
+      this.rowData = this.tbppsm041;
+      this.tbppsm041 = [];
       this.myDataList = {};
       this.loading = false;
-      this.updateEditCache();
     })
     .catch(error=>{
       this.errorMSG('獲取資料失敗', `後台獲取資料發生錯誤：${error.message}，請聯繫系統工程師`);
@@ -253,255 +557,8 @@ export class PPSI206RESComponent implements AfterViewInit {
     });
   }
 
-  changeDisplay() {
-    for (let i = 0; i < this.displayDataList.length; i++) {
-      if (this.displayDataList[i].cumsumType == 'day') {
-        this.discumsumType[i] = '天';
-      } else if (this.displayDataList[i].cumsumType == 'hour') {
-        this.discumsumType[i] = '小時';
-      }
-    }
-  }
-
-  shopCodeOptions;
-  getShopCode() {
-    this.PPSService.getShopCode(this.PLANT).subscribe((res) => {
-      // const data = res;
-      // this.shopCodeOptions = data.map((item) => item.schShopCode);
-      this.shopCodeOptions = res.data;
-    });
-  }
-
-  onSelect(event: boolean): void {
-    console.log('Select list opened:', event);
-    this.getEquipCode();
-    // 在这里执行你想要的操作
-  }
-
-  equipCodeOptions;
-  getEquipCode() {
-    this.PPSService.getEquipCode(this.PLANT, this.schShopCode).subscribe((res) => {
-      this.equipCodeOptions = res.data;
-    });
-  }
-
-  // insert
-  insertTab() {
-    if (_.isEmpty(this.schShopCode)) {
-      this.message.create('error', '「站別」不可為空');
-      return;
-    } else if (_.isEmpty(this.equipCode)) {
-      this.message.create('error', '「機台」不可為空');
-      return;
-    } else if (_.isEmpty(this.cumsumType)) {
-      this.message.create('error', '「累積單位」不可為空');
-      return;
-    } else if (_.isEmpty(this.accumulation)) {
-      this.message.create('error', '「累積值」不可為空');
-      return;
-    } else if (_.isEmpty(this.dateLimit)) {
-      this.message.create('error', '「強制投產」不可為空');
-      return;
-    } else if (_.isEmpty(this.useFlag)) {
-      this.message.create('error', '「是否使用」不可為空');
-      return;
-    } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定新增',
-        nzOnOk: () => {
-          this.insertSave();
-        },
-        nzOnCancel: () => {
-          console.log('cancel');
-          this.onInit();
-        },
-      });
-    }
-  }
-
-  // 新增資料
-  insertSave() {
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      let obj = {};
-      _.extend(obj, {
-        plant: this.PLANT,
-        schShopCode: this.schShopCode,
-        equipCode: this.equipCode,
-        cumsumType: this.cumsumType,
-        accumulation: this.accumulation,
-        dateLimit: this.dateLimit,
-        useFlag: this.useFlag,
-        userUpdate: this.userName,
-        userCreate: this.userName,
-      });
-
-      this.PPSService.insertTBPPSM107(obj).subscribe(
-        (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.getTBPPSM107();
-            this.sucessMSG('新增成功', ``);
-            this.loading = false;
-          } else {
-            this.errorMSG('新增失敗', res.message);
-            this.loading = false;
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
-          this.loading = false;
-        }
-      );
-    });
-  }
-  update() {
-    this.gridOptions.defaultColDef.editable = true;
-  }
-
-  // update
-  editRow(id: number): void {
-    this.editCache[id].edit = true;
-  }
-
-  // delete
-  deleteRow(id: number): void {
-    this.Modal.confirm({
-      nzTitle: '是否確定刪除',
-      nzOnOk: () => {
-        this.delByEquipCode(id);
-      },
-      nzOnCancel: () => console.log('cancel'),
-    });
-  }
-
-  // cancel
-  cancelEdit(id: number): void {
-    const index = this.displayDataList.findIndex((item) => item.id === id);
-    this.editCache[id] = {
-      data: { ...this.displayDataList[index] },
-      edit: false,
-    };
-  }
-
-  // update Save
-  saveEdit(rowData: any, id: number): void {
-    let myObj = this;
-    if (rowData.schShopCode === undefined) {
-      myObj.message.create('error', '「站別」不可為空');
-      return;
-    } else if (rowData.equipCode === undefined) {
-      myObj.message.create('error', '「機台」不可為空');
-      return;
-    } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(rowData, id);
-          this.loading = true;
-        },
-        nzOnCancel: () => console.log('cancel'),
-      });
-    }
-  }
-
-  // update
-  updateEditCache(): void {
-    this.displayDataList.forEach((item) => {
-      this.editCache[item.equipCode] = {
-        edit: false,
-        data: { ...item },
-      };
-    });
-  }
-
-  // 修改資料
-  updateSave(rowData, _id) {
-    let myObj = this;
-    this.loading = true;
-    console.log(rowData);
-    return new Promise((resolve, reject) => {
-      let obj = {};
-      _.extend(obj, {
-        id: rowData.id,
-        plant : this.PLANT,
-        schShopCode: rowData.schShopCode,
-        equipCode: rowData.equipCode,
-        cumsumType: rowData.cumsumType,
-        accumulation: rowData.accumulation,
-        dateLimit: rowData.dateLimit,
-        useFlag: rowData.useFlag,
-        userUpdate: this.userName,
-      });
-      myObj.PPSService.updateTBPPSM107(obj).subscribe(
-        (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.sucessMSG('修改成功', ``);
-            const index = this.displayDataList.findIndex(
-              (item) => item.id === _id
-            );
-            this.getTBPPSM107();
-            // Object.assign(this.displayDataList[index], rowData);
-            // this.editCache[_equipCode].edit = false;
-          } else {
-            this.errorMSG('修改失敗', res.message);
-            this.loading = false;
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
-          this.loading = false;
-        }
-      );
-    });
-  }
-
-  // 刪除資料
-  delByEquipCode(_id) {
-    let myObj = this;
-    this.loading = true;
-    return new Promise((resolve, reject) => {
-      myObj.PPSService.delTBPPSM107(this.PLANT, _id).subscribe(
-        (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.sucessMSG('刪除成功', ``);
-            this.getTBPPSM107();
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
-          this.loading = false;
-        }
-      );
-    });
-  }
-
   // convert to Excel and Download
   convertToExcel() {
-    let data;
-    let fileName;
-    let titleArray = [];
-    if (this.displayDataList.length > 0) {
-      data = this.formatDataForExcel(this.displayDataList);
-      fileName = `精整累計生產`;
-      titleArray = [
-        '站別',
-        '機台',
-        '累積單位',
-        '累積值',
-        '強制投產',
-        '是否使用',
-      ];
-    } else {
-      this.errorMSG('匯出失敗', '精整產能維護目前無資料');
-      return;
-    }
-    this.excelService.exportAsExcelFile(data, fileName, titleArray);
   }
 
   formatDataForExcel(_displayData) {
@@ -522,179 +579,6 @@ export class PPSI206RESComponent implements AfterViewInit {
     return excelData;
   }
 
-  // excel檔名
-  incomingfile(event) {
-    this.file = event.target.files[0];
-    console.log('incomingfile e1 : ' + this.file);
-    let lastname = this.file.name.split('.').pop();
-    if (lastname !== 'xlsx' && lastname !== 'xls' && lastname !== 'csv') {
-      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-      this.clearFile();
-      return;
-    }
-  }
-
-  // EXCEL 匯入
-  Upload() {
-    let value = document.getElementsByTagName('input')[0].value;
-    let lastname = this.file.name.split('.').pop();
-    console.log('incomingfile e2 : ' + this.file);
-    if (value === '') {
-      this.errorMSG('無檔案', '請先選擇欲上傳檔案。');
-      this.clearFile();
-    } else if (
-      lastname !== 'xlsx' &&
-      lastname !== 'xls' &&
-      lastname !== 'csv'
-    ) {
-      this.errorMSG('檔案格式錯誤', '僅限定上傳 Excel 格式。');
-      this.clearFile();
-      return;
-    } else {
-      this.Excelimport();
-    }
-  }
-  // EXCEL 樣板內資料取得及檢誤
-  Excelimport() {
-    let fileReader = new FileReader();
-    this.importdata = [];
-    fileReader.onload = (e) => {
-      this.arrayBuffer = fileReader.result;
-      var data = new Uint8Array(this.arrayBuffer);
-      var arr = new Array();
-      for (var i = 0; i != data.length; ++i)
-        arr[i] = String.fromCharCode(data[i]);
-      var bstr = arr.join('');
-      var workbook = XLSX.read(bstr, { type: 'binary' });
-      var first_sheet_name = workbook.SheetNames[0];
-      var worksheet: any = workbook.Sheets[first_sheet_name];
-      this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-
-      this.checkTemplate(worksheet, this.importdata);
-    };
-    fileReader.readAsArrayBuffer(this.file);
-  }
-
-  // EXCEL 匯入樣版檢查
-  checkTemplate(worksheet, importdata) {
-    if (
-      worksheet.A1 === undefined ||
-      worksheet.B1 === undefined ||
-      worksheet.C1 === undefined ||
-      worksheet.D1 === undefined ||
-      worksheet.E1 === undefined ||
-      worksheet.F1 === undefined
-    ) {
-      this.errorMSG('檔案樣板錯誤', '請先下載資料後，再透過該檔案調整上傳。');
-      this.clearFile();
-      return;
-    } else if (
-      worksheet.A1.v !== '站別' ||
-      worksheet.B1.v !== '機台' ||
-      worksheet.C1.v !== '累積單位' ||
-      worksheet.D1.v !== '累積值' ||
-      worksheet.E1.v !== '強制投產' ||
-      worksheet.F1.v !== '是否使用'
-    ) {
-      this.errorMSG(
-        '檔案樣板欄位表頭錯誤',
-        '請先下載資料後，再透過該檔案調整上傳。'
-      );
-      this.clearFile();
-      return;
-    } else {
-      this.importExcel(importdata);
-    }
-  }
-
-  // EXCEL 資料上傳 (ppsinptb02_nonbar)
-  importExcel(_data) {
-    for (let i = 0; i < _data.length; i++) {
-      let schShopCode = _data[i].站別;
-      let equipCode = _data[i].機台;
-      let cumsumType = _data[i].累積單位;
-      let accumulation = _data[i].累積值;
-      let dateLimit = _data[i].強制投產;
-      let useFlag = _data[i].是否使用;
-      if (schShopCode === undefined || equipCode === undefined) {
-        let col = i + 2;
-        this.errorTXT.push(`第 ` + col + `列，有欄位為空值`);
-        this.isERROR = true;
-      }
-    }
-
-    if (this.isERROR) {
-      // 匯入錯誤失敗訊息提醒
-      this.clearFile();
-      this.isErrorMsg = true;
-      this.importdata_new = [];
-      this.errorMSG('匯入錯誤', this.errorTXT);
-    } else {
-      for (let i = 0; i < _data.length; i++) {
-        let schShopCode = _data[i].站別.toString();
-        let equipCode = _data[i].機台.toString();
-        let cumsumType = _data[i].累積單位.toString();
-        let accumulation = _data[i].累積值.toString();
-        let dateLimit = _data[i].強制投產.toString();
-        let useFlag = _data[i].是否使用.toString();
-        let userUpdate = this.userName.toString();
-        let userCreate = this.userName.toString();
-
-        this.importdata_new.push({
-          plant: this.PLANT,
-          schShopCode: schShopCode,
-          equipCode: equipCode,
-          cumsumType: cumsumType,
-          accumulation: accumulation,
-          dateLimit: dateLimit,
-          useFlag: useFlag,
-          userUpdate: userUpdate,
-          userCreate: userCreate,
-        });
-      }
-
-      return new Promise((resolve, reject) => {
-        this.loading = true;
-        let myObj = this;
-        let obj = {};
-        obj = {
-          EXCELDATA: this.importdata_new,
-        };
-        console.log(obj);
-        myObj.PPSService.importTBPPSM107Excel(obj).subscribe(
-          async (res) => {
-            if (res.code === 200) {
-              this.loading = false;
-              await this.getTBPPSM107();
-              this.sucessMSG('EXCCEL上傳成功', '');
-              this.clearFile();
-              this.onInit();
-            } else {
-              this.errorMSG('匯入錯誤', res.message);
-              this.clearFile();
-              this.importdata_new = [];
-              this.loading = false;
-            }
-          },
-          (err) => {
-            reject('upload fail');
-            this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
-            this.importdata_new = [];
-            this.loading = false;
-          }
-        );
-      });
-    }
-  }
-
-  // 清空資料
-  clearFile() {
-    var objFile = document.getElementsByTagName('input')[0];
-    console.log(objFile.value + '已清除');
-    objFile.value = '';
-    console.log(this.file);
-    console.log(JSON.stringify(this.file));
-  }
 
   sucessMSG(_title, _plan): void {
     this.Modal.success({
@@ -710,62 +594,6 @@ export class PPSI206RESComponent implements AfterViewInit {
     });
   }
 
-  //============== 新增資料之彈出視窗 =====================
-  // 新增產能維護之彈出視窗
-  openYieldInput(): void {
-    this.isVisibleYield = true;
-    this.getShopCode();
-  }
-  //取消產能維護彈出視窗
-  cancelYieldInput(): void {
-    this.onInit();
-    this.isVisibleYield = false;
-  }
+  
 
-  onBtnClick1(e) {
-    console.log(this.conditionList);
-    e.params.api.setFocusedCell(e.params.node.rowIndex, 'accumulation');
-    e.params.api.startEditingCell({
-      rowIndex: e.params.node.rowIndex,
-      colKey: 'accumulation',
-    });
-  }
-
-  onBtnClick2(e) {
-    this.saveEdit(e.rowData, e.rowData.idx);
-  }
-
-  onBtnClick3(e) {
-    this.cancelEdit(e.rowData.idx);
-  }
-
-  onBtnClick4(e) {
-    this.deleteRow(e.rowData.id);
-  }
-
-  onRowClicked(event: any) {
-    console.log('Row clicked:', event.node);
-    this.whichRow = event.data.equipCode;
-  }
-
-  cumsumTypeDisplay(params: any): string {
-    const selectedOption = params.data.cumsumType;
-    console.log('selected option:', selectedOption);
-    if (selectedOption === 'day') {
-      return '日';
-    } else if (selectedOption === 'hour') {
-      return '小時';
-    }
-    return '';
-  }
-
-  cumsumTypeSelect(params: any): string {
-    const selectedOption = params.value;
-    if (selectedOption === 'day') {
-      return '日';
-    } else if (selectedOption === 'hour') {
-      return '小時';
-    }
-    return '';
-  }
 }
