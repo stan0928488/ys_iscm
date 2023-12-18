@@ -405,40 +405,45 @@ export class PPSService {
   getPPSINP08List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
+    return this.http.get<any>(queryUrl);
   }
   // I108 insertI108Save
   insertI108Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I108 updateI108Save
   updateI108Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
   // I108 delI108Data 刪除資料
   delI108Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
+
   // I108 importI108Excel EXCEL匯入
   importI108Excel(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   // 9.退火爐工時

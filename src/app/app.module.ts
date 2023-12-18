@@ -191,6 +191,7 @@ import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPag
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
 import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
 import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
+import { AGCustomActionCellComponent } from './shared/ag-component/ag-custom-action-cell-component';
 
 
 registerLocaleData(zh);
@@ -351,6 +352,7 @@ registerLocaleData(zh);
     PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
+    AGCustomActionCellComponent,
     PPSI112TabMenuComponent,
   ],
   imports: [

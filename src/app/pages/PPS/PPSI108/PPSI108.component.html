@@ -1,31 +1,33 @@
 <nz-content style="margin: 0 16px">
-  <nz-breadcrumb style="margin: 16px 0">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
-        <ul>
-          <li><a href="#/commonData/I101">鋼種分類</a></li>
-          <li><a href="#/commonData/I102">站別機台關聯表</a></li>
-          <li><a href="#/commonData/I103">設備能力</a></li>
-          <li><a href="#/commonData/I104">整備時間</a></li>
-          <li><a href="#/commonData/I105">大調機</a></li>
-          <li><a href="#/commonData/I106">小調機</a></li>
-          <li><a href="#/commonData/I107">線速工時</a></li>
-          <li class="active">
-            <a href="#/commonData/I108"
-              ><label style="color: blue">非線速工時</label></a
-            >
-          </li>
-          <li><a href="#/commonData/I109">產率設定</a></li>
-          <li><a href="#/commonData/I110">產能維護</a></li>
-          <li><a href="#/commonData/I111">combine資料設定</a></li>
-          <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+
+  <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="LoadingPage">
+    <nz-breadcrumb style="margin: 16px 0">
+      <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+      <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
+      <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
+          <ul>
+            <li><a href="#/commonData/I101">鋼種分類</a></li>
+            <li><a href="#/commonData/I102">站別機台關聯表</a></li>
+            <li><a href="#/commonData/I103">設備能力</a></li>
+            <li><a href="#/commonData/I104">整備時間</a></li>
+            <li><a href="#/commonData/I105">大調機</a></li>
+            <li><a href="#/commonData/I106">小調機</a></li>
+            <li><a href="#/commonData/I107">線速工時</a></li>
+            <li class="active">
+              <a href="#/commonData/I108"
+                ><label style="color: blue">非線速工時</label></a
+              >
+            </li>
+            <li><a href="#/commonData/I109">產率設定</a></li>
+            <li><a href="#/commonData/I110">產能維護</a></li>
+            <li><a href="#/commonData/I111">combine資料設定</a></li>
+            <li><a href="#/commonData/I200">系統設定</a></li>
+          </ul>
+        </tr>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
@@ -81,7 +83,21 @@
           </button>
         </div>
         <div nz-col [nzSpan]="90" style="padding-top: 10px">
-          <nz-table
+          <ag-grid-angular
+            style="width:1100px; height:100vh; margin-top: 10px"
+            class="ag-theme-alpine"
+            [rowData]="displayPPSINP08List"
+            [columnDefs]="ppsinp08ColumnDefs"
+            [gridOptions]="gridOptions"
+            [pagination]="true"
+            [suppressClickEdit]="true"
+            [editType]="'fullRow'"
+            (cellEditingStopped)="cellEditingStoppedHandler($event)"
+            (firstDataRendered)="onFirstDataRendered($event)"
+            (gridReady)="onGridReady($event)"
+            [paginationPageSize]="20">
+          </ag-grid-angular>
+          <!-- <nz-table
             #RowTable8
             nzBordered
             [nzData]="displayPPSINP08List"
@@ -351,7 +367,7 @@
                 </ng-template>
               </tr>
             </tbody>
-          </nz-table>
+          </nz-table> -->
         </div>
       </div>
     </nz-tab>
@@ -367,6 +383,10 @@
       </a>
     </nz-tab>
   </nz-tabset>
+
+  </nz-spin>
+
+
 </nz-content>
 
 <!-- 非線速新增 -->
