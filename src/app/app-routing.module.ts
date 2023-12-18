@@ -85,7 +85,12 @@ import { MSHI003CanDeactivateGuard } from './pages/MSH/MSHI003/MSHI003.can.deact
 import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
 import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
+import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
 import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
+import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
+import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_TabMenu.component';
+import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
+import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
@@ -133,8 +138,6 @@ import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Tab
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
-import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
-import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
 
 const routes: Routes = [
   {
@@ -275,6 +278,15 @@ const routes: Routes = [
         children: [
           { path: 'I202', component: PPSI202Component },
           { path: 'I202_NonBar', component: PPSI202NonBarComponent },
+        ],
+      },
+      {
+        path: 'I206_TabMenu',
+        component: PPSI206TabMenuComponent,
+        children: [
+          { path: '', redirectTo: '/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
+          { path: 'I206_SET', component: PPSI206SETComponent },
+          { path: 'I206_RES', component: PPSI206RESComponent },
         ],
       },
       { path: 'I205', component: PPSI205Component },

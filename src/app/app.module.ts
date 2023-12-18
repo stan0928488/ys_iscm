@@ -191,7 +191,9 @@ import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPag
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
 import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
 import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
-
+import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_TabMenu.component';
+import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
+import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 
 registerLocaleData(zh);
 
@@ -298,6 +300,7 @@ registerLocaleData(zh);
     PPSI210RefiningOpenSortRendererComponent,
     PPSI210RefiningOpenMachineRendererComponent,
     PPSI210RefiningSendChoiceRendererComponent,
+    PPSI112TabMenuComponent,
     PPSI112Component,
     PPSI112RefinIngComponent,
     BtnCellRendererUpdate,
@@ -317,6 +320,9 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShopCellEditorComponent,
     PPSI202_NonBarEditEquipCellEditorComponent,
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
+    PPSI206TabMenuComponent,
+    PPSI206SETComponent,
+    PPSI206RESComponent,
     PPSR344Component,
     PPSR321Component,
     PPSR321DetailTabMenuComponent,
@@ -351,7 +357,6 @@ registerLocaleData(zh);
     PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
-    PPSI112TabMenuComponent,
   ],
   imports: [
     BrowserModule,
