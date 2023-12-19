@@ -11,11 +11,11 @@ import { CookieService } from '../config/cookie.service';
 export class PPSService {
   APIURL: string = '';
   APINEWURL: string = '';
-  APIYW: string = '';
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'accept-user': this.cookieService.getCookie('USERNAME'),
+      'plant-code': this.cookieService.getCookie('plantCode')
     }),
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
@@ -261,7 +261,7 @@ export class PPSService {
   getPPSINP04List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/getPPSINP04List`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/getPPSINP04List`;
     return this.http.get(queryUrl);
   }
   // I104 delI104Tab1Data 刪除資料
@@ -269,7 +269,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl =
-      this.APIURL + `/FCP/I104` + nonbarUrl + `/delI104Tab1Data/${_ID}`;
+      this.APINEWURL + `/FCP/I104` + nonbarUrl + `/delI104Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I104 insertI104Tab1Save
@@ -277,7 +277,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -287,7 +287,7 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I104/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I104/updateSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -297,7 +297,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I104` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I104` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -405,40 +405,45 @@ export class PPSService {
   getPPSINP08List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
-    return this.http.get(queryUrl);
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
+    return this.http.get<any>(queryUrl);
   }
   // I108 insertI108Save
   insertI108Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I108 updateI108Save
   updateI108Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
+
   // I108 delI108Data 刪除資料
   delI108Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
+
   // I108 importI108Excel EXCEL匯入
   importI108Excel(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I108` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   // 9.退火爐工時
@@ -542,19 +547,19 @@ export class PPSService {
   //Get getPPSINP17List 取得17tab data
   getPPSINP17List() {
     console.log('api service getPPSINP17List');
-    let queryUrl = this.APIURL + '/FCP/I117/getPPSINP17List';
+    let queryUrl = this.APINEWURL + '/FCP/I117/getPPSINP17List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I117 delI117Tab1Data 刪除資料
   delI117Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I117/delI117Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/delI117Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I117 insertI117Tab1Save
   insertI117Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I117/insertI117Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/insertI117Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -562,7 +567,7 @@ export class PPSService {
   // I117 updateI117Tab1Save修改存檔
   updateI117Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I117/updateI117Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I117/updateI117Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -572,7 +577,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I117` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I117` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -2126,6 +2131,42 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  
+  // 取得虛擬訂單設定
+  getTbppsm040(plant:string) {
+    let queryUrl = this.APINEWURL + `/pi/I206/getTbppsm040/${plant}`;
+    return this.http.get<any>(queryUrl);
+  }
+  // 虛擬訂單設定-修改
+  updateTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/pi/I206/updateTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 虛擬訂單設定-刪除
+  delTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/pi/I206/delTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 虛擬訂單設定
+  importTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/pi/I206/importTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 虛擬訂單設定-資料生成
+  convertTbppsm041(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/pi/I206/fillTbppsm041Data`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 取得虛擬訂單結果表
+  getTbppsm041(plant:string) {
+    let queryUrl = this.APINEWURL + `/pi/I206/getTbppsm041/${plant}`;
+    return this.http.get<any>(queryUrl);
+  }
+
   getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
     const queryUrl = `${this.APINEWURL}/FCP/R311/getShipRepoEditionList`;
@@ -2554,53 +2595,6 @@ export class PPSService {
     return this.http.get(queryUrl);
   }
 
-  postSelectTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/select-parameter`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
 
-  getBilletTypeList(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/billettype-list`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
 
-  getTBPOMM04() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/tbpomm04Data`;
-    return this.http.get(queryUrl);
-  }
-
-  getProfiles() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/profiles`;
-    return this.http.get(queryUrl);
-  }
-
-  postInsertParameter(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm05/post/insert-parameter`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  getTbpommm04Version() {
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/get/version`;
-    return this.http.get(queryUrl);
-  }
-
-  postUpdateTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/post/update-tbpomm04`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  postDeleteTbpomm04(_parms) {
-    const body = JSON.stringify(_parms);
-    let queryUrl = `${this.APIYW}/iscm/ppsTbpomm04/post/delete-tbpomm04`;
-    return this.http.post<any>(queryUrl, body, this.httpOptions);
-  }
-
-  getMergeResult() {
-    let queryUrl = `${this.APIYW}/iscm/pomV0rOrder/merge/result`;
-    return this.http.get(queryUrl);
-  }
 }

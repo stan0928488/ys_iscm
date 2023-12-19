@@ -96,7 +96,7 @@ export class FcpStatusWebSocketStomp
         }
 
         // 正常連線之後重置為true
-        // 讓之後再斷線可以執行重連
+        // 讓之後再斷線可以啟動重連
         this.isFirstLostConnection = true;
 
         console.log('Web Socket: Connected', frame);
@@ -130,9 +130,8 @@ export class FcpStatusWebSocketStomp
       if(!_.isNil(this.autoReconnectTimeOutId )){
         clearTimeout(this.autoReconnectTimeOutId );
       }
-      if(!_.isNil(this.originalXMLHttpRequestOpen)){
-        XMLHttpRequest.prototype.open = this.originalXMLHttpRequestOpen;
-      }
+
+      this.restoreXMLHttpRequest();
     }
 
     public disconnect(){
@@ -192,7 +191,7 @@ export class FcpStatusWebSocketStomp
     addHeaderForStompHttpRequest(){
       const originalOpen = XMLHttpRequest.prototype.open;
       this.originalXMLHttpRequestOpen = originalOpen;
-      this.originalXMLHttpRequestSetHeader = XMLHttpRequest.prototype.setRequestHeader
+      this.originalXMLHttpRequestSetHeader = XMLHttpRequest.prototype.setRequestHeader;
       const regex = new RegExp(`\\S+?\\/${this.webSocketEndpointPrefix}\\/\\S+`);
       const _this = this;
       XMLHttpRequest.prototype.open = function(method, url) {

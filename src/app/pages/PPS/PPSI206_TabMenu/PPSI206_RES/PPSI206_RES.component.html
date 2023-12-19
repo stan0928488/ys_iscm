@@ -1,0 +1,38 @@
+<nz-content style="margin:0 16px;">
+  
+  <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
+    <div style="display: flex">
+      <button
+        nz-button
+        style="
+          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+          background-color: #4caf50;
+          border: 2px blue none;
+        "
+        nzType="primary"
+        (click)="convertToExcel()"
+      >
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        E X C E L 匯出
+      </button>
+    </div>
+    <div style = "float:right;">
+      <h3>異動者 : ___________要補上
+        異動時間 : ___________要補上
+      </h3>
+    </div> 
+    <p><p>
+
+    <ag-grid-angular
+      style="width: 100%; height: calc(100vh - 220px); overflow: scroll; "
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [gridOptions]="gridOptions"
+      [suppressClickEdit]="true"
+      [animateRows]="true"
+    >
+    </ag-grid-angular>
+  </nz-spin>
+</nz-content>

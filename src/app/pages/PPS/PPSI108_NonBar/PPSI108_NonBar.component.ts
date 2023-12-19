@@ -7,6 +7,9 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import { CellEditingStoppedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams } from "ag-grid-community";
+import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 
 interface ItemData {
@@ -68,6 +71,12 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
 
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+
+  // 哪些欄位在編輯完需將其轉成數字
+  parseNumberColumnIdsMap = new Map(); 
+
   constructor(
     private PPSService: PPSService,
     private excelService: ExcelService,
@@ -79,6 +88,10 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
     this.plantCode = this.cookieService.getCookie("plantCode");
+
+    this.parseNumberColumnIdsMap.set('diaMin', '尺寸MIN');
+    this.parseNumberColumnIdsMap.set('diaMax', '尺寸MAX');
+    this.parseNumberColumnIdsMap.set('wkTime', '加工時間');
   }
 
 
@@ -129,16 +142,229 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     this.errorTXT = [];
   }
 
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      editable: true,
+      resizable: true,
+      autoHeight: true,
+    }
+  };
+
+  ppsinp08ColumnDefs : ColDef[] = [
+    { 
+      headerName:'站別', 
+      field:'schShopCode',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機台', 
+      field:'equipCode',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機群', 
+      field:'equipGroup',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'製程代號', 
+      field:'equipProcessCode',
+      width: 150,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'鋼種', 
+      field:'steelType',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'包裝碼', 
+      field:'packCode',
+      width: 130,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'尺寸MIN', 
+      field:'diaMin',
+      width: 140,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'尺寸MAX', 
+      field:'diaMax',
+      width: 140,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'加工時間', 
+      field:'wkTime',
+      width: 150,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action', 
+      width: 140,
+      editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: AGCustomActionCellComponent,
+      cellRendererParams:{
+        edit : this.rowEditHandler.bind(this),
+        cancelEdit: this.rowCancalEditHandler.bind(this),
+        saveEdit : this.saveEditHandler.bind(this),
+        delete : this.deleteHandler.bind(this)
+      }
+    }
+  ];
+
+   // 首次渲染資料完畢後被調用
+   onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，再做寬度適應的調整
+  }
+
+  // 獲取ag-grid的Api函數
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.editCache[event.data.idx].data, ['isEditing']);
+    
+    if(_.isEqual(newValue, oldValue)){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+    }
+    
+  }
+
+  /**
+   * 刪除某row資料
+   * @param params 
+   */
+  deleteHandler(params: ICellRendererParams<any, any>){
+    this.delID(params.data.id);
+  }
+
+
+  /**
+   * 儲存編輯的資料
+   * @param params 
+   */
+  async saveEditHandler(params: ICellRendererParams<any, any>){
+    
+    // 關閉編輯狀態讓資料生效進到當前陣列中的某條row之中
+    params.api.stopEditing(false);
+
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache[params.data.idx].data;
+
+    // 排除非業務的資料(isEditing)進行比較
+    // 若一樣，表示使用者未修改任何資料，不給予更新
+    if(_.isEqual(_.omit(params.data, ['isEditing']), _.omit(cacheRowData, ['isEditing']))){
+      // 無法轉換提示錯誤
+       this.message.warning('無法更新，你尚未修改任何資料');
+       return;
+    }
+    
+    // 若是尺寸MIN、尺寸MAX、加工時間需轉成數字
+    // 若使用者這三個欄位輸入為空或非數字字元則會得到false
+    if(!this.cellValueValidate(params)){
+      // 還原為原資料
+      this.displayppsinptb08List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+      // 重新渲染資料
+      this.gridApi.setRowData(this.displayppsinptb08List);
+      return;
+    }
+    
+    // 驗證資料並執行更新
+    await this.saveEditWithValidation(params.data, params.node.rowIndex);
+    this.getPpsinptb08List();
+    // Y軸滾動到此row的位置
+    this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
+
+  /**
+   * 若是尺寸MIN、尺寸MAX、加工時間需轉成數字
+   * @param params 
+   */
+  cellValueValidate (params : ICellRendererParams<any, any>) : boolean{
+    for (const item of [...this.parseNumberColumnIdsMap.keys()]) {
+      if(typeof params.data[item] !== 'number'){
+        const parsedNumber = parseFloat(params.data[item]); 
+        if (!isNaN(parsedNumber)) {
+          // 若成功轉換成數字，更新資料
+          params.data[item] = parsedNumber;
+        } else {
+          // 無法轉換提示錯誤
+          // 該欄位使用者輸入非法字元
+          this.message.error(`無法更新，${this.parseNumberColumnIdsMap.get(item)}不可為空或必須為數字`);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+   /**
+   * 開始編輯
+   * @param params 
+   */
+   rowEditHandler(params: ICellRendererParams<any, any>){
+
+    // 控制編輯按鈕的顯示切換
+    params.data.isEditing = true;
+    
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，且帶的該欄位是要可編輯的
+    params.api.startEditingCell({
+      rowIndex : params.rowIndex,
+      colKey : 'wkTime' 
+    });
+  }
+
+/**
+ * 取消編輯並還原已變動的資料
+ * @param params 
+ */
+  rowCancalEditHandler(params: ICellRendererParams<any, any>){
+
+      // 關閉編輯狀態
+      params.api.stopEditing(false);
+      params.data.isEditing = false;
+
+      // 透過id取得緩存的舊資料
+      const cacheRowData = this.editCache[params.data.idx].data;
+
+      // 還原為原資料
+      this.displayppsinptb08List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+
+      // 重新渲染資料
+      this.gridApi.setRowData(this.displayppsinptb08List);
+
+      // Y軸滾動到此row的位置
+      this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
   
   ppsinptb08Tmp;
   ppsinptb08List: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayppsinptb08List: ItemData[] = [];
   getPpsinptb08List() {
-    this.loading = true;
+    this.LoadingPage = true;
     let myObj = this;
     this.PPSService.getPPSINP08List('2').subscribe(res => {
-      this.ppsinptb08Tmp = res;
+      this.ppsinptb08Tmp = res.data;
       const data = [];
       for (let i = 0; i < this.ppsinptb08Tmp.length ; i++) {
         data.push({
@@ -153,14 +379,15 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
           packCode: this.ppsinptb08Tmp[i].packCode,
           diaMin: this.ppsinptb08Tmp[i].diaMin,
           diaMax: this.ppsinptb08Tmp[i].diaMax,
-          wkTime: this.ppsinptb08Tmp[i].wkTime
+          wkTime: this.ppsinptb08Tmp[i].wkTime,
+          isEditing : false
         });
       }
       this.ppsinptb08List = data;
       this.displayppsinptb08List = this.ppsinptb08List;
       this.updateEditCache();
       console.log(this.ppsinptb08List);
-      myObj.loading = false;
+      myObj.LoadingPage = false;
     });
     
   }
@@ -216,27 +443,39 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     };
   }
 
-
   // update Save
-  saveEdit(id: number): void {
+  async saveEditWithValidation(updateRowData : any, rowIndex : number): Promise<void> {
     let myObj = this;
-    if (this.editCache[id].data.schShopCode === undefined) {
+    if (_.isEmpty(updateRowData.schShopCode)) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
+    } else if (_.isEmpty(updateRowData.equipCode) && _.isEmpty(updateRowData.equipGroup)) {
       myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
     } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(id)
-        },
-        nzOnCancel: () =>
-          console.log("cancel")
-      });
+        await this.updateSave(updateRowData, rowIndex);
     }
   }
+
+  // saveEdit(id: number): void {
+  //   let myObj = this;
+  //   if (this.editCache[id].data.schShopCode === undefined) {
+  //     myObj.message.create("error", "「站別」不可為空");
+  //     return;
+  //   } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
+  //     myObj.message.create("error", "「機台」和「機群」至少填一項");
+  //     return;
+  //   } else {
+  //     this.Modal.confirm({
+  //       nzTitle: '是否確定修改',
+  //       nzOnOk: () => {
+  //         this.updateSave(id)
+  //       },
+  //       nzOnCancel: () =>
+  //         console.log("cancel")
+  //     });
+  //   }
+  // }
   
 
   // update
@@ -271,12 +510,12 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
       })
 
       myObj.PPSService.insertI108Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.code === 200) {
           this.onInit();
           this.getPpsinptb08List();
           this.sucessMSG("新增成功", ``);
         } else {
-          this.errorMSG("新增失敗", res[0].MSG);
+          this.errorMSG("新增失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -286,57 +525,108 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     });
   }
 
-
-  // 修改資料
-  updateSave(_id) {
+  updateSave(updateRowData : any, rowIndex : number) : Promise<string>{
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        id : this.editCache[_id].data.id,
-        plantCode : this.editCache[_id].data.plantCode,
-        schShopCode : this.editCache[_id].data.schShopCode,
-        equipCode : this.editCache[_id].data.equipCode,
-        equipGroup : this.editCache[_id].data.equipGroup,
-        equipProcessCode : this.editCache[_id].data.equipProcessCode,
-        steelType : this.editCache[_id].data.steelType,
-        packCode : this.editCache[_id].data.packCode,
-        diaMin : this.editCache[_id].data.diaMin,
-        diaMax : this.editCache[_id].data.diaMax,
-        wkTime : this.editCache[_id].data.wkTime,
+        id : updateRowData.id,
+        plantCode : updateRowData.plantCode,
+        schShopCode : updateRowData.schShopCode,
+        equipCode : updateRowData.equipCode,
+        equipGroup : updateRowData.equipGroup,
+        equipProcessCode : updateRowData.equipProcessCode,
+        steelType : updateRowData.steelType,
+        packCode : updateRowData.packCode,
+        diaMin : updateRowData.diaMin,
+        diaMax : updateRowData.diaMax,
+        wkTime : updateRowData.wkTime,
         userName : this.userName
       })
       myObj.PPSService.updateI108Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.code === 200) {
           this.onInit();
           this.sucessMSG("修改成功", ``);
-          const index = this.ppsinptb08List.findIndex(item => item.idx === _id);
-          Object.assign(this.ppsinptb08List[index], this.editCache[_id].data);
-          this.editCache[_id].edit = false;
+          resolve('upload success');
         } else {
-          this.errorMSG("修改失敗", res[0].MSG);
+          this.errorMSG("修改失敗", res.message);
+          this.restoreRowData(updateRowData, rowIndex);
+          reject('upload fail');
         }
+        this.LoadingPage = false;
       },err => {
-        reject('upload fail');
         this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+        this.restoreRowData(updateRowData, rowIndex);
+        reject('upload fail');
         this.LoadingPage = false;
       })
     });
   }
 
-  
-  // 刪除資料
-  delID(_id) {
-    let myObj = this;
+  restoreRowData(rowData:any, rowIndex : number){
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache[rowData.idx].data;
+    // 還原為原資料
+    this.displayppsinptb08List[rowIndex] = _.cloneDeep(cacheRowData);
+    // 重新渲染資料
+    this.gridApi.setRowData(this.displayppsinptb08List);
+  }
+
+
+  // 修改資料
+  // updateSave(_id) {
+  //   let myObj = this;
+  //   this.LoadingPage = true;
+  //   return new Promise((resolve, reject) => {
+  //     let obj = {};
+  //     _.extend(obj, {
+  //       id : this.editCache[_id].data.id,
+  //       plantCode : this.editCache[_id].data.plantCode,
+  //       schShopCode : this.editCache[_id].data.schShopCode,
+  //       equipCode : this.editCache[_id].data.equipCode,
+  //       equipGroup : this.editCache[_id].data.equipGroup,
+  //       equipProcessCode : this.editCache[_id].data.equipProcessCode,
+  //       steelType : this.editCache[_id].data.steelType,
+  //       packCode : this.editCache[_id].data.packCode,
+  //       diaMin : this.editCache[_id].data.diaMin,
+  //       diaMax : this.editCache[_id].data.diaMax,
+  //       wkTime : this.editCache[_id].data.wkTime,
+  //       userName : this.userName
+  //     })
+  //     myObj.PPSService.updateI108Save('2', obj).subscribe(res => {
+  //       if(res.code === 200) {
+  //         this.onInit();
+  //         this.sucessMSG("修改成功", ``);
+  //         const index = this.ppsinptb08List.findIndex(item => item.idx === _id);
+  //         Object.assign(this.ppsinptb08List[index], this.editCache[_id].data);
+  //         this.editCache[_id].edit = false;
+  //       } else {
+  //         this.errorMSG("修改失敗", res.message);
+  //         this.LoadingPage = false;
+  //       }
+  //     },err => {
+  //       reject('upload fail');
+  //       this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+  //       this.LoadingPage = false;
+  //     })
+  //   });
+  // }
+
+
+  delID(id) {
+    this.LoadingPage = true;
     return new Promise((resolve, reject) => {
-      let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI108Data('2', id).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      this.PPSService.delI108Data('2', id).subscribe(res => {
+        if(res.code === 200) {
           this.onInit();
           this.sucessMSG("刪除成功", ``);
           this.getPpsinptb08List();
         }
+        else{
+          this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        }
+        this.LoadingPage = false;
       },err => {
         reject('upload fail');
         this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
@@ -344,6 +634,31 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
       })
     });
   }
+  
+  // 刪除資料
+  // delID(_id) {
+  //   let myObj = this;
+  //   this.LoadingPage = true;
+  //   return new Promise((resolve, reject) => {
+  //     let id = this.editCache[_id].data.id;
+  //     myObj.PPSService.delI108Data('2', id).subscribe(res => {
+  //       if(res.code === 200) {
+  //         this.onInit();
+  //         this.sucessMSG("刪除成功", ``);
+  //         this.getPpsinptb08List();
+  //         this.LoadingPage = false;
+  //       }
+  //       else{
+  //         this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+  //         this.LoadingPage = false;
+  //       }
+  //     },err => {
+  //       reject('upload fail');
+  //       this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+  //       this.LoadingPage = false;
+  //     })
+  //   });
+  // }
 
   
   //convert to Excel and Download
@@ -500,7 +815,7 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
           userName : this.userName
         })
         myObj.PPSService.importI108Excel('2', obj).subscribe(res => {
-          if(res[0].MSG === "Y") {
+          if(res.message === "Y") {
             this.loading = false;
             this.LoadingPage = false;
 

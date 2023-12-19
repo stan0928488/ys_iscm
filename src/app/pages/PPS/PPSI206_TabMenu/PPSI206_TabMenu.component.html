@@ -1,0 +1,29 @@
+<nz-content style="margin:16px 16px;">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
+        <nz-breadcrumb-item>規劃策略</nz-breadcrumb-item>
+        <nz-breadcrumb-item>策略基礎設定</nz-breadcrumb-item>
+        <nz-breadcrumb-item>虛擬訂單設定(PPSI206)</nz-breadcrumb-item>
+      </nz-breadcrumb>
+      
+    <nz-tabset style="margin-bottom:5px;" nzLinkRouter [nzType]="'card'" >
+        <nz-tab>
+            <a *nzTabLink 
+                nz-tab-link 
+                routerLinkActive="active"
+                [routerLink]="['/PlanSet/I206_TabMenu/I206_SET']">
+                虛擬訂單設定
+            </a>
+          </nz-tab>
+  
+          <nz-tab>
+            <a *nzTabLink 
+                nz-tab-link 
+                routerLinkActive="active"
+                [routerLink]="['/PlanSet/I206_TabMenu/I206_RES']">
+                虛擬訂單結果
+            </a>
+          </nz-tab>
+    </nz-tabset>
+    <router-outlet></router-outlet>
+  </nz-content>

@@ -133,6 +133,8 @@ import { PPSR310Component } from './pages/PPS/PPSR310/PPSR310.component';
 import { OpenMachineRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/open-machine-renderer-component';
 import { PPSI210RefiningOpenMachineRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-machine-renderer-component';
 import { AutoCampaignUpdateSaveCellRenderer } from './pages/PPS/PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
+import { PlanItemUpdateSaveCellRenderer } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PlanItemUpdateSaveCellRenderer.component';
+import { PlanItemDatePickerCellEditor } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PlanItemDatePickerCellEditor.component';
 import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
@@ -191,7 +193,9 @@ import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPag
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
 import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
 import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
-
+import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_TabMenu.component';
+import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
+import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 
 registerLocaleData(zh);
 
@@ -298,12 +302,16 @@ registerLocaleData(zh);
     PPSI210RefiningOpenSortRendererComponent,
     PPSI210RefiningOpenMachineRendererComponent,
     PPSI210RefiningSendChoiceRendererComponent,
+    PPSI112TabMenuComponent,
     PPSI112Component,
     PPSI112RefinIngComponent,
     BtnCellRendererUpdate,
-    SummaryDatePickerCellEditorComponent,
+    PlanItemDatePickerCellEditor,
     PPSR310Component,
     AutoCampaignUpdateSaveCellRenderer,
+    SummaryDatePickerCellEditorComponent,
+    PlanItemUpdateSaveCellRenderer,
+    PlanItemDatePickerCellEditor,
     ListPpsComponent,
     PPSI201NonBarComponent,
     PPSR311Component,
@@ -317,6 +325,9 @@ registerLocaleData(zh);
     PPSI202_NonBarEditShopCellEditorComponent,
     PPSI202_NonBarEditEquipCellEditorComponent,
     PPSI202_NonBarEditShutdownTypeCellEditorComponent,
+    PPSI206TabMenuComponent,
+    PPSI206SETComponent,
+    PPSI206RESComponent,
     PPSR344Component,
     PPSR321Component,
     PPSR321DetailTabMenuComponent,
@@ -351,7 +362,6 @@ registerLocaleData(zh);
     PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
-    PPSI112TabMenuComponent,
   ],
   imports: [
     BrowserModule,
