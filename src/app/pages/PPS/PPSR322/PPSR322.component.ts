@@ -225,12 +225,20 @@ export class PPSR322Component implements OnInit, AfterViewInit {
   dataSet: any[];
   dataSetInfo: any[];
   exportExcel() {
+    const typeArray: string[] = [
+      '削皮股：',
+      '冷抽一股：',
+      '冷抽二股：',
+      '研磨股：',
+    ];
     for (let i = 0; i < this.childData5.length; i++) {
       const one = this.childData5[i].instructions.split(/(?=\d+\.)/);
+
       for (let k = 0; k < one.length; k++) {
         if (k === 0) {
           this.childDataInfo5.push({
-            first: one[k],
+            first: typeArray[i],
+            sort: one[k],
           });
         } else {
           this.childDataInfo5.push({
