@@ -51,7 +51,7 @@ export class PPSI206SETComponent implements AfterViewInit {
   tbppsm040EditCacheList: { [id: string]: { data: any } } = {};
 
   //存放資料的陣列
-  tbppsm107: ItemData[] = [];
+  tbppsm040: ItemData[] = [];
   //新增視窗開關
   isVisibleYield: boolean;
 
@@ -59,19 +59,6 @@ export class PPSI206SETComponent implements AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
   agGridContext : any;
-
-  preEquip;
-
-  schShopCode: string;
-  equipCode: string;
-  cumsumType: string;
-  accumulation: number;
-  dateLimit: number;
-  useFlag: string;
-  dateUpdate: string;
-  userUpdate: string;
-  userCreate: string;
-  discumsumType;
 
   isERROR = false;
   arrayBuffer: any;
@@ -118,7 +105,7 @@ export class PPSI206SETComponent implements AfterViewInit {
 
   async ngAfterViewInit() {
     this.getRunFCPCount();
-    await this.getTBPPSM107();
+    await this.getTbppsm040();
     this.onInit();
   }
 
@@ -132,16 +119,6 @@ export class PPSI206SETComponent implements AfterViewInit {
   }
 
   onInit() {
-    this.schShopCode = '';
-    this.equipCode = '';
-    this.cumsumType = '';
-    this.accumulation = undefined;
-    this.dateLimit = undefined;
-    this.useFlag = '';
-    this.dateUpdate = '';
-    this.userUpdate = '';
-    this.userCreate = '';
-
     this.isVisibleYield = false;
     this.loading = false;
     this.isErrorMsg = false;
@@ -269,63 +246,33 @@ export class PPSI206SETComponent implements AfterViewInit {
   myDataList;
   displayDataList: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
-  async getTBPPSM107() {
-    await this.PPSService.getTBPPSM107(this.PLANT).then((res) => {
-      this.myDataList = res.data;
-      for (let i = 0; i < this.myDataList.length; i++) {
-        this.tbppsm107.push({
-          id: this.myDataList[i].id,
-          schShopCode: this.myDataList[i].schShopCode,
-          equipCode: this.myDataList[i].equipCode,
-          cumsumType: this.myDataList[i].cumsumType,
-          accumulation: this.myDataList[i].accumulation,
-          dateLimit: this.myDataList[i].dateLimit,
-          useFlag: this.myDataList[i].useFlag,
-          dateUpdate: this.myDataList[i].dateUpdate,
-          userUpdate: this.myDataList[i].userUpdate,
-        });
+  async getTbppsm040() {
+    this.PPSService.getTbppsm040("YS").subscribe((res) => {
+      
+      if (res.length > 0) {
+        this.myDataList = res.data;
+        for (let i = 0; i < this.myDataList.length; i++) {
+          this.tbppsm040.push({
+            id: this.myDataList[i].id,
+            schShopCode: this.myDataList[i].schShopCode,
+            equipCode: this.myDataList[i].equipCode,
+            cumsumType: this.myDataList[i].cumsumType,
+            accumulation: this.myDataList[i].accumulation,
+            dateLimit: this.myDataList[i].dateLimit,
+            useFlag: this.myDataList[i].useFlag,
+            dateUpdate: this.myDataList[i].dateUpdate,
+            userUpdate: this.myDataList[i].userUpdate,
+          });
+        }
+        this.displayDataList = this.tbppsm040;
+        this.tbppsm040 = [];
+        this.myDataList = {};
+        this.loading = false;
+        this.updateEditCache();
+      } else {
+        this.message.error('無資料');
+        return;
       }
-      this.displayDataList = this.tbppsm107;
-      this.tbppsm107 = [];
-      this.myDataList = {};
-      this.loading = false;
-      this.updateEditCache();
-    })
-    .catch(error=>{
-      this.errorMSG('獲取資料失敗', `後台獲取資料發生錯誤：${error.message}，請聯繫系統工程師`);
-      this.loading = false;
-    });
-  }
-
-  changeDisplay() {
-    for (let i = 0; i < this.displayDataList.length; i++) {
-      if (this.displayDataList[i].cumsumType == 'day') {
-        this.discumsumType[i] = '天';
-      } else if (this.displayDataList[i].cumsumType == 'hour') {
-        this.discumsumType[i] = '小時';
-      }
-    }
-  }
-
-  shopCodeOptions;
-  getShopCode() {
-    this.PPSService.getShopCode(this.PLANT).subscribe((res) => {
-      // const data = res;
-      // this.shopCodeOptions = data.map((item) => item.schShopCode);
-      this.shopCodeOptions = res.data;
-    });
-  }
-
-  onSelect(event: boolean): void {
-    console.log('Select list opened:', event);
-    this.getEquipCode();
-    // 在这里执行你想要的操作
-  }
-
-  equipCodeOptions;
-  getEquipCode() {
-    this.PPSService.getEquipCode(this.PLANT, this.schShopCode).subscribe((res) => {
-      this.equipCodeOptions = res.data;
     });
   }
 
@@ -343,7 +290,7 @@ export class PPSI206SETComponent implements AfterViewInit {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delByEquipCode(id);
+        this.delData(id);
       },
       nzOnCancel: () => console.log('cancel'),
     });
@@ -407,21 +354,21 @@ export class PPSI206SETComponent implements AfterViewInit {
         useFlag: rowData.useFlag,
         userUpdate: this.userName,
       });
-      myObj.PPSService.updateTBPPSM107(obj).subscribe(
+      myObj.PPSService.updateTbppsm040(obj).subscribe(
         (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.sucessMSG('修改成功', ``);
-            const index = this.displayDataList.findIndex(
-              (item) => item.id === _id
-            );
-            this.getTBPPSM107();
-            // Object.assign(this.displayDataList[index], rowData);
-            // this.editCache[_equipCode].edit = false;
-          } else {
-            this.errorMSG('修改失敗', res.message);
-            this.loading = false;
-          }
+          // if (res.code === 200) {
+          //   this.onInit();
+          //   this.sucessMSG('修改成功', ``);
+          //   const index = this.displayDataList.findIndex(
+          //     (item) => item.id === _id
+          //   );
+          //   this.getTbppsm040();
+          //   // Object.assign(this.displayDataList[index], rowData);
+          //   // this.editCache[_equipCode].edit = false;
+          // } else {
+          //   this.errorMSG('修改失敗', res.message);
+          //   this.loading = false;
+          // }
         },
         (err) => {
           reject('upload fail');
@@ -433,24 +380,24 @@ export class PPSI206SETComponent implements AfterViewInit {
   }
 
   // 刪除資料
-  delByEquipCode(_id) {
+  delData(_id) {
     let myObj = this;
     this.loading = true;
     return new Promise((resolve, reject) => {
-      myObj.PPSService.delTBPPSM107(this.PLANT, _id).subscribe(
-        (res) => {
-          if (res.code === 200) {
-            this.onInit();
-            this.sucessMSG('刪除成功', ``);
-            this.getTBPPSM107();
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
-          this.loading = false;
-        }
-      );
+      // myObj.PPSService.delTbppsm040(this.PLANT, _id).subscribe(
+      //   (res) => {
+      //     if (res.code === 200) {
+      //       this.onInit();
+      //       this.sucessMSG('刪除成功', ``);
+      //       this.getTbppsm040();
+      //     }
+      //   },
+      //   (err) => {
+      //     reject('upload fail');
+      //     this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
+      //     this.loading = false;
+      //   }
+      // );
     });
   }
 
@@ -634,20 +581,20 @@ export class PPSI206SETComponent implements AfterViewInit {
           EXCELDATA: this.importdata_new,
         };
         console.log(obj);
-        myObj.PPSService.importTBPPSM107Excel(obj).subscribe(
+        myObj.PPSService.importTbppsm040(obj).subscribe(
           async (res) => {
-            if (res.code === 200) {
-              this.loading = false;
-              await this.getTBPPSM107();
-              this.sucessMSG('EXCCEL上傳成功', '');
-              this.clearFile();
-              this.onInit();
-            } else {
-              this.errorMSG('匯入錯誤', res.message);
-              this.clearFile();
-              this.importdata_new = [];
-              this.loading = false;
-            }
+            // if (res.code === 200) {
+            //   this.loading = false;
+            //   await this.getTbppsm040();
+            //   this.sucessMSG('EXCCEL上傳成功', '');
+            //   this.clearFile();
+            //   this.onInit();
+            // } else {
+            //   this.errorMSG('匯入錯誤', res.message);
+            //   this.clearFile();
+            //   this.importdata_new = [];
+            //   this.loading = false;
+            // }
           },
           (err) => {
             reject('upload fail');
@@ -816,24 +763,5 @@ export class PPSI206SETComponent implements AfterViewInit {
     this.gridApi = params.api;
   }
 
-  cumsumTypeDisplay(params: any): string {
-    const selectedOption = params.data.cumsumType;
-    console.log('selected option:', selectedOption);
-    if (selectedOption === 'day') {
-      return '日';
-    } else if (selectedOption === 'hour') {
-      return '小時';
-    }
-    return '';
-  }
 
-  cumsumTypeSelect(params: any): string {
-    const selectedOption = params.value;
-    if (selectedOption === 'day') {
-      return '日';
-    } else if (selectedOption === 'hour') {
-      return '小時';
-    }
-    return '';
-  }
 }

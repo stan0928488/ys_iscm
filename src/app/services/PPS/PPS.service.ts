@@ -2131,6 +2131,30 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  
+  // 取得虛擬訂單設定
+  getTbppsm040(plant:string) {
+    let queryUrl = this.APINEWURL + `/FCP/I206/getTbppsm040/${plant}`;
+    return this.http.get<any>(queryUrl);
+  }
+  // 虛擬訂單設定-修改
+  updateTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/FCP/I206/updateTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 虛擬訂單設定-刪除
+  delTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/FCP/I206/delTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+  // 取得虛擬訂單設定
+  importTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/FCP/I206/importTbppsm040`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
   // 取得虛擬訂單結果表
   getTbppsm041(plant:string) {
     let queryUrl = this.APINEWURL + `/FCP/I206/getTbppsm041/${plant}`;
