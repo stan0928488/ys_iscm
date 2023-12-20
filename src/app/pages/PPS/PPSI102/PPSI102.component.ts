@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -33,6 +33,7 @@ interface row {
   providers: [NzMessageService],
 })
 export class PPSI102Component implements OnInit {
+  thisTabName = "站別機台關聯表(PPSI102)"
   USERNAME: string;
   PLANT_CODE: any;
 
@@ -115,6 +116,7 @@ export class PPSI102Component implements OnInit {
   frameworkComponents: any;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -132,6 +134,13 @@ export class PPSI102Component implements OnInit {
 
   ngOnInit(): void {
     this.getDataList();
+  }
+
+  ngAfterViewInit() {
+    const aI102Tab = this.elementRef.nativeElement.querySelector('#aI102') as HTMLAnchorElement;
+    const liI102Tab = this.elementRef.nativeElement.querySelector('#liI102') as HTMLLIElement;
+    liI102Tab.style.backgroundColor = '#E4E3E3';
+    aI102Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   getDataList() {

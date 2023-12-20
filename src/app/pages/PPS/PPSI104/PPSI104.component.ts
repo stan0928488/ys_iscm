@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -36,6 +36,7 @@ interface ItemData3 {
   providers:[NzMessageService]
 })
 export class PPSI104Component implements AfterViewInit {
+  thisTabName = "整備時間(PPSI104)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -73,6 +74,7 @@ export class PPSI104Component implements AfterViewInit {
   titleArray = ["站別","機台","機群","上下料","搬運","其他整備","大調機","小調機","退料","冷卻"];
   importdata_repeat = [];
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -88,6 +90,11 @@ export class PPSI104Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP03List();
+    
+    const aI104Tab = this.elementRef.nativeElement.querySelector('#aI104') as HTMLAnchorElement;
+    const liI104Tab = this.elementRef.nativeElement.querySelector('#liI104') as HTMLLIElement;
+    liI104Tab.style.backgroundColor = '#E4E3E3';
+    aI104Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   

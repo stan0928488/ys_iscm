@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -39,7 +39,7 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI109Component implements AfterViewInit {
-  
+  thisTabName = "產率設定(PPSI109)";
   tableHeight: string;
   frameworkComponents: any;
   LoadingPage = false;
@@ -79,6 +79,7 @@ export class PPSI109Component implements AfterViewInit {
   pageSize = 30;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -98,6 +99,11 @@ export class PPSI109Component implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.gettbppsm012List();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
+    
+    const aI109Tab = this.elementRef.nativeElement.querySelector('#aI109') as HTMLAnchorElement;
+    const liI109Tab = this.elementRef.nativeElement.querySelector('#liI109') as HTMLLIElement;
+    liI109Tab.style.backgroundColor = '#E4E3E3';
+    aI109Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   onInit() {

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListPpsComponent } from './list-pps.component';
+import { ListPpsNonbarComponent } from './list-pps-nonbar.component';
 
-describe('ListPpsComponent', () => {
-  let component: ListPpsComponent;
-  let fixture: ComponentFixture<ListPpsComponent>;
+describe('ListPpsNonbarComponent', () => {
+  let component: ListPpsNonbarComponent;
+  let fixture: ComponentFixture<ListPpsNonbarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ListPpsComponent ]
+      declarations: [ ListPpsNonbarComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ListPpsComponent);
+    fixture = TestBed.createComponent(ListPpsNonbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
