@@ -186,7 +186,8 @@ import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Tab
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
-import {AGCustomHeaderComponent} from './shared/ag-component/ag-custom-header-component'
+import { AGCustomHeaderComponent } from './shared/ag-component/ag-custom-header-component';
+import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { JwtInterceptor } from './services/config/jwt.interceptor';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
@@ -363,6 +364,7 @@ registerLocaleData(zh);
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
     ManageMenuComponent,
+    AGCustomActionCellComponent,
   ],
   imports: [
     BrowserModule,

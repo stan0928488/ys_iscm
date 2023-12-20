@@ -10,6 +10,7 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import * as moment from 'moment';
 import { ColDef, GridReadyEvent } from 'ag-grid-community';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface row {
   id: string;
@@ -37,16 +38,16 @@ export class PPSI102Component implements OnInit {
 
   rowData: row[] = [];
   colDefs: ColDef[] = [
-    { headerName: '工廠別', field: 'plant', width: 91 },
-    { headerName: '站別代碼', field: 'shopCode', width: 104 },
-    { headerName: '站別名稱', field: 'shopName', width: 106 },
-    { headerName: '機台', field: 'equipCode', width: 80 },
-    { headerName: '機台名稱', field: 'equipName', width: 131 },
-    { headerName: '設備庫存下限(單位:MT)', field: 'wipMin', width: 190 },
-    { headerName: '設備庫存上限(單位:MT)', field: 'wipMax', width: 190 },
-    { headerName: '機台群組', field: 'equipGroup', width: 104 },
-    { headerName: '發佈MES群組', field: 'mesPublishGroup', width: 131 },
-    { headerName: '有效碼', field: 'valid', width: 91 },
+    { headerName: '工廠別', field: 'plant', width: 91, headerComponent : AGCustomHeaderComponent },
+    { headerName: '站別代碼', field: 'shopCode', width: 104, headerComponent : AGCustomHeaderComponent },
+    { headerName: '站別名稱', field: 'shopName', width: 106, headerComponent : AGCustomHeaderComponent },
+    { headerName: '機台', field: 'equipCode', width: 80, headerComponent : AGCustomHeaderComponent },
+    { headerName: '機台名稱', field: 'equipName', width: 131, headerComponent : AGCustomHeaderComponent },
+    { headerName: '設備庫存下限(單位:MT)', field: 'wipMin', width: 190, headerComponent : AGCustomHeaderComponent },
+    { headerName: '設備庫存上限(單位:MT)', field: 'wipMax', width: 190, headerComponent : AGCustomHeaderComponent },
+    { headerName: '機台群組', field: 'equipGroup', width: 104, headerComponent : AGCustomHeaderComponent },
+    { headerName: '發佈MES群組', field: 'mesPublishGroup', width: 131, headerComponent : AGCustomHeaderComponent },
+    { headerName: '有效碼', field: 'valid', width: 91, headerComponent : AGCustomHeaderComponent },
     {
       headerName: 'Action',
       editable: false,
