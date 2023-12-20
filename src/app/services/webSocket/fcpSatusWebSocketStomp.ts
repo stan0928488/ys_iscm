@@ -42,7 +42,7 @@ export class FcpStatusWebSocketStomp
       this.router = this._router;
       this.jwtToken = localStorage.getItem('jwtToken');
       this.header = {
-        Authorization: `Bearer ${this.jwtToken}`,
+        Authorization: `${this.jwtToken}`,
         CurrentRoute : this.router.url
       }
 
