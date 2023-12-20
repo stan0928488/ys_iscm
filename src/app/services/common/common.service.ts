@@ -79,11 +79,18 @@ export class CommonService {
   //   );
   //   return this.http.get(queryUrl);
   // }
+  /** 
   casLogin(_username, _password, _env) {
     _password = encodeURIComponent(_password);
     let queryUrl = `${this.APINEWURL}/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
     return this.http.get(queryUrl);
   }
+  */
+  casLogin(_param) {
+    let queryUrl = "http://localhost:8080/ys-iscm/any/user/login";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+
 
   casLoginWithPost(_result) {
     const body = JSON.stringify(_result);
