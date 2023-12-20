@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit, OnInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -20,6 +20,7 @@ import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 export class PPSI105Component implements OnInit {
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -35,6 +36,7 @@ export class PPSI105Component implements OnInit {
     };
   }
 
+  thisTabName = "大調機(PPSI205)";
   PPSINP04List_tmp;
   PPSINP04List: ItemData4[] = [];
   editCache4: { [key: string]: { edit: boolean; data: ItemData4 } } = {};
@@ -151,6 +153,13 @@ export class PPSI105Component implements OnInit {
     },
   ];
 
+  ngAfterViewInit() {
+    const aI105Tab = this.elementRef.nativeElement.querySelector('#aI105') as HTMLAnchorElement;
+    const liI105Tab = this.elementRef.nativeElement.querySelector('#liI105') as HTMLLIElement;
+    liI105Tab.style.backgroundColor = '#E4E3E3';
+    aI105Tab.style.cssText = 'color: blue; font-weight:bold;';
+  }
+  
   ngOnInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP04List();

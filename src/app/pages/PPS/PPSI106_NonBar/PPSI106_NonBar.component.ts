@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -28,6 +28,7 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI106_NonBarComponent implements AfterViewInit {
+  thisTabName = "小調機(PPSI206)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -58,6 +59,7 @@ export class PPSI106_NonBarComponent implements AfterViewInit {
   errorTXT = [];
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -75,6 +77,11 @@ export class PPSI106_NonBarComponent implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getRunFCPCount();
     this.getTbppsm013List();
+    
+    const aI106NTab = this.elementRef.nativeElement.querySelector('#aI106N') as HTMLAnchorElement;
+    const liI106NTab = this.elementRef.nativeElement.querySelector('#liI106N') as HTMLLIElement;
+    liI106NTab.style.backgroundColor = '#E4E3E3';
+    aI106NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
 

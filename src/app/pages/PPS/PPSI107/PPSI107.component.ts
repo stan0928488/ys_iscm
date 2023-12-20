@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -34,6 +34,7 @@ interface ItemData05 {
   providers:[NzMessageService]
 })
 export class PPSI107Component implements AfterViewInit {
+  thisTabName = "線速工時(PPSI107)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -72,6 +73,7 @@ export class PPSI107Component implements AfterViewInit {
   titleArray = ["站號","機台","產出型態","鋼種類別","線速分類","減面率MIN","減面率MAX","產出尺寸最小值","產出尺寸最大值","線速(公尺/分)","日產出量"];
   importdata_repeat = [];
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -87,6 +89,11 @@ export class PPSI107Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP05List();
+    
+    const aI107Tab = this.elementRef.nativeElement.querySelector('#aI107') as HTMLAnchorElement;
+    const liI107Tab = this.elementRef.nativeElement.querySelector('#liI107') as HTMLLIElement;
+    liI107Tab.style.backgroundColor = '#E4E3E3';
+    aI107Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   

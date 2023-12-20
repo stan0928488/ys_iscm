@@ -2167,6 +2167,12 @@ export class PPSService {
     return this.http.get<any>(queryUrl);
   }
 
+  savetTbppsm040(obj) {
+    const body = JSON.stringify(obj);
+    let queryUrl = this.APINEWURL + `/pi/I206/savetTbppsm040/`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   getShipRepoEditionList() {
     console.log('Api Service 獲取報表維護版次');
     const queryUrl = `${this.APINEWURL}/FCP/R311/getShipRepoEditionList`;

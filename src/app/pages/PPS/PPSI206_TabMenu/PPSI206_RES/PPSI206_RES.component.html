@@ -10,15 +10,15 @@
           border: 2px blue none;
         "
         nzType="primary"
-        (click)="convertToExcel()"
+        (click)="excelExport()"
       >
         <span nz-icon nzType="download" nzTheme="outline"></span>
         E X C E L 匯出
       </button>
     </div>
     <div style = "float:right;">
-      <h3>異動者 : ___________要補上
-        異動時間 : ___________要補上
+      <h3>異動者 : {{this.rowData[0] ? this.rowData[0].userUpdate : ""}}
+        異動時間 : {{this.rowData[0] ? this.rowData[0].dateUpdate : ""}}
       </h3>
     </div> 
     <p><p>

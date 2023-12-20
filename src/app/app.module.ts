@@ -135,7 +135,8 @@ import { PPSI210RefiningOpenMachineRendererComponent } from './pages/PPS/PPSI210
 import { AutoCampaignUpdateSaveCellRenderer } from './pages/PPS/PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
 import { PlanItemUpdateSaveCellRenderer } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PlanItemUpdateSaveCellRenderer.component';
 import { PlanItemDatePickerCellEditor } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PlanItemDatePickerCellEditor.component';
-import { ListPpsComponent } from './pages/PPS/list-pps/list-pps.component';
+import { ListPpsBarComponent } from './pages/PPS/list-pps-bar/list-pps-bar.component';
+import { ListPpsNonbarComponent } from './pages/PPS/list-pps-nonbar/list-pps-nonbar.component';
 import { PPSI201NonBarComponent } from './pages/PPS/PPSI201_NonBar/PPSI201_NonBar.component';
 import { PPSR311Component } from './pages/PPS/PPSR311/PPSR311.component';
 import { ListShipRepoComponent } from './pages/PPS/list-ship-repo/list-ship-repo.component';
@@ -313,7 +314,8 @@ registerLocaleData(zh);
     SummaryDatePickerCellEditorComponent,
     PlanItemUpdateSaveCellRenderer,
     PlanItemDatePickerCellEditor,
-    ListPpsComponent,
+    ListPpsBarComponent,
+    ListPpsNonbarComponent,
     PPSI201NonBarComponent,
     PPSR311Component,
     ListShipRepoComponent,
