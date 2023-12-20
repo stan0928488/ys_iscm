@@ -86,8 +86,8 @@ export class CommonService {
     return this.http.get(queryUrl);
   }
   */
-  casLogin(_param) {
-    let queryUrl = "http://localhost:8080/ys-iscm/any/user/login";
+  casLogin(_param) { //http://localhost:8080/ys-iscm
+    let queryUrl = `${this.APINEWURL}`+"/any/user/login";
     return this.http.post(queryUrl,_param,this.httpOptions);
   }
 
