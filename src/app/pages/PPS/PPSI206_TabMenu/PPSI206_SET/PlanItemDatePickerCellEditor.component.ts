@@ -8,7 +8,7 @@ import * as _ from "lodash";
     template: `
         <nz-date-picker
             #planItemdatePicker
-            [(ngModel)]="planItemdateValue" 
+            [(ngModel)]="dateValue" 
             (ngModelChange)="onChange($event)">
         </nz-date-picker>
     `,
@@ -17,30 +17,19 @@ import * as _ from "lodash";
 export class PlanItemDatePickerCellEditor implements ICellEditorAngularComp, AfterViewInit{
 
     private params!: ICellEditorParams;
-    planItemdateValue: Date;
+    dateValue: Date;
 
     @ViewChild('planItemdatePicker', { static: true }) public planItemdatePicker;
 
     ngAfterViewInit(): void {
-        //this.planItemdatePicker.open();
+        //this.summaryDatePicker.open();
     }
 
     agInit(params: ICellEditorParams): void {
+        
         this.params = params;
-
         if (this.params.value) {
-            const dateArray = this.params.value.split('-');
-            if(dateArray.length > 2){
-                const day = parseInt(dateArray[2]);
-                const month = parseInt(dateArray[1]);
-                const year = parseInt(dateArray[0]);
-                this.planItemdateValue = new Date(year, month-1, day);
-            }else{
-                const month = parseInt(dateArray[1]);
-                const year = parseInt(dateArray[0]);
-                this.planItemdateValue = new Date(year, month-1);
-            }
-
+            this.dateValue = this.params.value
         }
 
     }
@@ -51,28 +40,16 @@ export class PlanItemDatePickerCellEditor implements ICellEditorAngularComp, Aft
             return;
         }
 
-        // 呼叫stopEditing傳入false表示保存資料到row中的調整日期欄位
-        this.params.api.stopEditing(false);
-        this.planItemdateValue = result;
+        this.dateValue = result;
     }
 
     getValue() {
 
-        if(_.isNil(this.planItemdateValue))
-        return null;
-        // const dateArray = this.params.value.split('-');
-        // if(dateArray.length > 2){
-        //     const d = this.planItemdateValue;
-        //     const year = d.getFullYear();
-        //     const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        //     const day = d.getDate().toString().padStart(2, '0');
-        //     return `${year}-${month}-${day}`;
-        // } else {
-        //     const d = this.planItemdateValue;
-        //     const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        //     const day = d.getDate().toString().padStart(2, '0');
-        //     return `${month}-${day}`;
-        // }
+        if(_.isNil(this.dateValue)){
+            return null;
+        }else{
+            return this.dateValue
+        }
      
     }
 

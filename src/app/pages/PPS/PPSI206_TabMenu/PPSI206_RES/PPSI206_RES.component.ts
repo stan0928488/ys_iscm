@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { ExcelService } from 'src/app/services/common/excel.service';
@@ -10,21 +10,21 @@ import * as XLSX from 'xlsx';
 import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { AppComponent } from 'src/app/app.component';
+import * as moment from 'moment';
 
 
 
-interface data {}
 @Component({
   selector: 'app-PPSI206',
   templateUrl: './PPSI206_RES.component.html',
   styleUrls: ['./PPSI206_RES.component.scss'],
   providers: [NzMessageService],
 })
-export class PPSI206RESComponent implements AfterViewInit {
+export class PPSI206RESComponent implements OnInit  {
   
   rowData: data[] = [];
   tbppsm041 = [];
-  loading = true;
+  loading = false;
 
   gridOptions = {
     defaultColDef: {
@@ -46,15 +46,11 @@ export class PPSI206RESComponent implements AfterViewInit {
   ) {
     this.i18n.setLocale(zh_TW);
   }
-
-  async ngAfterViewInit() {
-    await this.getTbppsm041();
-    this.onInit();
-  }
-
-  onInit() {
-  }
   
+  ngOnInit(): void {
+    this.getTbppsm041();
+  }
+
   columnDefs: (ColDef | ColGroupDef)[] = [
     {
       width: 130,
@@ -78,8 +74,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '訂單尺寸',
       field: 'saleOrderDia',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -93,8 +93,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 150,
       headerName: 'CYCLE_NO',
       field: 'cycleNo',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 8);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 8);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -102,8 +102,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 150,
       headerName: '生計交期',
       field: 'dateDeliveryPp',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 2);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 2);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -111,8 +111,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '計畫重量',
       field: 'planWeightI',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -120,8 +124,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '訂單長度',
       field: 'saleOrderLenght',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -165,8 +173,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '允收截止日',
       field: 'remarkWarehousingDate',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -186,8 +194,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'MILL產出日期',
       field: 'millDateO',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -195,8 +203,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'MILL開始日期',
       field: 'millDateS',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -264,8 +272,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '現況長度',
       field: 'sfcLenght',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -273,8 +285,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '投入尺寸',
       field: 'inputDia',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -282,8 +298,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '產出尺寸',
       field: 'outputDia',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -315,8 +335,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'TC_溫度',
       field: 'tcTemperature',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -324,8 +348,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'TC_頻率',
       field: 'tcFrequence',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -333,8 +361,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'BA1_溫度',
       field: 'ba1Temperature',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -342,8 +374,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: 'BA1_頻率',
       field: 'ba1Frequence',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -369,8 +405,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '密度',
       field: 'density',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -384,8 +424,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '產率',
       field: 'yield',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -393,8 +437,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '工廠排程的預計投入時間',
       field: 'planDateI',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -402,8 +446,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '工廠排程的預計產出時間',
       field: 'planDateO',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -429,8 +473,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '冷抽數',
       field: 'scheTyped',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -444,8 +492,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '最大冷抽數',
       field: 'maxCoolDrawn',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 2).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 2).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -459,8 +511,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '委外代工日',
       field: 'dateSendOutsourcing',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -468,8 +520,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '委外代工回廠日',
       field: 'dateBackOutsourcing',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -483,8 +535,8 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '軋延日期',
       field: 'millDate',
-      valueFormatter: (params: ValueFormatterParams): string => {
-        return this.appComponent.dateFormat(params.value, 1);
+      cellRenderer: (params) => {
+        return this.appComponent.dateObjFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -492,8 +544,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '重量',
       field: 'resWeight',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },      
       headerComponent: AGCustomHeaderComponent
     },
@@ -501,8 +557,12 @@ export class PPSI206RESComponent implements AfterViewInit {
       width: 110,
       headerName: '軋延重量',
       field: 'rollWe',
-      valueFormatter: (params: ValueFormatterParams): string | undefined => {
-        return this.appComponent.toThousandNumber(params.value, 0).toString();
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -514,26 +574,73 @@ export class PPSI206RESComponent implements AfterViewInit {
     }
   ];
 
-  myDataList;
-  async getTbppsm041() {
+  excelExport() {
+
+    let appComponent = this.appComponent;
+    let exportData = [];
+    let dateFieldArr = [
+      "dateDeliveryPp",
+      "remarkWarehousingDate",
+      "millDateO",
+      "millDateS",
+      "planDateI",
+      "planDateO",
+      "dateSendOutsourcing",
+      "dateBackOutsourcing",
+      "millDate",
+      "dateUpdate"
+    ]
     this.PPSService.getTbppsm041("YS").subscribe((res) => {
-      // this.isSpinning = true;
+      
       let result: any = res;
-      if (result.length > 0) {
-        this.rowData = JSON.parse(JSON.stringify(result));
-        // this.rowData.forEach((item) => {
-        //   item['isEditing'] = false;
-        // });
+      if (result.data && result.data.length > 0) {
+        if (result.data[0]) {
+          for (var i = 0; i <= result.data.length; i++) {
+            var element = result.data[i];
+            if (element) {
+              var obj = {};
+              this.columnDefs.forEach(function(temp){
+                if(dateFieldArr.includes(temp['field'])){
+                  obj[temp['headerName']] =  appComponent.dateObjFormat(element[temp['field']], 2);
+                }else{
+                  obj[temp['headerName']] = element[temp['field']]
+                }
+              });
+              exportData.push(obj);
+            }
+          }
+        } else {
+          this.rowData = [];
+        }
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, '虛擬訂單結果')
+      XLSX.writeFile(wb, ExcelService.toExportFileName("虛擬訂單結果"));
+
+    });
+
+  }
+
+  getTbppsm041() {
+    this.loading = true;
+    this.PPSService.getTbppsm041("YS").subscribe((res) => {
+      let result: any = res;
+      this.loading = false;
+      if (result.data && result.data.length > 0) {
+        if (result.data[0]) {
+          this.rowData = result.data.map(
+            (itemData) => itemData as data
+          ) as data[];
+        } else {
+          this.rowData = [];
+        }
       } else {
         this.message.error('無資料');
         return;
       }
-      // this.isSpinning = false;
     });
-  }
-
-  // convert to Excel and Download
-  convertToExcel() {
   }
 
   formatDataForExcel(_displayData) {
@@ -571,4 +678,76 @@ export class PPSI206RESComponent implements AfterViewInit {
 
   
 
+}
+
+interface data {
+  id: string;
+  plantCode: string;
+  plant: string;
+  saleOrder: string;
+  saleItem: string;
+  idNo: string;
+  resWeight: number;
+  rollWe: number;
+  steelType: string;
+  saleOrderDia: number;
+  micNo: string;
+  mergeNo: string;
+  cycleNo: string;
+  ppBlock: string;
+  dateDeliveryPp: Date;
+  saleOrderLength: number;
+  millDia: number;
+  custAbbreviations: string;
+  mtrlNo: string;
+  density: number;
+  saleAreaGroup: string;
+  remarkWarehousingDate: Date;
+  remarkPlanInStorage: string;
+  seqNo: string;
+  millDateO: Date;
+  millDateS: Date;
+  routingSeq: string;
+  inputShape: string;
+  outputShape: string;
+  shopCode: string;
+  equipCode: string;
+  nextShopCode: string;
+  nextEquipCode: string;
+  lineupProcess: string;
+  finalProcess: string;
+  processCode: string;
+  planWeightI: number;
+  yield: number;
+  lineupMicNo: string;
+  finalMicNo: string;
+  planDateI: Date;
+  planDateO: Date;
+  autoSort: number;
+  autoFrozen: string;
+  fixedEquipCode: string;
+  sfcLength: number;
+  inputDia: number;
+  outputDia: number;
+  nextRoutingSeq: string;
+  priorRoutingSeq: string;
+  scheTyped: number;
+  upDRoutingSeq: string;
+  maxCoolDrawn: number;
+  outsourcing: string;
+  dateSendOutsourcing: Date;
+  dateBackOutsourcing: Date;
+  flagOutsourcing: string;
+  tcTemperature: number;
+  tcFrequence: number;
+  ba1Temperature: number;
+  ba1Frequence: number;
+  rfTemperature: number;
+  opCode: string;
+  kindType: string;
+  scheType: string;
+  millDate: Date;
+  flag405Temp: string;
+  userUpdate:String;
+  dateUpdate:Date;
 }
