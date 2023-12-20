@@ -1,0 +1,37 @@
+<nz-content style="margin: 20px 20px">
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+        <ag-grid-angular
+            style="width:600px; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+            class="ag-theme-alpine"
+            [rowData]="roleList"
+            [columnDefs]="columnDefs"
+            [gridOptions]="gridOptions"
+            [pagination]="true"
+            [suppressClickEdit]="true"
+            [paginationPageSize]="20">
+        </ag-grid-angular>
+    </nz-spin>
+</nz-content>
+
+
+
+<nz-drawer
+      [nzBodyStyle]="{ overflow: 'auto' }"
+      [nzWidth]="600"
+      [nzVisible]="rolePermissionsDrawerVisible"
+      [nzTitle]="rolePermissionsDrawerTitle"
+      [nzFooter]="footerTpl"
+      (nzOnClose)="rolePermissionsDrawerClose()">
+
+    <div *nzDrawerContent>
+
+    </div>
+
+
+    <ng-template #footerTpl>
+        <div style="float: right">
+          <button nz-button style="margin-right: 8px;" (click)="rolePermissionsDrawerClose()">取消</button>
+          <button nz-button nzType="primary" (click)="rolePermissionsManageHandler()">提交</button>
+        </div>
+    </ng-template>
+</nz-drawer>

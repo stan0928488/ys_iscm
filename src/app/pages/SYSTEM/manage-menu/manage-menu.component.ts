@@ -7,13 +7,19 @@ import { ModalOptions, NzModalService } from 'ng-zorro-antd/modal';
 import { MENU_TOKEN } from '../config/menu';
 import * as _ from "lodash";
 import * as uuid from 'uuid';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { firstValueFrom } from 'rxjs';
 
 interface FlatNode {
   id : number | string;
   expandable: boolean;
-  name: string;
+  menuName: string;
   level: number;
   parentId : number | string;
+  menuType: string;
+  icon: string;
+  sortIndex: string;
+  path: string;
 }
 
 @Component({
@@ -23,6 +29,7 @@ interface FlatNode {
 })
 export class ManageMenuComponent {
 
+  isSpinning = false;
  
   @ViewChild('menuTreeView') treeView!: NzTreeViewComponent<FlatNode>;
 
@@ -31,6 +38,9 @@ export class ManageMenuComponent {
 
   // 當前哪個節點被點選新增子節點
   currentParentNode : null | FlatNode= null;
+
+  // 新節點圖示
+  newNodeIcon = '';
 
   // 新節點名稱
   newNodeName = '';
@@ -41,14 +51,21 @@ export class ManageMenuComponent {
   // 新節點路徑
   newNodePath = '';
 
+  // 新節點排序索引
+  newNodeSortIdx = '';
+
   private transformer = (node: Menu, level: number): FlatNode => ({
     id : node.id,
     expandable: !!node.children && node.children.length > 0,
     // 當前節點名稱
-    name: node.menuName,
+    menuName: node.menuName,
     // 當前節點是第幾層
     level,
-    parentId : node.parentId
+    parentId : node.parentId,
+    menuType : node.menuType,
+    icon : node.icon,
+    sortIndex : node.sortIndex,
+    path : node.path
   });
 
   selectListSelection = new SelectionModel<FlatNode>(true);
@@ -72,7 +89,8 @@ export class ManageMenuComponent {
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
   
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
-              private nzModalService: NzModalService){
+              private nzModalService: NzModalService,
+              private systemService : SYSTEMService){
     this.dataSource.setData(menus);
   }
 
@@ -86,6 +104,9 @@ export class ManageMenuComponent {
     });
     // 指定當前節點是被選擇的狀態
     this.selectListSelection.toggle(currentNode);
+
+    console.log("點選到節點~~~!!", currentNode);
+    
  
   }
 
@@ -93,35 +114,22 @@ export class ManageMenuComponent {
     this.currentParentNode = {
       id : null,
       expandable: true,
-      name: '添加頂級菜單',
+      menuName: '添加頂級菜單',
+      menuType: '',
+      icon: '',
+      sortIndex: '',
+      path: '',
       level: 0,
       parentId : null
     }
     this.addNewNodeVisible = true;
   }
 
-  addFirstNode(){
-    const originalMenu = this.dataSource.getData();
-
-    originalMenu.push({
-      id : uuid.v4(),
-      menuName : this.newNodeName,
-      fatherId : 0,
-      parentId :null,
-      icon : 'android',
-      open: false,
-      selected: false,
-      menuType: this.newMenuType,
-      path : this.newNodePath,
-      code: ''
-  });
-
-    this.dataSource.setData(originalMenu);
-    this.addNewNodeClose();
-  }
-
   addNewNodeOpen(node:FlatNode){
     this.currentParentNode = node;
+    if(node.level == 3){
+      this.newMenuType = 'F';
+    }
     this.addNewNodeVisible = true;
   }
 
@@ -133,42 +141,91 @@ export class ManageMenuComponent {
   expandNodes : any[] = []
   addNewNodeHandler(){
 
-    // 取得父節點的Id
-    const parentId = this.currentParentNode?.id;
-
-    // 沒有父節點Id表示是在執行頂級菜單的新增
-    if(!!!parentId){
-      this.addFirstNode();
-      return;
-    }
-
-    // 以下是第二級開始菜單的新增
-    // 裝配新的子節點資料
-    const newChildNode : Menu = {
-        id : uuid.v4(),
-        menuName : this.newNodeName,
-        fatherId : 0,
-        parentId : parentId,
-        icon : 'android',
-        open: false,
-        selected: false,
-        menuType: this.newMenuType,
-        path : this.newNodePath,
-        code: ''
-    }
-
-    const originalMenu = this.dataSource.getData();
-    this.addNewChildNodeToParentNode(originalMenu, newChildNode, parentId);
-    // console.log('newMenuTree===>', originalMenu);
-    this.dataSource.setData(originalMenu);
-    this.addNewNodeClose();
-    // 用剛剛添加的子節點的所有上級父節點將樹攤開至此子節點的位置
-    this.nestedExpand(parentId);
-    
-   
+    // 向後端發送請求保存此節點
+    this.saveNewNode();
     
     // const flattenMenu = this.treeFlattener.flattenNodes(originalMenu);
     // console.log('攤平newMenuTree===>', flattenMenu);
+  }
+
+  async saveNewNode(){
+
+    this.isSpinning = true;
+
+    // 裝配要保存的資料
+    const requestNodeData = {
+      menuType : this.newMenuType,   // 新節點類型(菜單/權限API)
+      icon : this.newNodeIcon, //新節點圖示
+      menuName : this.newNodeName,   // 新節點名稱
+      sortIndex : this.newNodeSortIdx, // 新節點的排序索引
+      level : String(this.currentParentNode.level), // 新節點在樹中的層級
+      path : this.newNodePath, // 新節點對應的路徑
+      parentId : _.isNil(this.currentParentNode?.id) ? null : String(this.currentParentNode?.id) // 父節點的Id
+    }
+
+    try{
+      const resObservable$  = this.systemService.saveMenuNode(requestNodeData);
+      const response = await firstValueFrom<any>(resObservable$);
+
+      if(response.code === 200){
+        this.renderMenuTree(requestNodeData, response.data.id);
+        this.newNodeIcon = '';
+        this.newNodeName = '';
+        this.newMenuType = 'C';
+        this.newNodePath = '';
+        this.newNodeSortIdx = '';
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '保存節點失敗',
+          nzContent: `請稍後重試或聯繫系統工程師`,
+        });
+      }
+
+      }catch (error) {
+        this.nzModalService.error({
+          nzTitle: '保存節點失敗',
+          nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+        });
+      }
+      finally{
+        this.isSpinning = false;
+      }
+  }
+
+  renderMenuTree(requestNodeData : any, dbId : number | string){
+
+    // 第二級之後的菜單新增
+    // 裝配要渲染新的子節點資料
+    const newChildNode : Menu = {
+      id : dbId,
+      menuType: requestNodeData.menuType,
+      icon : requestNodeData.icon,
+      menuName : requestNodeData.menuName,
+      sortIndex : requestNodeData.sortIndex,
+      path : requestNodeData.path,
+      parentId : requestNodeData.parentId,
+    }
+    
+    //渲染資料
+    const originalMenu = this.dataSource.getData();
+    // 非頂級菜單添加需要一層一層找尋它的父並掛在其底下
+    if(!_.isNull(requestNodeData.parentId)) {
+      this.addNewChildNodeToParentNode(originalMenu, newChildNode, requestNodeData.parentId);
+    }
+    // 頂級菜單直接加到第一層即可
+    else{
+      originalMenu.push(newChildNode)
+    }
+    this.dataSource.setData(originalMenu);
+   
+    // 關閉側邊欄輸入
+    this.addNewNodeClose();
+
+    // 非頂級菜單添加用剛剛添加的子節點找尋所有上級父節點攤開至此子節點的位置
+    if(!_.isNull(requestNodeData.parentId)) {
+      this.nestedExpand(requestNodeData.parentId);
+    }
   }
 
   // 根據添加或刪除的子節點，尋找所有上級父節點好以將樹攤開至此子節點的位置
@@ -199,7 +256,7 @@ export class ManageMenuComponent {
     
     for (const menuItem of originalMenus) {
       // 找到該子節點所屬的父節點
-      if(menuItem.id === parentId){
+      if(menuItem.id == parentId){
         // 父節點的children為空新增一個陣列給他
         // 並把當前子節點加到children之中
         if(_.isEmpty(menuItem.children)){
@@ -226,27 +283,26 @@ export class ManageMenuComponent {
     
     let message = '';
     if(this.finalChildrenlength > 0){
-      message = `「${node.name}」底下有${this.finalChildrenlength}個子菜單，您確定要刪除及其下級所有資料嗎?`
+      message = `「${node.menuName}」底下有${this.finalChildrenlength}個子菜單，您確定要刪除及其下級所有資料嗎?`
     }
     else{
-      message = `您確定要刪除「${node.name}」菜單資料嗎?`
+      message = `您確定要刪除「${node.menuName}」菜單資料嗎?`
     }
     const options: ModalOptions = {
       nzTitle: '確定刪除',
       nzContent: message,
       nzOnOk: () => {
-       // 取的父節點id好以攤開
+       // 取得父節點id好以攤開被刪除的節點原本所在的位置
        const parentId = node.parentId;
-       this.deleteRow(originalMenus, node.id);
-       this.dataSource.setData(originalMenus);
-       this.nestedExpand(parentId);
+       // 從樹的資料中刪除該節點
+       this.deleteRow(originalMenus, node.id, parentId);
       },
       nzOnCancel: () => {
         console.log('取消刪除某樹節點');
       }
     };
 
-    this.nzModalService.warning(options);
+    this.nzModalService.confirm(options);
   }
 
  
@@ -261,13 +317,45 @@ export class ManageMenuComponent {
       }
     }
   }
+  
+  async deleteRow(originalMenus : Menu[], nodeId, parentId){
+    this.isSpinning = true;
+    try{
+      const resObservable$  = this.systemService.deleteMenuNode(nodeId);
+      const response = await firstValueFrom<any>(resObservable$);
+      
+      if(response.code === 200){
+        this.renderingTreeForNodeDelete(originalMenus, nodeId);
+         // 重新渲染樹視圖
+       this.dataSource.setData(originalMenus);
+       // 攤開被刪除的節點原本所在的位置
+       this.nestedExpand(parentId);
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '刪除節點失敗',
+          nzContent: `請稍後重試或聯繫系統工程師`,
+        });
+      }
 
-  deleteRow(originalMenus : Menu[], id : number | string | null){
+      }catch (error) {
+        this.nzModalService.error({
+          nzTitle: '刪除節點失敗',
+          nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+        });
+      }
+      finally{
+        this.isSpinning = false;
+      }
+    
+  }
+
+  renderingTreeForNodeDelete(originalMenus : Menu[], id : number | string | null){
 
     // 尋找這個被刪除的元素在當前層次中的哪一個位置
     let deleteIdx = null;
     for (let i = 0; i < originalMenus.length; i++) {
-      if (originalMenus[i].id === id) {
+      if (originalMenus[i].id == id) {
         deleteIdx = i;
       }
     }
@@ -280,7 +368,7 @@ export class ManageMenuComponent {
     // 沒找到再找下一層
     for (const menuItem of originalMenus) {
       if(!_.isEmpty(menuItem.children) && menuItem.children !== undefined){
-            this.deleteRow(menuItem.children, id);
+            this.renderingTreeForNodeDelete(menuItem.children, id);
       }
     }
     
