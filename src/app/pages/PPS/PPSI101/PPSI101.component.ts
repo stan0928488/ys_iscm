@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -35,6 +35,7 @@ interface ItemData1 {
   providers: [NzMessageService],
 })
 export class PPSI101Component implements AfterViewInit {
+  thisTabName = "鋼種分類(PPSI101)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -68,6 +69,7 @@ export class PPSI101Component implements AfterViewInit {
   pageSize = 20;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -127,6 +129,11 @@ export class PPSI101Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP01List(this.pageIndex, this.pageSize);
+    
+    const aI101Tab = this.elementRef.nativeElement.querySelector('#aI101') as HTMLAnchorElement;
+    const liI101Tab = this.elementRef.nativeElement.querySelector('#liI101') as HTMLLIElement;
+    liI101Tab.style.backgroundColor = '#E4E3E3';
+    aI101Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   //tab1_select

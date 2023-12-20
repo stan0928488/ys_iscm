@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -31,9 +31,8 @@ interface ItemData17 {
   providers:[NzMessageService]
 })
 export class PPSI106Component implements AfterViewInit {
-  
+  thisTabName = "小調機(PPSI206)";
   tableHeight: string;
-
   frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -66,6 +65,7 @@ export class PPSI106Component implements AfterViewInit {
   titleArray = ["機台","產出尺寸最小值","產出尺寸最大值","產出型態","小調機代碼","小調機公差標準","爐批數量"];
   importdata_repeat = [];
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -85,6 +85,11 @@ export class PPSI106Component implements AfterViewInit {
     console.log("ngAfterViewChecked");
     this.getPPSINP17List();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
+    
+    const aI106Tab = this.elementRef.nativeElement.querySelector('#aI106') as HTMLAnchorElement;
+    const liI106Tab = this.elementRef.nativeElement.querySelector('#liI106') as HTMLLIElement;
+    liI106Tab.style.backgroundColor = '#E4E3E3';
+    aI106Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   gridOptions = {

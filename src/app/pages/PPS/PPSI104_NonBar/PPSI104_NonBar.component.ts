@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -35,6 +35,7 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI104_NonBarComponent implements AfterViewInit {
+  thisTabName = "整備時間(PPSI104)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -74,6 +75,7 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
   errorTXT = [];
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -89,6 +91,11 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP03List();
+    
+    const aI104NTab = this.elementRef.nativeElement.querySelector('#aI104N') as HTMLAnchorElement;
+    const liI104NTab = this.elementRef.nativeElement.querySelector('#liI104N') as HTMLLIElement;
+    liI104NTab.style.backgroundColor = '#E4E3E3';
+    aI104NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   onInit() {

@@ -1,5 +1,5 @@
 import { CellClickedEvent, CellDoubleClickedEvent, CellEditingStartedEvent, CellEditingStoppedEvent, CellValueChangedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams, Logger } from 'ag-grid-community';
-import { Component, AfterViewInit, HostListener } from "@angular/core";
+import { Component, AfterViewInit, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -33,6 +33,7 @@ interface ItemData8 {
   providers:[NzMessageService]
 })
 export class PPSI108Component implements AfterViewInit {
+  thisTabName = "非線速工時(PPSI108)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -70,6 +71,7 @@ export class PPSI108Component implements AfterViewInit {
   parseNumberColumnIdsMap = new Map(); 
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -89,6 +91,11 @@ export class PPSI108Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP08List();
+    
+    const aI108Tab = this.elementRef.nativeElement.querySelector('#aI108') as HTMLAnchorElement;
+    const liI108Tab = this.elementRef.nativeElement.querySelector('#liI108') as HTMLLIElement;
+    liI108Tab.style.backgroundColor = '#E4E3E3';
+    aI108Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   gridOptions = {
