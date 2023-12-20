@@ -1,0 +1,84 @@
+<nz-content style="margin: 20px 20px">
+    <button nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+    </button>
+    <div nz-row style="background-color: white; margin-top: 20px;">
+        <div nz-col nzFlex="2">
+            <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
+                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                    <nz-tree-node-option
+                        [nzSelected]="selectListSelection.isSelected(node)"
+                        (nzClick)="nodeClickHandler(node)"
+                    >
+                        {{ node.name }}
+                    </nz-tree-node-option>
+                    <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
+                        <span nz-icon nzType="minus" nzTheme="outline"></span>
+                    </button>
+                </nz-tree-node>
+
+                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                    <nz-tree-node-toggle>
+                        <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
+                    </nz-tree-node-toggle>
+                    <nz-tree-node-option
+                        [nzSelected]="selectListSelection.isSelected(node)"
+                        (nzClick)="nodeClickHandler(node)"
+                    >
+                        {{ node.name }}
+                    </nz-tree-node-option>
+                    <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
+                        <span nz-icon nzType="minus" nzTheme="outline"></span>
+                    </button>
+                </nz-tree-node>
+            </nz-tree-view>
+        </div>
+        <div nz-col nzFlex="3">編輯區塊</div>
+    </div>
+</nz-content>
+
+<nz-drawer
+      [nzBodyStyle]="{ overflow: 'auto' }"
+      [nzWidth]="420"
+      [nzVisible]="addNewNodeVisible"
+      nzTitle="新增子節點"
+      [nzFooter]="footerTpl"
+      (nzOnClose)="addNewNodeClose()">
+
+    <div *nzDrawerContent>
+        <div class="flexContainer">
+            <div>上級節點：</div>
+            <nz-tag [nzColor]="'#2db7f5'">{{ currentParentNode?.name }}</nz-tag>
+        </div>
+        <div style="margin-top: 20px;" class="flexContainer">
+            <div>類型：</div>
+            <nz-radio-group [(ngModel)]="newMenuType">
+                <label nz-radio nzValue="C">菜單</label>
+                <label nz-radio nzValue="F">權限API</label>
+              </nz-radio-group>
+        </div>
+        <div style="margin-top: 20px;" class="flexContainer">
+            <div>節點名稱：</div>
+            <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
+        </div>
+        <div style="margin-top: 20px;" class="flexContainer">
+            <div>節點路徑：</div>
+            <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
+        </div>
+    </div>
+
+
+    <ng-template #footerTpl>
+        <div style="float: right">
+          <button nz-button style="margin-right: 8px;" (click)="addNewNodeClose()">取消</button>
+          <button nz-button nzType="primary" (click)="addNewNodeHandler()">新增</button>
+        </div>
+    </ng-template>
+</nz-drawer>

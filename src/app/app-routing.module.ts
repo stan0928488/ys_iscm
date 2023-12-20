@@ -138,6 +138,7 @@ import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Tab
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
+import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 
 const routes: Routes = [
   {
@@ -557,8 +558,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: "ACCSetting",
-    component: ACCP100component,
+    path: 'system',
+    children: [
+      { path: '', redirectTo: '/system/ACCSetting', pathMatch: 'full' },
+      {
+        path: "ACCSetting",
+        component: ACCP100component,
+      },
+      {
+        path: "manageMenu",
+        component: ManageMenuComponent
+      }
+    ],
     canActivate: [AuthGuard]
   },
   {

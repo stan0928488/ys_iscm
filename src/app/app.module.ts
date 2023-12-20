@@ -196,6 +196,7 @@ import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Re
 import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_TabMenu.component';
 import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
 import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
+import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 
 registerLocaleData(zh);
 
@@ -275,7 +276,6 @@ registerLocaleData(zh);
     PPSR306Component,
     PPSR307Component,
     OIPP029component,
-
     SPAP100component,
     SPAP101component,
     InactivityTimerComponent,
@@ -362,6 +362,7 @@ registerLocaleData(zh);
     PPSI220TabMenuComponent,
     PPSCustomHeaderComponent,
     AGCustomHeaderComponent,
+    ManageMenuComponent,
   ],
   imports: [
     BrowserModule,
