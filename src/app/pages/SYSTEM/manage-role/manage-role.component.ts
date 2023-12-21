@@ -9,12 +9,14 @@ import { Menu } from '../config/types';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
+import * as _ from "lodash";
 
 interface FlatNode {
   id:string;
   expandable: boolean;
   name: string;
   level: number;
+  isSelected : boolean;
 }
 
 @Component({
@@ -32,6 +34,7 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
         expandable: !!node.children && node.children.length > 0,
         name: node.menuName,
         level,
+        isSelected : node.selected
       };
   };
 
@@ -121,7 +124,7 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
       else{
         this.nzModalService.error({
           nzTitle: '獲取職務資訊失敗',
-          nzContent: `請稍後重試或聯繫系統工程師`,
+          nzContent: response.message,
         });
       }
 
@@ -141,33 +144,105 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
     this.rolePermissionsDrawerVisible = false;
   }
 
+
+  async configRoleAndMenuRelation(selectedIds : string[], currentConfigRole : string){
+
+    const payload = {
+      menuIds : selectedIds, // 被勾選的菜單Id
+      roleId : currentConfigRole // 當前被配置職務角色Id
+    };
+
+    try{
+      this.isSpinning = true;
+      const resObservable$  = this.systemService.configRoleAndMenuRelation(payload)
+      const response = await firstValueFrom<any>(resObservable$);
+      
+      if(response.code === 200){
+        this.nzModalService.success({
+          nzTitle: '已保存',
+          nzContent: `配置菜單權限成功`,
+        });
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '配置菜單權限失敗',
+          nzContent: response.message,
+        });
+      }
+
+      }catch (error) {
+        this.nzModalService.error({
+          nzTitle: '配置菜單權限失敗',
+          nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+        });
+      }
+      finally{
+        this.isSpinning = false;
+      }
+  }
+
+
+  // 儲放被選中的節點的Id以及各自的所有父級節點Id
+  selectedIds = null;
+  // 當前哪個職務被配置
+  currentConfigRole = null;
+
   /**
    * 保存該職務對哪些菜單擁有權限
    */
-  rolePermissionsManageSubmitHandler(){
+  async rolePermissionsManageSubmitHandler(){
 
-    console.log("當前所有節點==>", this.treeControl.dataNodes);
-    console.log("被選中的節點==>",  this.getSelectedMenuNodeIds());
+    // 取得哪些菜單有被選中找出它們的Id
+    this.getSelectedMenuNodeIds();
+
+    // 獲取該被配置的職務的Id
+    const roleId = this.currentConfigRole.id;
+
+    await this.configRoleAndMenuRelation([...this.selectedIds], String(roleId));
 
   }
 
-  getSelectedMenuNodeIds() : string[] {
+  /**
+   * 獲取被選中的節點的Id以及各自的所有父級節點Id
+   */
+  getSelectedMenuNodeIds(){
+    this.selectedIds = new Set();
     // 儲存被選擇的節點本身與它的父節點
-    const selectedIds = new Set();
     this.treeControl.dataNodes.forEach((node) => {
       if (this.checklistSelection.isSelected(node)){
-        selectedIds.add(node.id.toString());
-        selectedIds.add(this.getParentNode(node).id.toString());
+        this.selectedIds.add(node.id.toString());
+        // 獲取所有有關係的前代父節點Id
+        this.getAllAncestorsIds(node);
       }
     });
-    return [...selectedIds] as string[];
   }
 
+  /**
+   * 獲取所有有關係的前代父節點Id
+   */
+  getAllAncestorsIds(node: FlatNode){
+    let parentNode = this.getParentNode(node)
 
-  async getSystemMenu(){
+    // 上級沒有父節點了
+    if(_.isNull(parentNode)){
+      return;
+    }
+
+    // 已找過這個分支的所有上級父節點了
+    if(this.selectedIds.has(parentNode.id.toString())){
+      return;
+    }
+
+    // 遞迴這個分支的所有上級父節點
+    this.selectedIds.add(parentNode.id.toString());
+    this.getAllAncestorsIds(parentNode);
+ 
+  }
+
+ async getMenusRelationRole(roleId : string){
     try{
       this.isSpinning = true;
-      const resObservable$  = this.systemService.getSystemMenu();
+      const resObservable$  = this.systemService.getMenusRelationRole(roleId);
       const response = await firstValueFrom<any>(resObservable$);
       
       if(response.code === 200){
@@ -176,20 +251,37 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
       }
       else{
         this.nzModalService.error({
-          nzTitle: '獲取功能菜單失敗',
+          nzTitle: '獲取職務對應菜單失敗',
           nzContent: `請稍後重試或聯繫系統工程師`,
         });
       }
 
       }catch (error) {
         this.nzModalService.error({
-          nzTitle: '獲取功能菜單失敗',
+          nzTitle: '獲取職務對應菜單失敗',
           nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
         });
       }
       finally{
         this.isSpinning = false;
       }
+  }
+
+
+ // 已存在資料庫的該職務有權限訪問的菜單Id
+ selectedIdCache : string[] = [];
+
+  /**
+   * 先前配置過某個職務的菜單節點checkBox要打勾
+   */
+  hasSelectedMenuNodsMarkHandler(){
+    // 遍歷所有節點isSelected為true的將它的checkBox打勾
+    this.treeControl.dataNodes.forEach(node => {
+      if(node.isSelected){
+        this.checklistSelection.select(node);
+        this.selectedIdCache.push(node.id.toString());
+      }
+    });
   }
 
 //-----------------------------------------
@@ -202,9 +294,11 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
    */
   async menuPermissionsManage(rowData:any){
     this.isSpinning = true;
+    this.currentConfigRole = rowData;
     this.rolePermissionsDrawerTitle = `管理「${rowData.roleName}」的菜單權限`
-    await this.getSystemMenu();
+    await this.getMenusRelationRole(String(rowData.id));
     this.treeControl.expandAll();
+    this.hasSelectedMenuNodsMarkHandler();
     this.rolePermissionsDrawerVisible = true;
     this.isSpinning = false;
   }

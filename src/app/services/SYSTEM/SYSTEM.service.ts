@@ -81,4 +81,23 @@ export class SYSTEMService {
     const queryUrl = `${this.CONTEXT_PATH}/system/role/getAllRole`;
     return this.http.post(queryUrl, null, this.httpOptions);
   }
+
+  /**
+   * 配置某職務角色擁有哪些菜單權限
+   */
+  configRoleAndMenuRelation(payload:any){
+    const queryUrl = `${this.CONTEXT_PATH}/system/role/saveRoleAuth`;
+    return this.http.post(queryUrl, payload, this.httpOptions);
+  }
+
+  /**
+   * 
+   */
+  getMenusRelationRole(roleId : string){
+    const queryUrl = `${this.CONTEXT_PATH}/system/role/getMenuByRoleId`;
+    const payload = {
+      roleId : roleId
+    }
+    return this.http.post(queryUrl, payload, this.httpOptions);
+  }
 }
