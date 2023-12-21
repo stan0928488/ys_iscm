@@ -12,10 +12,10 @@ import { of } from 'rxjs';
 export class SYSTEMService {
   APIURL: string = '';
   APINEWURL: string = '';
+  CONTEXT_PATH = '/ys-iscm';
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
       //'accept-user': this.cookieService.getCookie('USERNAME'),
       //'plant-code': this.cookieService.getCookie('plantCode')
     }),
@@ -36,27 +36,27 @@ export class SYSTEMService {
    * @returns 
    */
   getSystemMenu(){
-    const queryUrl = `${this.APINEWURL}/system/menu/getAllMenuFunctionAuth`;
-    console.log('請求URL --> ' + queryUrl);
+    const queryUrl = `${this.CONTEXT_PATH}/system/menu/getAllMenuFunctionAuth`;
     const body = {};
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  /**
+   * 保存菜單
+   * @param body 
+   * @returns 
+   */
   saveMenuNode(body : any) {
-    const queryUrl = `${this.APINEWURL}/system/menu/saveMenuFunction`;
-
-    // TODO
+    const queryUrl = `${this.CONTEXT_PATH}/system/menu/saveMenuFunction`;
+    return this.http.post(queryUrl, body, this.httpOptions);
     // 測試用回傳資料
-    const testResponse = {
-      code: 200,
-      data : {
-        id : new Date().getTime()
-      }
-    }
-
-    return of(testResponse);
-
-    //return this.http.post(queryUrl, body, this.httpOptions);
+    // const testResponse = {
+    //   code: 200,
+    //   data : {
+    //     id : new Date().getTime()
+    //   }
+    // }
+    // return of(testResponse);
   }
 
   deleteMenuNode(id : any) {
@@ -78,7 +78,7 @@ export class SYSTEMService {
    * @returns 獲取職務資訊
    */
   getRoleList() {
-    const queryUrl = `${this.APINEWURL}/system/menu/getAllRole`;
+    const queryUrl = `${this.CONTEXT_PATH}/system/role/getAllRole`;
     return this.http.post(queryUrl, null, this.httpOptions);
   }
 }

@@ -6,7 +6,7 @@
         <div nz-row style="background-color: white; margin-top: 20px;">
             <div nz-col nzFlex="2">
                 <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
-                    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
                         <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
                         <nz-tree-node-option
                             [nzSelected]="selectListSelection.isSelected(node)"
@@ -23,7 +23,7 @@
                         </button>
                     </nz-tree-node>
 
-                    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
                         <nz-tree-node-toggle>
                             <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
                         </nz-tree-node-toggle>
@@ -78,7 +78,7 @@
         </div>
         <div style="margin-top: 20px;" class="flexContainer">
             <div>節點圖示：</div>
-            <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
+            <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
         </div>
         <div style="margin-top: 20px;" class="flexContainer">
             <div>節點名稱：</div>

@@ -9,6 +9,7 @@ import * as _ from "lodash";
 import * as uuid from 'uuid';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { firstValueFrom } from 'rxjs';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 interface FlatNode {
   id : number | string;
@@ -25,7 +26,8 @@ interface FlatNode {
 @Component({
   selector: 'app-manage-menu',
   templateUrl: './manage-menu.component.html',
-  styleUrls: ['./manage-menu.component.css']
+  styleUrls: ['./manage-menu.component.css'],
+  providers: [NzMessageService],
 })
 export class ManageMenuComponent implements AfterViewInit {
 
@@ -90,7 +92,8 @@ export class ManageMenuComponent implements AfterViewInit {
   
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
-              private systemService : SYSTEMService){
+              private systemService : SYSTEMService,
+              private message: NzMessageService){
     // 測試用假資料
     //this.dataSource.setData(menus);
   }
@@ -105,7 +108,6 @@ export class ManageMenuComponent implements AfterViewInit {
       this.isSpinning = true;
       const resObservable$  = this.systemService.getSystemMenu();
       const response = await firstValueFrom<any>(resObservable$);
-      console.log('樹res===>', JSON.stringify(response));
       
       if(response.code === 200){
          // 生成菜單樹視圖
@@ -185,16 +187,21 @@ export class ManageMenuComponent implements AfterViewInit {
 
   async saveNewNode(){
 
+    if(_.isEmpty(this.newMenuType)){
+      this.message.error('請填寫菜單名稱');
+      return;
+    }
+
     this.isSpinning = true;
 
     // 裝配要保存的資料
     const requestNodeData = {
       menuType : this.newMenuType,   // 新節點類型(菜單/權限API)
-      icon : this.newNodeIcon, //新節點圖示
+      icon : _.isEmpty(this.newNodeIcon) ? null : this.newNodeIcon, //新節點圖示
       menuName : this.newNodeName,   // 新節點名稱
-      sortIndex : this.newNodeSortIdx, // 新節點的排序索引
+      sortIndex : _.isEmpty(this.newNodeSortIdx) ? null : this.newNodeSortIdx, // 新節點的排序索引
       level : String(this.currentParentNode.level), // 新節點在樹中的層級
-      path : this.newNodePath, // 新節點對應的路徑
+      path : _.isEmpty(this.newNodePath) ? null : this.newNodePath , // 新節點對應的路徑
       parentId : _.isNil(this.currentParentNode?.id) ? null : String(this.currentParentNode?.id) // 父節點的Id
     }
 
@@ -203,7 +210,17 @@ export class ManageMenuComponent implements AfterViewInit {
       const response = await firstValueFrom<any>(resObservable$);
 
       if(response.code === 200){
-        this.renderMenuTree(requestNodeData, response.data.id);
+        // 前端自行將當前節點加到樹中渲染資料
+        //this.renderMenuTree(requestNodeData, response.data.id);
+
+        // 從後端重拿一次菜單樹
+        await this.getSystemMenu();
+        // 關閉側邊欄輸入
+        this.addNewNodeClose();
+        // 非頂級菜單添加用剛剛添加的子節點找尋所有上級父節點攤開至此子節點的位置
+        if(!_.isNull(requestNodeData.parentId)) {
+          this.nestedExpand(requestNodeData.parentId);
+        }
         this.newNodeIcon = '';
         this.newNodeName = '';
         this.newMenuType = 'C';
@@ -228,6 +245,11 @@ export class ManageMenuComponent implements AfterViewInit {
       }
   }
 
+  /**
+   * 前端自行將當前節點加到樹中渲染資料
+   * @param requestNodeData 
+   * @param dbId 
+   */
   renderMenuTree(requestNodeData : any, dbId : number | string){
 
     // 第二級之後的菜單新增

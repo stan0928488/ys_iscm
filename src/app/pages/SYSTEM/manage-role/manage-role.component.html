@@ -21,17 +21,41 @@
       [nzVisible]="rolePermissionsDrawerVisible"
       [nzTitle]="rolePermissionsDrawerTitle"
       [nzFooter]="footerTpl"
+      [nzZIndex] = "1"
       (nzOnClose)="rolePermissionsDrawerClose()">
-
     <div *nzDrawerContent>
-
+        <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+            <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+            <nz-tree-node-checkbox
+                [nzChecked]="checklistSelection.isSelected(node)"
+                (nzClick)="leafItemSelectionToggle(node)"
+            ></nz-tree-node-checkbox>
+            <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="leafItemSelectionToggle(node)">
+                {{ node.name }}
+            </nz-tree-node-option>
+            </nz-tree-node>
+    
+            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+            <nz-tree-node-toggle>
+                <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
+            </nz-tree-node-toggle>
+            <nz-tree-node-checkbox
+                [nzChecked]="descendantsAllSelected(node)"
+                [nzIndeterminate]="descendantsPartiallySelected(node)"
+                (nzClick)="itemSelectionToggle(node)"
+            ></nz-tree-node-checkbox>
+            <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="itemSelectionToggle(node)">
+                {{ node.name }}
+            </nz-tree-node-option>
+            </nz-tree-node>
+        </nz-tree-view>
     </div>
-
 
     <ng-template #footerTpl>
         <div style="float: right">
           <button nz-button style="margin-right: 8px;" (click)="rolePermissionsDrawerClose()">取消</button>
-          <button nz-button nzType="primary" (click)="rolePermissionsManageHandler()">提交</button>
+          <button nz-button nzType="primary" (click)="rolePermissionsManageSubmitHandler()">提交</button>
         </div>
     </ng-template>
 </nz-drawer>
