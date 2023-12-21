@@ -1,26 +1,30 @@
 <nz-content style="margin:0 16px;">
   
   <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
-    <div style="display: flex">
-      <button
-        nz-button
-        style="
-          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-          background-color: #4caf50;
-          border: 2px blue none;
-        "
-        nzType="primary"
-        (click)="excelExport()"
-      >
-        <span nz-icon nzType="download" nzTheme="outline"></span>
-        E X C E L 匯出
-      </button>
-    </div>
-    <div style = "float:right;">
-      <h3>異動者 : {{this.rowData[0] ? this.rowData[0].userUpdate : ""}}
-        異動時間 : {{this.rowData[0] ? this.rowData[0].dateUpdate : ""}}
-      </h3>
-    </div> 
+    <table style="width: 100%; table-layout:fixed">
+      <tr>
+        <td>
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+            "
+            nzType="primary"
+            (click)="excelExport()"
+          >
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+          </button>
+      </td> 
+      <td style="text-align:right;">
+        <h3>異動者 : {{this.rowData[0] ? this.rowData[0].userCreate : ""}}
+          異動時間 : {{this.rowData[0] ? this.rowData[0].dateCreate : ""}}
+        </h3>
+      </td> 
+    </tr>
+    </table>
     <p><p>
 
     <ag-grid-angular

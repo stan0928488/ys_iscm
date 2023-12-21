@@ -23,10 +23,9 @@ import * as moment from 'moment';
   providers: [NzMessageService],
 })
 export class PPSI206SETComponent implements OnInit {
-  
+  public editType: 'fullRow' = 'fullRow';
   importAndConvert:boolean;
   postData = {};
-  public editType: 'fullRow' = 'fullRow';
   PLANT = '直棒';
   userName: string;
   plantCode: string;

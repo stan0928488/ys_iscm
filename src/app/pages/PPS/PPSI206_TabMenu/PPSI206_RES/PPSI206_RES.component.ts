@@ -748,6 +748,6 @@ interface data {
   scheType: string;
   millDate: Date;
   flag405Temp: string;
-  userUpdate:String;
-  dateUpdate:Date;
+  userCreate:String;
+  dateCreate:Date;
 }
