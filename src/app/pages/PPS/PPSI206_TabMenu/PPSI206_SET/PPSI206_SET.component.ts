@@ -255,10 +255,13 @@ export class PPSI206SETComponent implements OnInit {
             if (element) {
               var obj = {};
               this.columnDefs.forEach(function(temp){
-                if(dateFieldArr.includes(temp['field'])){
-                  obj[temp['headerName']] =  appComponent.dateObjFormat(element[temp['field']], 2);
+                if(temp['headerName'] == 'Action'){
                 }else{
-                  obj[temp['headerName']] = element[temp['field']]
+                  if(dateFieldArr.includes(temp['field'])){
+                    obj[temp['headerName']] =  appComponent.dateObjFormat(element[temp['field']], 2);
+                  }else{
+                    obj[temp['headerName']] = element[temp['field']]
+                  }
                 }
               });
               exportData.push(obj);
@@ -420,7 +423,10 @@ export class PPSI206SETComponent implements OnInit {
         var arr = new Array();
         for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
         var bstr = arr.join("");
-        var workbook = XLSX.read(bstr, { type: "binary" });
+        var workbook = XLSX.read(bstr, { type: "binary",cellDates: true,
+        cellNF: false,
+        cellText: false,
+        dateNF:"yyyy/mm/dd" });
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet: any = workbook.Sheets[first_sheet_name];
         this.importdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
@@ -447,6 +453,8 @@ export class PPSI206SETComponent implements OnInit {
             } else {
               this.message.error("匯入錯誤<br>"+ress.MSG);
             }
+            this.clearFile();
+
           },err => {
             this.loading = false;
             this.message.error("後台存檔錯誤，請聯繫系統工程師");
