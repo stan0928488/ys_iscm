@@ -15,8 +15,8 @@ export class SYSTEMService {
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'accept-user': this.cookieService.getCookie('USERNAME'),
-      'plant-code': this.cookieService.getCookie('plantCode')
+      //'accept-user': this.cookieService.getCookie('USERNAME'),
+      //'plant-code': this.cookieService.getCookie('plantCode')
     }),
   };
 
@@ -27,6 +27,18 @@ export class SYSTEMService {
   ) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
+  }
+
+
+  /**
+   * 獲取系統所有功能菜單
+   * @returns 
+   */
+  getSystemMenu(){
+    const queryUrl = `${this.APINEWURL}/system/menu/getAllMenuFunctionAuth`;
+    console.log('請求URL --> ' + queryUrl);
+    const body = {};
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   saveMenuNode(body : any) {

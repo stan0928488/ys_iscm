@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { Menu } from '../config/types';
 import { NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewComponent } from 'ng-zorro-antd/tree-view';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -27,7 +27,7 @@ interface FlatNode {
   templateUrl: './manage-menu.component.html',
   styleUrls: ['./manage-menu.component.css']
 })
-export class ManageMenuComponent {
+export class ManageMenuComponent implements AfterViewInit {
 
   isSpinning = false;
  
@@ -91,7 +91,42 @@ export class ManageMenuComponent {
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
               private systemService : SYSTEMService){
-    this.dataSource.setData(menus);
+    // 測試用假資料
+    //this.dataSource.setData(menus);
+  }
+
+
+  async ngAfterViewInit(): Promise<void> {
+    await this.getSystemMenu();
+  }
+
+  async getSystemMenu(){
+    try{
+      this.isSpinning = true;
+      const resObservable$  = this.systemService.getSystemMenu();
+      const response = await firstValueFrom<any>(resObservable$);
+      console.log('樹res===>', JSON.stringify(response));
+      
+      if(response.code === 200){
+         // 生成菜單樹視圖
+       this.dataSource.setData(response.data);
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '獲取功能菜單失敗',
+          nzContent: `請稍後重試或聯繫系統工程師`,
+        });
+      }
+
+      }catch (error) {
+        this.nzModalService.error({
+          nzTitle: '獲取功能菜單失敗',
+          nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+        });
+      }
+      finally{
+        this.isSpinning = false;
+      }
   }
 
   nodeClickHandler(currentNode: FlatNode){

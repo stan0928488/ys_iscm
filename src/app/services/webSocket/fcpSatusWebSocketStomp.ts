@@ -42,7 +42,7 @@ export class FcpStatusWebSocketStomp
       this.router = this._router;
       this.jwtToken = localStorage.getItem('jwtToken');
       this.header = {
-        Authorization: `${this.jwtToken}`,
+        Authorization: `Bearer ${this.jwtToken}`,
         CurrentRoute : this.router.url
       }
 
@@ -200,7 +200,7 @@ export class FcpStatusWebSocketStomp
           // 紀錄將當前的的XMLHttpRequest實例
           // 以便於socket連線完畢後，恢復setRequestHeader函數
           _this.currentXMLHttpRequestInstancing = this;
-          this.setRequestHeader('Authorization', `Bearer ${_this.jwtToken}`);
+          this.setRequestHeader('Authorization', `${_this.jwtToken}`);
           this.setRequestHeader('CurrentRoute', _this.router.url);
           // 已有header已完成設定關閉Header的設定
           // 避免web socket自己發的請求的XMLHttpRequest實例重複添加Authorization的值
