@@ -198,6 +198,7 @@ import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_Tab
 import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
 import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 
 registerLocaleData(zh);
 
@@ -365,6 +366,7 @@ registerLocaleData(zh);
     AGCustomHeaderComponent,
     ManageMenuComponent,
     AGCustomActionCellComponent,
+    ManageUserComponent,
   ],
   imports: [
     BrowserModule,

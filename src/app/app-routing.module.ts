@@ -139,6 +139,7 @@ import { ACCP100component } from './pages/ACC/ACCP100component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 
 const routes: Routes = [
   {
@@ -568,6 +569,10 @@ const routes: Routes = [
       {
         path: "manageMenu",
         component: ManageMenuComponent
+      },
+      {
+        path: "manageUser",
+        component: ManageUserComponent
       }
     ],
     canActivate: [AuthGuard]
