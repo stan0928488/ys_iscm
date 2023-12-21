@@ -140,6 +140,7 @@ import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Re
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 
 const routes: Routes = [
   {
@@ -573,6 +574,10 @@ const routes: Routes = [
       {
         path: "manageRole",
         component: ManageRoleComponent
+      },
+      {
+        path: "manageUser",
+        component: ManageUserComponent
       }
     ],
     canActivate: [AuthGuard]

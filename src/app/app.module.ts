@@ -200,6 +200,7 @@ import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPS
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
 import { ManageRoleActionCellComponent } from './pages/SYSTEM/manage-role/manage-role-action-cell-component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 
 registerLocaleData(zh);
 
@@ -369,6 +370,7 @@ registerLocaleData(zh);
     AGCustomActionCellComponent,
     ManageRoleComponent,
     ManageRoleActionCellComponent,
+    ManageUserComponent,
   ],
   imports: [
     BrowserModule,
