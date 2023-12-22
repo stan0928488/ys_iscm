@@ -3,6 +3,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { ColDef } from 'ag-grid-community';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 @Component({
   selector: 'app-manage-user',
@@ -34,13 +35,30 @@ export class ManageUserComponent implements AfterViewInit {
 
   showLeafIcon = false;
   hasChild = (_: number, node: FlatNode): boolean => node.open;
+  TREE_DATA: TreeNode[] = [];
 
   //normal
+  rowData: IRow[] = [];
   frameworkComponents: any;
   visible = false;
 
-  constructor() {
-    this.dataSource.setData(TREE_DATA);
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  constructor(
+    private systemService : SYSTEMService
+  ) {
+    this.dataSource.setData(this.TREE_DATA);
     this.frameworkComponents = {
       buttonRenderer: BtnCellRendererType2,
     };
@@ -51,60 +69,13 @@ export class ManageUserComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.systemService.getAllUserInfo().subscribe((res) => {
+      let result:any = res;
+      if(result.code == 200){
+        this.rowData = result.data;
+      }
+    });
   }
-
-  rowData: IRow[] = [
-    {
-      "id": 1,
-      "useStatus": "Y",
-      "delStatus": "0",
-      "createUser": null,
-      "createTime": "2023-12-08 11:02:51",
-      "updateUser": null,
-      "updateTime": "2023-12-19 13:25:48",
-      "applicationFrom": "PPS001",
-      "userCode": "UR11550",
-      "userName": "UR11550",
-      "userNickName": "Jane",
-      "userAvatar": "彥敏",
-      "salt": null,
-      "email": null,
-      "phone": null,
-      "landline": null,
-      "platform": null,
-      "positionName": "軟體工程師",
-      "positionCode": "O1IM01B600",
-      "plant": "鹽水廠",
-      "userMenus": null,
-      "userRoles": null,
-      "permission": null
-    },
-    {
-      "id": 2,
-      "useStatus": "Y",
-      "delStatus": "0",
-      "createUser": null,
-      "createTime": "2023-12-20 14:09:41",
-      "updateUser": null,
-      "updateTime": "2023-12-20 14:09:41",
-      "applicationFrom": "PPS001",
-      "userCode": "UR10369",
-      "userName": "UR10369",
-      "userNickName": "張倩雯",
-      "userAvatar": null,
-      "salt": null,
-      "email": null,
-      "phone": null,
-      "landline": null,
-      "platform": null,
-      "positionName": "軟體工程師",
-      "positionCode": "O1IM01B600",
-      "plant": null,
-      "userMenus": null,
-      "userRoles": null,
-      "permission": null
-    }
-  ];
 
   colDefs: ColDef<IRow>[] = [
     {headerName: '廠區',field: 'plant'},
@@ -127,6 +98,15 @@ export class ManageUserComponent implements AfterViewInit {
   ];
 
   onBtnClick1(e) {
+    this.systemService.getMenuByUserPosition({
+      "positionCode": e.rowData.positionCode
+    }).subscribe((res) => {
+      let result:any = res;
+      if(result.code == 200){
+        this.TREE_DATA = result.data;
+        this.dataSource.setData(this.TREE_DATA);
+      }
+    });
     this.open();
   }
 
@@ -198,320 +178,3 @@ interface FlatNode {
   menuName: string;
   level: number;
 }
-
-
-const TREE_DATA: TreeNode[] = [
-  {
-    "id": 3,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-19 16:50:24",
-    "updateUser": null,
-    "updateTime": "2023-12-19 16:51:33",
-    "applicationFrom": "PPS001",
-    "menuName": "係統管理",
-    "menuType": "C",
-    "icon": null,
-    "sortIndex": "1",
-    "level": "1",
-    "path": "/system/admin",
-    "parentId": null,
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [
-      {
-        "id": 4,
-        "useStatus": "Y",
-        "delStatus": "0",
-        "createUser": null,
-        "createTime": "2023-12-19 16:59:09",
-        "updateUser": null,
-        "updateTime": "2023-12-19 16:59:09",
-        "applicationFrom": "PPS001",
-        "menuName": "菜單功能管理",
-        "menuType": "C",
-        "icon": null,
-        "sortIndex": "1",
-        "level": "2",
-        "path": "/system/admin/menuManager",
-        "parentId": "3",
-        "selected": false,
-        "open": false,
-        "code": "",
-        "children": [
-          {
-            "id": 6,
-            "useStatus": "Y",
-            "delStatus": "0",
-            "createUser": null,
-            "createTime": "2023-12-19 17:03:31",
-            "updateUser": null,
-            "updateTime": "2023-12-19 17:03:31",
-            "applicationFrom": "PPS001",
-            "menuName": "保存",
-            "menuType": "F",
-            "icon": null,
-            "sortIndex": null,
-            "level": null,
-            "path": "/system/menu/saveMenuFunction",
-            "parentId": "4",
-            "selected": false,
-            "open": false,
-            "code": "",
-            "children": [],
-            "roles": null
-          },
-          {
-            "id": 7,
-            "useStatus": "Y",
-            "delStatus": "0",
-            "createUser": null,
-            "createTime": "2023-12-19 17:05:25",
-            "updateUser": null,
-            "updateTime": "2023-12-19 17:05:25",
-            "applicationFrom": "PPS001",
-            "menuName": "查詢",
-            "menuType": "F",
-            "icon": null,
-            "sortIndex": null,
-            "level": null,
-            "path": "/system/menu/getAllMenuFunctionAuth",
-            "parentId": "4",
-            "selected": false,
-            "open": false,
-            "code": "",
-            "children": [],
-            "roles": null
-          }
-        ],
-        "roles": null
-      },
-      {
-        "id": 5,
-        "useStatus": "Y",
-        "delStatus": "0",
-        "createUser": null,
-        "createTime": "2023-12-19 17:01:49",
-        "updateUser": null,
-        "updateTime": "2023-12-19 17:01:49",
-        "applicationFrom": "PPS001",
-        "menuName": "職務權限管理",
-        "menuType": "C",
-        "icon": null,
-        "sortIndex": "2",
-        "level": "2",
-        "path": "/system/admin/roleManager",
-        "parentId": "3",
-        "selected": false,
-        "open": false,
-        "code": "",
-        "children": [
-          {
-            "id": 8,
-            "useStatus": "Y",
-            "delStatus": "0",
-            "createUser": null,
-            "createTime": "2023-12-20 10:03:55",
-            "updateUser": null,
-            "updateTime": "2023-12-20 10:03:55",
-            "applicationFrom": "PPS001",
-            "menuName": "查詢職務",
-            "menuType": "F",
-            "icon": null,
-            "sortIndex": null,
-            "level": null,
-            "path": "/system/role/getAllRole",
-            "parentId": "5",
-            "selected": false,
-            "open": false,
-            "code": "",
-            "children": [],
-            "roles": null
-          }
-        ],
-        "roles": null
-      }
-    ],
-    "roles": null
-  },
-  {
-    "id": 4,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-19 16:59:09",
-    "updateUser": null,
-    "updateTime": "2023-12-19 16:59:09",
-    "applicationFrom": "PPS001",
-    "menuName": "菜單功能管理",
-    "menuType": "C",
-    "icon": null,
-    "sortIndex": "1",
-    "level": "2",
-    "path": "/system/admin/menuManager",
-    "parentId": "3",
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [
-      {
-        "id": 6,
-        "useStatus": "Y",
-        "delStatus": "0",
-        "createUser": null,
-        "createTime": "2023-12-19 17:03:31",
-        "updateUser": null,
-        "updateTime": "2023-12-19 17:03:31",
-        "applicationFrom": "PPS001",
-        "menuName": "保存",
-        "menuType": "F",
-        "icon": null,
-        "sortIndex": null,
-        "level": null,
-        "path": "/system/menu/saveMenuFunction",
-        "parentId": "4",
-        "selected": false,
-        "open": false,
-        "code": "",
-        "children": [],
-        "roles": null
-      },
-      {
-        "id": 7,
-        "useStatus": "Y",
-        "delStatus": "0",
-        "createUser": null,
-        "createTime": "2023-12-19 17:05:25",
-        "updateUser": null,
-        "updateTime": "2023-12-19 17:05:25",
-        "applicationFrom": "PPS001",
-        "menuName": "查詢",
-        "menuType": "F",
-        "icon": null,
-        "sortIndex": null,
-        "level": null,
-        "path": "/system/menu/getAllMenuFunctionAuth",
-        "parentId": "4",
-        "selected": false,
-        "open": false,
-        "code": "",
-        "children": [],
-        "roles": null
-      }
-    ],
-    "roles": null
-  },
-  {
-    "id": 5,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-19 17:01:49",
-    "updateUser": null,
-    "updateTime": "2023-12-19 17:01:49",
-    "applicationFrom": "PPS001",
-    "menuName": "職務權限管理",
-    "menuType": "C",
-    "icon": null,
-    "sortIndex": "2",
-    "level": "2",
-    "path": "/system/admin/roleManager",
-    "parentId": "3",
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [
-      {
-        "id": 8,
-        "useStatus": "Y",
-        "delStatus": "0",
-        "createUser": null,
-        "createTime": "2023-12-20 10:03:55",
-        "updateUser": null,
-        "updateTime": "2023-12-20 10:03:55",
-        "applicationFrom": "PPS001",
-        "menuName": "查詢職務",
-        "menuType": "F",
-        "icon": null,
-        "sortIndex": null,
-        "level": null,
-        "path": "/system/role/getAllRole",
-        "parentId": "5",
-        "selected": false,
-        "open": false,
-        "code": "",
-        "children": [],
-        "roles": null
-      }
-    ],
-    "roles": null
-  },
-  {
-    "id": 6,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-19 17:03:31",
-    "updateUser": null,
-    "updateTime": "2023-12-19 17:03:31",
-    "applicationFrom": "PPS001",
-    "menuName": "保存",
-    "menuType": "F",
-    "icon": null,
-    "sortIndex": null,
-    "level": null,
-    "path": "/system/menu/saveMenuFunction",
-    "parentId": "4",
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [],
-    "roles": null
-  },
-  {
-    "id": 7,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-19 17:05:25",
-    "updateUser": null,
-    "updateTime": "2023-12-19 17:05:25",
-    "applicationFrom": "PPS001",
-    "menuName": "查詢",
-    "menuType": "F",
-    "icon": null,
-    "sortIndex": null,
-    "level": null,
-    "path": "/system/menu/getAllMenuFunctionAuth",
-    "parentId": "4",
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [],
-    "roles": null
-  },
-  {
-    "id": 8,
-    "useStatus": "Y",
-    "delStatus": "0",
-    "createUser": null,
-    "createTime": "2023-12-20 10:03:55",
-    "updateUser": null,
-    "updateTime": "2023-12-20 10:03:55",
-    "applicationFrom": "PPS001",
-    "menuName": "查詢職務",
-    "menuType": "F",
-    "icon": null,
-    "sortIndex": null,
-    "level": null,
-    "path": "/system/role/getAllRole",
-    "parentId": "5",
-    "selected": false,
-    "open": false,
-    "code": "",
-    "children": [],
-    "roles": null
-  }
-]
