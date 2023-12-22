@@ -2,12 +2,11 @@ import { Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
-  selector: 'app-button-renderer',
+  selector: 'app-btn-cell-renderer-type2',
   template: `
-    <button nz-button nzType="default" (click)="onClick($event)">{{btnContext}}</button>
-    `
-})
-
+  <button nz-button nzType="default" (click)="onClick($event)">{{btnContext}}</button>
+  `}
+)
 export class BtnCellRendererType2 implements ICellRendererAngularComp {
 
   params;
