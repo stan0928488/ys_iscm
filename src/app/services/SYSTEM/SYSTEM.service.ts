@@ -4,7 +4,7 @@ import { ConfigService } from '../config/config.service';
 
 import * as _ from 'lodash';
 import { CookieService } from '../config/cookie.service';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -100,4 +100,16 @@ export class SYSTEMService {
     }
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
+
+  getAllUserInfo() {
+    const queryUrl = `${this.CONTEXT_PATH}/user/getAllUserInfo`;
+    return this.http.post(queryUrl, null, this.httpOptions);
+  }
+
+  getMenuByUserPosition(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/user/getMenuByUserPosition`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
 }
