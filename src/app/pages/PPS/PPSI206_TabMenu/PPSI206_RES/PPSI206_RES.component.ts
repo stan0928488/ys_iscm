@@ -94,7 +94,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: 'CYCLE_NO',
       field: 'cycleNo',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 8);
+        return this.appComponent.dateFormat(params.value, 8);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -103,7 +103,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '生計交期',
       field: 'dateDeliveryPp',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 2);
+        return this.appComponent.dateFormat(params.value, 2);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -174,7 +174,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '允收截止日',
       field: 'remarkWarehousingDate',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -195,7 +195,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: 'MILL產出日期',
       field: 'millDateO',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -204,7 +204,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: 'MILL開始日期',
       field: 'millDateS',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -438,7 +438,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '工廠排程的預計投入時間',
       field: 'planDateI',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -447,7 +447,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '工廠排程的預計產出時間',
       field: 'planDateO',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -512,7 +512,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '委外代工日',
       field: 'dateSendOutsourcing',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -521,7 +521,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '委外代工回廠日',
       field: 'dateBackOutsourcing',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 1);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -536,7 +536,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '軋延日期',
       field: 'millDate',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateFormat(params.value, 2);
       },
       headerComponent: AGCustomHeaderComponent
     },
@@ -601,7 +601,7 @@ export class PPSI206RESComponent implements OnInit  {
               var obj = {};
               this.columnDefs.forEach(function(temp){
                 if(dateFieldArr.includes(temp['field'])){
-                  obj[temp['headerName']] =  appComponent.dateObjFormat(element[temp['field']], 2);
+                  obj[temp['headerName']] =  appComponent.dateFormat(element[temp['field']], 2);
                 }else{
                   obj[temp['headerName']] = element[temp['field']]
                 }
