@@ -170,6 +170,7 @@ export class PPSI206SETComponent implements OnInit {
       width: 150,
       headerName: '生計交期',
       field: 'dateDeliveryPp',
+      headerComponent: AGCustomHeaderComponent,
       cellEditor: 'PlanItemDatePickerCellEditor',
       cellRenderer: (data) => {
         if(data.value){
