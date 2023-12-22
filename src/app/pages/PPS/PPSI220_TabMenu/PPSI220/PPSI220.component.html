@@ -86,7 +86,7 @@
                 <span nz-icon nzType="history" nzTheme="outline"></span>  歷程</label>
             </td>
             <td style="font-size: 11px; padding: 4px;">{{data.scheduleFlagNa}} <p>{{dateFormat(data.scheduleTime, '1')}}<label *ngIf="data.scheduleTime !== null"><br><label *ngIf="data.scheduleDone !== 'Y'">(下次執行時間)</label></label></p></td>
-            <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}} </td>
+            <td style="font-size: 11px; padding: 4px;">{{data.moEditionNa}}<p> MO 區間：{{data.lpstFlagNa}}<p> {{ data.planItemFlagNa}} </td>
             <td style="font-size: 11px; padding: 4px;">{{data.icpEditionNa}}</td>
             <td style="font-size: 11px; padding: 4px;">{{data.plansetEdition}} <br> {{ data.setName}}</td>
             <td style="font-size: 11px; padding: 4px;">{{data.initialFlag}}</td>
@@ -269,6 +269,19 @@
             </nz-radio-group>
           </td>
         </tr>
+        
+        <tr>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;虛擬訂單MO</td>
+            <td colspan="3">&nbsp;
+            <nz-radio-group [(ngModel)]="PLAN_ITEM_FLAG">
+              &nbsp;
+              <label nz-radio nzValue="1" >是，加入虛擬訂單MO
+              </label>
+              <label nz-radio nzValue="0" >否，不加入虛擬訂單MO
+              </label>
+            </nz-radio-group>
+          </td>
+        </tr>
 
         <tr>
           <td style = "width: 110px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;工時計算</td>
@@ -385,6 +398,19 @@
               <label style="color: chocolate; font-weight: bold;" *ngIf = "upd_LPSTDATA === '2'" >( ~ {{ upd_enddate }} )&nbsp;&nbsp;
               </label>
               <label nz-radio nzValue="3" (click) = "LPSTchange('3', 'upd')" >全部
+              </label>
+            </nz-radio-group>
+          </td>
+        </tr>
+
+        <tr>
+          <td style = "width: 60px; background-color: rgb(156, 182, 206); font-weight: bold; border-radius: 5px;">&nbsp;&nbsp;虛擬訂單MO</td>
+            <td colspan="3">&nbsp;
+            <nz-radio-group [(ngModel)]="updPlanItemFlag">
+              &nbsp;
+              <label nz-radio nzValue="1" >是，加入虛擬訂單MO
+              </label>
+              <label nz-radio nzValue="0" >否，不加入虛擬訂單MO
               </label>
             </nz-radio-group>
           </td>

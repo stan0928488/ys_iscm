@@ -47,6 +47,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
   isCommon = false;
   byUserShow = false;
 
+  PLAN_ITEM_FLAG;
   PlanDataList;           //規劃案清單
   PlanDataDtlList     //規劃案清單 (執行歷程)
   ShopSortingList;    //挑選排序
@@ -64,6 +65,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
   upd_enddate;        // 異動LPST區間
   upd_SCHEDULE_FLAG;  // 異動版本選擇
   upd_SCHEDULE_TIME;  // 異動排程時間
+  updPlanItemFlag;
 
   planSetDataList;    // 套餐選擇清單
   planSetSort;        // 套餐優先順序(下拉條件)
@@ -383,6 +385,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         this.PlanDataDtlList.forEach(data => {
           if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
         });
+      } else {
+        this.errorMSG("操作失敗", res.message);
       }
 
       this.LoadingPage = false;
@@ -478,6 +482,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         this.listOfICPOption = children;
         console.log(this.listOfICPOption)
         myObj.loading = false;
+      } else {
+        this.errorMSG("操作失敗", res.message);
       }
     });
   }
@@ -509,7 +515,9 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         this.listOfMOOption = children;
         console.log(this.listOfMOOption)
         myObj.loading = false;
-      } 
+      } else {
+        this.errorMSG("操作失敗", res.message);
+      }
     });
   }
 
@@ -647,6 +655,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         this.selPlanDataList.forEach(data => {
           if(data.scheduleFlag === '1') this.SCHEDULEVER = true;
         })
+      } else {
+        this.errorMSG("操作失敗", res.message);
       }
       myObj.loading = false;
     });
@@ -669,6 +679,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.listOfMOOption = [{label: data.hisMoEdition, value: data.hisMoEdition}];
     this.startdate = data.lpstStartdate;
     this.enddate = data.lpstEndtdate;
+    this.PLAN_ITEM_FLAG = data.planItemFlag;
 
     if(data.lpstFlag === '1') {
       this.LPSTDATA = '1';
@@ -725,6 +736,11 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       myObj.message.create("error", "請選擇「MO 要落於LPST哪個區間」");
       return;
     }
+    
+    if (this.PLAN_ITEM_FLAG === undefined) {
+      myObj.message.create("error", "請選擇「是否加入虛擬訂單MO」");
+      return;
+    }
     if (this.SCHEDULE_FLAG === undefined) {
       myObj.message.create("error", "請選擇「規劃案排程型態」");
       return;
@@ -754,6 +770,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         lpstFlag : this.LPSTDATA,
 				lpstStartdate : this.startdate,
         lpstEndtdate : this.enddate,
+        planItemFlag : this.PLAN_ITEM_FLAG,
         scheduleFlag : this.SCHEDULE_FLAG,
         scheduleTime : SCHEDULE
 			})
@@ -775,10 +792,13 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           this.CHOICE_shop_code = undefined;
           this.CHOICE_machine = undefined;
           this.CHOICE_sort = undefined;
+          this.PLAN_ITEM_FLAG = undefined;
 
           this.sucessMSG("已建立規劃案", `規劃案版本：${res.data[0].planEdition}`);
           this.getPlanDataList();
           this.isVisibleStart = false;
+        } else {
+          this.errorMSG("建立規劃案失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -804,6 +824,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.CHOICE_shop_code = undefined;
     this.CHOICE_machine = undefined;
     this.CHOICE_sort = undefined;
+    this.PLAN_ITEM_FLAG = undefined;
   }
 
 
@@ -819,6 +840,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       this.upd_oldPLANSET_EDITION = data.plansetEdition;
       this.upd_SCHEDULE_FLAG = data.scheduleFlag;
       this.upd_LPSTDATA = data.lpstFlag;
+      this.upd_PLAN_EDITION = data.planItemFlag;
       this.LPSTchange(data.LPSTDATA, 'upd');
       if (data.scheduleTime !== null) {
         let Yscdate = data.scheduleTime.substring(0, 4) ;
@@ -864,6 +886,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         if(this.upd_newPLANSET_EDITION === undefined) {
           this.upd_newPLANSET_EDITION = optionListTemp[0] ;
         }
+      } else {
+        this.errorMSG("取得規劃策略版次失敗", res.message);
       }
       myObj.loading = false;
     });
@@ -880,6 +904,9 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       return;
     } else if ((this.upd_SCHEDULE_FLAG === '1' || this.upd_SCHEDULE_FLAG === '2') && this.upd_SCHEDULE_TIME === undefined) {
       myObj.message.create("error", "請選擇"+`style:`+"「排程啟動時間」");
+      return;
+    } else if (this.updPlanItemFlag === undefined) {
+      myObj.message.create("error", "請選擇「是否加入虛擬訂單MO");
       return;
     } else {
       this.Modal.confirm({
@@ -902,6 +929,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
     this.upd_enddate = undefined;
     this.upd_SCHEDULE_FLAG = undefined;
     this.upd_SCHEDULE_TIME = undefined;
+    this.updPlanItemFlag = undefined;
+
   }
 
   // 確定修改存檔
@@ -924,6 +953,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         lpstFlag : this.upd_LPSTDATA,
 				lpstStartdate : this.upd_startdate,
         lpstEndtdate : this.upd_enddate,
+        planItemFlag : this.updPlanItemFlag,
         scheduleFlag : this.upd_SCHEDULE_FLAG,
         scheduleTime : SCHEDULE
 			})
@@ -936,12 +966,15 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           this.upd_LPSTDATA = undefined;
           this.upd_startdate = undefined;
           this.upd_enddate = undefined;
+          this.updPlanItemFlag = undefined;
           this.upd_SCHEDULE_FLAG = undefined;
           this.upd_SCHEDULE_TIME = undefined;
 
           this.sucessMSG("「規劃案」修改成功", `規劃案版本：${this.show_PLAN_EDITION}`);
           this.getPlanDataList();
           this.isVisibleUpd = false;
+        } else {
+          this.errorMSG("「規劃案」修改失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -1018,6 +1051,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           }
           this.setDateValue(this.oldPlanEdition.value);
         }
+      } else {
+        this.errorMSG("取得規劃案執行版次失敗", res.message);
       }
       myObj.loading = false;
     });
@@ -1058,6 +1093,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
 
           this.getPlanDataList();
           this.isCommon = false;
+        } else {
+          this.errorMSG("公版修改失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -1093,9 +1130,12 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           this.sucessMSG("已刪除規劃案", `規劃案版本：${_value1}`);
           this.getPlanDataList();
         } else {
-          reject('upload fail');
-          this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+          this.errorMSG("刪除失敗", res.message);
         }
+        // } else {
+        //   reject('upload fail');
+        //   this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
+        // }
       },err => {
         reject('upload fail');
         this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
@@ -1176,6 +1216,9 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       
 
       this.getPPSService.getShopSortingList('Q', data.seqNo).subscribe(res => {
+        
+        /*
+        2023-12-22 用不上，先註解
         console.log("sendchoice : getShopSortingList success");
         this.ShopSortingList = res.data;
         console.log(this.ShopSortingList)
@@ -1204,6 +1247,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           "method_dtlArray": "[[B,C]]",
           "move_firstStrategy": this.cellsort
         };
+        */
 
         // "shop_code": `[${SHOP_CODE}]`,
         // "sortBy":`[${SORT}]`,
@@ -1251,6 +1295,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           this.sucessMSG("已停止規劃案", `規劃案版本：${data.planEdition}`);
           // this.getPlanDataList();
           // this.getRunFCPCount();
+        } else {
+          this.errorMSG("停止規劃案失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -1711,6 +1757,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
                 if(res.code = 200) {
                   this.sucessMSG('已發佈至工廠排程', `FCP版本：${data.fcpEdition}`);
                   this.getPlanDataList();
+                } else {
+                  this.errorMSG("發佈至工廠排程失敗", res.message);
                 }
                 myObj.loading = false;
                 this.LoadingPage = false;
@@ -1796,6 +1844,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         // );
         location.reload(); // 设置为 true 表示强制从服务器加载页面
         return;
+      } else {
+        this.errorMSG("操作失敗", res.message);
       }
       this.moSortList = res.data;
     }
