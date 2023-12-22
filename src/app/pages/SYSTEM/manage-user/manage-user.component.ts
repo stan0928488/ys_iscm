@@ -4,6 +4,7 @@ import { ColDef } from 'ag-grid-community';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 @Component({
   selector: 'app-manage-user',
@@ -78,15 +79,15 @@ export class ManageUserComponent implements AfterViewInit {
   }
 
   colDefs: ColDef<IRow>[] = [
-    {headerName: '廠區',field: 'plant'},
-    {headerName: '工號',field: 'userCode'},
-    {headerName: '使用者名稱',field: 'userName'},
-    {headerName: '職位',field: 'positionName'},
-    {headerName: '職務代碼',field: 'positionCode'},
-    {headerName: '信箱',field: 'email'},
-    {headerName: '分機',field: 'landline'},
-    {headerName: '狀態',field: 'useStatus'},
-    {headerName: '創建時間',field: 'createTime'},
+    {headerName: '廠區',field: 'plant', headerComponent : AGCustomHeaderComponent},
+    {headerName: '工號',field: 'userCode', headerComponent : AGCustomHeaderComponent},
+    {headerName: '使用者名稱',field: 'userName', headerComponent : AGCustomHeaderComponent},
+    {headerName: '職位',field: 'positionName', headerComponent : AGCustomHeaderComponent},
+    {headerName: '職務代碼',field: 'positionCode', headerComponent : AGCustomHeaderComponent},
+    {headerName: '信箱',field: 'email', headerComponent : AGCustomHeaderComponent},
+    {headerName: '分機',field: 'landline', headerComponent : AGCustomHeaderComponent},
+    {headerName: '狀態',field: 'useStatus', headerComponent : AGCustomHeaderComponent},
+    {headerName: '創建時間',field: 'createTime', headerComponent : AGCustomHeaderComponent},
     {headerName: '操作',field: 'id',
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
