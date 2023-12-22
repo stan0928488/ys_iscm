@@ -1,6 +1,11 @@
 <nz-content style="margin: 20px 20px">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>設定</nz-breadcrumb-item>
+        <nz-breadcrumb-item>功能菜單管理</nz-breadcrumb-item>
+      </nz-breadcrumb>
+
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
-        <div style="width: 500px; background-color: white; margin-top: 20px;">
+        <div style="height: auto; width: 500px; background-color: white; margin-top: 20px;">
             <div style="display: inline-block; margin: 20px 5px;">
                 <button style="margin-right: 10px;" nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
                     <span nz-icon nzType="plus" nzTheme="outline"></span>
@@ -62,12 +67,13 @@
   [(nzVisible)]="editIsVisible"
   [nzTitle]="editModalTitle"
   [nzContent]="editModalContent"
-  [nzFooter]="editModalFooter"
   [nzWidth]="600"
+  (nzOnOk)="editSave()"
+  [nzOkText]="'保存更改'"
+  [nzOkLoading]="editSaveLoading"
+  [nzCancelText]="'取消'"
   (nzOnCancel)="closeEditModal()"
 >
-<ng-container>
-
   <ng-template #editModalContent>
     <div class="flexContainer">
         <label class="edit-label-required">節點類型</label>
@@ -104,66 +110,60 @@
         <input style="width: 200px;" nz-input placeholder="請輸入節點序索引" [(ngModel)]="editMenuSortIndex" type="text" nzSize="default"/>
     </div>
   </ng-template>
-
-  <ng-template #editModalFooter>
-    <button nz-button nzType="default" (click)="closeEditModal()">取消</button>
-    <button nz-button nzType="primary" (click)="editSave()">保存更改</button>
-  </ng-template>
-
-</ng-container>
 </nz-modal>
 
 <nz-drawer
-      [nzBodyStyle]="{ overflow: 'auto' }"
-      [nzWidth]="420"
-      [nzVisible]="addNewNodeVisible"
-      nzTitle="新增節點"
-      [nzFooter]="footerTpl"
-      (nzOnClose)="addNewNodeClose()">
-
-    <div *nzDrawerContent>
-        <div class="flexContainer">
-            <div>上級節點：</div>
-            <nz-tag [nzColor]="'#2db7f5'">{{ currentParentNode?.menuName }}</nz-tag>
+    [nzBodyStyle]="{overflow: 'auto' }"
+    [nzWidth]="420"
+    [nzVisible]="addNewNodeVisible"
+    nzTitle="新增節點"
+    [nzFooter]="footerTpl"
+    (nzOnClose)="addNewNodeClose()">
+        <div *nzDrawerContent>
+            <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+                <div class="flexContainer">
+                    <div>上級節點：</div>
+                    <nz-tag [nzColor]="'#2db7f5'">{{ currentParentNode?.menuName }}</nz-tag>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>類型：</div>
+                    <ng-container *ngIf="currentParentNode !== null && currentParentNode !== undefined && currentParentNode.level < 3; else finalLevel" >
+                        <nz-radio-group [(ngModel)]="newMenuType">
+                            <label nz-radio nzValue="C">菜單</label>
+                            <label nz-radio nzValue="F">權限API</label>
+                        </nz-radio-group>
+                    </ng-container>
+                    <ng-template #finalLevel>
+                        <nz-radio-group [(ngModel)]="newMenuType">
+                            <label nz-radio nzValue="F">權限API</label>
+                        </nz-radio-group>
+                    </ng-template>
+                    
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點圖示：</div>
+                    <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <label style="padding: inherit;" class="edit-label-required">節點名稱：</label>
+                    <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點路徑：</div>
+                    <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點排序索引：</div>
+                    <input style="width: 300px;" nz-input placeholder="請輸入節點排序索引" [(ngModel)]="newNodeSortIdx" type="text" nzSize="default"/>
+                </div>
+            </nz-spin>
         </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>類型：</div>
-            <ng-container *ngIf="currentParentNode !== null && currentParentNode !== undefined && currentParentNode.level < 3; else finalLevel" >
-                <nz-radio-group [(ngModel)]="newMenuType">
-                    <label nz-radio nzValue="C">菜單</label>
-                    <label nz-radio nzValue="F">權限API</label>
-                </nz-radio-group>
-            </ng-container>
-            <ng-template #finalLevel>
-                <nz-radio-group [(ngModel)]="newMenuType">
-                    <label nz-radio nzValue="F">權限API</label>
-                </nz-radio-group>
-            </ng-template>
-            
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>節點圖示：</div>
-            <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <label style="padding: inherit;" class="edit-label-required">節點名稱：</label>
-            <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>節點路徑：</div>
-            <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>節點排序索引：</div>
-            <input style="width: 300px;" nz-input placeholder="請輸入節點排序索引" [(ngModel)]="newNodeSortIdx" type="text" nzSize="default"/>
-        </div>
-    </div>
-
-
-    <ng-template #footerTpl>
-        <div style="float: right">
-          <button nz-button style="margin-right: 8px;" (click)="addNewNodeClose()">取消</button>
-          <button nz-button nzType="primary" (click)="addNewNodeHandler()">新增</button>
-        </div>
-    </ng-template>
+        <ng-template #footerTpl>
+            <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+                <div style="float: right">
+                    <button nz-button style="margin-right: 8px;" (click)="addNewNodeClose()">取消</button>
+                    <button nz-button nzType="primary" (click)="addNewNodeHandler()">新增</button>
+                </div>
+            </nz-spin>
+        </ng-template>
 </nz-drawer>

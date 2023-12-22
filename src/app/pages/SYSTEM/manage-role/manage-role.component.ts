@@ -101,6 +101,8 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
   rolePermissionsDrawerVisible = false;
   rolePermissionsDrawerTitle = '';
 
+  // 執行配置菜單權限給某職務的Loading標示
+  isDrawerSpinning = false;
 
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
@@ -194,6 +196,8 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
    */
   async rolePermissionsManageSubmitHandler(){
 
+    this.isDrawerSpinning = true;
+
     // 取得哪些菜單有被選中找出它們的Id
     this.getSelectedMenuNodeIds();
 
@@ -201,7 +205,9 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
     const roleId = this.currentConfigRole.id;
 
     await this.configRoleAndMenuRelation([...this.selectedIds], String(roleId));
-
+    
+    this.rolePermissionsDrawerClose();
+    this.isDrawerSpinning = false;
   }
 
   /**

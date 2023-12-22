@@ -76,6 +76,8 @@ export class ManageMenuComponent implements AfterViewInit {
   editMenuSortIndex = '';
   // 編輯的節點的父節點Id
   editParentId;
+  // 執行編輯保存的loading控制
+  editSaveLoading = false;
 
   private transformer = (node: Menu, level: number): FlatNode => ({
     id : node.id,
@@ -200,7 +202,7 @@ export class ManageMenuComponent implements AfterViewInit {
       return;
     }
 
-    this.isSpinning = true;
+    this.editSaveLoading = true;
 
     // 裝配要保存的資料
     const requestUpdateNodeData = {
@@ -215,7 +217,7 @@ export class ManageMenuComponent implements AfterViewInit {
     }
 
     await this.saveOrUpdateHandler(requestUpdateNodeData);
-
+    this.editSaveLoading = false;
   }
 
   addFirstLevelMenu(){
@@ -247,6 +249,7 @@ export class ManageMenuComponent implements AfterViewInit {
   }
 
   expandNodes : any[] = []
+  isDrawerSpinning = false;
   addNewNodeHandler(){
 
     // 向後端發送請求保存此節點
@@ -263,7 +266,7 @@ export class ManageMenuComponent implements AfterViewInit {
       return;
     }
 
-    this.isSpinning = true;
+    this.isDrawerSpinning = true;
 
     // 裝配要保存的資料
     const requestSaveNodeData = {
@@ -277,7 +280,7 @@ export class ManageMenuComponent implements AfterViewInit {
     }
 
     await this.saveOrUpdateHandler(requestSaveNodeData);
-    
+    this.isDrawerSpinning = false;
   }
 
  async saveOrUpdateHandler(requestNodeData : any){
@@ -327,7 +330,7 @@ export class ManageMenuComponent implements AfterViewInit {
         });
       }
       finally{
-        this.isSpinning = false;
+        
       }
 
   }

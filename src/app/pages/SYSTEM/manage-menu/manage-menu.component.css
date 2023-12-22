@@ -1,3 +1,5 @@
+@import url("../../../../standard.less");
+
 .flexContainer{
     display: flex;
     justify-content: start;
@@ -17,4 +19,8 @@
     display: inline-block;
     margin-right: 4px;
     color: #ed4014;
+}
+
+.drawerBox{
+    position: relative;
 }
