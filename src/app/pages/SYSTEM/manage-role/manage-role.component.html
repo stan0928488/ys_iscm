@@ -32,6 +32,7 @@
                 (nzClick)="leafItemSelectionToggle(node)"
             ></nz-tree-node-checkbox>
             <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="leafItemSelectionToggle(node)">
+                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
                 {{ node.name }}
             </nz-tree-node-option>
             </nz-tree-node>
@@ -46,6 +47,7 @@
                 (nzClick)="itemSelectionToggle(node)"
             ></nz-tree-node-checkbox>
             <nz-tree-node-option [nzDisabled]="node.disabled" (nzClick)="itemSelectionToggle(node)">
+                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
                 {{ node.name }}
             </nz-tree-node-option>
             </nz-tree-node>

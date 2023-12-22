@@ -17,6 +17,7 @@ interface FlatNode {
   name: string;
   level: number;
   isSelected : boolean;
+  icon : string;
 }
 
 @Component({
@@ -34,7 +35,8 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
         expandable: !!node.children && node.children.length > 0,
         name: node.menuName,
         level,
-        isSelected : node.selected
+        isSelected : node.selected,
+        icon: node.icon
       };
   };
 
