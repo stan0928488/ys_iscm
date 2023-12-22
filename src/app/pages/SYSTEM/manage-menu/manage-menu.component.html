@@ -1,10 +1,22 @@
 <nz-content style="margin: 20px 20px">
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
-        <button nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
-            <span nz-icon nzType="plus" nzTheme="outline"></span>
-        </button>
         <div nz-row style="background-color: white; margin-top: 20px;">
             <div nz-col nzFlex="2">
+                <div style="margin: 20px 10px;" class="flexContainer">
+                    <button style="margin-right: 10px;" nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+                        <button nz-button nzType="default" (click)="expandAll()"> 展開全部
+                            <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                        </button>
+                    </ng-container>
+                    <ng-template #isCollapseAll>
+                        <button nz-button nzType="default" (click)="expandAll()"> 收合全部
+                            <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+                        </button>
+                    </ng-template>
+                </div>
                 <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
                     <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
                         <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
@@ -36,9 +48,6 @@
                         </nz-tree-node-option>
                         <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
                             <span nz-icon nzType="plus" nzTheme="outline"></span>
-                        </button>
-                        <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
-                            <span nz-icon nzType="minus" nzTheme="outline"></span>
                         </button>
                     </nz-tree-node>
                 </nz-tree-view>

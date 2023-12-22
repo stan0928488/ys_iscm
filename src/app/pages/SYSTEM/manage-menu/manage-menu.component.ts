@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { Menu } from '../config/types';
 import { NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewComponent } from 'ng-zorro-antd/tree-view';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -89,11 +89,14 @@ export class ManageMenuComponent implements AfterViewInit {
   dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
+
+  isExpandAll = false;
   
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
               private systemService : SYSTEMService,
-              private message: NzMessageService){
+              private message: NzMessageService,
+              private changeDetectorRef: ChangeDetectorRef){
     // 測試用假資料
     //this.dataSource.setData(menus);
   }
@@ -428,7 +431,24 @@ export class ManageMenuComponent implements AfterViewInit {
             this.renderingTreeForNodeDelete(menuItem.children, id);
       }
     }
-    
+  }
+
+  expandAll(){
+    this.isSpinning = true;
+    this.isExpandAll = !this.isExpandAll;
+    if(this.isExpandAll){
+      // 使用setTimeout讓expandAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.expandAll();
+      },0);
+    }
+    else{
+      // 使用setTimeout讓collapseAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.collapseAll();
+      },0);
+    }
+    this.isSpinning = false;
   }
 
 }

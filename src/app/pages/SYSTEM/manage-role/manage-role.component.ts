@@ -295,7 +295,7 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
   async menuPermissionsManage(rowData:any){
     this.isSpinning = true;
     this.currentConfigRole = rowData;
-    this.rolePermissionsDrawerTitle = `管理「${rowData.roleName}」的菜單權限`
+    this.rolePermissionsDrawerTitle = `配置「${rowData.roleName}」的菜單權限`
     await this.getMenusRelationRole(String(rowData.id));
     this.treeControl.expandAll();
     this.hasSelectedMenuNodsMarkHandler();
