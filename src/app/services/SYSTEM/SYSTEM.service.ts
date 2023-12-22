@@ -59,18 +59,12 @@ export class SYSTEMService {
     // return of(testResponse);
   }
 
-  deleteMenuNode(id : any) {
-    const queryUrl = `${this.APINEWURL}/system/menu/deleteMenuFunction/${id}`;
-
-    // TODO
-    // 測試用回傳資料
-    const testResponse = {
-      code: 200
+  deleteMenuNode(menuId : string) {
+    const queryUrl = `${this.CONTEXT_PATH}/system/menu/delMenuFunction`;
+    const payload = {
+      menuId : menuId
     }
-
-    return of(testResponse);
-
-    // return this.http.get(queryUrl);
+    return this.http.post(queryUrl, payload, this.httpOptions);
   }
 
   /**
