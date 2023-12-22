@@ -18,14 +18,21 @@
     <nz-drawer
       [nzClosable]="false"
       [nzVisible]="visible"
+      [nzExtra]="extra"
       nzPlacement="right"
       nzTitle="用戶權限"
       (nzOnClose)="close()"
     >
       <ng-container *nzDrawerContent>
-
         <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
           <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+            <nz-tree-node-toggle>
+              <span
+                nz-icon
+                [nzType]="node.icon"
+                nzTheme="outline"
+              ></span>
+            </nz-tree-node-toggle>
             <nz-tree-node-option>
               {{ node.menuName }}
             </nz-tree-node-option>
@@ -35,7 +42,7 @@
             <nz-tree-node-toggle>
               <span
                 nz-icon
-                [nzType]="treeControl.isExpanded(node) ? 'minus-square' : 'plus-square'"
+                [nzType]="node.icon"
                 nzTheme="outline"
               ></span>
             </nz-tree-node-toggle>
@@ -46,5 +53,16 @@
         </nz-tree-view>
       </ng-container>
     </nz-drawer>
-
+    <ng-template #extra>
+      <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+          <button nz-button nzType="default" (click)="expandAll()"> 展開全部
+              <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+          </button>
+      </ng-container>
+      <ng-template #isCollapseAll>
+          <button nz-button nzType="default" (click)="expandAll()"> 收合全部
+              <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+          </button>
+      </ng-template>
+    </ng-template>
 </nz-content>

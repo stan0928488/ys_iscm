@@ -17,7 +17,8 @@ export class ManageUserComponent implements AfterViewInit {
   private transformer = (node: TreeNode, level: number): FlatNode => ({
     open: !!node.children && node.children.length > 0,
     menuName: node.menuName,
-    level
+    level,
+    icon : node.icon,
   });
 
   treeControl = new FlatTreeControl<FlatNode>(
@@ -37,6 +38,7 @@ export class ManageUserComponent implements AfterViewInit {
   showLeafIcon = false;
   hasChild = (_: number, node: FlatNode): boolean => node.open;
   TREE_DATA: TreeNode[] = [];
+  isExpandAll = false;
 
   //normal
   rowData: IRow[] = [];
@@ -123,6 +125,22 @@ export class ManageUserComponent implements AfterViewInit {
     return this.treeControl.dataNodes.find(n => n.menuName === menuName) || null;
   }
 
+  expandAll(){
+    this.isExpandAll = !this.isExpandAll;
+    if(this.isExpandAll){
+      // 使用setTimeout讓expandAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.expandAll();
+      },0);
+    }
+    else{
+      // 使用setTimeout讓collapseAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.collapseAll();
+      },0);
+    }
+  }
+
 }
 
 interface IRow {
@@ -178,4 +196,5 @@ interface FlatNode {
   open: boolean;
   menuName: string;
   level: number;
+  icon: string;
 }
