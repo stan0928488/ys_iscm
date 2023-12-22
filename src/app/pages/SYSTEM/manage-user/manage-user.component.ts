@@ -2,9 +2,9 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { AfterViewInit, Component } from '@angular/core';
 import { ColDef } from 'ag-grid-community';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
-import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 
 @Component({
   selector: 'app-manage-user',
