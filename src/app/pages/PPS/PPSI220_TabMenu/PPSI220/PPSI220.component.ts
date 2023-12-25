@@ -378,7 +378,6 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
   getPlanDataListByPlan(_Plan) {
     this.LoadingPage = true;
     this.getPPSService.getPlanDataListByPlan(_Plan, this.PLANT).subscribe(res => {
-      console.log("getPlanDataListByPlan success");
       if(res.code == 200) {
         this.PlanDataDtlList = res.data;
         console.log(this.PlanDataDtlList)
@@ -840,7 +839,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       this.upd_oldPLANSET_EDITION = data.plansetEdition;
       this.upd_SCHEDULE_FLAG = data.scheduleFlag;
       this.upd_LPSTDATA = data.lpstFlag;
-      this.upd_PLAN_EDITION = data.planItemFlag;
+      this.updPlanItemFlag = data.planItemFlag;
       this.LPSTchange(data.LPSTDATA, 'upd');
       if (data.scheduleTime !== null) {
         let Yscdate = data.scheduleTime.substring(0, 4) ;
@@ -947,6 +946,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
       let updPLANSET_EDITION;
       if(this.upd_newPLANSET_EDITION === undefined) updPLANSET_EDITION = this.upd_oldPLANSET_EDITION ;  else updPLANSET_EDITION = this.upd_newPLANSET_EDITION.value;
 
+      console.log(" this.updPlanItemFlag : " + this.updPlanItemFlag);
 			_.extend(obj, {
         planEdition : this.upd_PLAN_EDITION,
         plansetEdition : updPLANSET_EDITION,
@@ -1843,9 +1843,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         //   `請聯繫系統工程師。`
         // );
         location.reload(); // 设置为 true 表示强制从服务器加载页面
-        return;
-      } else {
         this.errorMSG("操作失敗", res.message);
+        return;
       }
       this.moSortList = res.data;
     }
