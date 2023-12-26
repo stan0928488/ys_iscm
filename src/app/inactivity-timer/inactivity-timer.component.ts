@@ -2,6 +2,8 @@ import { Component,OnDestroy, OnInit } from '@angular/core';
 import { Subject, timer, Subscription,interval } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth/auth.service';
+import { CookieService } from '../services/config/cookie.service';
+import { AppEventBusComponent } from '../app-event-bus.component';
 
 @Component({
   selector: 'app-inactivity-timer',
@@ -12,7 +14,11 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
   endTime = 120;
   isVisible = false ;
   message = ""
-  constructor(private authService:AuthService) { }
+  constructor(
+    private authService:AuthService,
+    private cookieService: CookieService,
+    private appEventBusComponent: AppEventBusComponent,
+  ) { }
   unsubscribe$: Subject<void> = new Subject();
   timerSubscription: Subscription;
   ngOnInit() {
@@ -39,6 +45,16 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
     const duration = endTime * 60;
     const pseudoSubscriber = {
       next: (value: number) => {
+        //登出菜單要清空
+        let userName = this.cookieService.getCookie("USERNAME");
+        if(!userName){
+          this.appEventBusComponent.emit({
+            name: 'logingSuccess',
+            data: {
+              logingSuccess:false,
+            },
+          });
+        }
         this.render((duration - +value)*interval,value,duration)
       },
       error: (error: any) => {},

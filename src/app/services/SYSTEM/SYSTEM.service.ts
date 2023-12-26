@@ -106,4 +106,9 @@ export class SYSTEMService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getCurrentUserMenu() {
+    const queryUrl = `${this.CONTEXT_PATH}/user/getCurrentUserMenu`;
+    return this.http.post(queryUrl, null, this.httpOptions);
+  }
+
 }

@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import { CommonService } from '../services/common/common.service';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
+import { AppEventBusComponent } from '../app-event-bus.component';
 //import * as base64 from "base64-encode-decode";
 
 @Component({
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private cookieService: CookieService,
     private authService: AuthService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private appEventBusComponent: AppEventBusComponent,
   ) {}
 
   ngOnInit() {
@@ -137,6 +139,13 @@ export class LoginComponent implements OnInit {
           this.authFail = false;
           this.isLogining = false;
           
+          this.appEventBusComponent.emit({
+            name: 'logingSuccess',
+            data: {
+              logingSuccess:true,
+            },
+          });
+
           this.router.navigateByUrl("/FCPBarData/P202_TabMenu/P202");
           
         } else {

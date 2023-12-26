@@ -1,17 +1,20 @@
-import { Component, HostListener, TemplateRef, ViewChild } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "./services/config/cookie.service";
 import { AuthService } from "./services/auth/auth.service";
 import { Router, CanActivate } from "@angular/router";
 
 import * as _ from "lodash";
 import * as moment from "moment";
+import { AppEventBusComponent } from "./app-event-bus.component";
+import { SYSTEMService } from "./services/SYSTEM/SYSTEM.service";
+import { NzModalService } from "ng-zorro-antd/modal";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"]
 })
-export class AppComponent {
+export class AppComponent implements OnInit,OnDestroy {
   title = "YS_iSCM";
   isCollapsed = true;
   triggerTemplate = null;
@@ -20,6 +23,8 @@ export class AppComponent {
   userName;
   plantCode;
   envName;
+
+  menus: TreeNode[] = [];
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
   @HostListener('document:keyup', ['$event'])
@@ -32,7 +37,10 @@ export class AppComponent {
   constructor(
     private cookieService: CookieService,
     public router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private appEventBusComponent: AppEventBusComponent,
+    private systemService : SYSTEMService,
+    private nzModalService: NzModalService
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -46,6 +54,48 @@ export class AppComponent {
     this.userName = this.cookieService.getCookie("USERNAME");
     this.plantCode = this.cookieService.getCookie("plantCode");
     this.envName = this.getEnvName(hostName);
+  }
+
+  ngOnInit(): void {
+
+    //刷新菜單要重撈
+    if(this.userName){
+      this.systemService.getCurrentUserMenu().subscribe((res) => {
+        let result:any = res;
+        if(result.code == 200){
+          this.menus = result.data;
+        }else{
+          this.nzModalService.error({
+            nzTitle: '獲取菜單失敗',
+            nzContent: result.message,
+          });
+        }
+      });
+    }else{
+      this.menus = [];
+    }
+
+    this.appEventBusComponent.on('logingSuccess', (data: any) => {
+      if (data.data.logingSuccess) {
+        this.systemService.getCurrentUserMenu().subscribe((res) => {
+          let result:any = res;
+          if(result.code == 200){
+            this.menus = result.data;
+          }else{
+            this.nzModalService.error({
+              nzTitle: '獲取菜單失敗',
+              nzContent: result.message,
+            });
+          }
+        });
+      }else{
+        this.menus = [];
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.appEventBusComponent.unsubscribe();
   }
 
   /** custom trigger can be TemplateRef **/
@@ -198,4 +248,27 @@ export class AppComponent {
     return '';
   }
 
+}
+
+interface TreeNode {
+  id?: number;
+  level:any;
+  useStatus?: string;
+  delStatus?: string;
+  createUser?: string;
+  createTime?: string;
+  updateUser?: string;
+  updateTime?: string;
+  applicationFrom?: string;
+  menuType?: string;
+  icon?: string;
+  sortIndex?: string;
+  path?: string;
+  parentId?: string;
+  selected: boolean;
+  code?: string;
+  menuName: string;
+  open?: boolean;
+  roles?: string;
+  children?: TreeNode[];
 }
