@@ -104,6 +104,9 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
   // 執行配置菜單權限給某職務的Loading標示
   isDrawerSpinning = false;
 
+  // 預設是將菜單權限樹展開
+  isExpandAll = true;
+
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
               private systemService : SYSTEMService) { }
@@ -399,7 +402,23 @@ export class ManageRoleComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-
+  expandAll(){
+    this.isDrawerSpinning = true;
+    this.isExpandAll = !this.isExpandAll;
+    if(this.isExpandAll){
+      // 使用setTimeout讓expandAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.expandAll();
+      },0);
+    }
+    else{
+      // 使用setTimeout讓collapseAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.collapseAll();
+      },0);
+    }
+    this.isDrawerSpinning = false;
+  }
 
 
 }

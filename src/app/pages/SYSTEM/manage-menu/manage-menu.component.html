@@ -11,12 +11,12 @@
                     <span nz-icon nzType="plus" nzTheme="outline"></span>
                 </button>
                 <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
-                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 展開全部
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 展開菜單
                         <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
                     </button>
                 </ng-container>
                 <ng-template #isCollapseAll>
-                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 收合全部
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 收合菜單
                         <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
                     </button>
                 </ng-template>

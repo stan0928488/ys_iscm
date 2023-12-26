@@ -30,6 +30,16 @@
       (nzOnClose)="rolePermissionsDrawerClose()">
     <div *nzDrawerContent>
         <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+            <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+                <button style="margin-right: 10px; margin-bottom: 20px;" nz-button nzType="default" (click)="expandAll()"> 展開菜單
+                    <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                </button>
+            </ng-container>
+            <ng-template #isCollapseAll>
+                <button style="margin-right: 10px; margin-bottom: 20px;" nz-button nzType="default" (click)="expandAll()"> 收合菜單
+                    <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+                </button>
+            </ng-template>
             <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
                 <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
                 <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>

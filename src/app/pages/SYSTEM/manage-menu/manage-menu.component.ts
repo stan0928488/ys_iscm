@@ -309,10 +309,12 @@ export class ManageMenuComponent implements AfterViewInit {
           this.newMenuType = 'C';
           this.newNodePath = '';
           this.newNodeSortIdx = '';
+          this.message.success(`新增「${requestNodeData.menuName}」菜單成功`);
         }
         // 更改成功後的處理
         else{
           this.closeEditModal();
+          this.message.success(`更新「${requestNodeData.menuName}」菜單成功`);
         }
 
       }
