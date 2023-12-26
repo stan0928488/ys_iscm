@@ -58,6 +58,20 @@ export class AppComponent implements OnInit,OnDestroy {
 
   ngOnInit(): void {
 
+    let logTime = localStorage.getItem('logTime');
+    if(logTime){
+      let today = new Date().getTime();
+      let diffMs = (today - Number(logTime));
+      let second_diff = diffMs/1000; 
+      //3秒內視為刷新
+      if(second_diff <= 3){
+        console.log("刷新")
+      }else{
+        this.authService.authLogOut();
+        console.log("視窗關閉")
+      }
+    }
+
     //刷新菜單要重撈
     if(this.userName){
       this.systemService.getCurrentUserMenu().subscribe((res) => {
@@ -96,6 +110,11 @@ export class AppComponent implements OnInit,OnDestroy {
 
   ngOnDestroy(): void {
     this.appEventBusComponent.unsubscribe();
+  }
+
+  @HostListener('window:unload', ['$event'])
+  unloadHandler(event) {
+    localStorage.setItem('logTime', new Date().getTime().toString())
   }
 
   /** custom trigger can be TemplateRef **/
