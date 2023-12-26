@@ -65,8 +65,10 @@ export class AppComponent implements OnInit,OnDestroy {
       let second_diff = diffMs/1000; 
       //3秒內視為刷新
       if(second_diff <= 3){
+        localStorage.removeItem('logTime');
         console.log("刷新")
       }else{
+        localStorage.removeItem('logTime');
         this.authService.authLogOut();
         console.log("視窗關閉")
       }
