@@ -15,7 +15,7 @@ export class PPSService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'accept-user': this.cookieService.getCookie('USERNAME'),
-      'plant-code': this.cookieService.getCookie('plantCode')
+      'plant-code': this.cookieService.getCookie('plantCode'),
     }),
   };
   // APIURL:string = "http://apptst.walsin.com:8083/pps/rest/FCP";
@@ -261,7 +261,8 @@ export class PPSService {
   getPPSINP04List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APINEWURL + `/FCP/I105` + nonbarUrl + `/getPPSINP04List`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I105` + nonbarUrl + `/getPPSINP04List`;
     return this.http.get(queryUrl);
   }
   // I104 delI104Tab1Data 刪除資料
@@ -345,14 +346,6 @@ export class PPSService {
   }
 
   //Get getPPSINP07List
-  getPPSINP07List(_type) {
-    console.log('api service getPPSINP07List');
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/getPPSINP07List`;
-    return this.http.get(queryUrl);
-  }
-
   getPPSINPTB07List(_type) {
     console.log('api service getPPSINPTB07List');
     let nonbarUrl = '';
@@ -360,31 +353,29 @@ export class PPSService {
     let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/getDataList`;
     return this.http.get(queryUrl);
   }
-  // I107 insertI107Save
-  insertI107Save(_type, _data) {
+
+  insertPPSINPTB07List(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/insertI107Save`;
+    let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/insertData`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I107 updateI107Save 修改存檔
-  updateI107Save(_type, _data) {
+  updatePPSINPTB07List(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/updateI107Save`;
+    let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/updateData`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I107 delI107Data 刪除資料
-  delI107Data(_type, _ID) {
+  deletePPSINPTB07(_type, _ID) {
+    const body = JSON.stringify(_ID);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl =
-      this.APIURL + `/FCP/I107` + nonbarUrl + `/delI107Data/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/deleteData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   //importI107Excel
@@ -400,12 +391,24 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  importPPSINPTB07(_type, _data) {
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    const body = JSON.stringify(_data);
+    console.log(body);
+    console.log('########################');
+    console.log(_type);
+    let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/importData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   // 8.非線速
   //Get getPPSINP08List 取得08tab data
   getPPSINP08List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/getPPSINP08List`;
     return this.http.get<any>(queryUrl);
   }
   // I108 insertI108Save
@@ -413,8 +416,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl =
-      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/insertSave`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I108 updateI108Save
@@ -422,8 +424,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl =
-      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/updateSave`;
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
@@ -431,8 +432,7 @@ export class PPSService {
   delI108Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl =
-      this.APINEWURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I108` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
 
@@ -1986,7 +1986,7 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  getTBPPSM107(plant:string) {
+  getTBPPSM107(plant: string) {
     let queryUrl = this.APINEWURL + `/FCP/I112/getTBPPSM107/${plant}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl).toPromise();
@@ -1998,32 +1998,31 @@ export class PPSService {
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
-  updateTBPPSM107(body){
+  updateTBPPSM107(body) {
     let queryUrl = this.APINEWURL + `/FCP/I112/updateTBPPSM107`;
     console.log(queryUrl);
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
-  delTBPPSM107(plant : string, id : number) {
-    let queryUrl =
-      this.APINEWURL + `/FCP/I112/delTBPPSM107/${plant}/${id}`;
+  delTBPPSM107(plant: string, id: number) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/delTBPPSM107/${plant}/${id}`;
     return this.http.get<any>(queryUrl);
   }
 
-  getEquipCode(plant : string, shopCode : string) {
-    let endpointUrl = this.APINEWURL + `/FCP/I112/getEquipCode/${plant}/${shopCode}`;
+  getEquipCode(plant: string, shopCode: string) {
+    let endpointUrl =
+      this.APINEWURL + `/FCP/I112/getEquipCode/${plant}/${shopCode}`;
     return this.http.get<any>(endpointUrl);
   }
 
-  getShopCode(plant : string) {
+  getShopCode(plant: string) {
     let queryUrl = this.APINEWURL + `/FCP/I112/getShopCode/${plant}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }
 
   importTBPPSM107Excel(body) {
-    let queryUrl =
-      this.APINEWURL + `/FCP/I112/importExcelPPSI112`;
+    let queryUrl = this.APINEWURL + `/FCP/I112/importExcelPPSI112`;
     console.log(queryUrl);
     return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
@@ -2115,7 +2114,8 @@ export class PPSService {
   del012NonBarTabData(_ID) {
     const body = JSON.stringify(_ID);
     console.log(body);
-    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/del012NonBarTabData/${_ID}`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I109/NonBar/del012NonBarTabData/${_ID}`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2131,9 +2131,8 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  
   // 取得虛擬訂單設定
-  getTbppsm040(plant:string) {
+  getTbppsm040(plant: string) {
     let queryUrl = this.APINEWURL + `/pi/I206/getTbppsm040/${plant}`;
     return this.http.get<any>(queryUrl);
   }
@@ -2162,7 +2161,7 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // 取得虛擬訂單結果表
-  getTbppsm041(plant:string) {
+  getTbppsm041(plant: string) {
     let queryUrl = this.APINEWURL + `/pi/I206/getTbppsm041/${plant}`;
     return this.http.get<any>(queryUrl);
   }
@@ -2600,7 +2599,4 @@ export class PPSService {
     console.log(`Api Service 獲取「成品庫存現況」資料 參數 -> 無參數`);
     return this.http.get(queryUrl);
   }
-
-
-
 }
