@@ -109,7 +109,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="PLANT">
+            <nz-select [(ngModel)]="plant">
               <nz-option nzValue="直棒" nzLabel="直棒"></nz-option>
             </nz-select>
           </td>
@@ -132,7 +132,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別代碼"
-              [(ngModel)]="SHOP_CODE"
+              [(ngModel)]="shopCode"
             />
           </td>
         </tr>
@@ -154,7 +154,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別名稱"
-              [(ngModel)]="SHOP_NAME"
+              [(ngModel)]="shopName"
             />
           </td>
         </tr>
@@ -176,7 +176,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台"
-              [(ngModel)]="EQUIP_CODE"
+              [(ngModel)]="equipCode"
             />
           </td>
         </tr>
@@ -198,7 +198,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台名稱"
-              [(ngModel)]="EQUIP_NAME"
+              [(ngModel)]="equipName"
             />
           </td>
         </tr>
@@ -219,7 +219,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存下限"
-              [(ngModel)]="WIP_MIN"
+              [(ngModel)]="wipMin"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -243,7 +243,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存上限"
-              [(ngModel)]="WIP_MAX"
+              [(ngModel)]="wipMax"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -268,7 +268,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台群組"
-              [(ngModel)]="EQUIP_GROUP"
+              [(ngModel)]="equipGroup"
             />
           </td>
         </tr>
@@ -290,7 +290,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="發佈MES群組"
-              [(ngModel)]="MES_PUBLISH_GROUP"
+              [(ngModel)]="mesPublishGroup"
             />
           </td>
         </tr>
@@ -308,7 +308,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="VALID">
+            <nz-select [(ngModel)]="valid">
               <nz-option nzValue="Y" nzLabel="Y"></nz-option>
               <nz-option nzValue="X" nzLabel="X"></nz-option>
             </nz-select>
