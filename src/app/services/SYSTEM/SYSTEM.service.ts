@@ -111,4 +111,9 @@ export class SYSTEMService {
     return this.http.post(queryUrl, null, this.httpOptions);
   }
 
+  getCurrentUser() {
+    const queryUrl = `${this.CONTEXT_PATH}/user/getCurrentUser`;
+    return this.http.post(queryUrl, null, this.httpOptions);
+  }
+
 }

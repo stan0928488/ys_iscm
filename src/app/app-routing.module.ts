@@ -141,6 +141,7 @@ import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPag
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
 import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
+import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
 
 const routes: Routes = [
   {
@@ -578,6 +579,17 @@ const routes: Routes = [
       {
         path: "manageUser",
         component: ManageUserComponent
+      }
+    ],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'user',
+    children: [
+      { path: '', redirectTo: '/user/profile', pathMatch: 'full' },
+      {
+        path: "profile",
+        component: UserProfileComponent,
       }
     ],
     canActivate: [AuthGuard]
