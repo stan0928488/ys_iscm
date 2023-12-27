@@ -80,6 +80,7 @@ export class AppComponent implements OnInit,OnDestroy {
         let result:any = res;
         if(result.code == 200){
           this.menus = result.data;
+          recursionSet(this.menus,1);
         }else{
           this.nzModalService.error({
             nzTitle: '獲取菜單失敗',
@@ -97,6 +98,7 @@ export class AppComponent implements OnInit,OnDestroy {
           let result:any = res;
           if(result.code == 200){
             this.menus = result.data;
+            recursionSet(this.menus,1);
           }else{
             this.nzModalService.error({
               nzTitle: '獲取菜單失敗',
@@ -292,4 +294,17 @@ interface TreeNode {
   open?: boolean;
   roles?: string;
   children?: TreeNode[];
+}
+
+function recursionSet(obj:TreeNode[],parentLevel:any) {
+  obj.forEach(function (item) {
+    if(item.parentId){
+      item.level = parentLevel + 1;
+    }else{
+      item.level = 1;
+    }
+    if(item.children){
+      recursionSet(item.children,item.level)
+    }
+  }); 
 }
