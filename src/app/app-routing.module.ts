@@ -619,6 +619,9 @@ const routes: Routes = [
       {
         path: "profile",
         component: UserProfileComponent,
+        data : {
+          pageName:"個人資料"
+        },
       }
     ],
     canActivate: [AuthGuard]
