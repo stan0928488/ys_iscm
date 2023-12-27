@@ -146,7 +146,7 @@ export class LoginComponent implements OnInit {
             },
           });
 
-          this.router.navigateByUrl("/FCPBarData/P202_TabMenu/P202");
+          this.router.navigate(['/FCPBarData/P202_TabMenu/P202']);
           
         } else {
           console.log('login fail err');

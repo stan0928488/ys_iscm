@@ -1,20 +1,23 @@
-import { Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "./services/config/cookie.service";
 import { AuthService } from "./services/auth/auth.service";
-import { Router, CanActivate } from "@angular/router";
-
+import { Router, ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, ResolveEnd, GuardsCheckEnd, NavigationCancel } from "@angular/router";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { AppEventBusComponent } from "./app-event-bus.component";
 import { SYSTEMService } from "./services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
+import { TabModel, TabService } from "./services/common/tab.service";
+import { filter, map, mergeMap } from "rxjs";
+import * as uuid from 'uuid';
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"]
 })
-export class AppComponent implements OnInit,OnDestroy {
+export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
+
   title = "YS_iSCM";
   isCollapsed = true;
   triggerTemplate = null;
@@ -34,13 +37,24 @@ export class AppComponent implements OnInit,OnDestroy {
     this.authService.notifyUserLoginAction();
   }
 
+  // 渲染tab元件的資料
+  tabsSourceData: TabModel[] = [];
+  // 使用者當前點選的頁面的路徑
+  routerPath = this.router.url;
+  // 當前哪個tab被選中
+  activeTabIndex = 0;
+
+  // 
   constructor(
     private cookieService: CookieService,
     public router: Router,
-    private authService: AuthService,
     private appEventBusComponent: AppEventBusComponent,
     private systemService : SYSTEMService,
-    private nzModalService: NzModalService
+    private nzModalService: NzModalService,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
+    private tabService: TabService,
+    private cdr: ChangeDetectorRef
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -55,6 +69,94 @@ export class AppComponent implements OnInit,OnDestroy {
     this.plantCode = this.cookieService.getCookie("plantCode");
     this.envName = this.getEnvName(hostName);
   }
+  ngAfterViewInit(): void {
+      // 分頁渲染處理
+      this.tabHandler();
+  }
+
+  tabHandler(): void {
+
+    this.tabService.getTabDataList$().subscribe(res => {
+
+       // 如果是關閉分頁，頁面顯示區塊需顯示最後一個存在的頁面
+       if(res.isClose){
+          this.tabsSourceData = res.tabArray;
+          this.goPage(this.tabsSourceData[this.tabsSourceData.length-1]);
+       }
+       else{
+          this.tabsSourceData = res.tabArray;
+          this.activeTabIndex = this.tabsSourceData.length;
+       }
+    });
+
+    this.router.events
+    .pipe(
+      filter(event => event instanceof NavigationEnd || event instanceof NavigationCancel),
+      map(() => {
+        this.routerPath = this.activatedRoute.snapshot['_routerState'].url;
+        return this.activatedRoute;
+      }),
+      map(route => {
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        return route;
+      }),
+      filter(route => {
+        return route.outlet === 'primary';
+      }),
+      mergeMap(route => {
+        return route.data;
+      })
+    ).subscribe(routeData => {
+      let route = this.activatedRoute;
+      while (route.firstChild) {
+        route = route.firstChild;
+      }     
+
+      // 路由相關資訊
+      let snapshot = route.snapshot;
+
+      // 該路由頁面名稱
+      let pageName = routeData['pageName'];
+      // 該路由頁面路徑
+      let pagePath = this.routerPath
+
+      // 若A分頁已開啟，再從側邊欄點選A分頁
+      // A分頁頁簽呈現被選擇的狀態
+      let existTabIdx = _.findIndex(this.tabsSourceData, item => { 
+        return item.pageName === pageName 
+      });
+
+      // 已存在該分頁，將該分頁頁簽呈現被選擇的狀態
+      if(existTabIdx !== -1){
+        this.activeTabIndex = existTabIdx;
+        return;
+      }
+
+      if(!_.isEqual(pagePath, '/login') && !_.isEqual(pagePath, '/AccessDined') && !_.isEmpty(routeData)){
+        this.tabService.setTabDataList$(
+          {
+            uuid : uuid.v4(),
+            pageName : pageName,
+            pagePath : pagePath
+          }
+        )
+      }
+
+    });
+  }
+  
+  closeTab({ index } : { index: number }){
+    let tabIdx = Number(index);
+    this.tabService.closeTab(this.tabsSourceData[tabIdx]);
+  }
+
+  goPage(tab : TabModel){
+    // 導航到獲取被點擊的tab的頁面
+    this.router.navigate([tab.pagePath]);
+  }
+  
 
   ngOnInit(): void {
 
@@ -108,6 +210,8 @@ export class AppComponent implements OnInit,OnDestroy {
         this.menus = [];
       }
     });
+
+  
   }
 
   ngOnDestroy(): void {
@@ -168,7 +272,9 @@ export class AppComponent implements OnInit,OnDestroy {
     this.cookieService.setCookie("plantCode", "", 1);
     this.userName = "";
     this.plantCode = "";
-
+    // 清空分頁
+    this.tabsSourceData = [];
+    this.tabService.clearTabDataList();
     this.router.navigate(["login"]);
   }
 

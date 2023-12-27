@@ -62,6 +62,15 @@
 
     <!-- router outlet area -->
     <div class="router-outlet-area">
+      <nz-tabset 
+        [nzSelectedIndex]="activeTabIndex"
+        nzType="editable-card"
+        [nzHideAdd]="true"
+        (nzClose)="closeTab($event)">
+        <nz-tab [nzClosable]="tabsSourceData.length > 1" *ngFor="let tab of tabsSourceData" [nzTitle]="tab.pageName" (nzClick)="goPage(tab)" >
+        </nz-tab>
+      </nz-tabset>
+
       <router-outlet
         (activate)="componentAdded($event)"
         (deactivate)="componentRemoved($event)"
