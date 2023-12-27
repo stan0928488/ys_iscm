@@ -30,25 +30,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { InactivityTimerComponent } from './inactivity-timer/inactivity-timer.component';
 
-import { ORPV101Component } from './pages/ORP/ORPV101/ORPV101.component';
-import { ORPP031component } from './pages/ORP/ORPP031/ORPP031.component';
-import { ORPP032component } from './pages/ORP/ORPP032/ORPP032.component';
-import { ORPP029_030component } from './pages/ORP/ORPP029_030/ORPP029_030.component';
-import { ORPP033component } from './pages/ORP/ORPP033/ORPP033.component';
-import { ORPR102Component } from './pages/ORP/ORPR102/ORPR102.component';
-import { ORPR403Component } from './pages/ORP/ORPR403/ORPR403.component';
-import { ORPP040Component } from './pages/ORP/ORPP040/ORPP040.component';
-import { ORPP041Component } from './pages/ORP/ORPP041/ORPP041.component';
-import { ORPP042Component } from './pages/ORP/ORPP042/ORPP042.component';
-import { ORPP043Component } from './pages/ORP/ORPP043/ORPP043.component';
-import { ORPPDEMOComponent } from './pages/ORP/ORPPDEMO/ORPPDEMO.component';
-import { ORPPDEMO1Component } from './pages/ORP/ORPPDEMO1/ORPPDEMO1.component';
-import { ORPP100Component } from './pages/ORP/ORPP100/ORPP100.component';
-import { ORPP101Component } from './pages/ORP/ORPP101/ORPP101.component';
-import { ORPPCHATDEMOComponent } from './pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component';
-
-import { TRAP001component } from './pages/TRA/TRAP001/TRAP001.component';
-
 import { PPSI101Component } from './pages/PPS/PPSI101/PPSI101.component';
 import { PPSI102Component } from './pages/PPS/PPSI102/PPSI102.component';
 import { PPSI102_NonBarComponent } from './pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component';
@@ -91,41 +72,37 @@ import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.co
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
 import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
-
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
 import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
 import { PPSR307Component } from './pages/PPS/PPSR307/PPSR307.component';
-import { OIPP029component } from './pages/OIP/OIPP029/OIPP029.component';
-
-import { SPAP100component } from './pages/SPA/SPAP100/SPAP100.component';
-import { SPAP101component } from './pages/SPA/SPAP101/SPAP101.component';
+import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
+import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
+import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
+import { PPSI210RefiningOpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-sort-renderer-component';
+import { PPSI210RefiningSendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/send-choice-renderer-component';
 
 import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
 import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
+import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
+import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 
 import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
 import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
+import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
+import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
+
 import { AgGridModule } from 'ag-grid-angular';
-import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
-import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
 import { CalendarModule } from 'primeng/calendar';
 import { PrimeDatePickerCellEditorComponent } from './pages/MSH/MSHI003/prime-date-picker-cell-editor';
 import { PrimeDatePickerCellEditor } from './pages/MSH/MSHI004/prime-date-picker-cell-editor';
-import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
-import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { AdjShopCodeCellRendererComponent } from './pages/MSH/MSHI003/AdjShopCodeCellRenderer.componet';
 import { AdjShopCodeCellSelectEditorComponent } from './pages/MSH/MSHI003/adj-shop-code-cell-select-editor';
 import { AdjLineupProcessSelectEditorComponent } from './pages/MSH/MSHI003/adj-lineup-process-cell-select-editor';
-import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
-import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
-import { NonPpsiComponent } from './pages/PPS/non-ppsi/non-ppsi.component';
 import { BtnCellRenderer } from './pages/RENDERER/BtnCellRenderer.component';
 import { OpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/open-sort-renderer-component';
 import { SendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210/send-choice-renderer-component';
-import { PPSI210RefiningOpenSortRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/open-sort-renderer-component';
-import { PPSI210RefiningSendChoiceRendererComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Refining/send-choice-renderer-component';
 
 import { BtnCellRendererUpdate } from './pages/RENDERER/BtnCellRendererUpdate.component';
 import { SummaryDatePickerCellEditorComponent } from './pages/PPS/PPSI205/SummaryDatePickerCellEditor.Component';
@@ -170,12 +147,6 @@ import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { ListSaleInputComponent } from './pages/PPS/list-sale-input/list-sale-input.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
-import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
-import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
-import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
-
-import { Pomp003BtnCellRenderer } from './pages/POM/pomp003/button-cell-renderer.component';
-import { Pomp001ActionBtnCellRenderer } from './pages/POM/pomp001/pomp001-action-btn-cell-renderer.component';
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
@@ -209,23 +180,6 @@ registerLocaleData(zh);
     LoginComponent,
     ErrorPageComponent,
     ACCP100component,
-    ORPV101Component,
-    ORPP100Component,
-    ORPP101Component,
-    ORPR403Component,
-    ORPP031component,
-    ORPP032component,
-    ORPP029_030component,
-    ORPP033component,
-    ORPR102Component,
-    ORPP040Component,
-    ORPP041Component,
-    ORPP042Component,
-    ORPP043Component,
-    ORPPDEMOComponent,
-    ORPPDEMO1Component,
-    ORPPCHATDEMOComponent,
-    TRAP001component,
 
     PPSI101Component,
     PPSI102Component,
@@ -277,9 +231,6 @@ registerLocaleData(zh);
     PPSR305Component,
     PPSR306Component,
     PPSR307Component,
-    OIPP029component,
-    SPAP100component,
-    SPAP101component,
     InactivityTimerComponent,
     MSHI001Component,
     MSHI002Component,
@@ -352,11 +303,6 @@ registerLocaleData(zh);
     ListSaleInputComponent,
     PPSR340Component,
     PPSR341Component,
-    POMP001Component,
-    POMP002Component,
-    POMP003Component,
-    Pomp003BtnCellRenderer,
-    Pomp001ActionBtnCellRenderer,
     PPSR313Component,
     PPSR322Child8Component,
     PPSR322Child9Component,

@@ -135,6 +135,19 @@ export class PPSI206RESComponent implements OnInit  {
     },
     {
       width: 110,
+      headerName: '軋延尺寸',
+      field: 'millDia',
+      cellRenderer: (params) => {
+        if(params.value){
+          return this.appComponent.toThousandNumber(params.value, 0).toString();
+        }else{
+          return params.value         
+        }
+      },
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
       headerName: '客戶名稱',
       field: 'custAbbreviations',
       headerComponent: AGCustomHeaderComponent
@@ -536,7 +549,7 @@ export class PPSI206RESComponent implements OnInit  {
       headerName: '軋延日期',
       field: 'millDate',
       cellRenderer: (params) => {
-        return this.appComponent.dateObjFormat(params.value, 1);
+        return this.appComponent.dateObjFormat(params.value, 2);
       },
       headerComponent: AGCustomHeaderComponent
     },
