@@ -80,12 +80,19 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
 
        // 如果是關閉分頁，頁面顯示區塊需顯示最後一個存在的頁面
        if(res.isClose){
+        console.log('close tabArray--->', res.tabArray);
           this.tabsSourceData = res.tabArray;
           this.goPage(this.tabsSourceData[this.tabsSourceData.length-1]);
+          // 修改TabIndex
+          // 若刪除tab從2個變成1個，沒修改該index會維持2
+          // 之後再tab添加從1又變成2，一樣賦值給activeTabIndex，
+          // 由於index沒有改變，tab選中的畫面效果就不會渲染
+          this.activeTabIndex = this.tabsSourceData.length-1;
        }
-       else{
+       else{  
           this.tabsSourceData = res.tabArray;
-          this.activeTabIndex = this.tabsSourceData.length;
+          this.activeTabIndex = this.tabsSourceData.length-1;
+          console.log('activeTabIndex--->', this.activeTabIndex);
        }
     });
 
