@@ -202,6 +202,7 @@ import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.comp
 import { ManageRoleActionCellComponent } from './pages/SYSTEM/manage-role/manage-role-action-cell-component';
 import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 import { BtnCellRendererType2 } from './pages/RENDERER/BtnCellRendererType2.component';
+import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
 
 registerLocaleData(zh);
 
@@ -373,6 +374,7 @@ registerLocaleData(zh);
     ManageRoleActionCellComponent,
     ManageUserComponent,
     BtnCellRendererType2,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,

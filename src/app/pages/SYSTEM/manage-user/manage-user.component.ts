@@ -181,7 +181,7 @@ interface TreeNode {
   menuType: string;
   icon: string;
   sortIndex: string;
-  level: string;
+  level: string|number;
   path: string;
   parentId: string;
   selected: boolean;
@@ -198,3 +198,4 @@ interface FlatNode {
   level: number;
   icon: string;
 }
+

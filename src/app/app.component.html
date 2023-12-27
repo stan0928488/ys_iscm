@@ -15,6 +15,7 @@
             nz-menu-item
             [nzDisabled]="menu.disabled"
             [nzSelected]="menu.selected"
+            [nzPaddingLeft]="menu.level * 24"
           >
             <span nz-icon [nzType]="menu.icon" *ngIf="menu.icon"></span>
             <a [routerLink]="[menu.path]"> {{menu.menuName}} </a>
@@ -26,6 +27,7 @@
             [nzTitle]="menu.menuName"
             [nzIcon]="menu.icon"
             [nzDisabled]="menu.disabled"
+            [nzPaddingLeft]="menu.level * 24"
           >
             <ul>
               <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: menu.children }"></ng-container>
