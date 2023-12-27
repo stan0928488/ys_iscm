@@ -1,24 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ORPP031component } from './pages/ORP/ORPP031/ORPP031.component';
-import { ORPP032component } from './pages/ORP/ORPP032/ORPP032.component';
-import { ORPP029_030component } from './pages/ORP/ORPP029_030/ORPP029_030.component';
-import { ORPP033component } from './pages/ORP/ORPP033/ORPP033.component';
-import { OIPP029component } from './pages/OIP/OIPP029/OIPP029.component';
-import { ORPV101Component } from './pages/ORP/ORPV101/ORPV101.component';
-import { ORPP100Component } from './pages/ORP/ORPP100/ORPP100.component';
-import { ORPP101Component } from './pages/ORP/ORPP101/ORPP101.component';
-import { ORPR102Component } from './pages/ORP/ORPR102/ORPR102.component';
-import { ORPR403Component } from './pages/ORP/ORPR403/ORPR403.component';
-import { ORPP040Component } from './pages/ORP/ORPP040/ORPP040.component';
-import { ORPP041Component } from './pages/ORP/ORPP041/ORPP041.component';
-import { ORPP042Component } from './pages/ORP/ORPP042/ORPP042.component';
-import { ORPP043Component } from './pages/ORP/ORPP043/ORPP043.component';
-import { ORPPDEMOComponent } from './pages/ORP/ORPPDEMO/ORPPDEMO.component';
-import { ORPPDEMO1Component } from './pages/ORP/ORPPDEMO1/ORPPDEMO1.component';
-import { ORPPCHATDEMOComponent } from './pages/ORP/ORPPCHATDEMO/ORPPCHATDEMO.component';
 
-import { TRAP001component } from './pages/TRA/TRAP001/TRAP001.component';
 
 import { PPSI101Component } from './pages/PPS/PPSI101/PPSI101.component';
 import { PPSI102Component } from './pages/PPS/PPSI102/PPSI102.component';
@@ -57,6 +39,7 @@ import { PPSI205Component } from './pages/PPS/PPSI205/PPSI205.component';
 import { PPSI205_100Component } from './pages/PPS/PPSI205_100/PPSI205_100.component';
 import { PPSI205_401Component } from './pages/PPS/PPSI205_401/PPSI205_401.component';
 import { PPSI210Component } from './pages/PPS/PPSI210_TabMenu/PPSI210/PPSI210.component';
+import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { PPSI220Component } from './pages/PPS/PPSI220_TabMenu/PPSI220/PPSI220.component';
 import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
@@ -68,23 +51,6 @@ import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
 import { PPSR307Component } from './pages/PPS/PPSR307/PPSR307.component';
 import { PPSR308Component } from './pages/PPS/PPSR308/PPSR308.component';
 import { PPSR309Component } from './pages/PPS/PPSR309/PPSR309.component';
-import { SPAP100component } from './pages/SPA/SPAP100/SPAP100.component';
-import { SPAP101component } from './pages/SPA/SPAP101/SPAP101.component';
-
-import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
-import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
-import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
-
-import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
-import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
-import { LoginComponent } from './login/login.component';
-import { AuthGuardService as AuthGuard } from './services/auth/auth-guard.service';
-import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
-import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
-import { MSHI003CanDeactivateGuard } from './pages/MSH/MSHI003/MSHI003.can.deactivate.guard';
-import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
-import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
-import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
 import { PPSI112Component } from './pages/PPS/PPSI112_TabMenu/PPSI112/PPSI112.component';
 import { PPSI112RefinIngComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_Refining/PPSI112_Refining.component';
@@ -121,10 +87,6 @@ import { PPSR321Detail0303CanDeactivateGuard } from './pages/PPS/PPSR321/PPSR321
 import { PPSR343Component } from './pages/PPS/PPSR343/PPSR343.component';
 import { PPSR340Component } from './pages/PPS/PPSR340/PPSR340.component';
 import { PPSR341Component } from './pages/PPS/PPSR341/PPSR341.component';
-
-import { POMP001Component } from './pages/POM/pomp001/pomp001.component';
-import { POMP002Component } from './pages/POM/pomp002/pomp002.component';
-import { POMP003Component } from './pages/POM/pomp003/pomp003.component';
 import { PPSR313Component } from './pages/PPS/PPSR313/PPSR313.component';
 import { PPSR322Child8Component } from './pages/PPS/PPSR322/PPSR322-child8/PPSR322-child8.component';
 import { PPSR322Child9Component } from './pages/PPS/PPSR322/PPSR322-child9/PPSR322-child9.component';
@@ -135,8 +97,23 @@ import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Re
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+
+import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
+import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
+import { MSHP001Component } from './pages/MSH/MSHP001/MSHP001.component';
+import { MSHI003Component } from './pages/MSH/MSHI003/MSHI003.component';
+import { MSHI003CanDeactivateGuard } from './pages/MSH/MSHI003/MSHI003.can.deactivate.guard';
+import { MSHI004Component } from './pages/MSH/MSHI004/MSHI004.component';
+
+import { LABI002Component } from './pages/LAB/LABI002/LABI002.component';
+import { LABI003Component } from './pages/LAB/LABI003/LABI003.component';
+import { LABI001Component } from './pages/LAB/LABI001/LABI001.component';
+import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
+
+import { LoginComponent } from './login/login.component';
+import { AuthGuardService as AuthGuard } from './services/auth/auth-guard.service';
+import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
-import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 
@@ -157,59 +134,6 @@ const routes: Routes = [
   },
 
   /* ORP & OIP & TRA */
-  {
-    path: 'ORPInput',
-    children: [
-      { path: '', redirectTo: '/ORPInput/V101', pathMatch: 'full' }, // 100開始
-      { path: 'V101', component: ORPP029_030component },
-      { path: 'V102', component: ORPP031component },
-      { path: 'V103', component: ORPP032component },
-      { path: 'V105', component: OIPP029component },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'ORPPlot',
-    children: [
-      { path: '', redirectTo: '/ORPPlot/P201', pathMatch: 'full' }, // 200開始
-      { path: 'P201', component: ORPP033component },
-      { path: 'P203', component: ORPP101Component },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'ORPExe',
-    children: [
-      { path: '', redirectTo: '/ORPExe/E301', pathMatch: 'full' }, // 300開始
-      { path: 'E301', component: ORPV101Component },
-      { path: 'E306', component: ORPP100Component },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'ORPRepo',
-    children: [
-      { path: '', redirectTo: '/ORPRepo/R401', pathMatch: 'full' }, // 400開始
-      { path: 'R401', component: ORPR102Component },
-      { path: 'R403', component: ORPR403Component },
-    ],
-    canActivate: [AuthGuard],
-  },
-
-  {
-    path: 'ORPCust',
-    children: [
-      { path: '', redirectTo: '/ORPCust/V040', pathMatch: 'full' },
-      { path: 'V040', component: ORPP040Component },
-      { path: 'V041', component: ORPP041Component },
-      { path: 'V042', component: ORPP042Component },
-      { path: 'V043', component: ORPP043Component },
-      { path: 'demo', component: ORPPDEMOComponent },
-      { path: 'demo1', component: ORPPDEMO1Component },
-      { path: 'chatdemo', component: ORPPCHATDEMOComponent },
-    ],
-    canActivate: [AuthGuard],
-  },
 
   /* PPS & MSH */
   {
@@ -501,62 +425,16 @@ const routes: Routes = [
   },
 
   /* RMP & PAS & DCM */
-  {
-    path: 'RMPInput',
-    children: [
-      { path: '', redirectTo: '/RMP/RMPInput/I101', pathMatch: 'full' },
-      // { path: "I101", component: PPSI200Component }
-    ],
-    canActivate: [AuthGuard],
-  },
 
   /* DCM */
-  {
-    path: 'DCMInput',
-    children: [
-      { path: '', redirectTo: '/DCM/DCMInput/I101', pathMatch: 'full' },
-      // { path: "I101", component: PPSI200Component }
-    ],
-    canActivate: [AuthGuard],
-  },
 
   /* SPA */
-  {
-    path: 'SPAInput',
-    children: [
-      { path: '', redirectTo: '/SPA/SPAInput/I101', pathMatch: 'full' },
-      { path: 'I101', component: SPAP100component },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'SPAPlot',
-    children: [
-      { path: '', redirectTo: '/SPA/SPAPlot/P201', pathMatch: 'full' },
-      { path: 'P201', component: SPAP101component },
-    ],
-    canActivate: [AuthGuard],
-  },
+
   /* TRA */
-  {
-    path: 'TRAInput',
-    children: [
-      { path: '', redirectTo: '/TRAInput/I001', pathMatch: 'full' },
-      { path: 'I001', component: TRAP001component },
-    ],
-    canActivate: [AuthGuard],
-  },
+
   /* POM  */
-  {
-    path: 'POM',
-    children: [
-      { path: '', redirectTo: '/POM/P001', pathMatch: 'full' },
-      { path: 'P001', component: POMP001Component },
-      { path: 'P002', component: POMP002Component },
-      { path: 'P003', component: POMP003Component },
-    ],
-    canActivate: [AuthGuard],
-  },
+  
+  /* system  */
   {
     path: 'system',
     children: [
