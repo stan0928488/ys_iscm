@@ -80,7 +80,6 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
 
        // 如果是關閉分頁，頁面顯示區塊需顯示最後一個存在的頁面
        if(res.isClose){
-        console.log('close tabArray--->', res.tabArray);
           this.tabsSourceData = res.tabArray;
           this.goPage(this.tabsSourceData[this.tabsSourceData.length-1]);
           // 修改TabIndex
@@ -92,7 +91,6 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
        else{  
           this.tabsSourceData = res.tabArray;
           this.activeTabIndex = this.tabsSourceData.length-1;
-          console.log('activeTabIndex--->', this.activeTabIndex);
        }
     });
 
