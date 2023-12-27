@@ -545,24 +545,24 @@ export class PPSI102Component implements OnInit {
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
 
       upload_data.push({
-        PLANT_CODE: 'YS',
-        PLANT: _data[i]['工廠別'],
-        SHOP_CODE: _data[i]['站別代碼'].toString(),
-        SHOP_NAME: _data[i]['站別名稱'],
-        EQUIP_CODE: _data[i]['機台'],
-        EQUIP_NAME: _data[i]['機台名稱'],
-        WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
+        plantCode: 'YS',
+        plant: _data[i]['工廠別'],
+        shopCode: _data[i]['站別代碼'].toString(),
+        shopName: _data[i]['站別名稱'],
+        equipCode: _data[i]['機台'],
+        equipName: _data[i]['機台名稱'],
+        wipMin: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
           ? ''
           : _data[i]['設備庫存下限(單位:MT)'],
-        WIP_MAX: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
+        wipMax: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
           ? ''
           : _data[i]['設備庫存上限(單位:MT)'],
-        EQUIP_GROUP: _data[i]['機台群組'],
-        MES_PUBLISH_GROUP: _data[i]['發佈MES群組'],
-        VALID: _data[i]['有效碼'],
-        BALANCE_RULE: '',
-        ORDER_SEQ: '',
-        WT_TYPE: '',
+        equipGroup: _data[i]['機台群組'],
+        mesPublishGroup: _data[i]['發佈MES群組'],
+        valid: _data[i]['有效碼'],
+        balanceRule: '',
+        orderSeq: '',
+        wtType: '',
         DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
         USERNAME: this.USERNAME,
       });
@@ -577,15 +577,15 @@ export class PPSI102Component implements OnInit {
       };
       console.log(obj);
       console.log('@@@@@@@@@@@@@@@@@@');
-      myObj.PPSService.importI107Excel('1', obj).subscribe(
+      myObj.PPSService.importPPSINPTB07('1', obj).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
+          if (res['message'] === 'Y') {
             this.loading = false;
             this.sucessMSG('EXCCEL上傳成功', '');
             this.clearFile();
             this.getDataList();
           } else {
-            this.errorMSG('匯入錯誤', res[0].MSG);
+            this.errorMSG('匯入錯誤', res['message']);
             this.clearFile();
             this.loading = false;
           }

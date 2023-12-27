@@ -26,8 +26,8 @@ interface ItemData7 {
   shopName: string;
   equipCode: string;
   equipName: string;
-  wipMin: string;
-  wipMax: string;
+  wipMin: number;
+  wipMax: number;
   equipGroup: string;
   mesPublishGroup: string;
   balanceRule: string;
@@ -632,34 +632,34 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       if (_data[i]['發佈MES群組'] == undefined) _data[i]['發佈MES群組'] = '';
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
       upload_data.push({
-        PLANT_CODE: 'YS',
-        PLANT: _data[i]['工廠別'],
-        SHOP_CODE: _data[i]['站別代碼'],
-        SHOP_NAME: _data[i]['站別'],
-        EQUIP_CODE: _data[i]['機台'],
-        EQUIP_GROUP: _data[i]['機台群組'],
-        MES_PUBLISH_GROUP: _data[i]['發佈MES群組'],
-        EQUIP_NAME: _data[i]['機台名稱'],
-        WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
+        plantCode: 'YS',
+        plant: _data[i]['工廠別'],
+        shopCode: _data[i]['站別代碼'],
+        shopName: _data[i]['站別'],
+        equipCode: _data[i]['機台'],
+        equipGroup: _data[i]['機台群組'],
+        mesPublishGroup: _data[i]['發佈MES群組'],
+        equipName: _data[i]['機台名稱'],
+        wipMin: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
           ? null
           : _data[i]['設備庫存下限(單位:MT)'],
-        WIP_MAX: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
+        wipMax: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
           ? null
           : _data[i]['設備庫存上限(單位:MT)'],
-        WT_TYPE:
+        wtType:
           _data[i]['工時計算分類'] == '線速'
             ? '1'
             : _data[i]['工時計算分類'] == '非線速'
             ? '2'
             : null,
-        VALID:
+        valid:
           _data[i]['有效碼'] == '有效'
             ? 'Y'
             : _data[i]['有效碼'] == '無效'
             ? 'X'
             : null,
-        BALANCE_RULE: null,
-        ORDER_SEQ: null,
+        balanceRule: null,
+        orderSeq: null,
         DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
         USERNAME: this.USERNAME,
       });
@@ -675,8 +675,9 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         EXCELDATA: upload_data,
       };
 
-      myObj.PPSService.importI107Excel('2', obj).subscribe(
+      myObj.PPSService.importPPSINPTB07('2', obj).subscribe(
         (res) => {
+          console.log(res);
           console.log('importExcelPPSI102');
           if (res['message'] === 'Y') {
             this.loading = false;
@@ -693,8 +694,12 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
           }
         },
         (err) => {
+          console.log(err);
           reject('upload fail');
-          this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+          this.errorMSG(
+            '修改存檔失敗',
+            '後台存檔錯誤，請聯繫系統工程師' + err['message']
+          );
           this.loading = false;
           this.LoadingPage = false;
         }

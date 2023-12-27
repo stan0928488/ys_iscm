@@ -345,29 +345,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  //Get getPPSINP07List
-  getPPSINP07List(_type) {
-    console.log('api service getPPSINP07List');
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/getPPSINP07List`;
-    return this.http.get(queryUrl);
-  }
-
   getPPSINPTB07List(_type) {
     console.log('api service getPPSINPTB07List');
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/getDataList`;
     return this.http.get(queryUrl);
-  }
-  // I107 insertI107Save
-  insertI107Save(_type, _data) {
-    const body = JSON.stringify(_data);
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/insertI107Save`;
-    return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   insertPPSINPTB07List(_type, _data) {
@@ -378,30 +361,12 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // I107 updateI107Save 修改存檔
-  updateI107Save(_type, _data) {
-    const body = JSON.stringify(_data);
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I107` + nonbarUrl + `/updateI107Save`;
-    return this.http.post(queryUrl, body, this.httpOptions);
-  }
-
   updatePPSINPTB07List(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/updateData`;
     return this.http.post(queryUrl, body, this.httpOptions);
-  }
-
-  // I107 delI107Data 刪除資料
-  delI107Data(_type, _ID) {
-    let nonbarUrl = '';
-    if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl =
-      this.APIURL + `/FCP/I107` + nonbarUrl + `/delI107Data/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
   }
 
   deletePPSINPTB07(_type, _ID) {
@@ -422,6 +387,17 @@ export class PPSService {
     console.log(_type);
     let queryUrl =
       this.APIURL + `/FCP/I107` + nonbarUrl + `/importExcelPPSI107`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  importPPSINPTB07(_type, _data) {
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    const body = JSON.stringify(_data);
+    console.log(body);
+    console.log('########################');
+    console.log(_type);
+    let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/importData`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
