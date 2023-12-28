@@ -55,8 +55,8 @@
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="e">華新/外包</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                <div *ngIf="user.platform == '2'">外包</div>
-                                <div *ngIf="user.platform == '1'">華新</div>
+                                <div *ngIf="user.platform == '1'">華新人員</div>
+                                <div *ngIf="user.platform == '2'">外包人員</div>
                             </nz-form-control>
                         </nz-form-item>
                     </form>

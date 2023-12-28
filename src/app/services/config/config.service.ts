@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ConfigService {
   APIURL: string = '';
+  CONTEXT_PATH = '/ys-iscm';
 
   constructor(private http: HttpClient) {
     //this.setAPIURL();

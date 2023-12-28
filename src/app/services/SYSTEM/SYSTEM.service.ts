@@ -12,7 +12,7 @@ import { Observable, of } from 'rxjs';
 export class SYSTEMService {
   APIURL: string = '';
   APINEWURL: string = '';
-  CONTEXT_PATH = '/ys-iscm';
+  CONTEXT_PATH = '';
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -28,6 +28,7 @@ export class SYSTEMService {
   ) {
     this.APIURL = this.configService.getAPIURL();
     this.APINEWURL = this.configService.getAPIURL('1');
+    this.CONTEXT_PATH = this.configService.CONTEXT_PATH;
   }
 
 
@@ -113,6 +114,10 @@ export class SYSTEMService {
 
   getCurrentUser() {
     const queryUrl = `${this.CONTEXT_PATH}/user/getCurrentUser`;
+    return this.http.post(queryUrl, null, this.httpOptions);
+  }
+  getCurrentUserMenuFunction() {
+    const queryUrl = `${this.CONTEXT_PATH}/user/getCurrentUserMenuFunction`;
     return this.http.post(queryUrl, null, this.httpOptions);
   }
 
