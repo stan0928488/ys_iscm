@@ -1,5 +1,26 @@
+@import url("../../../../standard.less");
+
 .flexContainer{
     display: flex;
     justify-content: start;
     align-items: center;
+}
+
+.flexContainer .edit-label-required{
+    padding: 10px 12px 10px 0;
+}
+
+.flexContainer .edit-label-not-required{
+    padding: 10px 12px 10px 0;
+}
+
+.flexContainer .edit-label-required:before{
+    content: "*";
+    display: inline-block;
+    margin-right: 4px;
+    color: #ed4014;
+}
+
+.drawerBox{
+    position: relative;
 }

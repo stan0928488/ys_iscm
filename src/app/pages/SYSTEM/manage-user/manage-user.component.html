@@ -1,0 +1,68 @@
+<nz-content style="margin: 0 16px">
+    <nz-breadcrumb style="margin: 16px 0">
+        <nz-breadcrumb-item>設定</nz-breadcrumb-item>
+        <nz-breadcrumb-item>用戶管理</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <ag-grid-angular
+      style="width: 100%; height: calc(100vh - 220px); overflow: scroll; "
+      class="ag-theme-alpine"
+      [frameworkComponents]="frameworkComponents"
+      [rowData]="rowData"
+      [columnDefs]="colDefs"
+      [pagination]="true"
+      [gridOptions]="gridOptions"
+    >
+    </ag-grid-angular>
+
+    <nz-drawer
+      [nzClosable]="false"
+      [nzVisible]="visible"
+      [nzExtra]="extra"
+      nzPlacement="right"
+      nzTitle="用戶權限"
+      (nzOnClose)="close()"
+    >
+      <ng-container *nzDrawerContent>
+        <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+          <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+            <nz-tree-node-toggle>
+              <span
+                nz-icon
+                [nzType]="node.icon"
+                nzTheme="outline"
+              ></span>
+            </nz-tree-node-toggle>
+            <nz-tree-node-option>
+              {{ node.menuName }}
+            </nz-tree-node-option>
+          </nz-tree-node>
+
+          <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+            <nz-tree-node-toggle>
+              <span
+                nz-icon
+                [nzType]="node.icon"
+                nzTheme="outline"
+              ></span>
+            </nz-tree-node-toggle>
+            <nz-tree-node-option>
+              {{ node.menuName }}
+            </nz-tree-node-option>
+          </nz-tree-node>
+        </nz-tree-view>
+      </ng-container>
+    </nz-drawer>
+    <ng-template #extra>
+      <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+          <button nz-button nzType="default" (click)="expandAll()"> 展開全部
+              <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+          </button>
+      </ng-container>
+      <ng-template #isCollapseAll>
+          <button nz-button nzType="default" (click)="expandAll()"> 收合全部
+              <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+          </button>
+      </ng-template>
+    </ng-template>
+</nz-content>

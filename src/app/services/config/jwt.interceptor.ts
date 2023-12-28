@@ -20,7 +20,8 @@ export class JwtInterceptor implements HttpInterceptor {
     if (jwtToken) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${jwtToken}`,
+         // Authorization: `Bearer ${jwtToken}`,
+         Authorization:jwtToken,
           CurrentRoute: currentRoute // 放入當前路由
         }
       });
@@ -39,7 +40,7 @@ export class JwtInterceptor implements HttpInterceptor {
           console.log('拒絕此使用者訪問');
           // 使用 UserStatusService 或其他方式處理錯誤訊息
           // 導航到 '/AccessDined' 網頁
-          // this.router.navigate(['/AccessDined']);   // 先關閉
+          //this.router.navigate(['/AccessDined']);
         }
 
         return throwError(error);

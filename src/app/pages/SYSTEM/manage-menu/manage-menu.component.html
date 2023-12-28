@@ -1,17 +1,38 @@
 <nz-content style="margin: 20px 20px">
-    <button nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
-    </button>
-    <div nz-row style="background-color: white; margin-top: 20px;">
-        <div nz-col nzFlex="2">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>設定</nz-breadcrumb-item>
+        <nz-breadcrumb-item>功能菜單管理</nz-breadcrumb-item>
+      </nz-breadcrumb>
+
+    <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+        <div style="height: auto; width: 500px; background-color: white; margin-top: 20px;">
+            <div style="display: inline-block; margin: 20px 5px;">
+                <button style="margin-right: 10px;" nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
+                    <span nz-icon nzType="plus" nzTheme="outline"></span>
+                </button>
+                <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 展開菜單
+                        <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                    </button>
+                </ng-container>
+                <ng-template #isCollapseAll>
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 收合菜單
+                        <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+                    </button>
+                </ng-template>
+                <button *ngIf="false" nz-button nzType="default" (click)="reloadSystemMenus()">
+                    <span nz-icon nzType="reload" nzTheme="outline"></span>
+                </button>
+            </div>
             <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
-                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
                     <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
                     <nz-tree-node-option
                         [nzSelected]="selectListSelection.isSelected(node)"
                         (nzClick)="nodeClickHandler(node)"
                     >
-                        {{ node.name }}
+                    <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                        {{ node.menuName }}
                     </nz-tree-node-option>
                     <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
@@ -21,7 +42,7 @@
                     </button>
                 </nz-tree-node>
 
-                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
                     <nz-tree-node-toggle>
                         <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
                     </nz-tree-node-toggle>
@@ -29,56 +50,120 @@
                         [nzSelected]="selectListSelection.isSelected(node)"
                         (nzClick)="nodeClickHandler(node)"
                     >
-                        {{ node.name }}
+                    <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                        {{ node.menuName }}
                     </nz-tree-node-option>
                     <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
                     </button>
-                    <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
-                        <span nz-icon nzType="minus" nzTheme="outline"></span>
-                    </button>
                 </nz-tree-node>
             </nz-tree-view>
         </div>
-        <div nz-col nzFlex="3">編輯區塊</div>
-    </div>
+    </nz-spin>
 </nz-content>
 
-<nz-drawer
-      [nzBodyStyle]="{ overflow: 'auto' }"
-      [nzWidth]="420"
-      [nzVisible]="addNewNodeVisible"
-      nzTitle="新增子節點"
-      [nzFooter]="footerTpl"
-      (nzOnClose)="addNewNodeClose()">
 
-    <div *nzDrawerContent>
-        <div class="flexContainer">
-            <div>上級節點：</div>
-            <nz-tag [nzColor]="'#2db7f5'">{{ currentParentNode?.name }}</nz-tag>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>類型：</div>
-            <nz-radio-group [(ngModel)]="newMenuType">
+<nz-modal
+  [(nzVisible)]="editIsVisible"
+  [nzTitle]="editModalTitle"
+  [nzContent]="editModalContent"
+  [nzWidth]="600"
+  (nzOnOk)="editSave()"
+  [nzOkText]="'保存更改'"
+  [nzOkLoading]="editSaveLoading"
+  [nzCancelText]="'取消'"
+  (nzOnCancel)="closeEditModal()"
+>
+  <ng-template #editModalContent>
+    <div class="flexContainer">
+        <label class="edit-label-required">節點類型</label>
+        <ng-container *ngIf="editNodelevel !== null && editNodelevel !== undefined && editNodelevel <= 3; else finalLevel" >
+            <nz-radio-group [(ngModel)]="editMenuType">
                 <label nz-radio nzValue="C">菜單</label>
                 <label nz-radio nzValue="F">權限API</label>
-              </nz-radio-group>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>節點名稱：</div>
-            <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
-        </div>
-        <div style="margin-top: 20px;" class="flexContainer">
-            <div>節點路徑：</div>
-            <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
-        </div>
+            </nz-radio-group>
+        </ng-container>
+        <ng-template #finalLevel>
+            <nz-radio-group [(ngModel)]="editMenuType">
+                <label nz-radio nzValue="F">權限API</label>
+            </nz-radio-group>
+        </ng-template>
     </div>
 
+    <div style="margin-top: 20px" class="flexContainer">
+        <label class="edit-label-not-required">節點圖示</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="editMenuIcon" type="text" nzSize="default"/>
+    </div>
 
-    <ng-template #footerTpl>
-        <div style="float: right">
-          <button nz-button style="margin-right: 8px;" (click)="addNewNodeClose()">取消</button>
-          <button nz-button nzType="primary" (click)="addNewNodeHandler()">新增</button>
+    <div style="margin-top: 20px" class="flexContainer">
+        <label class="edit-label-required">節點名稱</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="editNodeName" type="text" nzSize="default"/>
+    </div>
+
+    <div style="margin-top: 20px" class="flexContainer">
+        <label class="edit-label-not-required">節點路徑</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="editMenuPath" type="text" nzSize="default"/>
+    </div>
+
+    <div style="margin-top: 20px" class="flexContainer">
+        <label class="edit-label-not-required">節點排序索引</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點序索引" [(ngModel)]="editMenuSortIndex" type="text" nzSize="default"/>
+    </div>
+  </ng-template>
+</nz-modal>
+
+<nz-drawer
+    [nzBodyStyle]="{overflow: 'auto' }"
+    [nzWidth]="420"
+    [nzVisible]="addNewNodeVisible"
+    nzTitle="新增節點"
+    [nzFooter]="footerTpl"
+    (nzOnClose)="addNewNodeClose()">
+        <div *nzDrawerContent>
+            <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+                <div class="flexContainer">
+                    <div>上級節點：</div>
+                    <nz-tag [nzColor]="'#2db7f5'">{{ currentParentNode?.menuName }}</nz-tag>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>類型：</div>
+                    <ng-container *ngIf="currentParentNode !== null && currentParentNode !== undefined && currentParentNode.level < 3; else finalLevel" >
+                        <nz-radio-group [(ngModel)]="newMenuType">
+                            <label nz-radio nzValue="C">菜單</label>
+                            <label nz-radio nzValue="F">權限API</label>
+                        </nz-radio-group>
+                    </ng-container>
+                    <ng-template #finalLevel>
+                        <nz-radio-group [(ngModel)]="newMenuType">
+                            <label nz-radio nzValue="F">權限API</label>
+                        </nz-radio-group>
+                    </ng-template>
+                    
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點圖示：</div>
+                    <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <label style="padding: inherit;" class="edit-label-required">節點名稱：</label>
+                    <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點路徑：</div>
+                    <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點排序索引：</div>
+                    <input style="width: 300px;" nz-input placeholder="請輸入節點排序索引" [(ngModel)]="newNodeSortIdx" type="text" nzSize="default"/>
+                </div>
+            </nz-spin>
         </div>
-    </ng-template>
+        <ng-template #footerTpl>
+            <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+                <div style="float: right">
+                    <button nz-button style="margin-right: 8px;" (click)="addNewNodeClose()">取消</button>
+                    <button nz-button nzType="primary" (click)="addNewNodeHandler()">新增</button>
+                </div>
+            </nz-spin>
+        </ng-template>
 </nz-drawer>

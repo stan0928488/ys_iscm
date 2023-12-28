@@ -4,7 +4,7 @@
 
 export interface Menu {
   id: number | string;
-  fatherId: number | string;
+  fatherId?: number | string;
   path: string;
   menuName: string;
   menuType: 'C' | 'F' | 'A'; // F:權限API，C:菜單，A:不需權限通用API

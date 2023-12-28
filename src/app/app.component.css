@@ -71,5 +71,7 @@
 
 
 .router-outlet-area{ 
+  margin-top: 10px;
+  margin-left: 10px;
   height: calc(100vh - 68px);
 }

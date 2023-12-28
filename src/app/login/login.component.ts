@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import { CommonService } from '../services/common/common.service';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
+import { AppEventBusComponent } from '../app-event-bus.component';
 //import * as base64 from "base64-encode-decode";
 
 @Component({
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private cookieService: CookieService,
     private authService: AuthService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private appEventBusComponent: AppEventBusComponent,
   ) {}
 
   ngOnInit() {
@@ -114,24 +116,37 @@ export class LoginComponent implements OnInit {
     };
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
-    this.commonService.casLogin(username, password, env).subscribe(
+   const  _param = {userName:username,password:password,saveLogin:true}
+    this.commonService.casLogin(_param).subscribe(
       (res) => {
-        if (_.get(res, 'isAuth')) {
+        console.log("登录结果") ;
+        console.log(res)
+        let result:any = res ;
+
+        // if (_.get(res, 'isAuth')) {
+          if (result.code === 200 && result.data.auth === true) {
           console.log("login success");
           
           this.cookieService.setCookie("USERNAME", username, 2);
           this.cookieService.setCookie("plantCode", plantCode, 2);
           this.authService.emitAuthState();
-          
+          let jwtTokenTemp = result.data.jwtToken ;
           // 儲存 JWT token 到 localStorage
-          localStorage.setItem('jwtToken', _.get(res, "jwtToken"));
+          localStorage.setItem('jwtToken',jwtTokenTemp);
           let jwtToken = localStorage.getItem('jwtToken');
           console.log("jwtToken:" + jwtToken);
           
           this.authFail = false;
           this.isLogining = false;
           
-          this.router.navigateByUrl("/FCPBarData/P202_TabMenu/P202");
+          this.appEventBusComponent.emit({
+            name: 'logingSuccess',
+            data: {
+              logingSuccess:true,
+            },
+          });
+
+          this.router.navigate(['/user/profile']);
           
         } else {
           console.log('login fail err');
