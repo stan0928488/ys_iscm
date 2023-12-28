@@ -55,6 +55,30 @@
           </button>
         </div>
 
+        <p><p>
+         <!-- 測試預覽圖
+          <input type="file" (change)="onFileSelected($event)">
+<div *ngIf="previewURL">
+  <img [src]="previewURL" alt="Image Preview">
+</div> -->
+<!-- <p><p><p><p><p><p><p>
+       
+
+<div>
+  <button (click)="pasteFromClipboard()">Paste from Clipboard</button>
+</div>
+
+<div (click)="fileInput.click()" style="cursor: pointer;">
+  <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+  <div>
+    <textarea #pasteArea [(ngModel)]="pasteContent" (input)="onPaste($event)" placeholder="Paste image here"></textarea>
+  </div>
+  <div *ngIf="previewURL">
+    <img [src]="previewURL" alt="Image Preview">
+  </div>
+</div>
+
+<p><p><p><p><p><p><p> -->
         <ag-grid-angular
           class="ag-theme-alpine" 
           style="width: 100%; height: 350px;"
