@@ -72,7 +72,6 @@ export class UserProfileComponent implements AfterViewInit {
   };
 
   ngAfterViewInit(): void {
-    this.treeControl.expandAll();
   }
 
   ngOnInit(): void {
