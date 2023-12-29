@@ -8,26 +8,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
-
-
-
-
-interface ItemData3 {
-  id: string;
-  tab3ID: number;
-  SHOP_CODE: string;
-  EQUIP_CODE: string;
-  EQUIP_GROUP: string;
-  LOAD_TIME: number;
-  TRANSFER_TIME: number;
-  OTHER_TIME: number;
-  BIG_ADJUST_TIME: number;
-  SMALL_ADJUST_TIME: number;
-  RETURN_TIME: number;
-  COOLING_TIME: number;
-}
-
-
+import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 @Component({
   selector: "app-PPSI104",
@@ -36,6 +18,8 @@ interface ItemData3 {
   providers:[NzMessageService]
 })
 export class PPSI104Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "整備時間(PPSI104)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -85,6 +69,9 @@ export class PPSI104Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -97,7 +84,102 @@ export class PPSI104Component implements AfterViewInit {
     aI104Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
-  
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 100,
+      headerName: '站別',
+      field: 'SHOP_CODE',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '機台',
+      field: 'EQUIP_CODE',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '機群',
+      field: 'EQUIP_GROUP',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 130,
+      headerName: '上下料',
+      field: 'LOAD_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '搬運',
+      field: 'TRANSFER_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '其他整備',
+      field: 'OTHER_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '大調機',
+      field: 'BIG_ADJUST_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '小調機',
+      field: 'SMALL_ADJUST_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '退料',
+      field: 'RETURN_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 110,
+      headerName: '冷卻',
+      field: 'COOLING_TIME',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   PPSINP03List_tmp;
   PPSINP03List: ItemData3[] = [];
   editCache3: { [key: string]: { edit: boolean; data: ItemData3 } } = {};
@@ -207,40 +289,40 @@ export class PPSI104Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData3): void {
     let myObj = this;
-    if (this.editCache3[id].data.SHOP_CODE === undefined || "" === this.editCache3[id].data.SHOP_CODE) {
+    if (rowData.SHOP_CODE === undefined || "" === rowData.SHOP_CODE) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache3[id].data.EQUIP_CODE === undefined || "" === this.editCache3[id].data.EQUIP_CODE) {
+    } else if (rowData.EQUIP_CODE === undefined || "" === rowData.EQUIP_CODE) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache3[id].data.LOAD_TIME === undefined || "" === this.editCache3[id].data.LOAD_TIME.toString()) {
+    } else if (rowData.LOAD_TIME === undefined || "" === rowData.LOAD_TIME.toString()) {
       myObj.message.create("error", "「上下料」不可為空");
       return;
-    } else if (this.editCache3[id].data.TRANSFER_TIME === undefined || "" === this.editCache3[id].data.TRANSFER_TIME.toString()) {
+    } else if (rowData.TRANSFER_TIME === undefined || "" === rowData.TRANSFER_TIME.toString()) {
       myObj.message.create("error", "「搬運」不可為空");
       return;
-    }  else if (this.editCache3[id].data.OTHER_TIME === undefined || "" === this.editCache3[id].data.OTHER_TIME.toString()) {
+    }  else if (rowData.OTHER_TIME === undefined || "" === rowData.OTHER_TIME.toString()) {
       myObj.message.create("error", "「其他整備」不可為空");
       return;
-    }  else if (this.editCache3[id].data.BIG_ADJUST_TIME === undefined || "" === this.editCache3[id].data.BIG_ADJUST_TIME.toString()) {
+    }  else if (rowData.BIG_ADJUST_TIME === undefined || "" === rowData.BIG_ADJUST_TIME.toString()) {
       myObj.message.create("error", "「大調機」不可為空");
       return;
-    }  else if (this.editCache3[id].data.SMALL_ADJUST_TIME === undefined || "" === this.editCache3[id].data.SMALL_ADJUST_TIME.toString()) {
+    }  else if (rowData.SMALL_ADJUST_TIME === undefined || "" === rowData.SMALL_ADJUST_TIME.toString()) {
       myObj.message.create("error", "「小調機」不可為空");
       return;
-    }  else if (this.editCache3[id].data.RETURN_TIME === undefined || "" === this.editCache3[id].data.RETURN_TIME.toString()) {
+    }  else if (rowData.RETURN_TIME === undefined || "" === rowData.RETURN_TIME.toString()) {
       myObj.message.create("error", "「退料」不可為空");
       return;
-    }   else if (this.editCache3[id].data.COOLING_TIME === undefined || "" === this.editCache3[id].data.COOLING_TIME.toString())  {
+    }   else if (rowData.COOLING_TIME === undefined || "" === rowData.COOLING_TIME.toString())  {
       myObj.message.create("error", "「冷卻」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -312,23 +394,23 @@ export class PPSI104Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData3) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache3[_id].data.tab3ID,
-        SHOP_CODE : this.editCache3[_id].data.SHOP_CODE,
-        EQUIP_CODE : this.editCache3[_id].data.EQUIP_CODE,
-        EQUIP_GROUP : this.editCache3[_id].data.EQUIP_GROUP === undefined ? null : this.editCache3[_id].data.EQUIP_GROUP ,
-        LOAD_TIME : this.editCache3[_id].data.LOAD_TIME,
-        TRANSFER_TIME : this.editCache3[_id].data.TRANSFER_TIME,
-        OTHER_TIME : this.editCache3[_id].data.OTHER_TIME,
-        BIG_ADJUST_TIME : this.editCache3[_id].data.BIG_ADJUST_TIME,
-        SMALL_ADJUST_TIME : this.editCache3[_id].data.SMALL_ADJUST_TIME,
-        RETURN_TIME : this.editCache3[_id].data.RETURN_TIME,
-        COOLING_TIME : this.editCache3[_id].data.COOLING_TIME,
+        ID : rowData.tab3ID,
+        SHOP_CODE : rowData.SHOP_CODE,
+        EQUIP_CODE : rowData.EQUIP_CODE,
+        EQUIP_GROUP : rowData.EQUIP_GROUP === undefined ? null : rowData.EQUIP_GROUP ,
+        LOAD_TIME : rowData.LOAD_TIME,
+        TRANSFER_TIME : rowData.TRANSFER_TIME,
+        OTHER_TIME : rowData.OTHER_TIME,
+        BIG_ADJUST_TIME : rowData.BIG_ADJUST_TIME,
+        SMALL_ADJUST_TIME : rowData.SMALL_ADJUST_TIME,
+        RETURN_TIME : rowData.RETURN_TIME,
+        COOLING_TIME : rowData.COOLING_TIME,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
@@ -347,9 +429,9 @@ export class PPSI104Component implements AfterViewInit {
 
           this.sucessMSG("修改成功", ``);
 
-          const index = this.PPSINP03List.findIndex(item => item.id === _id);
-          Object.assign(this.PPSINP03List[index], this.editCache3[_id].data);
-          this.editCache3[_id].edit = false;
+          const index = this.PPSINP03List.findIndex(item => item.id === rowData.id);
+          Object.assign(this.PPSINP03List[index], rowData);
+          this.editCache3[rowData.id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -643,5 +725,39 @@ export class PPSI104Component implements AfterViewInit {
     this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
 
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'COOLING_TIME');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'COOLING_TIME',
+    });
+  }
 
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData);
+  }
+
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.id);
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.id);
+  }
+
+}
+
+interface ItemData3 {
+  id: string;
+  tab3ID: number;
+  SHOP_CODE: string;
+  EQUIP_CODE: string;
+  EQUIP_GROUP: string;
+  LOAD_TIME: number;
+  TRANSFER_TIME: number;
+  OTHER_TIME: number;
+  BIG_ADJUST_TIME: number;
+  SMALL_ADJUST_TIME: number;
+  RETURN_TIME: number;
+  COOLING_TIME: number;
 }
