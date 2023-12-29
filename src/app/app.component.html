@@ -35,10 +35,10 @@
           </li>
         </ng-container>
       </ng-template>
-      <li nz-menu-item *ngIf="userName !== ''">
+      <li nz-menu-item *ngIf="menus && menus.length > 0">
         <span nz-icon nzType="minus" nzTheme="outline"></span>
       </li>
-      <li nz-menu-item *ngIf="userName !== ''">
+      <li nz-menu-item *ngIf="menus && menus.length > 0">
         <span (click)="onLogout()">
           <span nz-icon nzType="user" nzTheme="outline"></span>
           <span class="outline">登出 {{ userName }}</span>

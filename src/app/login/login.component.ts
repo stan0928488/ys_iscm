@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.redirectCheck();
-
+    this.authService.authLogOut();
     this.authService.emitAuthState();
 
     if (this.authService.isAuthenticated()) {

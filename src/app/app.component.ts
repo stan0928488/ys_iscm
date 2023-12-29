@@ -164,7 +164,6 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
   
 
   ngOnInit(): void {
-
     let logTime = localStorage.getItem('logTime');
     if(logTime){
       let today = new Date().getTime();
