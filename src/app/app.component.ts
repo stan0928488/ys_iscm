@@ -74,9 +74,10 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
       this.tabHandler();
   }
 
-
-  //當前被關閉的分頁
-  currentCloseTab : TabModel = null;
+  // 當前正在瀏覽的分頁
+  isCurrentViewTabClose : boolean = null;
+  // 當前被關閉的分頁的索引
+  currentViewTabIndex : number = null;
   tabHandler(): void {
 
     this.tabService.getTabDataList$().subscribe(res => {
@@ -87,14 +88,19 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
           // 響應被動取得當前剩下的tab
           this.tabsSourceData = res.tabArray;
 
-          // 如果關閉的不是當前正在瀏覽的分頁，則不需要導航到其他頁
-          const isExist = this.tabsSourceData.filter(item => _.isEqual(item.uuid, this.currentCloseTab.uuid))
-          if(isExist){
+          // 當前正在瀏覽的頁面被關閉(已不存在在tabsSourceData裡了)
+          // 則需要導航到下一個tab
+          if(this.isCurrentViewTabClose){
+            // tab中中間的tab被關閉，導航到它右方的tab
+            if(this.tabsSourceData.length-1 >= this.currentViewTabIndex){
+              this.goPage(this.tabsSourceData[this.currentViewTabIndex]);
+            }
+            // tab中排在最後一個的tab被關閉，導航到剩下的最後一個tab
+            else{
+              this.goPage(this.tabsSourceData[this.tabsSourceData.length - 1]);
+            }
             return;
           }
-
-          // 當前tab被關閉，導航到最後一個tab
-          this.goPage(this.tabsSourceData[this.tabsSourceData.length-1]);
        }
        // 使用者點開頁面產生新tab
        else{  
@@ -165,8 +171,14 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
   }
   
   closeTab({ index } : { index: number }){
+
     let tabIdx = Number(index);
-    this.currentCloseTab = this.tabsSourceData[tabIdx];
+
+    // 是否是當前正在瀏覽的頁面被關閉
+    this.isCurrentViewTabClose = this.activeTabIndex === tabIdx;
+    // 當前被關閉的分頁的索引
+    this.currentViewTabIndex = tabIdx;
+  
     this.tabService.closeTab(this.tabsSourceData[tabIdx]);
   }
 

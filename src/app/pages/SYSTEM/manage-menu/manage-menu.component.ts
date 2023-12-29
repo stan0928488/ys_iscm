@@ -214,7 +214,7 @@ export class ManageMenuComponent implements AfterViewInit {
 
     this.editSaveLoading = true;
 
-    // 裝配要保存的資料
+    // 裝配要更新的資料
     const requestUpdateNodeData = {
       id: this.editId,
       menuType : this.editMenuType,   // 新節點類型(菜單/權限API)
@@ -658,19 +658,28 @@ export class ManageMenuComponent implements AfterViewInit {
   // 新增通用授權API輸入參數--路徑
   newCommonApiPathInput = '';
 
+  // 編輯通用授權API彈出框是否顯示
+  commonApiEditModalVisible = false;
+  // 編輯通用授權API彈出框標題
+  commonApiEditModalTitle = '';
+  // 編輯通用授權API彈出框保存按鈕是否顯示處理中
+  commonApiEditSaveLoading = false;
+  // 編輯通用授權API輸入參數--名稱
+  editCommonApiNameInput = '';
+  // 編輯通用授權API輸入參數--路徑
+  editCommonApiPathInput = '';
+
   menusAndApisList : any[] = [];
 
   menusAndApisColumnDefs: ColDef[] = [
     { 
       headerName:'名稱', 
       field:'menuName',
-      width: 150,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'類型', 
       field:'menuType',
-      width: 150,
       valueFormatter: (params: ValueFormatterParams<any, string>) => {
         const type = params.value;
         if(_.isEqual('A', type)){
@@ -691,12 +700,10 @@ export class ManageMenuComponent implements AfterViewInit {
     { 
       headerName:'路徑', 
       field:'path',
-      width: 250,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'Action', 
-      width: 150,
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: CommonApiEditComponent,
     }
@@ -711,6 +718,63 @@ export class ManageMenuComponent implements AfterViewInit {
       autoHeight: true,
     }
   };
+
+  currentCommonApiEditData = null;
+  commonApiCacheData = null;
+  commonApiEditOpen(rowData : any){
+
+    // 顯示通用授權API編輯視窗
+    this.commonApiEditModalVisible = true;
+
+    // 賦值原來的名稱跟路徑給編輯輸入框
+    this.editCommonApiNameInput = rowData.menuName;
+    this.editCommonApiPathInput = rowData.path;
+
+    // 紀錄當前編輯的資料
+    this.currentCommonApiEditData = rowData;
+
+    // 緩存一份當前編輯的資料，用於比對使用者是否有做修改了
+    this.commonApiCacheData = _.cloneDeep(rowData);
+  }
+
+  async commonApiEditSave(){
+
+    if(_.isEmpty(this.editCommonApiNameInput)){
+      this.message.error('請填寫通用授權API名稱');
+      return;
+    }
+
+    if(_.isEmpty(this.editCommonApiPathInput)){
+      this.message.error('請填寫通用授權API路徑');
+      return;
+    }
+
+    this.currentCommonApiEditData.menuName = this.editCommonApiNameInput;
+    this.currentCommonApiEditData.path = this.editCommonApiPathInput;
+
+    // 比對是否跟編輯前的資料一樣
+    // 一樣的話則不執行更新保存
+    if(_.isEqual(this.currentCommonApiEditData, this.commonApiCacheData)){
+      this.message.warning('您尚未修改任何資料');
+      return;
+    }
+
+    const requestUpdateCommonApiData = {
+      id: this.currentCommonApiEditData.id,
+      menuName :  this.currentCommonApiEditData.menuName,   // 通用授權API名稱
+      path : this.currentCommonApiEditData.path // 通用授權API名稱路徑
+      //updateUser : this.USERNAME
+    }
+
+    await this.addOrUpdateCommonApiHandler(requestUpdateCommonApiData);
+    this.commonApiCloseEditModal();
+    
+  }
+
+  commonApiCloseEditModal(){
+    this.commonApiEditModalVisible = false;
+  }
+
 
   addCommomApiVisible(){
     this.addCommonApiVisible = true;
@@ -728,6 +792,10 @@ export class ManageMenuComponent implements AfterViewInit {
       const response = await firstValueFrom<any>(resObservable$);
       if(response.code === 200){
         this.menusAndApisList = response.data;
+        // 使用detectChanges()函數讓ag-grid渲染完畢
+        // 之後再調autoSize才會成功
+        this.changeDetectorRef.detectChanges();
+        this. autoSizeAll();
       }
       else{
         this.menusAndApisList = [];
@@ -784,7 +852,7 @@ export class ManageMenuComponent implements AfterViewInit {
 
 
 
-  // 新增通用API
+  // 新增或更新通用API
   async addOrUpdateCommonApiHandler(payload : any){
 
     try{
@@ -803,8 +871,11 @@ export class ManageMenuComponent implements AfterViewInit {
           nzTitle: '新增成功',
           nzContent: '新增通用授權API成功',
         });
-        this.newCommonApiNameInput = '';
-        this.newCommonApiPathInput = '';
+
+        if(!!!payload.id){
+          this.newCommonApiNameInput = '';
+          this.newCommonApiPathInput = '';
+        }
       }
       else{
         this.nzModalService.error({
@@ -872,6 +943,15 @@ export class ManageMenuComponent implements AfterViewInit {
 
   }
 
+  // ag-grid根據cell中的內容寬度適應
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+        allColumnIds.push(column.getId());
+      }
+    );
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
 
   // 獲取ag-grid的Api函數
   onGridReady(params: GridReadyEvent<any>) {

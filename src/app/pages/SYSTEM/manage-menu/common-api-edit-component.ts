@@ -11,7 +11,8 @@ import { ICellRendererParams } from "ag-grid-community";
             [disabled]="params.data.menuType!=='A'"
             nzType="primary"
             nzShape="round"
-            nzSize="small">
+            nzSize="small"
+            (click)="componentParent.commonApiEditOpen(params.data)">
             編輯
         </button>
         <button 

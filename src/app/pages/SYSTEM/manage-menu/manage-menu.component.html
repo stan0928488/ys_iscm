@@ -205,6 +205,32 @@
 
 
 <!-- 通用授權API管理 -->
+<nz-modal
+  [(nzVisible)]="commonApiEditModalVisible"
+  [nzTitle]="commonApiEditModalTitle"
+  [nzContent]="commonApiEditModalContent"
+  [nzWidth]="600"
+  (nzOnOk)="commonApiEditSave()"
+  [nzOkText]="'保存更改'"
+  [nzOkLoading]="commonApiEditSaveLoading"
+  [nzCancelText]="'取消'"
+  (nzOnCancel)="commonApiCloseEditModal()">
+
+    <ng-template #commonApiEditModalContent>
+        <div style="margin-top: 20px;" class="flexContainer">
+            <label style="padding: inherit;" class="edit-label-required">通用授權API名稱：</label>
+            <input style="width: 200px;" nz-input placeholder="請輸入通用授權API名稱" [(ngModel)]="editCommonApiNameInput" type="text" nzSize="default"/>
+        </div>
+        <div style="margin-top: 20px;" class="flexContainer">
+            <label style="padding: inherit;" class="edit-label-required">通用授權API路徑：</label>
+            <input style="width: 200px;" nz-input placeholder="請輸入通用授權API路徑" [(ngModel)]="editCommonApiPathInput" type="text" nzSize="default"/>
+        </div>
+    </ng-template>
+
+</nz-modal>
+
+
+
 <nz-drawer
     [nzBodyStyle]="{overflow: 'auto' }"
     [nzWidth]="420"

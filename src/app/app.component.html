@@ -63,7 +63,8 @@
     </nz-header>
 
     <!-- router outlet area -->
-      <div class="router-outlet-area">
+    <nz-content class="router-outlet-area">
+      <div>
         <nz-tabset 
           [(nzSelectedIndex)]="activeTabIndex"
           nzType="editable-card"
@@ -78,6 +79,7 @@
           (deactivate)="componentRemoved($event)"
         ></router-outlet>
       </div>
+    </nz-content>
 
     <nz-footer style="text-align: center; padding: 8px">
       Copyright © Walsin Lihwa Corp. All Rights Reserved.
