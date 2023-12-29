@@ -1,68 +1,103 @@
 <nz-content style="margin: 20px 20px">
     <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
-        <nz-breadcrumb-item>設定</nz-breadcrumb-item>
-        <nz-breadcrumb-item>功能菜單管理</nz-breadcrumb-item>
+        <nz-breadcrumb-item>系統管理</nz-breadcrumb-item>
+        <nz-breadcrumb-item>菜單功能管理</nz-breadcrumb-item>
       </nz-breadcrumb>
 
     <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
-        <div style="height: auto; width: 500px; background-color: white; margin-top: 20px;">
-            <div style="display: inline-block; margin: 20px 5px;">
-                <button style="margin-right: 10px;" nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
-                    <span nz-icon nzType="plus" nzTheme="outline"></span>
-                </button>
-                <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
-                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 展開菜單
-                        <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
-                    </button>
-                </ng-container>
-                <ng-template #isCollapseAll>
-                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 收合菜單
-                        <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
-                    </button>
-                </ng-template>
-                <button *ngIf="false" nz-button nzType="default" (click)="reloadSystemMenus()">
-                    <span nz-icon nzType="reload" nzTheme="outline"></span>
-                </button>
-            </div>
-            <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
-                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
-                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
-                    <nz-tree-node-option
-                        [nzSelected]="selectListSelection.isSelected(node)"
-                        (nzClick)="nodeClickHandler(node)"
-                    >
-                    <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
-                        {{ node.menuName }}
-                    </nz-tree-node-option>
-                    <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+        <div style="display: flex; justify-content: strat; align-items: start; width:100%">
+            <nz-card style="height: auto; min-width:350px; width: auto; margin-top: 20px;" nzTitle="菜單樹管理">
+                <div style="display: inline-block; margin-bottom: 20px;">
+                    <button style="margin-right: 10px;" nz-button nzType="primary" (click)="addFirstLevelMenu()">添加頂級菜單
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
                     </button>
-                    <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
-                        <span nz-icon nzType="minus" nzTheme="outline"></span>
+                    <ng-container *ngIf="!isExpandAll; else isCollapseAll" >
+                        <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 展開菜單
+                            <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                        </button>
+                    </ng-container>
+                    <ng-template #isCollapseAll>
+                        <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 收合菜單
+                            <span nz-icon nzType="fullscreen-exit" nzTheme="outline"></span>
+                        </button>
+                    </ng-template>
+                    <button *ngIf="false" nz-button nzType="default" (click)="reloadSystemMenus()">
+                        <span nz-icon nzType="reload" nzTheme="outline"></span>
                     </button>
-                </nz-tree-node>
+                </div>
+                <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" #menuTreeView>
+                    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                        <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                        <nz-tree-node-option
+                            [nzSelected]="selectListSelection.isSelected(node)"
+                            (nzClick)="nodeClickHandler(node)"
+                        >
+                        <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            {{ node.menuName }}
+                        </nz-tree-node-option>
+                        <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+                            <span nz-icon nzType="plus" nzTheme="outline"></span>
+                        </button>
+                        <button nz-button nzType="text" nzSize="small" (click)="deleteNode(node)">
+                            <span nz-icon nzType="minus" nzTheme="outline"></span>
+                        </button>
+                    </nz-tree-node>
 
-                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
-                    <nz-tree-node-toggle>
-                        <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
-                    </nz-tree-node-toggle>
-                    <nz-tree-node-option
-                        [nzSelected]="selectListSelection.isSelected(node)"
-                        (nzClick)="nodeClickHandler(node)"
-                    >
-                    <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
-                        {{ node.menuName }}
-                    </nz-tree-node-option>
-                    <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+                    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                        <nz-tree-node-toggle>
+                            <span nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon></span>
+                        </nz-tree-node-toggle>
+                        <nz-tree-node-option
+                            [nzSelected]="selectListSelection.isSelected(node)"
+                            (nzClick)="nodeClickHandler(node)"
+                        >
+                        <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            {{ node.menuName }}
+                        </nz-tree-node-option>
+                        <button *ngIf="node.level <=3" nz-button nzType="text" nzSize="small" (click)="addNewNodeOpen(node)">
+                            <span nz-icon nzType="plus" nzTheme="outline"></span>
+                        </button>
+                    </nz-tree-node>
+                </nz-tree-view>
+            </nz-card>
+            <nz-card style="height: auto; width: 1000px; margin-top: 20px; margin-left: 20px" nzTitle="通用授權API管理">
+                
+                <div class="flexContainer">
+                    <button style="margin-right: 50px;" nz-button nzType="primary" (click)="addCommomApiVisible()">新增通用授權API
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
                     </button>
-                </nz-tree-node>
-            </nz-tree-view>
+                    <input style="width: 200px; margin-right: 10px;" nz-input placeholder="關鍵字" [(ngModel)]="menusOrApisKeyword"/>
+                    <nz-select  style="margin-right: 10px;" [(ngModel)]="menusOrApisType" nzPlaceHolder="類型">
+                        <nz-option nzValue="A" nzLabel="通用授權API"></nz-option>
+                        <nz-option nzValue="F" nzLabel="權限API"></nz-option>
+                        <nz-option nzValue="C" nzLabel="菜單"></nz-option>
+                        <nz-option nzValue="" nzLabel="All"></nz-option>
+                    </nz-select>
+                    <button nz-button nzType="default"(click)="searchMenusOrApis()">
+                        <span nz-icon nzType="search"></span>
+                        搜尋
+                    </button>
+                </div>
+
+                <ag-grid-angular
+                    style="width:100%; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+                    class="ag-theme-alpine"
+                    [context]="agGridContext"
+                    [rowData]="menusAndApisList"
+                    [columnDefs]="menusAndApisColumnDefs"
+                    [gridOptions]="gridOptions"
+                    [pagination]="true"
+                    [suppressClickEdit]="true"
+                    (gridReady)="onGridReady($event)"
+                    [paginationPageSize]="20">
+                </ag-grid-angular>  
+            </nz-card>
         </div>
     </nz-spin>
 </nz-content>
 
 
+<!-- 菜單樹管理 -->
 <nz-modal
   [(nzVisible)]="editIsVisible"
   [nzTitle]="editModalTitle"
@@ -166,4 +201,37 @@
                 </div>
             </nz-spin>
         </ng-template>
+</nz-drawer>
+
+
+<!-- 通用授權API管理 -->
+<nz-drawer
+    [nzBodyStyle]="{overflow: 'auto' }"
+    [nzWidth]="420"
+    [nzVisible]="addCommonApiVisible"
+    nzTitle="新增通用授權API"
+    [nzFooter]="addCommonApiFooterTpl"
+    (nzOnClose)="addCommonApiClose()">
+
+    <div *nzDrawerContent>
+        <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+            <div style="margin-top: 20px;" class="flexContainer">
+                <label style="padding: inherit;" class="edit-label-required">通用授權API名稱：</label>
+                <input style="width: 200px;" nz-input placeholder="請輸入通用授權API名稱" [(ngModel)]="newCommonApiNameInput" type="text" nzSize="default"/>
+            </div>
+            <div style="margin-top: 20px;" class="flexContainer">
+                <label style="padding: inherit;" class="edit-label-required">通用授權API路徑：</label>
+                <input style="width: 200px;" nz-input placeholder="請輸入通用授權API路徑" [(ngModel)]="newCommonApiPathInput" type="text" nzSize="default"/>
+            </div>
+        </nz-spin>
+    </div>
+
+    <ng-template #addCommonApiFooterTpl>
+        <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isDrawerSpinning">
+            <div style="float: right">
+                <button nz-button style="margin-right: 8px;" (click)="addCommonApiClose()">取消</button>
+                <button nz-button nzType="primary" (click)="addCommonApi()">新增</button>
+            </div>
+        </nz-spin>
+    </ng-template>
 </nz-drawer>

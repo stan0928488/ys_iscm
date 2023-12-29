@@ -175,6 +175,7 @@ import { ManageRoleActionCellComponent } from './pages/SYSTEM/manage-role/manage
 import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 import { BtnCellRendererType2 } from './pages/RENDERER/BtnCellRendererType2.component';
 import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
+import { CommonApiEditComponent } from './pages/SYSTEM/manage-menu/common-api-edit-component';
 
 registerLocaleData(zh);
 
@@ -323,6 +324,7 @@ registerLocaleData(zh);
     ManageUserComponent,
     BtnCellRendererType2,
     UserProfileComponent,
+    CommonApiEditComponent,
   ],
   imports: [
     BrowserModule,

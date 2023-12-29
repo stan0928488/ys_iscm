@@ -86,13 +86,23 @@ export class SYSTEMService {
   }
 
   /**
-   * 
+   * 根據職務獲取對應的菜單
    */
   getMenusRelationRole(roleId : string){
     const queryUrl = `${this.CONTEXT_PATH}/system/role/getMenuByRoleId`;
     const payload = {
       roleId : roleId
     }
+    return this.http.post(queryUrl, payload, this.httpOptions);
+  }
+
+  /**
+   * 關鍵字搜尋菜單或API
+   * @param payload 
+   * @returns 
+   */
+  findMenusOrApisByKeyword(payload : any){
+    const queryUrl = `${this.CONTEXT_PATH}/system/menu/getAllCommonFunctionAuth`;
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
 
