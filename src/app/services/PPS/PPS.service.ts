@@ -217,7 +217,7 @@ export class PPSService {
   getPPSINP03List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/getPPSINP03List`;
+    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/getPPSINP03List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -226,7 +226,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/insertSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -235,7 +235,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/updateSave`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -243,7 +243,7 @@ export class PPSService {
   delI103Tab1Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/delData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/delData/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I103 importI103Excel EXCEL匯入
@@ -251,7 +251,7 @@ export class PPSService {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I103` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }

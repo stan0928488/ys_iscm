@@ -319,7 +319,7 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache[_id].data.ID,
+        ID : this.editCache[_id].data.idx,
         PLANT_CODE : this.editCache[_id].data.PLANT_CODE,
         SHOP_CODE : this.editCache[_id].data.SHOP_CODE,
         EQUIP_CODE : this.editCache[_id].data.EQUIP_CODE,
@@ -353,10 +353,9 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
   
   // 刪除資料
-  delID(_id) {
+  delID(_ID) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache[_id].data.ID;
       myObj.PPSService.delI103Tab1Data('2', _ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
@@ -516,8 +515,8 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
         let coolingTime = _data[i].冷卻時間 !== undefined ? _data[i].冷卻時間.toString() : '0';
         let otherTime = _data[i].其他整備時間 !== undefined ? _data[i].其他整備時間.toString() : '0';
 
-        this.importdata_new.push({plantCode: plantCode, shopCode: shopCode, equipCode: equipCode, equipGroup: equipGroup, loadTime: loadTime, transferTime: transferTime,
-          bigAdjustTime: bigAdjustTime, smallAdjustTime: smallAdjustTime, returnTime: returnTime, coolingTime: coolingTime, otherTime: otherTime});
+        this.importdata_new.push({PLANT_CODE: plantCode, SHOP_CODE: shopCode, EQUIP_CODE: equipCode, EQUIP_GROUP: equipGroup, LOAD_TIME: loadTime, TRANSFER_TIME: transferTime,
+          BIG_ADJUST_TIME: bigAdjustTime, SMALL_ADJUST_TIME: smallAdjustTime, RETURN_TIME: returnTime, COOLING_TIME: coolingTime, OTHER_TIME: otherTime});
       }
 
       return new Promise((resolve, reject) => {
