@@ -97,7 +97,7 @@ export class UserProfileComponent implements AfterViewInit {
         //   }
         // });
       } else {
-        this.message.create("error", "result.message");
+        this.message.create("error", result.message);
         
       }
     });

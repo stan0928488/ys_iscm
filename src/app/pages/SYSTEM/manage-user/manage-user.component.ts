@@ -5,6 +5,7 @@ import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
+import {NzMessageService} from "ng-zorro-antd/message";
 
 @Component({
   selector: 'app-manage-user',
@@ -59,6 +60,7 @@ export class ManageUserComponent implements AfterViewInit {
   };
 
   constructor(
+    private message: NzMessageService,
     private systemService : SYSTEMService
   ) {
     this.dataSource.setData(this.TREE_DATA);
@@ -76,6 +78,8 @@ export class ManageUserComponent implements AfterViewInit {
       let result:any = res;
       if(result.code == 200){
         this.rowData = result.data;
+      } else {
+        this.message.create("error", result.message);
       }
     });
   }
@@ -108,6 +112,8 @@ export class ManageUserComponent implements AfterViewInit {
       if(result.code == 200){
         this.TREE_DATA = result.data;
         this.dataSource.setData(this.TREE_DATA);
+      } else {
+        this.message.create("error", result.message);
       }
     });
     this.open();
