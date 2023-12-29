@@ -7,26 +7,8 @@ import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService} from "ng-zorro-antd/modal"
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
-
-
-
-interface ItemData {
-  idx: number;
-  ID: number;
-  PLANT_CODE: string;
-  SHOP_CODE: string;
-  EQUIP_CODE: string;
-  EQUIP_GROUP: string;
-  LOAD_TIME: number;
-  TRANSFER_TIME: number;
-  BIG_ADJUST_TIME: number;
-  SMALL_ADJUST_TIME: number;
-  RETURN_TIME: number;
-  COOLING_TIME: number;
-  OTHER_TIME: number;
-}
-
-
+import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 @Component({
   selector: "app-PPSI104_NonBar",
@@ -35,6 +17,8 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI104_NonBarComponent implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "整備時間(PPSI104)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -55,16 +39,6 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
   OTHER_TIME = 0;
 
   isVisiblePrepare = false;
-  searchShopCodeValue = '';
-  searchEquipCodeValue = '';
-  searchEquipGroupValue = '';
-  searchLoadTimeValue = '';
-  searchTransferTimeValue = '';
-  searchOtherTimeValue = '';
-  searchBigAdjustTimeValue = '';
-  searchSmallAdjustTimeValue = '';
-  searchReturnTimeValue = '';
-  searchCoolingTimeValue = '';
 
   isErrorMsg = false;;
   isERROR = false;
@@ -86,16 +60,100 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 100,
+      headerName: '站別',
+      field: 'SHOP_CODE',
+    },
+    {
+      width: 100,
+      headerName: '機台',
+      field: 'EQUIP_CODE',
+    },
+    {
+      width: 100,
+      headerName: '機群',
+      field: 'EQUIP_GROUP',
+    },
+    {
+      width: 100,
+      headerName: '上下料時間',
+      field: 'LOAD_TIME',
+    },
+    {
+      width: 100,
+      headerName: '搬運時間',
+      field: 'TRANSFER_TIME',
+    },
+    {
+      width: 100,
+      headerName: '大調機時間',
+      field: 'BIG_ADJUST_TIME',
+    },
+    {
+      width: 100,
+      headerName: '小調機時間',
+      field: 'SMALL_ADJUST_TIME',
+    },
+    {
+      width: 100,
+      headerName: '退料時間',
+      field: 'RETURN_TIME',
+    },
+    {
+      width: 100,
+      headerName: '冷卻時間',
+      field: 'COOLING_TIME',
+    },
+    {
+      width: 100,
+      headerName: '其他整備時間',
+      field: 'OTHER_TIME',
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
+
   ngAfterViewInit() {
-    console.log("ngAfterViewChecked");
     this.getPPSINP03List();
-    
-    const aI104NTab = this.elementRef.nativeElement.querySelector('#aI104N') as HTMLAnchorElement;
-    const liI104NTab = this.elementRef.nativeElement.querySelector('#liI104N') as HTMLLIElement;
-    liI104NTab.style.backgroundColor = '#E4E3E3';
-    aI104NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   onInit() {
@@ -112,16 +170,6 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
     this.isVisiblePrepare = false;
     this.LoadingPage = false;
-    this.searchShopCodeValue = '';
-    this.searchEquipCodeValue = '';
-    this.searchEquipGroupValue = '';
-    this.searchLoadTimeValue = '';
-    this.searchTransferTimeValue = '';
-    this.searchOtherTimeValue = '';
-    this.searchBigAdjustTimeValue = '';
-    this.searchSmallAdjustTimeValue = '';
-    this.searchReturnTimeValue = '';
-    this.searchCoolingTimeValue = '';
     
     this.isErrorMsg = false;
     this.importdata = [];
@@ -190,12 +238,6 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
       });
     }
   }
-
-
-  // update
-  editRow(id: number): void {
-    this.editCache[id].edit = true;
-  }
   
   // delete
   deleteRow(id: number): void {
@@ -221,40 +263,40 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: number): void {
+  saveEdit(rowData: ItemData): void {
     let myObj = this;
-    if (this.editCache[id].data.SHOP_CODE === undefined) {
+    if (rowData.SHOP_CODE === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache[id].data.EQUIP_CODE === undefined && this.editCache[id].data.EQUIP_GROUP === undefined) {
+    } else if (rowData.EQUIP_CODE === undefined && rowData.EQUIP_GROUP === undefined) {
       myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
-    } else if (this.editCache[id].data.LOAD_TIME === undefined) {
+    } else if (rowData.LOAD_TIME === undefined) {
       myObj.message.create("error", "「上下料」不可為空");
       return;
-    } else if (this.editCache[id].data.TRANSFER_TIME === undefined) {
+    } else if (rowData.TRANSFER_TIME === undefined) {
       myObj.message.create("error", "「搬運」不可為空");
       return;
-    } else if (this.editCache[id].data.BIG_ADJUST_TIME === undefined) {
+    } else if (rowData.BIG_ADJUST_TIME === undefined) {
       myObj.message.create("error", "「大調機」不可為空");
       return;
-    } else if (this.editCache[id].data.SMALL_ADJUST_TIME === undefined) {
+    } else if (rowData.SMALL_ADJUST_TIME === undefined) {
       myObj.message.create("error", "「小調機」不可為空");
       return;
-    } else if (this.editCache[id].data.RETURN_TIME === undefined) {
+    } else if (rowData.RETURN_TIME === undefined) {
       myObj.message.create("error", "「退料」不可為空");
       return;
-    }  else if (this.editCache[id].data.COOLING_TIME === undefined) {
+    }  else if (rowData.COOLING_TIME === undefined) {
       myObj.message.create("error", "「冷卻」不可為空");
       return;
-    } else if (this.editCache[id].data.OTHER_TIME === undefined) {
+    } else if (rowData.OTHER_TIME === undefined) {
       myObj.message.create("error", "「其他整備」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -313,33 +355,33 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache[_id].data.idx,
-        PLANT_CODE : this.editCache[_id].data.PLANT_CODE,
-        SHOP_CODE : this.editCache[_id].data.SHOP_CODE,
-        EQUIP_CODE : this.editCache[_id].data.EQUIP_CODE,
-        EQUIP_GROUP : this.editCache[_id].data.EQUIP_GROUP,
-        LOAD_TIME : this.editCache[_id].data.LOAD_TIME,
-        TRANSFER_TIME : this.editCache[_id].data.TRANSFER_TIME,
-        OTHER_TIME : this.editCache[_id].data.OTHER_TIME,
-        BIG_ADJUST_TIME : this.editCache[_id].data.BIG_ADJUST_TIME,
-        SMALL_ADJUST_TIME : this.editCache[_id].data.SMALL_ADJUST_TIME,
-        RETURN_TIME : this.editCache[_id].data.RETURN_TIME,
-        COOLING_TIME : this.editCache[_id].data.COOLING_TIME,
+        ID : rowData.ID,
+        PLANT_CODE : rowData.PLANT_CODE,
+        SHOP_CODE : rowData.SHOP_CODE,
+        EQUIP_CODE : rowData.EQUIP_CODE,
+        EQUIP_GROUP : rowData.EQUIP_GROUP,
+        LOAD_TIME : rowData.LOAD_TIME,
+        TRANSFER_TIME : rowData.TRANSFER_TIME,
+        OTHER_TIME : rowData.OTHER_TIME,
+        BIG_ADJUST_TIME : rowData.BIG_ADJUST_TIME,
+        SMALL_ADJUST_TIME : rowData.SMALL_ADJUST_TIME,
+        RETURN_TIME : rowData.RETURN_TIME,
+        COOLING_TIME : rowData.COOLING_TIME,
         USERNAME : this.USERNAME
       })
       myObj.PPSService.updateI103Tab1Save('2', obj).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
-          const index = this.PPSINP03List.findIndex(item => item.idx === _id);
-          Object.assign(this.PPSINP03List[index], this.editCache[_id].data);
-          this.editCache[_id].edit = false;
+          const index = this.PPSINP03List.findIndex(item => item.idx === rowData.idx);
+          Object.assign(this.PPSINP03List[index], rowData);
+          this.editCache[rowData.idx].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -585,110 +627,40 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     this.isVisiblePrepare = false;
   }
 
-// ============= 過濾資料之menu ========================
-  // 4.(資料過濾)整備時間
-  ppsInp03ListFilter(property:string, keyWord:string){
-    const filterFunc = item => {
-      let propertyValue = _.get(item, property);
-      if (keyWord == "") {
-        return true;
-      } else {
-        return _.startsWith(propertyValue, keyWord);
-      }
-    };
-
-    const data = this.PPSINP03List.filter(item => filterFunc(item));
-    this.displayPPSINP03List = data;
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'OTHER_TIME');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'OTHER_TIME',
+    });
   }
 
-  // 資料過濾---整備時間 --> 站別
-  searchShopCode() : void{
-    this.ppsInp03ListFilter("SHOP_CODE", this.searchShopCodeValue);
-  } 
-  resetByShopCode() : void{
-    this.searchShopCodeValue = '';
-    this.ppsInp03ListFilter("SHOP_CODE", this.searchShopCodeValue);
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData);
   }
 
-  // 資料過濾---整備時間 --> 機台
-  searchEquipCode() : void{
-    this.ppsInp03ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
-  } 
-  resetByEquipCode() : void{
-    this.searchEquipCodeValue = '';
-    this.ppsInp03ListFilter("EQUIP_CODE", this.searchEquipCodeValue);
-  }
-  // 資料過濾---整備時間 --> 機群
-  searchEquipGroup() : void{
-    this.ppsInp03ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
-  } 
-  resetByEquipGroup() : void{
-    this.searchEquipGroupValue = '';
-    this.ppsInp03ListFilter("EQUIP_GROUP", this.searchEquipGroupValue);
+  onBtnClick3(e) {
+    this.cancelEdit(e.rowData.ID);
   }
 
-  // 資料過濾---整備時間 --> 上下料
-  searchLoadTime() : void{
-    this.ppsInp03ListFilter("LOAD_TIME", this.searchLoadTimeValue);
-  } 
-  resetByLoadTime() : void{
-    this.searchLoadTimeValue = '';
-    this.ppsInp03ListFilter("LOAD_TIME", this.searchLoadTimeValue);
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData.ID);
   }
 
-  // 資料過濾---整備時間 --> 搬運
-  searchByTransferTime() : void{
-    this.ppsInp03ListFilter("TRANSFER_TIME", this.searchTransferTimeValue);
-  } 
-  resetByTransferTime() : void{
-    this.searchTransferTimeValue = '';
-    this.ppsInp03ListFilter("TRANSFER_TIME", this.searchTransferTimeValue);
-  }
+}
 
-  // 資料過濾---整備時間 --> 大調機
-  searchByBigAdjustTime() : void{
-    this.ppsInp03ListFilter("BIG_ADJUST_TIME", this.searchBigAdjustTimeValue);
-  } 
-  resetByBigAdjustTime() : void{
-    this.searchBigAdjustTimeValue = '';
-    this.ppsInp03ListFilter("BIG_ADJUST_TIME", this.searchBigAdjustTimeValue);
-  }
-
-  // 資料過濾---整備時間 --> 小調機
-  searchBySmallAdjustTime() : void{
-    this.ppsInp03ListFilter("SMALL_ADJUST_TIME", this.searchSmallAdjustTimeValue);
-  } 
-  resetBySmallAdjustTime() : void{
-    this.searchSmallAdjustTimeValue = '';
-    this.ppsInp03ListFilter("SMALL_ADJUST_TIME", this.searchSmallAdjustTimeValue);
-  }
-
-  // 資料過濾---整備時間 --> 退料
-  searchByReturnTime() : void{
-    this.ppsInp03ListFilter("RETURN_TIME", this.searchReturnTimeValue);
-  } 
-  resetByReturnTime() : void{
-    this.searchReturnTimeValue = '';
-    this.ppsInp03ListFilter("RETURN_TIME", this.searchReturnTimeValue);
-  }
-  
-  // 資料過濾---整備時間 --> 冷卻
-  searchByCoolingTime() : void{
-    this.ppsInp03ListFilter("COOLING_TIME", this.searchCoolingTimeValue);
-  } 
-  resetByCoolingTime() : void{
-    this.searchCoolingTimeValue = '';
-    this.ppsInp03ListFilter("COOLING_TIME", this.searchCoolingTimeValue);
-  }
-
-  // 資料過濾---整備時間 --> 其他整備
-  searchByOtherTime() : void{
-    this.ppsInp03ListFilter("OTHER_TIME", this.searchOtherTimeValue);
-  } 
-  resetByOtherTime() : void{
-    this.searchOtherTimeValue = '';
-    this.ppsInp03ListFilter("OTHER_TIME", this.searchOtherTimeValue);
-  }
-
-
+interface ItemData {
+  idx: number;
+  ID: number;
+  PLANT_CODE: string;
+  SHOP_CODE: string;
+  EQUIP_CODE: string;
+  EQUIP_GROUP: string;
+  LOAD_TIME: number;
+  TRANSFER_TIME: number;
+  BIG_ADJUST_TIME: number;
+  SMALL_ADJUST_TIME: number;
+  RETURN_TIME: number;
+  COOLING_TIME: number;
+  OTHER_TIME: number;
 }
