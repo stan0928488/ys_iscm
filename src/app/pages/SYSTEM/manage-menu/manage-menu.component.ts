@@ -10,6 +10,10 @@ import * as uuid from 'uuid';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { firstValueFrom } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ColDef, ColumnApi, GridApi, GridReadyEvent, ValueFormatterParams } from 'ag-grid-community';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { CommonApiEditComponent } from './common-api-edit-component';
+import { CookieService } from 'src/app/services/config/cookie.service';
 
 interface FlatNode {
   id : number | string;
@@ -115,18 +119,24 @@ export class ManageMenuComponent implements AfterViewInit {
 
   isExpandAll = false;
   
+  USERNAME = '';
   constructor(@Inject(MENU_TOKEN) public menus: Menu[],
               private nzModalService: NzModalService,
               private systemService : SYSTEMService,
               private message: NzMessageService,
-              private changeDetectorRef: ChangeDetectorRef){
+              private changeDetectorRef: ChangeDetectorRef,
+              private cookieService : CookieService){
     // 測試用假資料
     //this.dataSource.setData(menus);
+    this.agGridContext = {
+      componentParent: this
+    };
+    this.USERNAME = this.cookieService.getCookie('USERNAME');
   }
-
 
   async ngAfterViewInit(): Promise<void> {
     await this.getSystemMenu();
+    await this.searchMenusOrApis();
   }
 
   async getSystemMenu(){
@@ -213,7 +223,8 @@ export class ManageMenuComponent implements AfterViewInit {
       sortIndex : _.isEmpty(this.editMenuSortIndex) ? null : this.editMenuSortIndex, // 新節點的排序索引
       level : String(this.editNodelevel), // 新節點在樹中的層級
       path : _.isEmpty(this.editMenuPath) ? null : this.editMenuPath , // 新節點對應的路徑
-      parentId : _.isNil(this.editParentId) ? null : String(this.editParentId) // 父節點的Id
+      parentId : _.isNil(this.editParentId) ? null : String(this.editParentId), // 父節點的Id
+      //updateUser : this.USERNAME
     }
 
     await this.saveOrUpdateHandler(requestUpdateNodeData);
@@ -230,7 +241,7 @@ export class ManageMenuComponent implements AfterViewInit {
       sortIndex: '',
       path: '',
       level: 0,
-      parentId : null
+      parentId : null,
     }
     this.addNewNodeVisible = true;
   }
@@ -276,7 +287,8 @@ export class ManageMenuComponent implements AfterViewInit {
       sortIndex : _.isEmpty(this.newNodeSortIdx) ? null : this.newNodeSortIdx, // 新節點的排序索引
       level : String(this.currentParentNode.level), // 新節點在樹中的層級
       path : _.isEmpty(this.newNodePath) ? null : this.newNodePath , // 新節點對應的路徑
-      parentId : _.isNil(this.currentParentNode?.id) ? null : String(this.currentParentNode?.id) // 父節點的Id
+      parentId : _.isNil(this.currentParentNode?.id) ? null : String(this.currentParentNode?.id), // 父節點的Id
+      //createUser : this.USERNAME
     }
 
     await this.saveOrUpdateHandler(requestSaveNodeData);
@@ -356,6 +368,7 @@ export class ManageMenuComponent implements AfterViewInit {
       sortIndex : requestNodeData.sortIndex,
       path : requestNodeData.path,
       parentId : requestNodeData.parentId,
+      //createUser : this.USERNAME
     }
     
     //渲染資料
@@ -623,5 +636,249 @@ export class ManageMenuComponent implements AfterViewInit {
     this.isExpandAll = false;
     this.throttleGetSystemMenu();
   }
+
+
+//-----------------------------------------------
+// 通用API管理
+//-----------------------------------------------
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext: any;
+
+  // 搜尋關鍵字
+  menusOrApisKeyword = null;
+  // 搜尋指定的類型
+  menusOrApisType = 'A';
+
+  // 控制新增通用API側邊欄顯示與否
+  addCommonApiVisible = false;
+
+  // 新增通用授權API輸入參數--名稱
+  newCommonApiNameInput = '';
+  // 新增通用授權API輸入參數--路徑
+  newCommonApiPathInput = '';
+
+  menusAndApisList : any[] = [];
+
+  menusAndApisColumnDefs: ColDef[] = [
+    { 
+      headerName:'名稱', 
+      field:'menuName',
+      width: 150,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'類型', 
+      field:'menuType',
+      width: 150,
+      valueFormatter: (params: ValueFormatterParams<any, string>) => {
+        const type = params.value;
+        if(_.isEqual('A', type)){
+          return '通用授權API';
+        }
+        else if(_.isEqual('F', type)){
+          return '權限API';
+        }
+        else if(_.isEqual('C', type)){
+          return '菜單';
+        }
+        else{
+          return type;
+        }
+      },
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'路徑', 
+      field:'path',
+      width: 250,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action', 
+      width: 150,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: CommonApiEditComponent,
+    }
+  ];
+
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      //editable: true,
+      resizable: true,
+      autoHeight: true,
+    }
+  };
+
+  addCommomApiVisible(){
+    this.addCommonApiVisible = true;
+  }
+
+  async searchMenusOrApis(){
+
+    try{
+      this.isSpinning = true;
+      const payload = {
+        keyword : this.menusOrApisKeyword, //關鍵字
+        menuType : this.menusOrApisType // 類型
+      }
+      const resObservable$  = this.systemService.findMenusOrApisByKeyword(payload);
+      const response = await firstValueFrom<any>(resObservable$);
+      if(response.code === 200){
+        this.menusAndApisList = response.data;
+      }
+      else{
+        this.menusAndApisList = [];
+        this.nzModalService.error({
+          nzTitle: '搜尋失敗',
+          nzContent: response.message,
+        });
+      }
+
+      }catch (error) {
+        this.nzModalService.error({
+          nzTitle: '搜尋失敗',
+          nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+        });
+      }
+      finally{
+        this.isSpinning = false;
+      }
+
+  }
+
+  // 關閉新增通用API側邊欄
+  addCommonApiClose(){
+    this.addCommonApiVisible = false;
+  }
+
+  async addCommonApi(){
+
+    if(_.isEmpty(this.newCommonApiNameInput)){
+      this.message.error('請填寫通用授權API名稱');
+      return;
+    }
+
+    if(_.isEmpty(this.newCommonApiNameInput)){
+      this.message.error('請填寫通用授權API路徑');
+      return;
+    }
+
+    // 裝配要新增的資料
+    const requestSaveCommonApiData = {
+      menuType : 'A',   // 類型固定為A(通用授權API)
+      icon : 'ant-design', //先固定為ant-design
+      menuName : this.newCommonApiNameInput,   // 通用授權API名稱
+      sortIndex : null, // 沒有排序關係
+      level : null, // 沒有層級關係
+      path : this.newCommonApiPathInput, // 通用授權API名稱對應的路徑
+      parentId : null, // 沒有父節點
+      //createUser : this.USERNAME
+    }
+
+    await this.addOrUpdateCommonApiHandler(requestSaveCommonApiData);
+
+  }
+
+
+
+  // 新增通用API
+  async addOrUpdateCommonApiHandler(payload : any){
+
+    try{
+      this.isDrawerSpinning = true;
+      const resObservable$  = this.systemService.saveMenuNode(payload);
+      const response = await firstValueFrom<any>(resObservable$);
+      if(response.code === 200){
+
+        this.menusOrApisKeyword = '';
+        this.menusOrApisType = 'A';
+
+        await this.searchMenusOrApis();
+
+        this.addCommonApiClose();
+        this.nzModalService.success({
+          nzTitle: '新增成功',
+          nzContent: '新增通用授權API成功',
+        });
+        this.newCommonApiNameInput = '';
+        this.newCommonApiPathInput = '';
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '新增通用授權API失敗',
+          nzContent: response.message,
+        });
+      }
+
+    }catch (error) {
+      this.nzModalService.error({
+        nzTitle: '新增通用授權API失敗',
+        nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+      });
+    }
+    finally{
+      this.isDrawerSpinning = false;
+    }
+  }
+
+  deleteCommonApi(rowData : any){
+
+    this.nzModalService.confirm({
+      nzTitle: `確定刪除該通用授權API「${rowData.menuName}」?`,
+      nzOkText: '確定',
+      nzCancelText: '取消',
+      nzOnOk: async () => {
+          await this.deleteCommonApiHandler(rowData);
+      },
+      nzOnCancel: () => {
+          console.log("取消刪除通用授權API");
+      }
+    }); 
+  }
+
+  async deleteCommonApiHandler(rowData : any){
+
+    try{
+      this.isSpinning = true;
+      const resObservable$  = this.systemService.deleteMenuNode(rowData.id.toString());
+      const response = await firstValueFrom<any>(resObservable$);
+
+      if(response.code === 200){
+        // 從後端重拿一次資料
+        await this.searchMenusOrApis();
+        this.nzModalService.success({
+          nzTitle: '刪除成功',
+          nzContent: '刪除通用授權API成功',
+        });
+      }
+      else{
+        this.nzModalService.error({
+          nzTitle: '刪除通用授權API失敗',
+          nzContent: response.message,
+        });
+      }
+    }catch (error) {
+      this.nzModalService.error({
+        nzTitle: '刪除通用授權API失敗',
+        nzContent: `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`,
+      });
+    }
+    finally{
+      this.isSpinning = false;
+    }
+
+  }
+
+
+  // 獲取ag-grid的Api函數
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+
 
 }

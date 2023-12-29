@@ -42,7 +42,7 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
   // 使用者當前點選的頁面的路徑
   routerPath = this.router.url;
   // 當前哪個tab被選中
-  activeTabIndex = 0;
+  activeTabIndex = null;
 
   // 
   constructor(
@@ -74,22 +74,34 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
       this.tabHandler();
   }
 
+
+  //當前被關閉的分頁
+  currentCloseTab : TabModel = null;
   tabHandler(): void {
 
     this.tabService.getTabDataList$().subscribe(res => {
 
        // 如果是關閉分頁，頁面顯示區塊需顯示最後一個存在的頁面
        if(res.isClose){
+
+          // 響應被動取得當前剩下的tab
           this.tabsSourceData = res.tabArray;
+
+          // 如果關閉的不是當前正在瀏覽的分頁，則不需要導航到其他頁
+          const isExist = this.tabsSourceData.filter(item => _.isEqual(item.uuid, this.currentCloseTab.uuid))
+          if(isExist){
+            return;
+          }
+
+          // 當前tab被關閉，導航到最後一個tab
           this.goPage(this.tabsSourceData[this.tabsSourceData.length-1]);
-          // 修改TabIndex
-          // 若刪除tab從2個變成1個，沒修改該index會維持2
-          // 之後再tab添加從1又變成2，一樣賦值給activeTabIndex，
-          // 由於index沒有改變，tab選中的畫面效果就不會渲染
-          this.activeTabIndex = this.tabsSourceData.length-1;
        }
+       // 使用者點開頁面產生新tab
        else{  
+          // 響應被動取得當前剩下的tab
           this.tabsSourceData = res.tabArray;
+
+          // tab選中的效果移到最新一個開啟的tab
           this.activeTabIndex = this.tabsSourceData.length-1;
        }
     });
@@ -154,6 +166,7 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
   
   closeTab({ index } : { index: number }){
     let tabIdx = Number(index);
+    this.currentCloseTab = this.tabsSourceData[tabIdx];
     this.tabService.closeTab(this.tabsSourceData[tabIdx]);
   }
 
