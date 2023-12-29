@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
@@ -28,6 +28,7 @@ interface ItemData1 {
   providers:[NzMessageService]
 })
 export class PPSI111Component implements AfterViewInit {
+  thisTabName = "combine資料設定(PPSI111)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -70,6 +71,7 @@ export class PPSI111Component implements AfterViewInit {
   PLANT = '直棒';
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private getPPSService: PPSService,
     private i18n: NzI18nService,
@@ -89,6 +91,11 @@ export class PPSI111Component implements AfterViewInit {
     this.getRunFCPCount();
     this.getFCPTB26List();
     this.getSHOP_CODEList();
+    
+    const aI111Tab = this.elementRef.nativeElement.querySelector('#aI111') as HTMLAnchorElement;
+    const liI111Tab = this.elementRef.nativeElement.querySelector('#liI111') as HTMLLIElement;
+    liI111Tab.style.backgroundColor = '#E4E3E3';
+    aI111Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
 

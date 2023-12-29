@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -37,7 +37,7 @@ interface data {
   providers:[NzMessageService]
 })
 export class PPSI109_NonBarComponent implements AfterViewInit {
-  
+  thisTabName = "產率設定(PPSI109)";
   tableHeight: string;
   frameworkComponents: any;
   LoadingPage = false;
@@ -70,6 +70,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   titleArray = ["站別","鋼種","產率設定值",'建立日期', '建立者', '異動日期', '異動者', 'Action'];
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -93,6 +94,11 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     this.getI109GradeNoList();
     this.getI109ShopCodeList();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
+    
+    const aI109NTab = this.elementRef.nativeElement.querySelector('#aI109N') as HTMLAnchorElement;
+    const liI109NTab = this.elementRef.nativeElement.querySelector('#liI109N') as HTMLLIElement;
+    liI109NTab.style.backgroundColor = '#E4E3E3';
+    aI109NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   searchData= {

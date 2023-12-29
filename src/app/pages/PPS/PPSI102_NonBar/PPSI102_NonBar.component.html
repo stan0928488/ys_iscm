@@ -1,31 +1,5 @@
 <nz-content style="margin: 0 16px">
-  <nz-breadcrumb style="margin: 16px 0">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
-        <ul>
-          <li><a href="#/commonData/I101">鋼種分類</a></li>
-          <li class="active">
-            <a href="#/commonData/I102_NonBar"
-              ><label style="color: blue">站別機台關聯表</label></a
-            >
-          </li>
-          <li><a href="#/commonData/I103_NonBar">設備能力</a></li>
-          <li><a href="#/commonData/I104_NonBar">整備時間</a></li>
-          <li><a href="#/commonData/I105_NonBar">大調機</a></li>
-          <li><a href="#/commonData/I106_NonBar">小調機</a></li>
-          <li><a href="#/commonData/I107_NonBar">線速工時</a></li>
-          <li><a href="#/commonData/I108_NonBar">非線速工時</a></li>
-          <li><a href="#/commonData/I109_NonBar">產率設定</a></li>
-          <li><a href="#/commonData/I110_NonBar">產能維護</a></li>
-          <li><a href="#/commonData/I111_NonBar">combine資料設定</a></li>
-          <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+  <app-list-pps-nonbar [childrenTabName]="thisTabName"></app-list-pps-nonbar>
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
@@ -130,7 +104,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="PLANT">
+            <nz-select [(ngModel)]="plant">
               <nz-option nzValue="精整" nzLabel="精整"></nz-option>
               <nz-option nzValue="軋鋼" nzLabel="軋鋼"></nz-option>
             </nz-select>
@@ -154,7 +128,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別代碼"
-              [(ngModel)]="SHOP_CODE"
+              [(ngModel)]="shopCode"
             />
           </td>
         </tr>
@@ -176,7 +150,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別名"
-              [(ngModel)]="SHOP_NAME"
+              [(ngModel)]="shopName"
             />
           </td>
         </tr>
@@ -198,7 +172,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台"
-              [(ngModel)]="EQUIP_CODE"
+              [(ngModel)]="equipCode"
             />
           </td>
         </tr>
@@ -220,7 +194,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="設備名"
-              [(ngModel)]="EQUIP_NAME"
+              [(ngModel)]="equipName"
             />
           </td>
         </tr>
@@ -241,7 +215,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存下限"
-              [(ngModel)]="WIP_MIN"
+              [(ngModel)]="wipMin"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -265,7 +239,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存上限"
-              [(ngModel)]="WIP_MAX"
+              [(ngModel)]="wipMax"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -290,7 +264,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台群組"
-              [(ngModel)]="EQUIP_GROUP"
+              [(ngModel)]="equipGroup"
             />
           </td>
         </tr>
@@ -312,7 +286,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="發佈MES群組"
-              [(ngModel)]="MES_PUBLISH_GROUP"
+              [(ngModel)]="mesPublishGroup"
             />
           </td>
         </tr>
@@ -330,7 +304,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="WT_TYPE" nzPlaceHolder="選擇工時計算分類">
+            <nz-select [(ngModel)]="wtType" nzPlaceHolder="選擇工時計算分類">
               <nz-option nzValue="1" nzLabel="線速"></nz-option>
               <nz-option nzValue="2" nzLabel="非線速"></nz-option>
             </nz-select>
@@ -350,7 +324,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="VALID">
+            <nz-select [(ngModel)]="valid">
               <nz-option nzValue="Y" nzLabel="有效"></nz-option>
               <nz-option nzValue="X" nzLabel="無效"></nz-option>
             </nz-select>

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, AfterViewInit, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
@@ -26,6 +26,7 @@ interface ItemData2 {
   providers:[NzMessageService]
 })
 export class PPSI200Component implements AfterViewInit {
+  thisTabName = "系統設定(PPSI200)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -106,6 +107,7 @@ export class PPSI200Component implements AfterViewInit {
   titleArray = ["ID","年-月","week_index","星期","disabledFlag","editStatus"];
   importdata_repeat = [];
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private getPPSService: PPSService,
     private i18n: NzI18nService,
@@ -124,6 +126,11 @@ export class PPSI200Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getFCPTB16List();
+    
+    const aI200Tab = this.elementRef.nativeElement.querySelector('#aI200') as HTMLAnchorElement;
+    const liI200Tab = this.elementRef.nativeElement.querySelector('#liI200') as HTMLLIElement;
+    liI200Tab.style.backgroundColor = '#E4E3E3';
+    aI200Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
 

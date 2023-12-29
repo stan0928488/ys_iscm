@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -34,6 +34,7 @@ interface ItemData {
   providers:[NzMessageService]
 })
 export class PPSI103_NonBarComponent implements AfterViewInit {
+  thisTabName = "設備能力(PPSI103)";
   LoadingPage = false;
   loading = false; //loaging data flag  
   isErrorMsg = false;
@@ -71,6 +72,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
 
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -86,6 +88,11 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP02List();
+    
+    const aI103NTab = this.elementRef.nativeElement.querySelector('#aI103N') as HTMLAnchorElement;
+    const liI103NTab = this.elementRef.nativeElement.querySelector('#liI103N') as HTMLLIElement;
+    liI103NTab.style.backgroundColor = '#E4E3E3';
+    aI103NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   onInit() {

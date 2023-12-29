@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from "@angular/core";
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, HostListener } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: "app-PPSI105",
@@ -18,8 +19,18 @@ import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
   providers:[NzMessageService]
 })
 export class PPSI105Component implements OnInit {
+  // 測試預覽圖
+  // @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  // @ViewChild('pasteArea') pasteArea!: ElementRef<HTMLTextAreaElement>;
+
+  // selectedFile: File | null = null;
+  // previewURL: string | ArrayBuffer | null = null;
+  // pasteContent: string = ''; // 新增這行
+
 
   constructor(
+    // private clipboard: Clipboard,
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -35,6 +46,8 @@ export class PPSI105Component implements OnInit {
     };
   }
 
+
+  thisTabName = "大調機(PPSI205)";
   PPSINP04List_tmp;
   PPSINP04List: ItemData4[] = [];
   editCache4: { [key: string]: { edit: boolean; data: ItemData4 } } = {};
@@ -151,6 +164,15 @@ export class PPSI105Component implements OnInit {
     },
   ];
 
+
+
+  ngAfterViewInit() {
+    const aI105Tab = this.elementRef.nativeElement.querySelector('#aI105') as HTMLAnchorElement;
+    const liI105Tab = this.elementRef.nativeElement.querySelector('#liI105') as HTMLLIElement;
+    liI105Tab.style.backgroundColor = '#E4E3E3';
+    aI105Tab.style.cssText = 'color: blue; font-weight:bold;';
+  }
+  
   ngOnInit() {
     console.log("ngAfterViewChecked");
     this.getPPSINP04List();
@@ -587,3 +609,131 @@ interface ItemData4 {
   SMALL_ADJUST_TOLERANCE_4: string;
   FURANCE_BATCH_QTY_4: number; 
 }
+
+
+
+
+
+
+
+
+  // ----------------------------------------------------------
+  // 測試預覽圖
+  // @HostListener('paste', ['$event'])
+  // onPaste(event: ClipboardEvent): void {
+  //   this.handleClipboardImage(event);
+  // }
+
+  // handleClipboardImage(event: ClipboardEvent): void {
+  //   const items = event.clipboardData?.items;
+
+  //   if (items) {
+  //     for (let i = 0; i < items.length; i++) {
+  //       const item = items[i];
+  //       if (item.type.startsWith('image')) {
+  //         this.handleImageItem(item);
+  //       }
+  //     }
+  //   }
+  // }
+
+  // handleImageItem(item: DataTransferItem): void {
+  //   item.getAsString((url) => {
+  //     const blob = this.dataURItoBlob(url);
+  //     if (blob) {
+  //       this.selectedFile = new File([blob], 'pasted_image.png', { type: blob.type });
+  //       this.displayImagePreview();
+  //       this.copyImageToClipboard();
+  //     }
+  //   });
+  // }
+
+  // displayImagePreview(): void {
+  //   const reader = new FileReader();
+
+  //   reader.onload = (e) => {
+  //     this.previewURL = e.target?.result;
+  //   };
+
+  //   if (this.selectedFile) {
+  //     reader.readAsDataURL(this.selectedFile);
+  //   }
+  // }
+
+  // copyImageToClipboard(): void {
+  //   if (this.selectedFile) {
+  //     const dataURL = URL.createObjectURL(this.selectedFile);
+
+  //     // Check if the clipboard API is available
+  //     if (navigator.clipboard && navigator.clipboard.writeText) {
+  //       navigator.clipboard.writeText(dataURL)
+  //         .then(() => {
+  //           console.log('Image copied to clipboard.');
+  //         })
+  //         .catch((error) => {
+  //           console.error('Error copying image to clipboard:', error);
+  //         });
+  //     } else {
+  //       // Fallback for browsers that do not support the clipboard API
+  //       const textArea = document.createElement('textarea');
+  //       textArea.value = dataURL;
+  //       document.body.appendChild(textArea);
+  //       textArea.select();
+  //       document.execCommand('copy');
+  //       document.body.removeChild(textArea);
+  //       console.log('Image copied to clipboard (fallback).');
+  //     }
+  //   }
+  // }
+
+  // dataURItoBlob(dataURI: string): Blob | null {
+  //   const byteString = atob(dataURI.split(',')[1]);
+  //   const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  //   const ab = new ArrayBuffer(byteString.length);
+  //   const ia = new Uint8Array(ab);
+
+  //   for (let i = 0; i < byteString.length; i++) {
+  //     ia[i] = byteString.charCodeAt(i);
+  //   }
+
+  //   return new Blob([ab], { type: mimeString });
+  // }
+
+// -------- ok 版本
+  // onFileSelected(event: any): void {
+  //   const fileInput = event.target as HTMLInputElement;
+  //   const files = fileInput.files;
+
+  //   if (files && files.length > 0) {
+  //     this.selectedFile = files[0];
+  //     this.displayImagePreview();
+  //     this.copyImageToClipboard();
+  //   }
+  // }
+
+  // displayImagePreview(): void {
+  //   const reader = new FileReader();
+
+  //   reader.onload = (e) => {
+  //     this.previewURL = e.target?.result;
+  //   };
+
+  //   if (this.selectedFile) {
+  //     reader.readAsDataURL(this.selectedFile);
+  //   }
+  // }
+
+  // copyImageToClipboard(): void {
+  //   if (this.selectedFile) {
+  //     const dataURL = URL.createObjectURL(this.selectedFile);
+
+  //     navigator.clipboard.writeText(dataURL)
+  //       .then(() => {
+  //         console.log('Image copied to clipboard.');
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error copying image to clipboard:', error);
+  //       });
+  //   }
+  // }

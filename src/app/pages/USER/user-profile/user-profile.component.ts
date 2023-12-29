@@ -8,6 +8,7 @@ import {
   Validators
 } from '@angular/forms';
 
+import {NzMessageService} from "ng-zorro-antd/message";
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { NzFormTooltipIcon } from 'ng-zorro-antd/form';
@@ -75,19 +76,26 @@ export class UserProfileComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.systemService.getCurrentUser().subscribe((res) => {
+    this.systemService.getCurrentUserMenuFunction().subscribe((res) => {
       let result: any = res;
       if (result.code == 200) {
         this.user = result.data;
-        this.systemService.getMenuByUserPosition({
-          "positionCode": this.user.positionCode
-        }).subscribe((res) => {
-          let result:any = res;
-          if(result.code == 200){
-            this.TREE_DATA = result.data;
-            this.dataSource.setData(this.TREE_DATA);
-          }
-        });
+
+        this.TREE_DATA = result.data.userMenus;
+        this.dataSource.setData(this.TREE_DATA);
+
+        // this.systemService.getMenuByUserPosition({
+        //   "positionCode": this.user.positionCode
+        // }).subscribe((res) => {
+        //   let result:any = res;
+        //   if(result.code == 200){
+        //     this.TREE_DATA = result.data;
+        //     this.dataSource.setData(this.TREE_DATA);
+        //   }
+        // });
+      } else {
+        this.message.create("error", "result.message");
+        
       }
     });
   }
@@ -124,6 +132,7 @@ export class UserProfileComponent implements AfterViewInit {
   }
 
   constructor(
+    private message: NzMessageService,
     private fb: NonNullableFormBuilder,
     private systemService: SYSTEMService,
   ) {
@@ -156,7 +165,7 @@ interface User {
   userName: string;
   userNickName: string;
   userAvatar: string;
-  salt: string;
+  // salt: string;
   email: string;
   phone: string;
   landline: string;

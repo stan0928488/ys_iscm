@@ -1,31 +1,5 @@
 <nz-content style="margin: 0 16px">
-  <nz-breadcrumb style="margin: 16px 0">
-    <nz-breadcrumb-item>生產計畫</nz-breadcrumb-item>
-    <nz-breadcrumb-item>靜態基本資料</nz-breadcrumb-item>
-    <nz-breadcrumb-item>通用表</nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
-        <ul>
-          <li><a href="#/commonData/I101">鋼種分類</a></li>
-          <li class="active">
-            <a href="#/commonData/I102"
-              ><label style="color: blue">站別機台關聯表</label></a
-            >
-          </li>
-          <li><a href="#/commonData/I103">設備能力</a></li>
-          <li><a href="#/commonData/I104">整備時間</a></li>
-          <li><a href="#/commonData/I105">大調機</a></li>
-          <li><a href="#/commonData/I106">小調機</a></li>
-          <li><a href="#/commonData/I107">線速工時</a></li>
-          <li><a href="#/commonData/I108">非線速工時</a></li>
-          <li><a href="#/commonData/I109">產率設定</a></li>
-          <li><a href="#/commonData/I110">產能維護</a></li>
-          <li><a href="#/commonData/I111">combine資料設定</a></li>
-          <li><a href="#/commonData/I200">系統設定</a></li>
-        </ul>
-      </tr>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
+  <app-list-pps-bar [childrenTabName]="thisTabName"></app-list-pps-bar>
 
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
     <nz-tab>
@@ -135,7 +109,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="PLANT">
+            <nz-select [(ngModel)]="plant">
               <nz-option nzValue="直棒" nzLabel="直棒"></nz-option>
             </nz-select>
           </td>
@@ -158,7 +132,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別代碼"
-              [(ngModel)]="SHOP_CODE"
+              [(ngModel)]="shopCode"
             />
           </td>
         </tr>
@@ -180,7 +154,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="站別名稱"
-              [(ngModel)]="SHOP_NAME"
+              [(ngModel)]="shopName"
             />
           </td>
         </tr>
@@ -202,7 +176,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台"
-              [(ngModel)]="EQUIP_CODE"
+              [(ngModel)]="equipCode"
             />
           </td>
         </tr>
@@ -224,7 +198,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台名稱"
-              [(ngModel)]="EQUIP_NAME"
+              [(ngModel)]="equipName"
             />
           </td>
         </tr>
@@ -245,7 +219,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存下限"
-              [(ngModel)]="WIP_MIN"
+              [(ngModel)]="wipMin"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -269,7 +243,7 @@
             <nz-input-number
               style="width: 22%"
               nzPlaceHolder="設備庫存上限"
-              [(ngModel)]="WIP_MAX"
+              [(ngModel)]="wipMax"
               [nzMin]="0"
               [nzMax]="100000"
               [nzStep]="1"
@@ -294,7 +268,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="機台群組"
-              [(ngModel)]="EQUIP_GROUP"
+              [(ngModel)]="equipGroup"
             />
           </td>
         </tr>
@@ -316,7 +290,7 @@
               style="width: 22%; color: darkblue"
               nz-input
               placeholder="發佈MES群組"
-              [(ngModel)]="MES_PUBLISH_GROUP"
+              [(ngModel)]="mesPublishGroup"
             />
           </td>
         </tr>
@@ -334,7 +308,7 @@
           </td>
           <td style="width: 600px; background-color: #eee">
             &nbsp;
-            <nz-select [(ngModel)]="VALID">
+            <nz-select [(ngModel)]="valid">
               <nz-option nzValue="Y" nzLabel="Y"></nz-option>
               <nz-option nzValue="X" nzLabel="X"></nz-option>
             </nz-select>

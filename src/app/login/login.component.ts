@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.redirectCheck();
-
+    this.authService.authLogOut();
     this.authService.emitAuthState();
 
     if (this.authService.isAuthenticated()) {
@@ -146,7 +146,7 @@ export class LoginComponent implements OnInit {
             },
           });
 
-          this.router.navigate(['/FCPBarData/P202_TabMenu/P202']);
+          this.router.navigate(['/user/profile']);
           
         } else {
           console.log('login fail err');

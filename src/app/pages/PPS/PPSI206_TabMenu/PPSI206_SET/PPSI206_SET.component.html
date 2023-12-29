@@ -1,70 +1,59 @@
 <nz-content style="margin:0 16px;">
   
   <nz-spin nzTip="Loading..." [nzSize]="'large'" [nzSpinning]="loading">
-    <div style="display: flex">
-      <input
-        type="file"
-        id="fileupload"
-        style="width: 190px;"
-        (change)="incomingfile($event)"
-        placeholder="Upload file"
-        accept=".xlsx, .xls, .csv"
-      />
-      <button
-        nz-button
-        style="
-          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-          background-color: #4caf50;
-          border: 2px blue none;
-          margin-right: 20px;
-        "
-        nzType="primary"
-        (click)="Upload()"
-      >
-        <span nz-icon nzType="upload" nzTheme="outline"></span>
-        E X C E L 匯入
-      </button>
-      <button
-        nz-button
-        style="
-          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-          background-color: #4caf50;
-          border: 2px blue none;
-        "
-        nzType="primary"
-        (click)="convertToExcel()"
-      >
-        <span nz-icon nzType="download" nzTheme="outline"></span>
-        E X C E L 匯出
-      </button>
-      <button nz-button nzType="primary" 
-        style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
-        (click)="convertData()"><span nzTheme="outline"></span>
-        資料生成
-      </button>
-    </div>
-    <div style = "float:right;">
-      <h3>異動者 : ___________要補上
-        異動時間 : ___________要補上
-      </h3>
-    </div> 
+    <table style="width: 100%; table-layout:fixed">
+      <tr>
+        <td>
+          <input type="file" id="fileupload" style="display: inline-block;" placeholder="Upload file" [(ngModel)]="file" (change)="incomingfile($event)"  accept=".xlsx">
+          <button
+            nz-button
+            style="margin-left:30px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); background-color: #4CAF50;border:2px blue none;cursor: pointer;"
+            nzType="primary"
+            (click)="uploadExcel()"
+          >
+          <span nz-icon nzType="upload" nzTheme="outline"></span>
+          E X C E L 匯入
+          </button>
+          <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none; margin-left: 20px; "
+            nzType="primary"
+            (click)="excelExport()"
+          >
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+          </button>
+        </td>
+        <td style="text-align:center;">
+          <button nz-button nzType="primary" 
+            style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; "
+            (click)="convertData()"><span nzTheme="outline"></span>
+            資料生成
+          </button>
+        </td> 
+        <td style="text-align:right;">
+          <h3>異動者 : {{this.rowData[0] ? this.rowData[0].userUpdate : ""}}
+            異動時間 : {{this.rowData[0] ? this.rowData[0].dateUpdate : ""}}
+          </h3>
+        </td> 
+      </tr>
+    </table>
     <p><p>
 
     <ag-grid-angular
       style="width: 100%; height: calc(100vh - 220px); overflow: scroll; "
       class="ag-theme-alpine"
-      [rowData]="displayDataList"
+      [rowData]="rowData"
       [columnDefs]="columnDefs"
       [pagination]="true"
-      [suppressRowClickSelection]="true"
-      [gridOptions]="gridOptions"
+      [frameworkComponents]="frameworkComponents"
+      editType="fullRow"
       [suppressClickEdit]="true"
-      (cellDoubleClicked)="cellDoubleClickedHandler($event)"
-      (cellEditingStopped)="cellEditingStoppedHandler($event)"
-      [groupSelectsChildren]="true"
+      [gridOptions]="gridOptions"
       [context]="myContext"
-      [animateRows]="true"
-      [editType]="editType"
       (gridReady)="onGridReady($event)"
     >
     </ag-grid-angular>

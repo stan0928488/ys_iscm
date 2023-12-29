@@ -177,7 +177,6 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
   
 
   ngOnInit(): void {
-
     let logTime = localStorage.getItem('logTime');
     if(logTime){
       let today = new Date().getTime();
@@ -364,6 +363,37 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
         return date;
       } else if (_flag == '8') {
         let date = moment(_dateString, "MM-DD").format("MM-DD");
+        return date;
+      } 
+    }
+  }
+
+  //日期物件format
+  dateObjFormat(_date, _flag) {
+    if (_date) {
+      if (_flag == '1') {
+        let date = moment(_date).format("YYYY/MM/DD HH:mm:ss");
+        return date;
+      } else if (_flag == '2') {
+        let date = moment(_date).format("YYYY/MM/DD");
+        return date;
+      } else if (_flag == '3') {
+        let date = moment(_date).format("HH:mm:ss");
+        return date;
+      } else if (_flag == '4') {
+        let date = moment(_date).format("HH:mm");
+        return date;
+      } else if (_flag == '5') {
+        let date = moment(_date).format("MM");
+        return date;
+      } else if (_flag == '6') {
+        let date = moment(_date).format("YYYY/MM");
+        return date;
+      } else if (_flag == '7') {
+        let date = moment(_date).format("YYYYMMDDHHmmss");
+        return date;
+      } else if (_flag == '8') {
+        let date = moment(_date).format("MM/DD");
         return date;
       } 
     }

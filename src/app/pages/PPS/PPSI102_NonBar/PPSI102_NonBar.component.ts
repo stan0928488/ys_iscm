@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -26,8 +26,8 @@ interface ItemData7 {
   shopName: string;
   equipCode: string;
   equipName: string;
-  wipMin: string;
-  wipMax: string;
+  wipMin: number;
+  wipMax: number;
   equipGroup: string;
   mesPublishGroup: string;
   balanceRule: string;
@@ -45,40 +45,87 @@ interface ItemData7 {
   providers: [NzMessageService],
 })
 export class PPSI102_NonBarComponent implements AfterViewInit {
+  thisTabName = '站別機台關聯表(PPSI102)';
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
   USERNAME;
-  PLANT_CODE;
+  plantCode;
 
   colDefs: ColDef[] = [
-    { headerName: '工廠別', field: 'plant', width: 91, headerComponent : AGCustomHeaderComponent },
-    { headerName: '站別代碼', field: 'shopCode', width: 104, headerComponent : AGCustomHeaderComponent },
-    { headerName: '站別', field: 'shopName', width: 106, headerComponent : AGCustomHeaderComponent },
-    { headerName: '機台', field: 'equipCode', width: 80, headerComponent : AGCustomHeaderComponent },
-    { headerName: '機台名稱', field: 'equipName', width: 131, headerComponent : AGCustomHeaderComponent },
-    { headerName: '設備庫存下限(單位:MT)', field: 'wipMin', width: 190, headerComponent : AGCustomHeaderComponent },
-    { headerName: '設備庫存上限(單位:MT)', field: 'wipMax', width: 190, headerComponent : AGCustomHeaderComponent },
-    { headerName: '機台群組', field: 'equipGroup', width: 104, headerComponent : AGCustomHeaderComponent },
-    { headerName: '發佈MES群組', field: 'mesPublishGroup', width: 131, headerComponent : AGCustomHeaderComponent },
+    {
+      headerName: '工廠別',
+      field: 'plant',
+      width: 130,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '站別代碼',
+      field: 'shopCode',
+      width: 145,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '站別',
+      field: 'shopName',
+      width: 115,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '機台',
+      field: 'equipCode',
+      width: 115,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '機台名稱',
+      field: 'equipName',
+      width: 140,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '設備庫存下限(單位:MT)',
+      field: 'wipMin',
+      width: 230,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '設備庫存上限(單位:MT)',
+      field: 'wipMax',
+      width: 230,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '機台群組',
+      field: 'equipGroup',
+      width: 140,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '發佈MES群組',
+      field: 'mesPublishGroup',
+      width: 165,
+      headerComponent: AGCustomHeaderComponent,
+    },
     {
       headerName: '工時計算分類',
       field: 'wtType',
-      width: 131,
+      width: 170,
       valueFormatter: this.wtTypeNameDisplay,
-      headerComponent : AGCustomHeaderComponent
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '有效碼',
       field: 'valid',
-      width: 91,
+      width: 130,
       valueFormatter: this.validNameDisplay,
-      headerComponent : AGCustomHeaderComponent
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: 'Action',
       editable: false,
       filter: false,
+      width: 155,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -110,17 +157,17 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   };
 
   // 站別機台關聯表
-  PLANT = '精整';
-  SHOP_CODE;
-  SHOP_NAME;
-  EQUIP_CODE;
-  EQUIP_NAME;
-  WIP_MIN;
-  WIP_MAX;
-  EQUIP_GROUP;
-  MES_PUBLISH_GROUP;
-  WT_TYPE;
-  VALID = 'Y';
+  plant = '精整';
+  shopCode;
+  shopName;
+  equipCode;
+  equipName;
+  wipMin;
+  wipMax;
+  equipGroup;
+  mesPublishGroup;
+  wtType;
+  valid = 'Y';
   isVisibleYield = false;
   searchPlantValue = '';
   searchShopCodeValue = '';
@@ -153,6 +200,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   ];
   frameworkComponents: any;
   constructor(
+    private elementRef: ElementRef,
     private PPSService: PPSService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
@@ -162,7 +210,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
-    this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.plantCode = this.cookieService.getCookie('plantCode');
     this.frameworkComponents = {
       buttonRenderer: BtnCellRenderer,
     };
@@ -171,6 +219,15 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP07List();
+
+    const aI102NTab = this.elementRef.nativeElement.querySelector(
+      '#aI102N'
+    ) as HTMLAnchorElement;
+    const liI102NTab = this.elementRef.nativeElement.querySelector(
+      '#liI102N'
+    ) as HTMLLIElement;
+    liI102NTab.style.backgroundColor = '#E4E3E3';
+    aI102NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   PPSINP07List_tmp;
@@ -224,16 +281,16 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   // insert
   insertTab() {
     let myObj = this;
-    if (this.PLANT === undefined) {
+    if (this.plant === undefined) {
       myObj.message.create('error', '「工廠別」不可為空');
       return;
-    } else if (this.SHOP_CODE === undefined) {
+    } else if (this.shopCode === undefined) {
       myObj.message.create('error', '「站別代碼」不可為空');
       return;
-    } else if (this.EQUIP_CODE === undefined) {
+    } else if (this.equipCode === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    } else if (this.VALID === undefined) {
+    } else if (this.valid === undefined) {
       myObj.message.create('error', '「有效碼」不可為空');
       return;
     } else {
@@ -317,41 +374,41 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        PLANT_CODE: this.PLANT_CODE,
-        PLANT: this.PLANT,
-        SHOP_CODE: this.SHOP_CODE,
-        SHOP_NAME: this.SHOP_NAME === undefined ? null : this.SHOP_NAME,
-        EQUIP_CODE: this.EQUIP_CODE,
-        EQUIP_NAME: this.EQUIP_NAME === undefined ? null : this.EQUIP_NAME,
-        WIP_MIN: this.WIP_MIN === undefined ? null : this.WIP_MIN,
-        WIP_MAX: this.WIP_MAX === undefined ? null : this.WIP_MAX,
-        EQUIP_GROUP: this.EQUIP_GROUP === undefined ? null : this.EQUIP_GROUP,
-        MES_PUBLISH_GROUP:
-          this.MES_PUBLISH_GROUP === undefined ? null : this.MES_PUBLISH_GROUP,
-        VALID: this.VALID,
-        WT_TYPE: this.WT_TYPE === undefined ? null : this.WT_TYPE,
-        BALANCE_RULE: null,
-        ORDER_SEQ: null,
+        plantCode: this.plantCode,
+        plant: this.plant,
+        shopCode: this.shopCode,
+        shopName: this.shopName === undefined ? null : this.shopName,
+        equipCode: this.equipCode,
+        equipName: this.equipName === undefined ? null : this.equipName,
+        wipMin: this.wipMin === undefined ? null : this.wipMin,
+        wipMax: this.wipMax === undefined ? null : this.wipMax,
+        equipGroup: this.equipGroup === undefined ? null : this.equipGroup,
+        mesPublishGroup:
+          this.mesPublishGroup === undefined ? null : this.mesPublishGroup,
+        valid: this.valid,
+        wtType: this.wtType === undefined ? null : this.wtType,
+        balanceRule: null,
+        orderSeq: null,
       });
 
-      myObj.PPSService.insertI107Save('2', obj).subscribe(
+      myObj.PPSService.insertPPSINPTB07List('2', obj).subscribe(
         (res) => {
           console.log(res);
-          if (res[0].MSG === 'Y') {
-            this.SHOP_CODE = undefined;
-            this.SHOP_NAME = undefined;
-            this.EQUIP_CODE = undefined;
-            this.EQUIP_NAME = undefined;
-            this.WIP_MIN = undefined;
-            this.WIP_MAX = undefined;
-            this.EQUIP_GROUP = undefined;
-            this.MES_PUBLISH_GROUP = undefined;
-            this.VALID = undefined;
-            this.WT_TYPE = undefined;
+          if (res['message'] === 'Y') {
+            this.shopCode = undefined;
+            this.shopName = undefined;
+            this.equipCode = undefined;
+            this.equipName = undefined;
+            this.wipMin = undefined;
+            this.wipMax = undefined;
+            this.equipGroup = undefined;
+            this.mesPublishGroup = undefined;
+            this.valid = undefined;
+            this.wtType = undefined;
             this.getPPSINP07List();
             this.sucessMSG('新增成功', ``);
           } else {
-            this.errorMSG('新增失敗', res[0].MSG);
+            this.errorMSG('新增失敗', res['message']);
           }
         },
         (err) => {
@@ -389,40 +446,40 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID: rowData.id,
-        PLANT_CODE: rowData.plantCode,
-        PLANT: rowData.plant,
-        SHOP_CODE: rowData.shopCode,
-        SHOP_NAME: rowData.shopName === undefined ? null : rowData.shopName,
-        EQUIP_CODE: rowData.equipCode,
-        EQUIP_NAME: rowData.equipName === undefined ? null : rowData.equipName,
-        WIP_MIN: rowData.wipMin === undefined ? null : rowData.wipMin,
-        WIP_MAX: rowData.wipMax === undefined ? null : rowData.wipMax,
-        EQUIP_GROUP:
+        id: rowData.id,
+        plantCode: rowData.plantCode,
+        plant: rowData.plant,
+        shopCode: rowData.shopCode,
+        shopName: rowData.shopName === undefined ? null : rowData.shopName,
+        equipCode: rowData.equipCode,
+        equipName: rowData.equipName === undefined ? null : rowData.equipName,
+        wipMin: rowData.wipMin === undefined ? null : rowData.wipMin,
+        wipMax: rowData.wipMax === undefined ? null : rowData.wipMax,
+        equipGroup:
           rowData.equipGroup === undefined ? null : rowData.equipGroup,
-        MES_PUBLISH_GROUP:
+        mesPublishGroup:
           rowData.mesPublishGroup === undefined
             ? null
             : rowData.mesPublishGroup,
-        VALID: rowData.valid,
-        WT_TYPE: rowData.wtType === undefined ? null : rowData.wtType,
-        BALANCE_RULE: null,
-        ORDER_SEQ: null,
+        valid: rowData.valid,
+        wtType: rowData.wtType === undefined ? null : rowData.wtType,
+        balanceRule: null,
+        orderSeq: null,
       });
 
-      myObj.PPSService.updateI107Save('2', obj).subscribe(
+      myObj.PPSService.updatePPSINPTB07List('2', obj).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
-            this.SHOP_CODE = undefined;
-            this.SHOP_NAME = undefined;
-            this.EQUIP_CODE = undefined;
-            this.EQUIP_NAME = undefined;
-            this.WIP_MIN = undefined;
-            this.WIP_MAX = undefined;
-            this.EQUIP_GROUP = undefined;
-            this.MES_PUBLISH_GROUP = undefined;
-            this.VALID = undefined;
-            this.WT_TYPE = undefined;
+          if (res['message'] === 'Y') {
+            this.shopCode = undefined;
+            this.shopName = undefined;
+            this.equipCode = undefined;
+            this.equipName = undefined;
+            this.wipMin = undefined;
+            this.wipMax = undefined;
+            this.equipGroup = undefined;
+            this.mesPublishGroup = undefined;
+            this.valid = undefined;
+            this.wtType = undefined;
             console.log(this.PPSINP07List);
             console.log(this.editCache7);
 
@@ -433,7 +490,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             Object.assign(this.PPSINP07List[index], rowData);
             this.editCache7[_id].edit = false;
           } else {
-            this.errorMSG('修改失敗', res[0].MSG);
+            this.errorMSG('修改失敗', res['message']);
           }
         },
         (err) => {
@@ -449,12 +506,13 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache7[_id].data.id;
-      myObj.PPSService.delI107Data('2', _ID).subscribe(
+      myObj.PPSService.deletePPSINPTB07('2', _id).subscribe(
         (res) => {
-          if (res[0].MSG === 'Y') {
+          if (res['message'] === 'Y') {
             this.sucessMSG('刪除成功', ``);
             this.getPPSINP07List();
+          } else {
+            this.errorMSG('修改失敗', res['message']);
           }
         },
         (err) => {
@@ -574,34 +632,34 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       if (_data[i]['發佈MES群組'] == undefined) _data[i]['發佈MES群組'] = '';
       if (_data[i]['機台'] == undefined) _data[i]['機台'] = '';
       upload_data.push({
-        PLANT_CODE: 'YS',
-        PLANT: _data[i]['工廠別'],
-        SHOP_CODE: _data[i]['站別代碼'],
-        SHOP_NAME: _data[i]['站別'],
-        EQUIP_CODE: _data[i]['機台'],
-        EQUIP_GROUP: _data[i]['機台群組'],
-        MES_PUBLISH_GROUP: _data[i]['發佈MES群組'],
-        EQUIP_NAME: _data[i]['機台名稱'],
-        WIP_MIN: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
+        plantCode: 'YS',
+        plant: _data[i]['工廠別'],
+        shopCode: _data[i]['站別代碼'],
+        shopName: _data[i]['站別'],
+        equipCode: _data[i]['機台'],
+        equipGroup: _data[i]['機台群組'],
+        mesPublishGroup: _data[i]['發佈MES群組'],
+        equipName: _data[i]['機台名稱'],
+        wipMin: _.isNil(_data[i]['設備庫存下限(單位:MT)'])
           ? null
           : _data[i]['設備庫存下限(單位:MT)'],
-        WIP_MAX: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
+        wipMax: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
           ? null
           : _data[i]['設備庫存上限(單位:MT)'],
-        WT_TYPE:
+        wtType:
           _data[i]['工時計算分類'] == '線速'
             ? '1'
             : _data[i]['工時計算分類'] == '非線速'
             ? '2'
             : null,
-        VALID:
+        valid:
           _data[i]['有效碼'] == '有效'
             ? 'Y'
             : _data[i]['有效碼'] == '無效'
             ? 'X'
             : null,
-        BALANCE_RULE: null,
-        ORDER_SEQ: null,
+        balanceRule: null,
+        orderSeq: null,
         DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
         USERNAME: this.USERNAME,
       });
@@ -617,10 +675,11 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         EXCELDATA: upload_data,
       };
 
-      myObj.PPSService.importI107Excel('2', obj).subscribe(
+      myObj.PPSService.importPPSINPTB07('2', obj).subscribe(
         (res) => {
+          console.log(res);
           console.log('importExcelPPSI102');
-          if (res[0].MSG === 'Y') {
+          if (res['message'] === 'Y') {
             this.loading = false;
             this.LoadingPage = false;
             console.log(obj);
@@ -628,15 +687,19 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             this.clearFile();
             this.getPPSINP07List();
           } else {
-            this.errorMSG('匯入錯誤', res[0].MSG);
+            this.errorMSG('匯入錯誤', res['message']);
             this.clearFile();
             this.loading = false;
             this.LoadingPage = false;
           }
         },
         (err) => {
+          console.log(err);
           reject('upload fail');
-          this.errorMSG('修改存檔失敗', '後台存檔錯誤，請聯繫系統工程師');
+          this.errorMSG(
+            '修改存檔失敗',
+            '後台存檔錯誤，請聯繫系統工程師' + err['message']
+          );
           this.loading = false;
           this.LoadingPage = false;
         }

@@ -81,16 +81,16 @@ export class ManageUserComponent implements AfterViewInit {
   }
 
   colDefs: ColDef<IRow>[] = [
-    {headerName: '廠區',field: 'plant', headerComponent : AGCustomHeaderComponent},
-    {headerName: '工號',field: 'userCode', headerComponent : AGCustomHeaderComponent},
-    {headerName: '使用者名稱',field: 'userName', headerComponent : AGCustomHeaderComponent},
-    {headerName: '職位',field: 'positionName', headerComponent : AGCustomHeaderComponent},
-    {headerName: '職務代碼',field: 'positionCode', headerComponent : AGCustomHeaderComponent},
-    {headerName: '信箱',field: 'email', headerComponent : AGCustomHeaderComponent},
-    {headerName: '分機',field: 'landline', headerComponent : AGCustomHeaderComponent},
-    {headerName: '狀態',field: 'useStatus', headerComponent : AGCustomHeaderComponent},
-    {headerName: '創建時間',field: 'createTime', headerComponent : AGCustomHeaderComponent},
-    {headerName: '操作',field: 'id',
+    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '工號',field: 'userCode', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '使用者名稱',field: 'userNickName', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '職位',field: 'positionName', width:200, headerComponent : AGCustomHeaderComponent},
+    {headerName: '職務代碼',field: 'positionCode', width:150, headerComponent : AGCustomHeaderComponent},
+    {headerName: '信箱',field: 'email', width:200, headerComponent : AGCustomHeaderComponent},
+    {headerName: '分機',field: 'landline', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '狀態',field: 'useStatus', width:100, headerComponent : AGCustomHeaderComponent},
+    {headerName: '創建時間',field: 'createTime', width:200, headerComponent : AGCustomHeaderComponent},
+    {headerName: '操作',field: 'id', width:150, 
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
         {
@@ -149,7 +149,7 @@ interface IRow {
   userMenus:string;
   platform:string;
   phone:string;
-  salt:string;
+  // salt:string;
   userAvatar:string;
   userNickName:string;
   applicationFrom:string;
