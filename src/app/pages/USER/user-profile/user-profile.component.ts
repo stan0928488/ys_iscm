@@ -165,7 +165,7 @@ interface User {
   userName: string;
   userNickName: string;
   userAvatar: string;
-  salt: string;
+  // salt: string;
   email: string;
   phone: string;
   landline: string;
