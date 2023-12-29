@@ -74,6 +74,10 @@ export class UserProfileComponent implements AfterViewInit {
   ngAfterViewInit(): void {
   }
 
+  expend(node){
+    this.treeControl.toggle(node)
+  }
+
   ngOnInit(): void {
     this.systemService.getCurrentUserMenuFunction().subscribe((res) => {
       let result: any = res;
