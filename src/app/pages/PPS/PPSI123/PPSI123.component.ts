@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -27,6 +27,7 @@ interface ItemData20 {
   providers: [NzMessageService],
 })
 export class PPSI123Component implements AfterViewInit {
+  thisTabName = "直棒清洗站設備能力(PPSI123)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -53,6 +54,7 @@ export class PPSI123Component implements AfterViewInit {
   excelImportFile: File = null;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private commonService: CommonService,
     private i18n: NzI18nService,
@@ -68,6 +70,11 @@ export class PPSI123Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP20List();
+    
+    const liI123Tab = this.elementRef.nativeElement.querySelector('#liI123') as HTMLLIElement;
+    const aI123Tab = this.elementRef.nativeElement.querySelector('#aI123') as HTMLAnchorElement;
+    liI123Tab.style.backgroundColor = '#E4E3E3';
+    aI123Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   PPSINP20List_tmp;
@@ -79,17 +86,6 @@ export class PPSI123Component implements AfterViewInit {
     this.isSpinning = true;
     let myObj = this;
     this.PPSService.getPPSINP20List().subscribe((res) => {
-      const licss = document.getElementById('ddli');
-      if (licss != null) {
-        licss.style.backgroundColor = '#E4E3E3';
-      }
-      const acss = document.getElementById('dda');
-      if (acss != null) {
-        acss.style.cssText = 'color: blue; font-weight:bold;';
-      }
-      document.getElementById('dda').innerHTML = '直棒清洗站設備能力(PPSI123)';
-      document.getElementById('dda').style.fontSize = '17px';
-      console.log('getFCPTB26List success');
       this.PPSINP20List_tmp = res;
 
       const data = [];

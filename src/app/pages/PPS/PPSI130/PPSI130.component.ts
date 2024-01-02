@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -96,6 +96,7 @@ class DisplayTbppsm014 extends Tbppsm014 {
   providers: [NzMessageService],
 })
 export class PPSI130Component implements AfterViewInit {
+  thisTabName = "精整批次爐鋼種捲數製程碼對應表(PPSI130)";
   USERNAME;
   PLANT_CODE;
   isSpinning = false;
@@ -188,6 +189,7 @@ export class PPSI130Component implements AfterViewInit {
   excelImportFile: File;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private commonService: CommonService,
     private i18n: NzI18nService,
@@ -203,6 +205,11 @@ export class PPSI130Component implements AfterViewInit {
   ngAfterViewInit() {
     const p = this.getPPSI130List();
     this.setupTableAndEditCache(p);
+    
+    const liI130Tab = this.elementRef.nativeElement.querySelector('#liI130') as HTMLLIElement;
+    const aI130Tab = this.elementRef.nativeElement.querySelector('#aI130') as HTMLAnchorElement;
+    liI130Tab.style.backgroundColor = '#E4E3E3';
+    aI130Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   getPPSI130List() {
@@ -217,17 +224,6 @@ export class PPSI130Component implements AfterViewInit {
         (response) => {
           const resData = { response: response, isSearch: false };
           resolve(resData);
-          const licss = document.getElementById('ffli');
-          if (licss != null) {
-            licss.style.backgroundColor = '#E4E3E3';
-          }
-          const acss = document.getElementById('ffa');
-          if (acss != null) {
-            acss.style.cssText = 'color: blue; font-weight:bold;';
-          }
-          document.getElementById('ffa').innerHTML =
-            '精整批次爐鋼種捲數製程碼對應表(PPSI130)';
-          document.getElementById('ffa').style.fontSize = '17px';
         },
         (error) => {
           const errorMsg = JSON.stringify(error['error']);

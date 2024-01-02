@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -76,6 +76,7 @@ class Displaytbppsm114 extends tbppsm114 {
   providers: [NzMessageService],
 })
 export class PPSI131Component implements AfterViewInit {
+  thisTabName = "直棒BA1批次爐工時維護(PPSI131)";
   USERNAME;
   id;
   isSpinning = false;
@@ -139,6 +140,7 @@ export class PPSI131Component implements AfterViewInit {
   excelImportFile: File;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private commonService: CommonService,
     private i18n: NzI18nService,
@@ -154,6 +156,11 @@ export class PPSI131Component implements AfterViewInit {
   async ngAfterViewInit() {
     const p = this.getPPSI131List();
     await this.setupTableAndEditCache(p);
+    
+    const liI131Tab = this.elementRef.nativeElement.querySelector('#liI131') as HTMLLIElement;
+    const aI131Tab = this.elementRef.nativeElement.querySelector('#aI131') as HTMLAnchorElement;
+    liI131Tab.style.backgroundColor = '#E4E3E3';
+    aI131Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   getPPSI131List() {
@@ -168,17 +175,6 @@ export class PPSI131Component implements AfterViewInit {
         (response) => {
           const resData = { response: response, isSearch: false };
           resolve(resData);
-          const licss = document.getElementById('ggli');
-          if (licss != null) {
-            licss.style.backgroundColor = '#E4E3E3';
-          }
-          const acss = document.getElementById('gga');
-          if (acss != null) {
-            acss.style.cssText = 'color: blue; font-weight:bold;';
-          }
-          document.getElementById('gga').innerHTML =
-            '直棒BA1批次爐工時維護(PPSI131)';
-          document.getElementById('gga').style.fontSize = '17px';
         },
         (error) => {
           const errorMsg = JSON.stringify(error['error']);

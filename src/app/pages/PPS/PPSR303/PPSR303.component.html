@@ -22,7 +22,7 @@
     <nz-spin [nzTip]="spinType" [nzSize] ="'large'" [nzSpinning]="isLoading">
 
         <ag-grid-angular
-        style="width: 100% ; height:700px; overflow: scroll"
+        style="width: 100% ; height: calc(100vh - 180px); overflow: scroll;"
         class="ag-theme-alpine"
         [columnDefs]="columnDefsTab1"
         [defaultColDef]="defaultColDefTab1"

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -33,6 +33,7 @@ interface ItemData10 {
   providers: [NzMessageService],
 })
 export class PPSI122Component implements AfterViewInit {
+  thisTabName = "直棒桶槽式工時(PPSI122)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -70,6 +71,7 @@ export class PPSI122Component implements AfterViewInit {
   excelImportFile: File;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private commonService: CommonService,
     private i18n: NzI18nService,
@@ -85,6 +87,11 @@ export class PPSI122Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP10List();
+    
+    const liI122Tab = this.elementRef.nativeElement.querySelector('#liI122') as HTMLLIElement;
+    const aI122Tab = this.elementRef.nativeElement.querySelector('#aI122') as HTMLAnchorElement;
+    liI122Tab.style.backgroundColor = '#E4E3E3';
+    aI122Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   PPSINP10List_tmp;
@@ -96,16 +103,6 @@ export class PPSI122Component implements AfterViewInit {
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP10List().subscribe((res) => {
-      const licss = document.getElementById('ccli');
-      if (licss != null) {
-        licss.style.backgroundColor = '#E4E3E3';
-      }
-      const acss = document.getElementById('cca');
-      if (acss != null) {
-        acss.style.cssText = 'color: blue; font-weight:bold;';
-      }
-      document.getElementById('cca').innerHTML = '直棒桶槽式工時(PPSI122)';
-      document.getElementById('cca').style.fontSize = '17px';
       console.log('getFCPTB26List success');
       this.PPSINP10List_tmp = res;
 
