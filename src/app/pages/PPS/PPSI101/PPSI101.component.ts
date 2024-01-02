@@ -372,7 +372,7 @@ export class PPSI101Component implements AfterViewInit {
               this.ROLL_WEIGHT = undefined;
 
               this.sucessMSG('刪除成功', ``);
-              this.getPPSINP01List(1, 0);
+              this.getPPSINP01List(this.pageIndex, this.pageSize);
             }
           },
           (err) => {
