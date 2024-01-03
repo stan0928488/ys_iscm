@@ -169,39 +169,38 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
-  // 2.機台能力
-  //Get getPPSINP02List 取得02tab data
-  getPPSINP02List(_type) {
+  getPPSINPTB02(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/getPPSINP02List`;
+    let queryUrl = this.APINEWURL + `/ppsinptb02` + nonbarUrl + `/getDataList`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-  // I102 insertI102Tab1Save
-  insertI102Tab1Save(_type, _data) {
+
+  insertPPSINPTB02(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/insertSave`;
+    let queryUrl = this.APINEWURL + `/ppsinptb02` + nonbarUrl + `/insertData`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  // I102 updateI102Tab1Save修改存檔
-  updateI102Tab1Save(_type, _data) {
+
+  updatePPSINPTB02(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/updateSave`;
+    let queryUrl = this.APINEWURL + `/ppsinptb02` + nonbarUrl + `/updateData`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
-  // I102 delI102Tab1Data 刪除資料
-  delI102Tab1Data(_type, _ID) {
+
+  deletePPSINPTB02(_type, _id) {
+    const body = JSON.stringify(_id);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/ppsinptb02` + nonbarUrl + `/deleteData`;
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
   // I102 importI102Excel EXCEL匯入
   importI102Excel(_type, _data) {
@@ -209,6 +208,15 @@ export class PPSService {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl = this.APIURL + `/FCP/I102` + nonbarUrl + `/importExcel`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  importPPSINPTB02(_type, _data) {
+    const body = JSON.stringify(_data);
+    let nonbarUrl = '';
+    if (_type === '2') nonbarUrl = `/NonBar`;
+    let queryUrl = this.APINEWURL + `/ppsinptb02` + nonbarUrl + `/importData`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -372,6 +380,7 @@ export class PPSService {
 
   deletePPSINPTB07(_type, _ID) {
     const body = JSON.stringify(_ID);
+    console.log(body);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
     let queryUrl = this.APINEWURL + `/ppsinptb07` + nonbarUrl + `/deleteData`;

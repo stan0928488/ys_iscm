@@ -121,6 +121,7 @@ export class PPSI102Component implements OnInit {
       ],
     },
   ];
+
   gridOptions = {
     defaultColDef: {
       editable: true,
