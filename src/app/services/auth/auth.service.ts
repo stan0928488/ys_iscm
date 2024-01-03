@@ -1,11 +1,12 @@
 import { Injectable, EventEmitter, Output } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import * as moment from "moment";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import * as _ from "lodash";
 import { Observable, Subject } from "rxjs";
 import { CookieService } from "../config/cookie.service";
 import { ACCService } from "src/app/services/ACC/ACC.service";
+import { AppEventBusComponent } from "src/app/app-event-bus.component";
 
 @Injectable({
   providedIn: "root"
@@ -22,7 +23,8 @@ export class AuthService {
     private ACCService: ACCService,
     private cookieService: CookieService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private appEventBusComponent: AppEventBusComponent,
   ) {}
 
   isAuthenticated(): boolean {
@@ -35,9 +37,16 @@ export class AuthService {
       this.isAuth = false;
       this.USERNAME = "";
     }
-    // if(this.isAuth){
-    //   this.ACCService.getplantACC100List().subscribe();
-    // }
+    if(this.isAuth ){
+      this.router.events.subscribe(
+        (event:any)=>{
+          if(event instanceof NavigationEnd){
+            if(!event.url.includes('login') && this.appEventBusComponent.hasPermission(event.url) == false){
+              this.router.navigate(['/AccessDined']);
+            }
+          }
+      })
+    }
     return this.isAuth;
   }
 

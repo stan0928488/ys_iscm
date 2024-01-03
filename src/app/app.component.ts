@@ -212,6 +212,7 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
         if(result.code == 200){
           this.menus = result.data;
           recursionSet(this.menus,1);
+          this.appEventBusComponent.logingObjAdd(this.menus);
         }else{
           this.nzModalService.error({
             nzTitle: '獲取菜單失敗',
@@ -230,6 +231,7 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
           if(result.code == 200){
             this.menus = result.data;
             recursionSet(this.menus,1);
+            this.appEventBusComponent.logingObjAdd(this.menus);
           }else{
             this.nzModalService.error({
               nzTitle: '獲取菜單失敗',
