@@ -37,16 +37,6 @@ export class AuthService {
       this.isAuth = false;
       this.USERNAME = "";
     }
-    if(this.isAuth ){
-      this.router.events.subscribe(
-        (event:any)=>{
-          if(event instanceof NavigationEnd){
-            if(!event.url.includes('login') && this.appEventBusComponent.hasPermission(event.url) == false){
-              this.router.navigate(['/AccessDined']);
-            }
-          }
-      })
-    }
     return this.isAuth;
   }
 
