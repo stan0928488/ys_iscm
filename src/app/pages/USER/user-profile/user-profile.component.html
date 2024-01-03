@@ -11,7 +11,7 @@
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email">所屬廠區</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-                                {{user.plant}}
+                                <span *ngIf="user">{{user.plant}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
@@ -19,44 +19,44 @@
                                 <span>工號</span>
                             </nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input your nickname!">
-                                {{user.userName}}
+                                <span *ngIf="user">{{user.userName}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="website">姓名</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                {{user.userNickName}}
+                                <span *ngIf="user">{{user.userNickName}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="a">職位</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                {{user.positionName}}
+                                <span *ngIf="user">{{user.positionName}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="b">職務代碼</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                {{user.positionCode}}
+                                <span *ngIf="user">{{user.positionCode}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="c">E-mail</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                {{user.email}}
+                                <span *ngIf="user">{{user.email}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="d">分機</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                {{user.phone}}
+                                <span *ngIf="user">{{user.phone}}</span>
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="e">華新/外包</nz-form-label>
                             <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
-                                <div *ngIf="user.platform == '1'">華新人員</div>
-                                <div *ngIf="user.platform == '2'">外包人員</div>
+                                <div *ngIf="user && user.platform == '1'">華新人員</div>
+                                <div *ngIf="user && user.platform == '2'">外包人員</div>
                             </nz-form-control>
                         </nz-form-item>
                     </form>
