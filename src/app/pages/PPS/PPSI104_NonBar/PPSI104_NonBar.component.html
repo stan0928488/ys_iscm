@@ -12,399 +12,64 @@
       <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
         非直棒
       </a>
-      <div style="background: rgb(255, 255, 255); min-height: 1200px">
-        <table>
-          <tr>
-            <td>
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-                nzType="primary"
-                (click)="openPrepareInput()"
-              >
-                <span nz-icon nzType="plus" nzTheme="outline"></span>
-                新增
-              </button>
-            </td>
-            <td style="text-align: right; width: 35%">
-              <input
-                type="file"
-                id="fileupload"
-                style="display: inline-block"
-                (change)="incomingfile($event)"
-                placeholder="Upload file"
-                accept=".xlsx, .xls, .csv"
-              />
-              <button
-                nz-button
-                style="
-                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                  background-color: #4caf50;
-                  border: 2px blue none;
-                "
-                nzType="primary"
-                (click)="Upload()"
-              >
-                <span nz-icon nzType="upload" nzTheme="outline"></span>
-                E X C E L 匯入
-              </button>
-              &nbsp;&nbsp;
-              <button
-                nz-button
-                style="
-                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                  background-color: #4caf50;
-                  border: 2px blue none;
-                "
-                nzType="primary"
-                (click)="convertToExcel()"
-              >
-                <span nz-icon nzType="download" nzTheme="outline"></span>
-                E X C E L 匯出
-              </button>
-            </td>
-          </tr>
-        </table>
-        <p></p>
-        <p></p>
-
-        <div nz-col [nzSpan]="25">
-          <nz-table
-            #RowTable
-            nzBordered
-            [nzData]="displayPPSINP03List"
-            [nzPageSize]="20"
-            [nzScroll]="{ y: '500px' }"
-          >
-            <thead>
-              <tr>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  站別
-                  <nz-filter-trigger
-                    [nzActive]="searchShopCodeValue.length > 0"
-                    [nzDropdownMenu]="shopCodeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  機台
-                  <nz-filter-trigger
-                    [nzActive]="searchEquipCodeValue.length > 0"
-                    [nzDropdownMenu]="equipCodeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  機群
-                  <nz-filter-trigger
-                    [nzActive]="searchEquipGroupValue.length > 0"
-                    [nzDropdownMenu]="equipGroupMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  上下料時間
-                  <nz-filter-trigger
-                    [nzActive]="searchLoadTimeValue.length > 0"
-                    [nzDropdownMenu]="loadTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  搬運時間
-                  <nz-filter-trigger
-                    [nzActive]="searchTransferTimeValue.length > 0"
-                    [nzDropdownMenu]="transferTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  大調機時間
-                  <nz-filter-trigger
-                    [nzActive]="searchBigAdjustTimeValue.length > 0"
-                    [nzDropdownMenu]="bigAdjustTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  小調機時間
-                  <nz-filter-trigger
-                    [nzActive]="searchSmallAdjustTimeValue.length > 0"
-                    [nzDropdownMenu]="smallAdjustTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  退料時間
-                  <nz-filter-trigger
-                    [nzActive]="searchReturnTimeValue.length > 0"
-                    [nzDropdownMenu]="returnTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  冷卻時間
-                  <nz-filter-trigger
-                    [nzActive]="searchCoolingTimeValue.length > 0"
-                    [nzDropdownMenu]="coolingTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  其他整備時間
-                  <nz-filter-trigger
-                    [nzActive]="searchOtherTimeValue.length > 0"
-                    [nzDropdownMenu]="otherTimeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let data of RowTable.data; let i = index"
-                class="editable-row"
-              >
-                <ng-container
-                  *ngIf="!editCache[data.idx].edit; else editTemplate"
-                >
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.SHOP_CODE }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.EQUIP_CODE }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.EQUIP_GROUP }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.LOAD_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.TRANSFER_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.BIG_ADJUST_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.SMALL_ADJUST_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.RETURN_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.COOLING_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.OTHER_TIME | number }}
-                  </td>
-                  <td style="text-align: center; padding: 0px; height: 60px">
-                    <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to delete?"
-                      (nzOnConfirm)="deleteRow(data.idx)"
-                      >刪除</a
-                    >
-                  </td>
-                </ng-container>
-                <ng-template #editTemplate>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入站別"
-                      [(ngModel)]="editCache[data.idx].data.SHOP_CODE"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入機台"
-                      [(ngModel)]="editCache[data.idx].data.EQUIP_CODE"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入機群"
-                      [(ngModel)]="editCache[data.idx].data.EQUIP_GROUP"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="上下料時間"
-                      [(ngModel)]="editCache[data.idx].data.LOAD_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="搬運時間"
-                      [(ngModel)]="editCache[data.idx].data.TRANSFER_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="大調機時間"
-                      [(ngModel)]="editCache[data.idx].data.BIG_ADJUST_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="小調機時間"
-                      [(ngModel)]="editCache[data.idx].data.SMALL_ADJUST_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="退料時間"
-                      [(ngModel)]="editCache[data.idx].data.RETURN_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="冷卻時間"
-                      [(ngModel)]="editCache[data.idx].data.COOLING_TIME"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="其他整備時間"
-                      [(ngModel)]="editCache[data.idx].data.OTHER_TIME"
-                    />
-                  </td>
-                  <td>
-                    <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to cancel?"
-                      (nzOnConfirm)="cancelEdit(data.idx)"
-                      >取消</a
-                    >
-                  </td>
-                </ng-template>
-              </tr>
-            </tbody>
-          </nz-table>
-        </div>
+      <div>
+        <button
+          nz-button
+          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+          nzType="primary"
+          (click)="openPrepareInput()"
+        >
+          <span nz-icon nzType="plus" nzTheme="outline"></span>
+          新增
+        </button>
+        &nbsp;&nbsp;
+        <input
+          type="file"
+          id="fileupload"
+          style="display: inline-block; margin-left: 550px"
+          (change)="incomingfile($event)"
+          placeholder="Upload file"
+          accept=".xlsx, .xls, .csv"
+        />
+        <button
+          nz-button
+          style="
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+            background-color: #4caf50;
+            border: 2px blue none;
+          "
+          nzType="primary"
+          (click)="Upload()"
+        >
+          <span nz-icon nzType="upload" nzTheme="outline"></span>
+          E X C E L 匯入
+        </button>
+        &nbsp;&nbsp;
+        <button
+          nz-button
+          style="
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+            background-color: #4caf50;
+            border: 2px blue none;
+          "
+          nzType="primary"
+          (click)="convertToExcel()"
+        >
+          <span nz-icon nzType="download" nzTheme="outline"></span>
+          E X C E L 匯出
+        </button>
       </div>
+      <ag-grid-angular  style="width: 100%; height: calc(100vh - 220px); overflow: scroll;" class="ag-theme-alpine" 
+      [rowData]="PPSINP03List"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      class="ag-theme-alpine"
+      [frameworkComponents]="frameworkComponents"
+      [gridOptions]="gridOptions"
+      editType="fullRow"
+      [suppressClickEdit]="true"
+      >
+      </ag-grid-angular>
     </nz-tab>
   </nz-tabset>
 </nz-content>
@@ -635,198 +300,3 @@
     <button nz-button nzType="primary" (click)="insertTab()">確定</button>
   </ng-template>
 </nz-modal>
-
-<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchShopCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-<nz-dropdown-menu #equipCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipCode()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #equipGroupMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchEquipGroupValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchEquipGroup()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByEquipGroup()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #loadTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchLoadTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchLoadTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByLoadTime()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #transferTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchTransferTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByTransferTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByTransferTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #bigAdjustTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchBigAdjustTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByBigAdjustTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByBigAdjustTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #smallAdjustTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchSmallAdjustTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchBySmallAdjustTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetBySmallAdjustTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #returnTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchReturnTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByReturnTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByReturnTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #coolingTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchCoolingTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByCoolingTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByCoolingTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #otherTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchOtherTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByOtherTime()"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByOtherTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
