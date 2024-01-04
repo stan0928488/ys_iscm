@@ -127,7 +127,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     { 
       headerName:'Action',
       field:'action',
-      width: 150,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: AGCustomActionCellComponent,

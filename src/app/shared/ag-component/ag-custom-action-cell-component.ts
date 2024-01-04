@@ -7,27 +7,51 @@ import { ICellRendererParams } from "ag-grid-community";
 @Component({
     selector: 'ag-custom-action-cell',
     template: `
-        <a 
+        <button 
             *ngIf="!params.data.isEditing"
-            (click)="params.edit(params)">修改
-        </a>
-        <a
+            nz-button 
+            nzType="primary"
+            (click)="params.edit(params)">
+            編輯
+        </button>
+        <button 
             *ngIf="!params.data.isEditing"
+            id="deleteBtn"
+            nz-button 
+            nzType="primary" 
+            nzDanger
             nz-popconfirm
             nzPopconfirmTitle="確定刪除嗎?"
-            (nzOnConfirm)="params.delete(params)">刪除
-        </a>
-        <a
+            (nzOnConfirm)="params.delete(params)">
+            刪除
+        </button>
+        <button 
             *ngIf="params.data.isEditing"
+            nz-button 
+            nzType="primary"
             nz-popconfirm
             nzPopconfirmTitle="確定修改嗎?"
-            (nzOnConfirm)="params.saveEdit(params)">確認
-        </a>
-        <a 
+            (nzOnConfirm)="params.saveEdit(params)">
+            確定
+        </button>
+        <button 
             *ngIf="params.data.isEditing"
-            (click)="params.cancelEdit(params)">取消
-        </a>
-      `
+            id="deleteBtn"
+            nz-button 
+            nzType="primary" 
+            nzDanger
+            (click)="params.cancelEdit(params)">
+            取消
+        </button>
+      `,
+     styles : [
+        `
+        #deleteBtn{
+            margin-left: 10px;
+        }
+        
+        `
+    ]
   })
   export class AGCustomActionCellComponent implements ICellRendererAngularComp {
    
