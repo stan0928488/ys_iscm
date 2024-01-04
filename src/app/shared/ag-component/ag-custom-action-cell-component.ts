@@ -9,17 +9,13 @@ import { ICellRendererParams } from "ag-grid-community";
     template: `
         <button 
             *ngIf="!params.data.isEditing"
-            nz-button 
-            nzType="primary"
+            class="updateButton"
             (click)="params.edit(params)">
             編輯
         </button>
         <button 
             *ngIf="!params.data.isEditing"
-            id="deleteBtn"
-            nz-button 
-            nzType="primary" 
-            nzDanger
+            class="deleteButton"
             nz-popconfirm
             nzPopconfirmTitle="確定刪除嗎?"
             (nzOnConfirm)="params.delete(params)">
@@ -27,8 +23,7 @@ import { ICellRendererParams } from "ag-grid-community";
         </button>
         <button 
             *ngIf="params.data.isEditing"
-            nz-button 
-            nzType="primary"
+            class="updateButton"
             nz-popconfirm
             nzPopconfirmTitle="確定修改嗎?"
             (nzOnConfirm)="params.saveEdit(params)">
@@ -36,22 +31,12 @@ import { ICellRendererParams } from "ag-grid-community";
         </button>
         <button 
             *ngIf="params.data.isEditing"
-            id="deleteBtn"
-            nz-button 
-            nzType="primary" 
-            nzDanger
+            class="deleteButton" 
             (click)="params.cancelEdit(params)">
             取消
         </button>
       `,
-     styles : [
-        `
-        #deleteBtn{
-            margin-left: 10px;
-        }
-        
-        `
-    ]
+    styleUrls: ['../../pages/RENDERER/BtnCellRenderer.component.scss'],
   })
   export class AGCustomActionCellComponent implements ICellRendererAngularComp {
    

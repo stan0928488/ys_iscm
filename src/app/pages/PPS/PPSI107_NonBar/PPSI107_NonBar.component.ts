@@ -76,31 +76,26 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     { 
       headerName:'站別', 
       field:'schShopCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機台', 
       field:'equipCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機群', 
       field:'equipGroup',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'製程代號', 
       field:'equipProcessCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'尺寸MIN', 
       field:'diaMin',
-      width: 120,
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
@@ -109,7 +104,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     { 
       headerName:'尺寸MAX', 
       field:'diaMax',
-      width: 120,
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
@@ -121,7 +115,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
@@ -146,7 +139,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 

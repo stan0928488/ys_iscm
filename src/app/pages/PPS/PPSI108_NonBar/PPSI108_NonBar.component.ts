@@ -156,7 +156,6 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 

@@ -105,7 +105,6 @@ export class PPSI108Component implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 
