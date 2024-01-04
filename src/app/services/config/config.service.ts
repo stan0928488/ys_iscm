@@ -38,18 +38,12 @@ export class ConfigService {
           var urlHost = 'ys-ppsapt01.walsin.corp';
           this.APIURL = `http://${urlHost}:8080${APIBODY}`;
         }
-
         break;
       case 'ys-pps.walsin.corp':
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
       default:
-        if (flag === '2') {
-          var urlHost = 'yw-ppsapsit201.walsin.corp';
-          this.APIURL = `http://${urlHost}:8080${APIBODY}`;
-        } else {
-          this.APIURL = `http://${hostName}:8080${APIBODY}`;
-        }
+        this.APIURL = `http://${hostName}:8080${APIBODY}`;
     }
   }
 

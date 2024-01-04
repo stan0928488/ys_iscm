@@ -1,67 +1,76 @@
-
-.editable-cell {
-  position: relative;
+:host ::ng-deep .ag-root-wrapper.ag-layout-normal {
+  border-radius: 7px;
 }
 
-.editable-cell-value-wrap {
-  padding: 5px 12px;
-  width: 80%;margin-left:auto; margin-right:auto;
+:host ::ng-deep .ag-row {
+  background-color: #ffffff;
+}
+
+:host ::ng-deep .ant-btn-primary {
+  border-radius: 5px;
+}
+
+th {
+  background-color: #9cb6ce;
+  border-radius: 7px;
+  padding: 0 0 0 5px;
+  text-align: left;
+  width: 150px;
+}
+
+td {
+  border-radius: 7px;
+  background-color: #eee;
+}
+
+:host ::ng-deep .ant-modal-body {
+  padding: 10px 24px;
+}
+
+:host .updateButton {
+  color: #fff;
+  background-color: #1677ff;
+  border-style: none;
+  width: calc(50% - 5px);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  height: 70%;
+  border-radius: 3px;
+}
+
+:host .updateButton:hover {
+  // background-color: #bfd4e4;
+  // font-weight: bold;
   cursor: pointer;
 }
 
-.editable-row:hover .editable-cell-value-wrap {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 4px 11px;
-}
-.excel-control {
-  float:right;
-  margin-left : 40vw;
-}
-/*
-
-tbody {
-display: block;
-overflow: auto;
-height: 500px;
-width: 100%;
+:host .deleteButton {
+  color: #fff;
+  background-color: red;
+  border-style: none;
+  width: calc(50% - 5px);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  height: 70%;
+  border-radius: 3px;
+  margin: 0px 0px 0px 10px;
 }
 
-thead tr {
-display: table;
-width: 100%;
-table-layout: fixed;
+:host .deleteButton:hover {
+  // background-color: #edb1b1;
+  // font-weight: 700;
+  cursor: pointer;
 }
 
-thead, tbody tr {
-display: table;
-width: 100%;
-table-layout: fixed;
+:host .container {
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 }
-
-thead {
-width: calc( 100% - 1em )
-}
-
-*/
-
-
-
-.ant-table-tbody>tr>td, .ant-table-thead>tr>th{
-padding: 8px;
-}
-
-td > button {
-cursor: default;
-}
-
-
-  // 頁籤
-  #tab-1{ width:1000px; height:50;}
-  #tab-1 > ul{ display:block; margin:0;list-style:none;}
-  .tab-title1{list-style:none;}
-  #tab-1 > ul > li{ display:inline-block; vertical-align:top; font-family:'微軟正黑體'; margin:0 -1px -1px 0 ; border:1px solid #BCBCBC; height:25px; line-height:25px; background:#ffffff;padding:0 15px;list-style:none; box-sizing:border-box; box-shadow: 0 1px;}
-  #tab-1 >  ul > li a{ color:rgb(0, 0, 0); text-decoration:none;}
-  #tab-1 > ul > li.active{ border-bottom:1px solid #fff; background:rgb(228, 227, 227); font-weight: bold;}
-  #tab-1 > .tab-inner1{ clear:both; color:#000; border:1px #cbfcfc solid;}
-  .tab-inner{ padding:15px; height:50px;}

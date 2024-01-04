@@ -1,5 +1,5 @@
 import { CommonService } from './../../../services/common/common.service';
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -27,6 +27,7 @@ interface ItemData13 {
   providers: [NzMessageService],
 })
 export class PPSI121Component implements AfterViewInit {
+  thisTabName = "直棒研磨道次(PPSI121)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -52,6 +53,7 @@ export class PPSI121Component implements AfterViewInit {
   excelImportFile: File;
 
   constructor(
+    private elementRef:ElementRef,
     private PPSService: PPSService,
     private commonService: CommonService,
     private i18n: NzI18nService,
@@ -67,6 +69,11 @@ export class PPSI121Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP13List();
+    
+    const liI121Tab = this.elementRef.nativeElement.querySelector('#liI121') as HTMLLIElement;
+    const aI121Tab = this.elementRef.nativeElement.querySelector('#aI121') as HTMLAnchorElement;
+    liI121Tab.style.backgroundColor = '#E4E3E3';
+    aI121Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
   PPSINP13List_tmp;
@@ -78,16 +85,6 @@ export class PPSI121Component implements AfterViewInit {
     this.loading = true;
     let myObj = this;
     this.PPSService.getPPSINP13List().subscribe((res) => {
-      const licss = document.getElementById('bbli');
-      if (licss != null) {
-        licss.style.backgroundColor = '#E4E3E3';
-      }
-      const acss = document.getElementById('bba');
-      if (acss != null) {
-        acss.style.cssText = 'color: blue; font-weight:bold;';
-      }
-      document.getElementById('bba').innerHTML = '直棒研磨道次(PPSI121)';
-      document.getElementById('bba').style.fontSize = '17px';
       console.log('getPPSINP13List success');
       this.PPSINP13List_tmp = res;
 
