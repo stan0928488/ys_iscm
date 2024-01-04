@@ -131,13 +131,13 @@ export class PPSI106Component implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 110,
+      width: 120,
       headerName: '小調機代碼',
       field: 'SMALL_ADJUST_CODE_17',
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 110,
+      width: 130,
       headerName: '小調機公差標準',
       field: 'SMALL_ADJUST_TOLERANCE_17',
       headerComponent: AGCustomHeaderComponent
@@ -149,7 +149,7 @@ export class PPSI106Component implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',

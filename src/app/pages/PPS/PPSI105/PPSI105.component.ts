@@ -125,13 +125,13 @@ export class PPSI105Component implements OnInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 110,
+      width: 120,
       headerName: '大調機代碼',
       field: 'BIG_ADJUST_CODE_4',
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 110,
+      width: 130,
       headerName: '小調機公差標準',
       field: 'SMALL_ADJUST_TOLERANCE_4',
       headerComponent: AGCustomHeaderComponent
@@ -143,7 +143,7 @@ export class PPSI105Component implements OnInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',

@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit, ChangeDetectorRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -8,6 +8,10 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
+import { CellEditingStoppedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams } from "ag-grid-community";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
+import { DecimalPipe } from "@angular/common";
 
 
 
@@ -72,6 +76,103 @@ export class PPSI107Component implements AfterViewInit {
   importdata = [];
   titleArray = ["站號","機台","產出型態","鋼種類別","線速分類","減面率MIN","減面率MAX","產出尺寸最小值","產出尺寸最大值","線速(公尺/分)","日產出量"];
   importdata_repeat = [];
+
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  
+  ppsinp05ColumnDefs : ColDef[] = [
+    { 
+      headerName:'站號', 
+      field:'SHOP_CODE_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機台', 
+      field:'EQUIP_CODE_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出型態', 
+      field:'SHAPE_TYPE_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'鋼種類別', 
+      field:'GRADE_GROUP_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'線速分類', 
+      field:'SPEED_TYPE_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'減面率MIN', 
+      field:'REDUCTION_RATE_MIN_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent,
+    },
+    { 
+      headerName:'減面率MAX', 
+      field:'REDUCTION_RATE_MAX_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出尺寸最小值', 
+      field:'DIA_MIN_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'產出尺寸最大值', 
+      field:'DIA_MAX_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'線速(公尺/分)', 
+      field:'SPEED_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'日產出量', 
+      field:'EQUIP_CAP_5',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      width: 150,
+      editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: AGCustomActionCellComponent,
+      cellRendererParams:{
+        edit : this.rowEditHandler.bind(this),
+        cancelEdit: this.rowCancalEditHandler.bind(this),
+        saveEdit : this.saveEditHandler.bind(this),
+        delete : this.deleteHandler.bind(this)
+      }
+    }
+  ];
+
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      editable: true,
+      resizable: true,
+      autoHeight: true,
+    }
+  };
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -80,6 +181,7 @@ export class PPSI107Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -96,46 +198,167 @@ export class PPSI107Component implements AfterViewInit {
     aI107Tab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
+
+  
+
+  /**
+   * 做寬度適應的調整
+   */
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+
+  /**
+   * 首次渲染資料完畢後被調用
+   * @param event 
+   */
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，做寬度適應的調整
+    this.autoSizeAll();
+  }
+
+ /**
+ * 開始編輯
+ * @param params 
+ */
+  rowEditHandler(params: ICellRendererParams<any, any>){
+    // 控制編輯按鈕的顯示切換
+    params.data.isEditing = true;
+    
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，且帶的該欄位是要可編輯的
+    params.api.startEditingCell({
+      rowIndex : params.rowIndex,
+      colKey : 'EQUIP_CAP_5' 
+    });
+  }
+  
+   /**
+   * 取消編輯並還原已變動的資料
+   * @param params 
+   */
+   rowCancalEditHandler(params: ICellRendererParams<any, any>){
+    params.api.stopEditing(false);
+     // 透過id取得緩存的舊資料
+     const cacheRowData = this.editCache05[params.data.id.toString()].data;
+     // 還原為原資料
+     this.displayPPSINP05List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+     // 渲染資料
+     this.gridApi.setRowData(this.displayPPSINP05List);
+     // Y軸滾動到此row的位置
+     this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
+
+  async saveEditHandler(params: ICellRendererParams<any, any>){
+    // 關閉編輯狀態讓資料生效進到當前陣列中的某條row之中
+    params.api.stopEditing(false);
+
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache05[params.data.id.toString()].data;
+
+    // 排除非業務的資料(isEditing)進行比較
+    // 若一樣，表示使用者未修改任何資料，不給予更新
+    if(_.isEqual(_.omit(params.data, ['isEditing']), _.omit(cacheRowData, ['isEditing']))){
+        // 無法轉換提示錯誤
+        this.message.warning('無法更新，你尚未修改任何資料');
+        return;
+    }
+
+    // 執行更新
+    await this.saveEdit(params.data.id);
+ }
+
+  /**
+   * 
+   * @param params 刪除資料
+   */
+  deleteHandler(params: ICellRendererParams<any, any>){
+    this.delID(params.data.id);
+  }
+
+  /**
+   * 獲取ag-grid的Api函數
+   * @param params 
+   */
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.editCache05[event.data.id].data, ['isEditing']);
+    
+    if(_.isEqual(newValue, oldValue)){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+    }
+    
+  }
+
+
+  restoreRowData(id : any){
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache05[id.toString()].data;
+    // 還原為原資料
+    this.displayPPSINP05List[id] = _.cloneDeep(cacheRowData);
+    // 重新渲染資料
+    this.gridApi.setRowData(this.displayPPSINP05List);
+  }
   
   PPSINP05List_tmp;
   PPSINP05List: ItemData05[] = [];
   editCache05: { [key: string]: { edit: boolean; data: ItemData05 } } = {};
   displayPPSINP05List : ItemData05[] = [];
-  getPPSINP05List() {
+  getPPSINP05List() : Promise<void>{
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP05List('1').subscribe(res => {
-      console.log("getFCPTB26List success 05");
-      this.PPSINP05List_tmp = res;
-      console.log("取得this.PPSINP05List_tmp");
-      console.log(this.PPSINP05List_tmp);
-      console.log("將撈出來的資料用迴圈放進data");
-      const data = [];
-      for (let i = 0; i < this.PPSINP05List_tmp.length ; i++) {
-        data.push({
-          id: `${i}`,
-          tab5ID: this.PPSINP05List_tmp[i].ID,
-          SHOP_CODE_5:this.PPSINP05List_tmp[i].SHOP_CODE,
-          EQUIP_CODE_5: this.PPSINP05List_tmp[i].EQUIP_CODE,
-          SHAPE_TYPE_5: this.PPSINP05List_tmp[i].SHAPE_TYPE,
-          GRADE_GROUP_5: this.PPSINP05List_tmp[i].GRADE_GROUP,
-          SPEED_TYPE_5: this.PPSINP05List_tmp[i].SPEED_TYPE,
-          REDUCTION_RATE_MIN_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MIN,
-          REDUCTION_RATE_MAX_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MAX,
-          DIA_MIN_5: this.PPSINP05List_tmp[i].DIA_MIN,
-          DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
-          SPEED_5: this.PPSINP05List_tmp[i].SPEED,
-          EQUIP_CAP_5: this.PPSINP05List_tmp[i].EQUIP_CAP
-        });
-      }
-      console.log("打印data");
-      console.log(data);
+    return new Promise((resolve, reject) => {
+      this.PPSService.getPPSINP05List('1').subscribe(res => {
+        console.log("getFCPTB26List success 05");
+        this.PPSINP05List_tmp = res;
+        console.log("取得this.PPSINP05List_tmp");
+        console.log(this.PPSINP05List_tmp);
+        console.log("將撈出來的資料用迴圈放進data");
+        const data = [];
+        for (let i = 0; i < this.PPSINP05List_tmp.length ; i++) {
+          data.push({
+            id: `${i}`,
+            tab5ID: this.PPSINP05List_tmp[i].ID,
+            SHOP_CODE_5:this.PPSINP05List_tmp[i].SHOP_CODE,
+            EQUIP_CODE_5: this.PPSINP05List_tmp[i].EQUIP_CODE,
+            SHAPE_TYPE_5: this.PPSINP05List_tmp[i].SHAPE_TYPE,
+            GRADE_GROUP_5: this.PPSINP05List_tmp[i].GRADE_GROUP,
+            SPEED_TYPE_5: this.PPSINP05List_tmp[i].SPEED_TYPE,
+            REDUCTION_RATE_MIN_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MIN,
+            REDUCTION_RATE_MAX_5: this.PPSINP05List_tmp[i].REDUCTION_RATE_MAX,
+            DIA_MIN_5: this.PPSINP05List_tmp[i].DIA_MIN,
+            DIA_MAX_5: this.PPSINP05List_tmp[i].DIA_MAX,
+            SPEED_5: this.PPSINP05List_tmp[i].SPEED,
+            EQUIP_CAP_5: this.PPSINP05List_tmp[i].EQUIP_CAP
+          });
+        }
+        console.log("打印data");
+        console.log(data);
 
-      this.PPSINP05List = data;
-      this.displayPPSINP05List = this.PPSINP05List;
-      console.log("更新線速暫存區");
-      this.updateEditCache();
-      myObj.loading = false;
+        this.PPSINP05List = data;
+        this.displayPPSINP05List = this.PPSINP05List;
+        console.log("更新線速暫存區");
+        this.updateEditCache();
+        myObj.loading = false;
+        resolve();
+      },err => {
+        reject();
+        myObj.LoadingPage = false;
+      });
     });
   }
 
@@ -214,51 +437,44 @@ export class PPSI107Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: string): void {
+ async saveEdit(id: number): Promise<void> {
     console.log("更改線速表");
     let myObj = this;
-    if (this.editCache05[id].data.SHOP_CODE_5 === undefined || "" === this.editCache05[id].data.SHOP_CODE_5) {
+    if (this.displayPPSINP05List[id].SHOP_CODE_5 === undefined || "" === this.displayPPSINP05List[id].SHOP_CODE_5) {
       myObj.message.create("error", "「站號」不可為空");
       return;
-    } else if (this.editCache05[id].data.EQUIP_CODE_5 === undefined || "" === this.editCache05[id].data.EQUIP_CODE_5) {
+    } else if (this.displayPPSINP05List[id].EQUIP_CODE_5 === undefined || "" === this.displayPPSINP05List[id].EQUIP_CODE_5) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    }  else if (this.editCache05[id].data.SHAPE_TYPE_5 === undefined || "" === this.editCache05[id].data.SHAPE_TYPE_5) {
+    }  else if (this.displayPPSINP05List[id].SHAPE_TYPE_5 === undefined || "" === this.displayPPSINP05List[id].SHAPE_TYPE_5) {
       myObj.message.create("error", "「產出型態」不可為空");
       return;
-    }   else if (this.editCache05[id].data.GRADE_GROUP_5 === undefined || "" === this.editCache05[id].data.GRADE_GROUP_5) {
+    }   else if (this.displayPPSINP05List[id].GRADE_GROUP_5 === undefined || "" === this.displayPPSINP05List[id].GRADE_GROUP_5) {
       myObj.message.create("error", "「鋼種類別」不可為空");
       return;
-    } else if (this.editCache05[id].data.REDUCTION_RATE_MIN_5 === undefined || "" === this.editCache05[id].data.REDUCTION_RATE_MIN_5.toString()) {
+    } else if (this.displayPPSINP05List[id].REDUCTION_RATE_MIN_5 === undefined || "" === this.displayPPSINP05List[id].REDUCTION_RATE_MIN_5.toString()) {
       myObj.message.create("error", "「減面率MIN」不可為空");
       return;
-    }   else if (this.editCache05[id].data.REDUCTION_RATE_MAX_5 === undefined || "" === this.editCache05[id].data.REDUCTION_RATE_MAX_5.toString()) {
+    }   else if (this.displayPPSINP05List[id].REDUCTION_RATE_MAX_5 === undefined || "" === this.displayPPSINP05List[id].REDUCTION_RATE_MAX_5.toString()) {
       myObj.message.create("error", "「減面率MAX」不可為空");
       return;
-    }  else if (this.editCache05[id].data.DIA_MIN_5 === undefined || "" === this.editCache05[id].data.DIA_MIN_5.toString()) {
+    }  else if (this.displayPPSINP05List[id].DIA_MIN_5 === undefined || "" === this.displayPPSINP05List[id].DIA_MIN_5.toString()) {
       myObj.message.create("error", "「最小產出尺寸不可為空");
       return;
-    } else if (this.editCache05[id].data.DIA_MAX_5 === undefined || "" === this.editCache05[id].data.DIA_MAX_5.toString()) {
+    } else if (this.displayPPSINP05List[id].DIA_MAX_5 === undefined || "" === this.displayPPSINP05List[id].DIA_MAX_5.toString()) {
       myObj.message.create("error", "「最大產出尺寸」不可為空");
       return;
-    } else if (this.editCache05[id].data.SPEED_5 === undefined || "" === this.editCache05[id].data.SPEED_5.toString()) {
+    } else if (this.displayPPSINP05List[id].SPEED_5 === undefined || "" === this.displayPPSINP05List[id].SPEED_5.toString()) {
       myObj.message.create("error", "「線速」不可為空");
       return;
-    } else if (this.editCache05[id].data.EQUIP_CAP_5 === undefined || "" === this.editCache05[id].data.EQUIP_CAP_5.toString()) {
+    } else if (this.displayPPSINP05List[id].EQUIP_CAP_5 === undefined || "" === this.displayPPSINP05List[id].EQUIP_CAP_5.toString()) {
       myObj.message.create("error", "「日產出量」不可為空");
-      return;}
-      else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(id)
-        },
-        nzOnCancel: () =>
-          console.log("cancel")
-      });
+      return;
     }
-  }
-  
+    else {
+       await this.updateSave(id);
+    }
+ }
 
   // update
   updateEditCache(): void {
@@ -296,7 +512,7 @@ export class PPSI107Component implements AfterViewInit {
 
       myObj.PPSService.insertI105Save('1', obj).subscribe(res => {
         console.log(res)
-        if(res[0].MSG === "Y") {
+        if(res.message === "Y") {
           this.SHOP_CODE_5 = undefined;
           this.EQUIP_CODE_5 = undefined;
           this.SHAPE_TYPE_5 = undefined;
@@ -312,7 +528,7 @@ export class PPSI107Component implements AfterViewInit {
           this.sucessMSG("新增成功", ``);
           this.isVisibleSpeed = false;
         } else {
-          this.errorMSG("新增失敗", res[0].MSG);
+          this.errorMSG("新增失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -322,9 +538,64 @@ export class PPSI107Component implements AfterViewInit {
     });
   }
 
+  updateSave(_id) {
+    let myObj = this;
+    this.LoadingPage = true;
+    return new Promise((resolve, reject) => {
+      let obj = {};
+      _.extend(obj, {
+        ID : this.displayPPSINP05List[_id].tab5ID,
+        SHOP_CODE: this.displayPPSINP05List[_id].SHOP_CODE_5,
+        EQUIP_CODE: this.displayPPSINP05List[_id].EQUIP_CODE_5,
+        SHAPE_TYPE: this.displayPPSINP05List[_id].SHAPE_TYPE_5,
+        GRADE_GROUP: this.displayPPSINP05List[_id].GRADE_GROUP_5,
+        SPEED_TYPE: this.displayPPSINP05List[_id].SPEED_TYPE_5,
+        REDUCTION_RATE_MIN: this.displayPPSINP05List[_id].REDUCTION_RATE_MIN_5,
+        REDUCTION_RATE_MAX: this.displayPPSINP05List[_id].REDUCTION_RATE_MAX_5,
+        DIA_MIN: this.displayPPSINP05List[_id].DIA_MIN_5,
+        DIA_MAX: this.displayPPSINP05List[_id].DIA_MAX_5,
+        SPEED: this.displayPPSINP05List[_id].SPEED_5,
+        EQUIP_CAP: this.displayPPSINP05List[_id].EQUIP_CAP_5,
+        USERNAME : this.USERNAME,
+        DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')})
+      
+        myObj.PPSService.updateI105Save('1', obj).subscribe(async res => 
+        {
+          if(res.message === "Y") {
+            this.SHOP_CODE_5 = undefined;
+            this.EQUIP_CODE_5 = undefined;
+            this.SHAPE_TYPE_5 = undefined;
+            this.GRADE_GROUP_5 = undefined;
+            this.SPEED_TYPE_5 = undefined;
+            this.REDUCTION_RATE_MIN_5 = undefined;
+            this.REDUCTION_RATE_MAX_5 = undefined;
+            this.DIA_MIN_5 = undefined;
+            this.DIA_MAX_5 = undefined;
+            this.SPEED_5 = undefined;
+            this.EQUIP_CAP_5 = undefined;
+            await this.getPPSINP05List();
+            this.sucessMSG("修改成功", ``);
+            // Y軸滾動到此row的位置
+            this.changeDetectorRef.detectChanges();
+            this.gridApi.ensureIndexVisible(Number(_id), 'middle');
+            resolve('修改成功');
+          } else {
+            this.errorMSG("修改失敗", res.message);
+            this.restoreRowData(_id);
+            reject('修改失敗');
+          }
+          this.LoadingPage = false;
+      },err => {
+        reject('upload fail');
+        this.restoreRowData(_id);
+        this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
+        this.LoadingPage = false;
+      })
+    });
+  }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave_Old(_id) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
@@ -347,7 +618,7 @@ export class PPSI107Component implements AfterViewInit {
       
         myObj.PPSService.updateI105Save('1', obj).subscribe(res => 
         {
-          if(res[0].MSG === "Y") {
+          if(res.message === "Y") {
             this.SHOP_CODE_5 = undefined;
             this.EQUIP_CODE_5 = undefined;
             this.SHAPE_TYPE_5 = undefined;
@@ -365,7 +636,7 @@ export class PPSI107Component implements AfterViewInit {
             Object.assign(this.PPSINP05List[index], this.editCache05[_id].data);
             this.editCache05[_id].edit = false;
           } else {
-            this.errorMSG("修改失敗", res[0].MSG);
+            this.errorMSG("修改失敗", res.message);
           }
       },err => {
         reject('upload fail');
@@ -385,10 +656,9 @@ export class PPSI107Component implements AfterViewInit {
       console.log(this.editCache05);
       console.log("_id");
       console.log(_id);
-      console.log("BBBBBB"+this.editCache05[_id]);
       let _ID = this.editCache05[_id].data.tab5ID;
       myObj.PPSService.delI105Data('1', _ID).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.message === "Y") {
           this.SHOP_CODE_5 = undefined;
           this.EQUIP_CODE_5 = undefined;
           this. SHAPE_TYPE_5 = undefined;
@@ -657,9 +927,8 @@ export class PPSI107Component implements AfterViewInit {
       console.log("EXCELDATA:"+ obj);
       myObj.PPSService.importI105Excel('1',obj).subscribe(res => {
         console.log("importExcelPPSI105");
-        if(res[0].MSG === "Y") { 
+        if(res.message === "Y") { 
           
-
           this.loading = false;
           this.LoadingPage = false;
           
@@ -668,7 +937,7 @@ export class PPSI107Component implements AfterViewInit {
           this.getPPSINP05List()
           
         } else {
-          this.errorMSG("匯入錯誤", res[0].MSG);
+          this.errorMSG("匯入錯誤", res.message);
           this.clearFile();
           this.loading = false;
           this.LoadingPage = false;
@@ -680,7 +949,6 @@ export class PPSI107Component implements AfterViewInit {
         this.LoadingPage = false;
       })
     });
-    this.getPPSINP05List();
 
   }
 

@@ -1,5 +1,5 @@
 import { CellClickedEvent, CellDoubleClickedEvent, CellEditingStartedEvent, CellEditingStoppedEvent, CellValueChangedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams, Logger } from 'ag-grid-community';
-import { Component, AfterViewInit, ElementRef } from "@angular/core";
+import { Component, AfterViewInit, ElementRef, ChangeDetectorRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
@@ -78,6 +78,7 @@ export class PPSI108Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -243,7 +244,8 @@ export class PPSI108Component implements AfterViewInit {
 
     // 驗證資料並執行更新
     await this.saveEditWithValidation(params.data, params.node.rowIndex);
-    this.getPPSINP08List();
+    await this.getPPSINP08List();
+    this.changeDetectorRef.detectChanges();
     // Y軸滾動到此row的位置
     this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
   }
@@ -288,32 +290,45 @@ export class PPSI108Component implements AfterViewInit {
   PPSINP08List: ItemData8[] = [];
   editCache8: { [key: string]: { edit: boolean; data: ItemData8 } } = {};
   displayPPSINP08List : ItemData8[] = [];
-  getPPSINP08List() {
+  getPPSINP08List() : Promise<void> {
     this.LoadingPage = true;
     let myObj = this;
-    this.PPSService.getPPSINP08List('1').subscribe(res => {
-      console.log("getFCPTB26List success");
-      this.PPSINP08List_tmp = res.data;
-
-      const data = [];
-      for (let i = 0; i < this.PPSINP08List_tmp.length ; i++) {
-        data.push({
-          id: `${i}`,
-          tab8ID: this.PPSINP08List_tmp[i].ID,
-          SHOP_CODE_8: this.PPSINP08List_tmp[i].SHOP_CODE,
-          EQUIP_CODE_8: this.PPSINP08List_tmp[i].EQUIP_CODE,
-          SHAPE_TYPE_8: this.PPSINP08List_tmp[i].SHAPE_TYPE,
-          DIA_MIN_8: this.PPSINP08List_tmp[i].DIA_MIN,
-          DIA_MAX_8: this.PPSINP08List_tmp[i].DIA_MAX,
-          MINS_8: this.PPSINP08List_tmp[i].MINS,
-          isEditing : false
-        });
-      }
-      this.PPSINP08List = data;
-      this.displayPPSINP08List = this.PPSINP08List;
-      this.updateEditCache();
-      console.log(this.PPSINP08List);
-      myObj.LoadingPage = false;   
+    return new Promise((resolve, reject) => {
+      this.PPSService.getPPSINP08List('1').subscribe(res => {
+        if(res.code === 200){
+          console.log("getFCPTB26List success");
+          this.PPSINP08List_tmp = res.data;
+          const data = [];
+          for (let i = 0; i < this.PPSINP08List_tmp.length ; i++) {
+            data.push({
+              id: `${i}`,
+              tab8ID: this.PPSINP08List_tmp[i].ID,
+              SHOP_CODE_8: this.PPSINP08List_tmp[i].SHOP_CODE,
+              EQUIP_CODE_8: this.PPSINP08List_tmp[i].EQUIP_CODE,
+              SHAPE_TYPE_8: this.PPSINP08List_tmp[i].SHAPE_TYPE,
+              DIA_MIN_8: this.PPSINP08List_tmp[i].DIA_MIN,
+              DIA_MAX_8: this.PPSINP08List_tmp[i].DIA_MAX,
+              MINS_8: this.PPSINP08List_tmp[i].MINS,
+              isEditing : false
+            });
+          }
+          this.PPSINP08List = data;
+          this.displayPPSINP08List = this.PPSINP08List;
+          this.updateEditCache();
+          console.log(this.PPSINP08List);
+          myObj.LoadingPage = false;
+          resolve();
+        }
+        else{
+          this.errorMSG("獲取失敗", "資料獲取失敗，請聯繫系統工程師");
+          myObj.LoadingPage = false;
+          reject();
+        }
+      },err => {
+        this.errorMSG("獲取失敗", "資料獲取失敗，請聯繫系統工程師");
+        myObj.LoadingPage = false;
+        reject();
+      });
     });
   }
   

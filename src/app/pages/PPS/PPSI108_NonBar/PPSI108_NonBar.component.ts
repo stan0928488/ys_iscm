@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef } from "@angular/core";
+import { Component, AfterViewInit, ElementRef, ChangeDetectorRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -86,6 +86,7 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
@@ -295,7 +296,8 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     
     // 驗證資料並執行更新
     await this.saveEditWithValidation(params.data, params.node.rowIndex);
-    this.getPpsinptb08List();
+    await this.getPpsinptb08List();
+    this.changeDetectorRef.detectChanges();
     // Y軸滾動到此row的位置
     this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
   }
@@ -367,36 +369,49 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
   ppsinptb08List: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayppsinptb08List: ItemData[] = [];
-  getPpsinptb08List() {
+  getPpsinptb08List() : Promise<void> {
     this.LoadingPage = true;
     let myObj = this;
-    this.PPSService.getPPSINP08List('2').subscribe(res => {
-      this.ppsinptb08Tmp = res.data;
-      const data = [];
-      for (let i = 0; i < this.ppsinptb08Tmp.length ; i++) {
-        data.push({
-          idx: `${i}`,
-          id: this.ppsinptb08Tmp[i].id,
-          plantCode: this.ppsinptb08Tmp[i].plantCode,
-          schShopCode: this.ppsinptb08Tmp[i].schShopCode,
-          equipCode: this.ppsinptb08Tmp[i].equipCode,
-          equipGroup: this.ppsinptb08Tmp[i].equipGroup,
-          equipProcessCode: this.ppsinptb08Tmp[i].equipProcessCode,
-          steelType: this.ppsinptb08Tmp[i].steelType,
-          packCode: this.ppsinptb08Tmp[i].packCode,
-          diaMin: this.ppsinptb08Tmp[i].diaMin,
-          diaMax: this.ppsinptb08Tmp[i].diaMax,
-          wkTime: this.ppsinptb08Tmp[i].wkTime,
-          isEditing : false
-        });
-      }
-      this.ppsinptb08List = data;
-      this.displayppsinptb08List = this.ppsinptb08List;
-      this.updateEditCache();
-      console.log(this.ppsinptb08List);
-      myObj.LoadingPage = false;
+    return new Promise((resolve, reject) => {
+      this.PPSService.getPPSINP08List('2').subscribe(res => {
+        if(res.code === 200){
+          this.ppsinptb08Tmp = res.data;
+          const data = [];
+          for (let i = 0; i < this.ppsinptb08Tmp.length ; i++) {
+            data.push({
+              idx: `${i}`,
+              id: this.ppsinptb08Tmp[i].id,
+              plantCode: this.ppsinptb08Tmp[i].plantCode,
+              schShopCode: this.ppsinptb08Tmp[i].schShopCode,
+              equipCode: this.ppsinptb08Tmp[i].equipCode,
+              equipGroup: this.ppsinptb08Tmp[i].equipGroup,
+              equipProcessCode: this.ppsinptb08Tmp[i].equipProcessCode,
+              steelType: this.ppsinptb08Tmp[i].steelType,
+              packCode: this.ppsinptb08Tmp[i].packCode,
+              diaMin: this.ppsinptb08Tmp[i].diaMin,
+              diaMax: this.ppsinptb08Tmp[i].diaMax,
+              wkTime: this.ppsinptb08Tmp[i].wkTime,
+              isEditing : false
+            });
+          }
+          this.ppsinptb08List = data;
+          this.displayppsinptb08List = this.ppsinptb08List;
+          this.updateEditCache();
+          console.log(this.ppsinptb08List);
+          myObj.LoadingPage = false;
+          resolve();
+        }
+        else{
+          this.errorMSG("獲取失敗", "資料獲取失敗，請聯繫系統工程師");
+          myObj.LoadingPage = false;
+          reject();
+        }
+      },err => {
+        this.errorMSG("獲取失敗", "資料獲取失敗，請聯繫系統工程師");
+        myObj.LoadingPage = false;
+        reject();
+      });
     });
-    
   }
 
  

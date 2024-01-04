@@ -102,7 +102,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
       field: "equipQuanity"
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable:false,
       cellRenderer: 'buttonRenderer',

@@ -56,7 +56,23 @@
             </button>
           </div>
           <div nz-col [nzSpan]="25" style="padding-top: 10px">
-            <nz-table
+
+            <ag-grid-angular
+              style="width:100%; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+              class="ag-theme-alpine"
+              [rowData]="displayPPSINP05List"
+              [columnDefs]="ppsinp05ColumnDefs"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [suppressClickEdit]="true"
+              [editType]="'fullRow'"
+              (firstDataRendered)="onFirstDataRendered($event)"
+              (cellEditingStopped)="cellEditingStoppedHandler($event)"
+              (gridReady)="onGridReady($event)"
+              [paginationPageSize]="20">
+            </ag-grid-angular>
+
+            <!-- <nz-table
               class="table05"
               #RowTable05
               nzBordered
@@ -506,7 +522,7 @@
                   </ng-template>
                 </tr>
               </tbody>
-            </nz-table>
+            </nz-table> -->
           </div>
         </div>
       </nz-spin>

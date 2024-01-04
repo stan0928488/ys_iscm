@@ -173,7 +173,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     {
       headerName: 'Action',
       editable:false,
-      width: 200,
+      width: 150,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {

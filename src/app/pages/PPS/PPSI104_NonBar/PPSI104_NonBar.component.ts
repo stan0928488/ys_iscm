@@ -83,54 +83,64 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
       width: 100,
       headerName: '站別',
       field: 'SHOP_CODE',
+      headerComponent: AGCustomHeaderComponent
     },
     {
       width: 100,
       headerName: '機台',
       field: 'EQUIP_CODE',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '機群',
       field: 'EQUIP_GROUP',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '上下料時間',
       field: 'LOAD_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '搬運時間',
       field: 'TRANSFER_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '大調機時間',
       field: 'BIG_ADJUST_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '小調機時間',
       field: 'SMALL_ADJUST_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '退料時間',
       field: 'RETURN_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '冷卻時間',
       field: 'COOLING_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 150,
       headerName: '其他整備時間',
       field: 'OTHER_TIME',
+      headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',
@@ -154,6 +164,11 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.getPPSINP03List();
+    
+    const aI104NTab = this.elementRef.nativeElement.querySelector('#aI104N') as HTMLAnchorElement;
+    const liI104NTab = this.elementRef.nativeElement.querySelector('#liI104N') as HTMLLIElement;
+    liI104NTab.style.backgroundColor = '#E4E3E3';
+    aI104NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   onInit() {

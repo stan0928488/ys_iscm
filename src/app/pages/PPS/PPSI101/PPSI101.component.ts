@@ -4,17 +4,6 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-
-// // ag-grid
-// import {
-//   ColDef,
-//   RowModelType,
-//   IDatasource,
-//   IGetRowsParams,
-//   GridOptions,
-//   GridReadyEvent } from 'ag-grid-community';
-//   import { AgGridModule } from 'ag-grid-angular';
-
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
@@ -111,7 +100,7 @@ export class PPSI101Component implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',

@@ -5,11 +5,12 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
   selector: 'app-button-renderer',
-  template: `
-    <button *ngIf="isNew == false"  nz-button nzType="default" (click)="editOnClick($event)">編輯</button>
-    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="updateOnClick($event)">保存</button>
-    <button *ngIf="isNew == true"  nz-button nzType="default" (click)="calcelOnClick($event)">取消</button>
-    `
+  template: `    
+    <button class="updateButton" *ngIf="isNew == false" (click)="editOnClick($event)">編輯</button>
+    <button class="updateButton" *ngIf="isNew == true" (click)="updateOnClick($event)">保存</button>
+    <button class="deleteButton" *ngIf="isNew == true" (click)="calcelOnClick($event)">取消</button>
+    `,
+    styleUrls: ['./BtnCellRenderer.component.scss']
 })
 
 export class BtnCellRendererUpdate implements ICellRendererAngularComp {

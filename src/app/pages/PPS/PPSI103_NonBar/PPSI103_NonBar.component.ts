@@ -139,7 +139,7 @@ export class PPSI103_NonBarComponent implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent,
     },
     {
-      headerName: '更新、刪除',
+      headerName: 'Action',
       field: 'id',
       width: 165,
       cellRenderer: (params) => {

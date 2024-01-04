@@ -1,0 +1,53 @@
+
+:host ::ng-deep .ant-btn-primary {
+  border-radius: 5px;
+}
+
+:host .updateButton {
+    color: #fff;
+    background-color: #1677ff;
+    border-style: none;
+    width: calc(50% - 5px);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    line-height: 0 !important;
+    height: 70%;
+    border-radius: 3px;
+  }
+  
+  :host .updateButton:hover {
+    /* background-color: #bfd4e4;
+     font-weight: bold; */
+    cursor: pointer;
+  }
+  
+  :host .deleteButton {
+    color: #fff;
+    background-color: rgba(255, 0, 0, 0.664);
+    border-style: none;
+    width: calc(50% - 5px);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    line-height: 0 !important;
+    height: 70%;
+    border-radius: 3px;
+    margin: 0px 0px 0px 10px;
+  }
+  
+  :host .deleteButton:hover {
+    /* background-color: #edb1b1;
+    font-weight: 700; */
+    cursor: pointer;
+  }
+  
+  :host .container {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  

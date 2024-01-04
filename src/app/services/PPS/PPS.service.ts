@@ -316,41 +316,41 @@ export class PPSService {
   getPPSINP05List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/getPPSINP05List`;
+    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/getPPSINP05List`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
-  // I105 insertI105Save
+
   insertI105Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/insertSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/insertSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I105 updateI105Save
   updateI105Save(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/updateSave`;
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/updateSave`;
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I105 delI105Data 刪除資料
   delI105Data(_type, _ID) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/delData/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/delData/${_ID}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
   // I105 importI105Excel EXCEL匯入
   importI105Excel(_type, _data) {
     const body = JSON.stringify(_data);
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APIURL + `/FCP/I105` + nonbarUrl + `/importExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/importExcel`;
     console.log(queryUrl);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   //Get getPPSINP07List

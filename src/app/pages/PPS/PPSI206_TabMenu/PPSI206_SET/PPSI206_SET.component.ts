@@ -221,7 +221,7 @@ export class PPSI206SETComponent implements OnInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: BtnCellRendererUpdate,
