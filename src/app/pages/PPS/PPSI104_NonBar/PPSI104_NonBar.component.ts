@@ -90,42 +90,42 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
       field: 'EQUIP_CODE',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '機群',
       field: 'EQUIP_GROUP',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '上下料時間',
       field: 'LOAD_TIME',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '搬運時間',
       field: 'TRANSFER_TIME',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '大調機時間',
       field: 'BIG_ADJUST_TIME',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '小調機時間',
       field: 'SMALL_ADJUST_TIME',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '退料時間',
       field: 'RETURN_TIME',
     },
     {
-      width: 100,
+      width: 120,
       headerName: '冷卻時間',
       field: 'COOLING_TIME',
     },
     {
-      width: 100,
+      width: 150,
       headerName: '其他整備時間',
       field: 'OTHER_TIME',
     },
@@ -154,6 +154,11 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.getPPSINP03List();
+    
+    const aI104NTab = this.elementRef.nativeElement.querySelector('#aI104N') as HTMLAnchorElement;
+    const liI104NTab = this.elementRef.nativeElement.querySelector('#liI104N') as HTMLLIElement;
+    liI104NTab.style.backgroundColor = '#E4E3E3';
+    aI104NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
   
   onInit() {
