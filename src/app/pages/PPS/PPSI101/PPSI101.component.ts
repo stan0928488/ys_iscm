@@ -19,6 +19,8 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
 import { ExcelService } from 'src/app/services/common/excel.service';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 interface ItemData1 {
   id: string;
   tab1ID: number;
@@ -35,6 +37,8 @@ interface ItemData1 {
   providers: [NzMessageService],
 })
 export class PPSI101Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "鋼種分類(PPSI101)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -68,6 +72,66 @@ export class PPSI101Component implements AfterViewInit {
   pageIndex = 1;
   pageSize = 20;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 150,
+      headerName: '鋼種',
+      field: 'GRADE_NO',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: '特殊機台使用',
+      field: 'SPECIAL_EQUIP_CODE',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: '鋼種類別',
+      field: 'GRADE_GROUP',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 150,
+      headerName: '鋼胚重(KG)',
+      field: 'ROLL_WEIGHT',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 200,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ]
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -80,51 +144,10 @@ export class PPSI101Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
-
-  // public rowBuffer = 0;
-  // public rowSelection: 'single' | 'multiple' = 'multiple';
-  // public rowModelType: RowModelType = 'infinite';
-  // public cacheBlockSize = 100; //資料筆數
-  // public cacheOverflowSize = 2;
-  // public maxConcurrentDatasourceRequests = 1;
-  // public infiniteInitialRowCount = 1000;
-  // public maxBlocksInCache = 20;
-  // public rowData !: any[];
-  // public GridOptions : GridOptions;
-
-  // onGridReady(params: GridReadyEvent<any[]>) {
-  //   const dataSource: IDatasource = {
-  //     rowCount: undefined,
-
-  //     getRows: (params : IGetRowsParams) => {
-
-  //       this.PPSINP01List_tmp(params.startRow, params.endRow);
-  //       console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-
-  //       const data = [];
-
-  //       for (let i = 0; i < this.PPSINP01List_tmp.length ; i++) {
-  //           data.push({
-  //             id: `${i}`,
-  //             tab1ID: this.PPSINP01List_tmp[i].ID,
-  //             GRADE_NO: this.PPSINP01List_tmp[i].GRADE_NO,
-  //             SPECIAL_EQUIP_CODE: this.PPSINP01List_tmp[i].SPECIAL_EQUIP_CODE,
-  //             ROLL_WEIGHT: this.PPSINP01List_tmp[i].ROLL_WEIGHT,
-  //             GRADE_GROUP: this.PPSINP01List_tmp[i].GRADE_GROUP
-  //       });
-  //       const rowsThisPage = data.concat(params.startRow, params.endRow);
-
-  //       let lastRow = -1;
-  //       if(data.length <= params.endRow) {
-  //         lastRow = data.length;
-  //       }
-  //         params.successCallback(rowsThisPage, lastRow);
-  //       }
-  //     },
-  //     };
-  //     params.api!.setDatasource(dataSource);
-  //   }
 
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
@@ -196,13 +219,12 @@ export class PPSI101Component implements AfterViewInit {
   }
 
   // delete
-  deleteRow(id: string, _type): void {
-    console.log('id:' + id + 'type:' + _type);
+  deleteRow(rowData:ItemData1, _type): void {
     if (_type === 1) {
       this.Modal.confirm({
         nzTitle: '是否確定刪除',
         nzOnOk: () => {
-          this.delID(id, _type);
+          this.delID(rowData, _type);
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -221,20 +243,19 @@ export class PPSI101Component implements AfterViewInit {
   }
 
   // update Save
-  saveEdit(id: string, _type): void {
+  saveEdit(rowData: ItemData1, _type): void {
     if (_type === 1) {
-      console.log(this.editCache1[id]);
 
       let myObj = this;
       if (
-        this.editCache1[id].data.GRADE_NO === undefined ||
-        '' === this.editCache1[id].data.GRADE_NO
+        rowData.GRADE_NO === undefined ||
+        '' === rowData.GRADE_NO
       ) {
         myObj.message.create('error', '「鋼種」不可為空');
         return;
       } else if (
-        this.editCache1[id].data.GRADE_GROUP === undefined ||
-        '' === this.editCache1[id].data.GRADE_GROUP
+        rowData.GRADE_GROUP === undefined ||
+        '' === rowData.GRADE_GROUP
       ) {
         myObj.message.create('error', '「鋼種類別」不可為空');
         return;
@@ -242,7 +263,7 @@ export class PPSI101Component implements AfterViewInit {
         this.Modal.confirm({
           nzTitle: '是否確定修改',
           nzOnOk: () => {
-            this.updateSave(id, 1);
+            this.updateSave(rowData, 1);
           },
           nzOnCancel: () => console.log('cancel'),
         });
@@ -311,18 +332,18 @@ export class PPSI101Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id, _type) {
+  updateSave(rowData:ItemData1, _type) {
     if (_type === 1) {
       let myObj = this;
       this.LoadingPage = true;
       return new Promise((resolve, reject) => {
         let obj = {};
         _.extend(obj, {
-          ID: this.editCache1[_id].data.tab1ID,
-          GRADE_NO: this.editCache1[_id].data.GRADE_NO,
-          GRADE_GROUP: this.editCache1[_id].data.GRADE_GROUP,
-          SPECIAL_EQUIP_CODE: this.editCache1[_id].data.SPECIAL_EQUIP_CODE,
-          ROLL_WEIGHT: this.editCache1[_id].data.ROLL_WEIGHT,
+          ID: rowData.tab1ID,
+          GRADE_NO: rowData.GRADE_NO,
+          GRADE_GROUP: rowData.GRADE_GROUP,
+          SPECIAL_EQUIP_CODE: rowData.SPECIAL_EQUIP_CODE,
+          ROLL_WEIGHT: rowData.ROLL_WEIGHT,
           USERNAME: this.USERNAME,
           DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
         });
@@ -334,15 +355,7 @@ export class PPSI101Component implements AfterViewInit {
               this.SPECIAL_EQUIP_CODE = undefined;
               this.ROLL_WEIGHT = undefined;
               this.sucessMSG('修改成功', ``);
-
-              const index = this.PPSINP01List.findIndex(
-                (item) => item.id === _id
-              );
-              Object.assign(
-                this.PPSINP01List[index],
-                this.editCache1[_id].data
-              );
-              this.editCache1[_id].edit = false;
+              this.getPPSINP01List(this.pageIndex,this.pageSize);
             } else {
               this.errorMSG('修改失敗', res[0].MSG);
             }
@@ -358,11 +371,11 @@ export class PPSI101Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delID(_id, _type) {
+  delID(rowData:ItemData1, _type) {
     if (_type === 1) {
       let myObj = this;
       return new Promise((resolve, reject) => {
-        let _ID = this.editCache1[_id].data.tab1ID;
+        let _ID = rowData.tab1ID;
         myObj.PPSService.delI101Tab1Data(_ID).subscribe(
           (res) => {
             if (res[0].MSG === 'Y') {
@@ -372,7 +385,7 @@ export class PPSI101Component implements AfterViewInit {
               this.ROLL_WEIGHT = undefined;
 
               this.sucessMSG('刪除成功', ``);
-              this.getPPSINP01List(1, 0);
+              this.getPPSINP01List(this.pageIndex, this.pageSize);
             }
           },
           (err) => {
@@ -408,66 +421,6 @@ export class PPSI101Component implements AfterViewInit {
   // 取消鋼種彈出視窗
   cancelGradeInput(): void {
     this.isVisibleGrade = false;
-  }
-
-  // ============= 過濾資料之menu ========================
-
-  // 1.(過濾資料)鋼種分類
-  ppsInp01ListFilter(property: string, keyWord: string) {
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      if (keyWord == '') {
-        return true;
-      } else {
-        return _.startsWith(propertyValue, keyWord);
-      }
-    };
-
-    const data = this.PPSINP01List.filter((item) => filterFunc(item));
-    this.displayPPSINP01List = data;
-  }
-
-  // 資料過濾---鋼種分類 --> 鋼種
-  searchByGradeNo(): void {
-    this.ppsInp01ListFilter('GRADE_NO', this.searchByGradeNoValue);
-  }
-  resetByGradeNo(): void {
-    this.searchByGradeNoValue = '';
-    this.ppsInp01ListFilter('GRADE_NO', this.searchByGradeNoValue);
-  }
-
-  // 資料過濾---鋼種分類 --> 特殊機台使用
-  searchBySpecialEquipCode(): void {
-    this.ppsInp01ListFilter(
-      'SPECIAL_EQUIP_CODE',
-      this.searchBySpecialEquipCodeValue
-    );
-  }
-  resetBySpecialEquipCode(): void {
-    this.searchBySpecialEquipCodeValue = '';
-    this.ppsInp01ListFilter(
-      'SPECIAL_EQUIP_CODE',
-      this.searchBySpecialEquipCodeValue
-    );
-  }
-
-  // 資料過濾---鋼種分類 --> 鋼種類別
-  searchByGradeGroup(): void {
-    this.ppsInp01ListFilter('GRADE_GROUP', this.searchByGradeGroupValue);
-  }
-
-  resetByGradeGroup(): void {
-    this.searchByGradeGroupValue = '';
-    this.ppsInp01ListFilter('GRADE_GROUP', this.searchByGradeGroupValue);
-  }
-
-  // 資料過濾---鋼種分類 --> 鋼胚重(KG)
-  searchByRollWeight(): void {
-    this.ppsInp01ListFilter('ROLL_WEIGHT', this.searchByRollWeightValue);
-  }
-  resetByRollWeight(): void {
-    this.searchByRollWeightValue = '';
-    this.ppsInp01ListFilter('ROLL_WEIGHT', this.searchByRollWeightValue);
   }
 
   // excel檔名
@@ -602,4 +555,24 @@ export class PPSI101Component implements AfterViewInit {
 
     this.excelService.exportAsExcelFile(arr, fileName, this.titleArray);
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'ROLL_WEIGHT');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'ROLL_WEIGHT',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData,1);
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData,1);
+  }
+
 }

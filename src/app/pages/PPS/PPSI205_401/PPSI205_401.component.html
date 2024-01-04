@@ -18,14 +18,13 @@
     <nz-tab nzTitle="205站公版尺寸" (nzClick)="changeTab(3)"></nz-tab>
 
     <!-- 401 Auto Campaign -->
-    <nz-tab nzTitle="401 Auto Campaign" (nzClick)="changeTab(4)">
+    <nz-tab nzTitle="401 Auto Campaign">
       <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
         <nz-tab class="Tab5-a" style="background-color: #ffffff">
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/PlanSet/I205']"
-            [queryParams]="{ selectedTabIndex: 1, innerSelect: 0 }"
+            [routerLink]="['/PlanSet/I205_a401']"
             style="color: black"
           >
           Auto campaign表

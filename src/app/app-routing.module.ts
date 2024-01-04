@@ -44,7 +44,9 @@ import { PPSI220Component } from './pages/PPS/PPSI220_TabMenu/PPSI220/PPSI220.co
 import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
-import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
+import { PPSR303TabMenuComponent } from './pages/PPS/PPSR303_TabMenu/PPSR303_TabMenu.component';
+import { PPSR303Component } from './pages/PPS/PPSR303_TabMenu/PPSR303/PPSR303.component';
+import { PPSR303FcpComponent } from './pages/PPS/PPSR303_TabMenu/PPSR303_Fcp/PPSR303_Fcp.component';
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
 import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
@@ -116,6 +118,8 @@ import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
+import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 
 const routes: Routes = [
   {
@@ -216,7 +220,9 @@ const routes: Routes = [
       },
       { path: 'I205', component: PPSI205Component },
       { path: 'I205_100', component: PPSI205_100Component },
+      { path: 'I205_a100', component: PPSI205A100Component },
       { path: 'I205_401', component: PPSI205_401Component },
+      { path: 'I205_a401', component: PPSI205A401Component },
       { path: 'I204', component: PPSI204Component },
       { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
       { path: 'I203', component: PPSI203Component },
@@ -281,7 +287,21 @@ const routes: Routes = [
     path: 'FCPBarRepo',
     children: [
       { path: '', redirectTo: '/FCPBarRepo/R302', pathMatch: 'full' },
-      { path: 'R303', component: PPSR303Component },
+      { 
+        path: 'R303_TabMenu', 
+        component: PPSR303TabMenuComponent,
+        children: [
+          { path: '', redirectTo: '/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
+          { 
+            path: 'R303', 
+            component: PPSR303Component 
+          },
+          { 
+            path: 'R303_Fcp', 
+            component: PPSR303FcpComponent
+          }
+        ]
+      },
       { path: 'R302', component: PPSR302Component },
       { path: 'R301', component: PPSR301Component },
     ],

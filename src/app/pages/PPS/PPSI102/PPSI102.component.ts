@@ -103,7 +103,7 @@ export class PPSI102Component implements OnInit {
       headerName: 'Action',
       editable: false,
       filter: false,
-      width: 155,
+      width: 160,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -121,6 +121,7 @@ export class PPSI102Component implements OnInit {
       ],
     },
   ];
+
   gridOptions = {
     defaultColDef: {
       editable: true,

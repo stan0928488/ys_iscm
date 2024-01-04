@@ -243,7 +243,7 @@ export class PPSR307Component implements AfterViewInit {
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確認'
       })
   }
 }
