@@ -188,7 +188,7 @@ export class PPSI110Component implements AfterViewInit {
         field: 'dateLimit',
       },
       {
-        width: 200,
+        width: 150,
         headerName: 'Action',
         editable: false,
         cellRenderer: 'buttonRenderer',

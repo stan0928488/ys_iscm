@@ -86,13 +86,13 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     {
       headerName: '設備庫存下限(單位:MT)',
       field: 'wipMin',
-      width: 230,
+      width: 210,
       headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '設備庫存上限(單位:MT)',
       field: 'wipMax',
-      width: 230,
+      width: 210,
       headerComponent: AGCustomHeaderComponent,
     },
     {
@@ -110,14 +110,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     {
       headerName: '工時計算分類',
       field: 'wtType',
-      width: 170,
+      width: 160,
       valueFormatter: this.wtTypeNameDisplay,
       headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '有效碼',
       field: 'valid',
-      width: 130,
+      width: 120,
       valueFormatter: this.validNameDisplay,
       headerComponent: AGCustomHeaderComponent,
     },
@@ -125,7 +125,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       headerName: 'Action',
       editable: false,
       filter: false,
-      width: 155,
+      width: 150,
+      pinned: 'right',
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {

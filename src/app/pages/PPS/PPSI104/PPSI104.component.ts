@@ -159,7 +159,7 @@ export class PPSI104Component implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 200,
+      width: 150,
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',
