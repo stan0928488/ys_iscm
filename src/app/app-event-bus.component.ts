@@ -38,7 +38,7 @@ export class AppEventBusComponent {
   hasPermission(path:string) : boolean {
     let pathArr:string[] = [];
     recursionPath(this.menus,pathArr)
-    const found = pathArr.find((item) => path.includes(item));
+    const found = pathArr.find((item) => path === item);
     if(found){
       return true;
     }else{
