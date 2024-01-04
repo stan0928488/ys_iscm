@@ -1,30 +1,20 @@
-import { Component, OnInit, TemplateRef  } from '@angular/core';
+import { Component, OnInit  } from '@angular/core';
 import { registerLocaleData, DatePipe } from '@angular/common';
-//import { zh_TW, NzI18nService,NzInputModule,NzTimePickerModule,NzDatePickerModule,NzSelectModule , NzMessageService ,NzSpinModule , NzModalRef, NzModalService } from "ng-zorro-antd";
-import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {NzModalService,NzModalRef} from "ng-zorro-antd/modal"
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import zh from '@angular/common/locales/zh';
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 registerLocaleData(zh);
-import * as moment from 'moment';
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
-import { CellClickedEvent, 
-  ColDef, 
-  GridReadyEvent,
-  PreConstruct, 
-  ICellRendererParams,
-  IDatasource,
-  IGetRowsParams,
-  RowModelType, } from 'ag-grid-community';
-import { ModuleRegistry } from 'ag-grid-community';
+import { CellClickedEvent, ColDef } from 'ag-grid-community';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import * as moment from 'moment';
+
 interface data {
 
 }
@@ -59,114 +49,114 @@ export class PPSR303Component implements OnInit {
   checked = false;
   checkSecond = false;
   columnDefsTab1: ColDef<data>[] = [
-    { headerName:'ID_NO',field: 'idNo' , filter: false,width: 120 },
-    { headerName:'訂單號碼',field: 'saleOrder' , filter: false,width: 100 },
-    { headerName: '訂單項次' ,field: 'saleItem' , filter: false,width: 100 },
-    { headerName:'訂單批次',field: 'saleLineno' , filter: false,width: 100},
-    { headerName:'FINAL_MIC_NO',field: 'finalMicNo' , filter: false,width: 140 },
-    { headerName:'LINEUP_MIC_NO',field: 'lineupMicNo' , filter: false,width: 140 },
-    { headerName:'製程碼', field:'processCode', filter:false, width:80},
-    { headerName: '製程順序' ,field: 'routingSeq' , filter: false,width: 90 },
-    { headerName: '下一站的製程順序' ,field: 'nextRoutingSeq' , filter: false,width: 100 },
-    { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 80 },
-    { headerName:'現況流程',field: 'lineupProcess' , filter: false,width: 90 },
-    { headerName:'重量', field: "weight", filter :false,width: 90 },
-    { headerName:'現況重量',field: 'planWeightI' , filter: false,width: 90 },
-    { headerName: '合併單號' ,field: 'mergeNo' , filter: false,width: 100 },
-    { headerName: '訂單長度' ,field: 'saleOrderLength' , filter: false,width: 90 },
-    { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 90 },
-    { headerName: '下站別' ,field: 'nextShopCode' , filter: false,width: 90 },
-    { headerName: 'CYCLE_NO' ,field: 'ppCycleNo' , filter: false,width: 90 },
-    { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 100 },
-    { headerName: 'LOCK值' ,field: 'lock' , filter: false,width: 90 },
-    { headerName: '投入型態' ,field: 'inputShape' , filter: false,width: 90 },
-    { headerName: '產出型態' ,field: 'outputShape' , filter: false,width: 90 },
-    { headerName: '投入尺寸' ,field: 'inputDiaMax' , filter: false,width: 90},
-    { headerName: '產出尺寸' ,field: 'turnDiaMax' , filter: false,width: 90 },
-    { headerName: '密度' ,field: 'density' , filter: false,width: 80 },
-    { headerName: '軋延計劃日' ,field: 'millDate' , filter: false,width: 120 },
-    { headerName: '生計交期' ,field: 'dateDeliveryPp' , filter: false,width: 120 },
-    { headerName: '最佳機台' ,field: 'optimalEquipCode' , filter: false,width: 100 },
-    { headerName: '選定機台' ,field: 'chooseEquipCode' , filter: false,width: 100 },
-    { headerName: '備註入庫日' ,field: 'remarkWarehousingDate' , filter: false,width: 100 },
-	{ headerName:'FINAL_生產流程',field: 'finalProcess' , filter: false,width: 160 },
-    { headerName:'現況尺寸',field: 'sfcDia' , filter: false,width: 90 },
-    { headerName: '現況站別' ,field: 'sfcShopCode' , filter: false,width: 100 },
-    { headerName:'銷售區別',field: 'saleAreaGroup' , filter: false,width: 90},
-    { headerName:'客戶名稱',field: 'custAbbreviations' , filter: false,width: 100 },
-    { headerName:'TC_溫度',field: 'tcTemperature' , filter: false,width: 90 },
-    { headerName:'TC_頻率', field:'tcFrequence', filter:false, width:90},
-    { headerName: 'BA1_溫度' ,field: 'ba1Temperature' , filter: false,width: 90 },
-    { headerName: 'BA1_頻率' ,field: 'ba1Frequence' , filter: false,width: 90 },
-    { headerName: 'RF_溫度' ,field: 'rfTemperature' , filter: false,width: 90 },
-    { headerName:'RF_頻率',field: 'rfFrequence' , filter: false,width: 90 },
-    { headerName:'抽數別',field: 'scheType' , filter: false,width: 90 },
-    { headerName:'當站工時',field: 'workingHours' , filter: false,width: 90 },
-    { headerName: '最早可投入時間' ,field: 'epst' , filter: false,width: 120 },
-    { headerName: '最晚須投入時間' ,field: 'lpst' , filter: false,width: 120 },
-    { headerName: '投入時間 JIT' ,field: 'jit' , filter: false,width: 120 },
-    { headerName: 'ASAP' ,field: 'asap' , filter: false,width: 120 },
-    { headerName: 'CPST' ,field: 'cpst' , filter: false,width: 120 },
-    { headerName: '建立日期' ,field: 'dateCreate' , filter: false,width: 120 },
-    { headerName: '版次' ,field: 'edition' , filter: false,width: 150 },
-    { headerName: '上一站的製程順序' ,field: 'priorRoutingSeq' , filter: false,width: 80 },
-    { headerName: '儲區' ,field: 'loc' , filter: false,width: 100 },
-    { headerName: '倉別' ,field: 'house' , filter: false,width: 100},
-    { headerName: 'COMPAIGN_ID' ,field: 'compaignId' , filter: false,width: 100 },
-    { headerName: '虛擬分捆註記' ,field: 'prepareDivideId' , filter: false,width: 100 },
-    { headerName: '工廠排程的凍結狀態' ,field: 'autoFrozen' , filter: false,width: 100 },
-    { headerName: '工廠排程的預計投入時間' ,field: 'planDateI' , filter: false,width: 100 },
-    { headerName: '工廠排程的預計產出時間' ,field: 'planDateO' , filter: false,width: 100 },
-    { headerName: '工廠排程的排程順序' ,field: 'autoSort' , filter: false,width: 100 },
-    { headerName: 'ASAP調整日期' ,field: 'newasap' , filter: false,width: 120 },
-	  { headerName: '委外' ,field: 'flagOutsourcing' , filter: false,width: 100 },
-    { headerName: '委外回廠時間' ,field: 'dateBackOutsourcing' , filter: false,width: 100 },
-    { headerName: '委外出廠時間' ,field: 'dateSendOutsourcing' , filter: false,width: 100 },
-    { headerName: '技術指定機台' ,field: 'fixenEquipCode' , filter: false,width: 100 },
-    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100 },
-    { headerName: '料號' ,field: 'mtrlNo' , filter: false,width: 200},
-    { headerName: '違反事項' ,field: 'violation' , filter: false,width: 150 },
-    { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300 },
-    { headerName: '作業代碼' ,field: 'opCode' , filter: false,width: 100 },
-    { headerName: '判斷 405站是否做過C2/C3F' ,field: 'flag405Temp' , filter: false,width: 80 },
+    { headerName:'ID_NO',field: 'idNo' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName:'訂單號碼',field: 'saleOrder' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '訂單項次' ,field: 'saleItem' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName:'訂單批次',field: 'saleLineno' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName:'FINAL_MIC_NO',field: 'finalMicNo' , filter: false,width: 140, headerComponent: AGCustomHeaderComponent },
+    { headerName:'LINEUP_MIC_NO',field: 'lineupMicNo' , filter: false,width: 140, headerComponent: AGCustomHeaderComponent },
+    { headerName:'製程碼', field:'processCode', filter:false, width:80, headerComponent: AGCustomHeaderComponent },
+    { headerName: '製程順序' ,field: 'routingSeq' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '下一站的製程順序' ,field: 'nextRoutingSeq' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 80, headerComponent: AGCustomHeaderComponent },
+    { headerName:'現況流程',field: 'lineupProcess' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'重量', field: "weight", filter :false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'現況重量',field: 'planWeightI' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '合併單號' ,field: 'mergeNo' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '訂單長度' ,field: 'saleOrderLength' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '下站別' ,field: 'nextShopCode' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'CYCLE_NO' ,field: 'ppCycleNo' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'LOCK值' ,field: 'lock' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '投入型態' ,field: 'inputShape' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '產出型態' ,field: 'outputShape' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '投入尺寸' ,field: 'inputDiaMax' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '產出尺寸' ,field: 'turnDiaMax' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '密度' ,field: 'density' , filter: false,width: 80, headerComponent: AGCustomHeaderComponent },
+    { headerName: '軋延計劃日' ,field: 'millDate' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '生計交期' ,field: 'dateDeliveryPp' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '最佳機台' ,field: 'optimalEquipCode' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '選定機台' ,field: 'chooseEquipCode' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '備註入庫日' ,field: 'remarkWarehousingDate' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+	  { headerName:'FINAL_生產流程',field: 'finalProcess' , filter: false,width: 160, headerComponent: AGCustomHeaderComponent },
+    { headerName:'現況尺寸',field: 'sfcDia' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '現況站別' ,field: 'sfcShopCode' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName:'銷售區別',field: 'saleAreaGroup' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'客戶名稱',field: 'custAbbreviations' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName:'TC_溫度',field: 'tcTemperature' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'TC_頻率', field:'tcFrequence', filter:false, width:90, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'BA1_溫度' ,field: 'ba1Temperature' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'BA1_頻率' ,field: 'ba1Frequence' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'RF_溫度' ,field: 'rfTemperature' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'RF_頻率',field: 'rfFrequence' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'抽數別',field: 'scheType' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName:'當站工時',field: 'workingHours' , filter: false,width: 90, headerComponent: AGCustomHeaderComponent },
+    { headerName: '最早可投入時間' ,field: 'epst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '最晚須投入時間' ,field: 'lpst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '投入時間 JIT' ,field: 'jit' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'ASAP' ,field: 'asap' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'CPST' ,field: 'cpst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '建立日期' ,field: 'dateCreate' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+    { headerName: '版次' ,field: 'edition' , filter: false,width: 150, headerComponent: AGCustomHeaderComponent },
+    { headerName: '上一站的製程順序' ,field: 'priorRoutingSeq' , filter: false,width: 80, headerComponent: AGCustomHeaderComponent },
+    { headerName: '儲區' ,field: 'loc' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '倉別' ,field: 'house' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'COMPAIGN_ID' ,field: 'compaignId' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '虛擬分捆註記' ,field: 'prepareDivideId' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '工廠排程的凍結狀態' ,field: 'autoFrozen' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '工廠排程的預計投入時間' ,field: 'planDateI' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '工廠排程的預計產出時間' ,field: 'planDateO' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '工廠排程的排程順序' ,field: 'autoSort' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'ASAP調整日期' ,field: 'newasap' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+	  { headerName: '委外' ,field: 'flagOutsourcing' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '委外回廠時間' ,field: 'dateBackOutsourcing' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '委外出廠時間' ,field: 'dateSendOutsourcing' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '技術指定機台' ,field: 'fixenEquipCode' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '產品種類' ,field: 'kindType' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '料號' ,field: 'mtrlNo' , filter: false,width: 200, headerComponent: AGCustomHeaderComponent },
+    { headerName: '違反事項' ,field: 'violation' , filter: false,width: 150, headerComponent: AGCustomHeaderComponent },
+    { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300, headerComponent: AGCustomHeaderComponent },
+    { headerName: '作業代碼' ,field: 'opCode' , filter: false,width: 100, headerComponent: AGCustomHeaderComponent },
+    { headerName: '判斷 405站是否做過C2/C3F' ,field: 'flag405Temp' , filter: false,width: 80, headerComponent: AGCustomHeaderComponent },
     { headerName: '入庫日備註' ,field: 'remarkPlanInStorage' , filter: false,width: 120 }
     ];
 
   columnDefsTab2: ColDef<data>[] = [
-      { headerName: '版次' ,field: 'edition' , filter: false,width: 300 },
-      { headerName: 'ID號碼' ,field: 'idNo' , filter: false,width: 120},
-      { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 120},
-      { headerName: '機台碼' ,field: 'equipCode' , filter: false,width: 120},
-      { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 120},
-      { headerName: '製程順序' ,field: 'routingSeq' , filter: false,width: 120},
-      { headerName: '產出尺寸' ,field: 'turnDiaMax' , filter: false,width: 120},
-      { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 120},
-      { headerName: '支數' ,field: 'pieceCount' , filter: false,width: 120 },
-      { headerName: '減面率' ,field: 'reductionRate' , filter: false,width: 120 },
-      { headerName: '機台群組' ,field: 'equipGroup' , filter: false,width: 120 },
-      { headerName: '鋼種群組' ,field: 'gradeGroup' , filter: false,width: 120 },
-      { headerName: '線速分類' ,field: 'speedType' , filter: false,width: 120 },
-      { headerName: '線速' ,field: 'wireSpeed' , filter: false,width: 120 },
-      { headerName: '研磨道次' ,field: 'gringdingPass' , filter: false,width: 120 },
-      { headerName: '非線速-加工時間' ,field: 'processingTime' , filter: false,width: 120 },
-      { headerName: '總生產長度' ,field: 'ttlLength' , filter: false,width: 120 },
-      { headerName: '大調機代碼' ,field: 'bigAdjustCode' , filter: false,width: 120 },
-      { headerName: '搬運時間' ,field: 'transferTime' , filter: false,width: 120 },
-      { headerName: '其他整備時間' ,field: 'otherTime' , filter: false,width: 120 },
-      { headerName: '冷卻時間' ,field: 'coolingTime' , filter: false,width: 120},
-      { headerName: '產出型態' ,field: 'outputShape' , filter: false,width: 120 },
-      { headerName: '當站工時' ,field: 'workingHours' , filter: false,width: 120 },
-      { headerName: '優先順序' ,field: 'priority' , filter: false,width: 120 },
-      { headerName: '最早可投入時間' ,field: 'epst' , filter: false,width: 120},
-      { headerName: '最晚須投入時間' ,field: 'lpst' , filter: false,width: 120},
-      { headerName: '投入時間' ,field: 'jit' , filter: false,width: 120},
-      { headerName: 'ASAP' ,field: 'asap' , filter: false,width: 120},
-      { headerName: 'CPST' ,field: 'cpst' , filter: false,width: 120},
-      { headerName: '建立日期' ,field: 'dateCreate' , filter: false,width: 120},
-      { headerName: '違反事項' ,field: 'violation' , filter: false,width: 120 },
-      { headerName: 'compaign Id' ,field: 'compaignId' , filter: false,width: 120},
-      { headerName: 'ASAP調整日期' ,field: 'newAsap' , filter: false,width: 120},
-      { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300 },
+      { headerName: '版次' ,field: 'edition' , filter: false,width: 300, headerComponent: AGCustomHeaderComponent },
+      { headerName: 'ID號碼' ,field: 'idNo' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '站別碼' ,field: 'shopCodeSche' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '機台碼' ,field: 'equipCode' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '鋼種' ,field: 'steelType' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '製程順序' ,field: 'routingSeq' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '產出尺寸' ,field: 'turnDiaMax' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '實際長度' ,field: 'actualLength' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '支數' ,field: 'pieceCount' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '減面率' ,field: 'reductionRate' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '機台群組' ,field: 'equipGroup' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '鋼種群組' ,field: 'gradeGroup' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '線速分類' ,field: 'speedType' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '線速' ,field: 'wireSpeed' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '研磨道次' ,field: 'gringdingPass' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '非線速-加工時間' ,field: 'processingTime' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '總生產長度' ,field: 'ttlLength' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '大調機代碼' ,field: 'bigAdjustCode' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '搬運時間' ,field: 'transferTime' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '其他整備時間' ,field: 'otherTime' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '冷卻時間' ,field: 'coolingTime' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '產出型態' ,field: 'outputShape' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '當站工時' ,field: 'workingHours' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '優先順序' ,field: 'priority' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '最早可投入時間' ,field: 'epst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '最晚須投入時間' ,field: 'lpst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '投入時間' ,field: 'jit' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: 'ASAP' ,field: 'asap' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: 'CPST' ,field: 'cpst' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '建立日期' ,field: 'dateCreate' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '違反事項' ,field: 'violation' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: 'compaign Id' ,field: 'compaignId' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: 'ASAP調整日期' ,field: 'newAsap' , filter: false,width: 120, headerComponent: AGCustomHeaderComponent },
+      { headerName: '違反事項_已解決' ,field: 'resetViolation' , filter: false,width: 300, headerComponent: AGCustomHeaderComponent },
       { headerName: '判斷 405站是否做過C2/C3F' ,field: 'flag405Temp' , filter: false,width: 120}
   ]
   public defaultColDefTab1: ColDef = {
@@ -204,9 +194,6 @@ export class PPSR303Component implements OnInit {
   spinType = "";
   isError = false;
   secondIdNo = '';
-  FCPMoEdition = [];
-  isShowFCPMo = false;
-  fcpMo = '';
 
   FCP_HEADER = [{field : "fcpEdition" ,headerName : "FCP版本 "},
                 {field : "moEdition" ,headerName : " MO版次"},
@@ -438,13 +425,11 @@ export class PPSR303Component implements OnInit {
     handleOk(): void {
       console.log('Button ok clicked!');
       this.isShowTable2 = false;
-      this.isShowFCPMo = false;
     }
   
     handleCancel(): void {
       console.log('Button cancel clicked!');
       this.isShowTable2 = false;
-      this.isShowFCPMo = false;
       this.checkSecond = false;
     }
 
@@ -484,12 +469,12 @@ export class PPSR303Component implements OnInit {
   
       const book: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-      XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'MO異常表_'+this.edition+ '.xlsx');//filename => Date_
+      XLSX.writeFile(book, moment().format('YYYYMMDDHHmmss') + '_MO異常表_' + this.edition+ '.xlsx');//filename => Date_
       this.isLoading = false;
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確認'
       })
 
     }
@@ -530,99 +515,17 @@ export class PPSR303Component implements OnInit {
   
       const book: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-      XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'MO異常表 _ '+ this.secondIdNo +'.xlsx');//filename => Date_
+      XLSX.writeFile(book, moment().format('YYYYMMDDHHmmss') + '_MO異常表 _ '+ this.secondIdNo +'.xlsx');//filename => Date_
       this.isLoading = false;
       this.Modal.info({
         nzTitle: '提示訊息',
         nzContent: 'excel 匯出完成' ,
-        nzOkText:'知道了'
+        nzOkText:'確認'
       })
       
     }
 
-    showFCP(){
-
-      let myObj = this ;
-      myObj.getPPSService.getR303FCPEditionList().subscribe(res => {
-      
-        let result:any = res;
-        if(result.data.length == 0){
-          this.errorMSG("錯誤","沒有版次資料");
-          return;
-        }
-        if(result.code == 200){
-          this.FCPMoEdition = result.data;
-          this.fcpMo = this.FCPMoEdition[0];
-          this.isShowFCPMo = true;
-        }
-        
-
-      },
-      error =>{
-        if(this.FCPMoEdition.length == 0){
-          this.errorMSG("錯誤","請連繫後端");
-        }
-      });
-      
-    }
-
-    exportExcelFCP(): void {
-      this.isLoading = true;
-      this.isShowFCPMo = false;
-      let header = [];
-
-      var head = []
-      for(var i in this.FCP_HEADER){
-        
-        head.push(this.FCP_HEADER[i]['headerName']);
-      }
-      header.push(head);
-      var dataReSort = {
-        data : []
-      };
-      
-      let myObj = this ;
-      myObj.getPPSService.getR303FCPData(this.fcpMo).subscribe(res => {
-        
-        var result: any = res;
-
-        if(result.code == 200){
-          for(var i in result.data) {
-            var temp = {}
-            var fcp = result.data[i];
-            
-            for(var j in this.FCP_HEADER){
-              var field = this.FCP_HEADER[j]['field']
-              temp[field] = fcp[field];
-            }
-            
-            dataReSort.data.push(temp);
     
-          }
-      
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
-          XLSX.utils.sheet_add_aoa(worksheet,header);
-          XLSX.utils.sheet_add_json(worksheet,dataReSort.data,{ origin: 'A2', skipHeader: true });//origin => started row
-      
-          const book: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(book, worksheet,'sheet1');
-          XLSX.writeFile(book,new Date().toLocaleDateString('sv')+'FCP_MO異常表 _ '+ this.fcpMo +'.xlsx');//filename => Date_
-          this.isLoading = false;
-          this.Modal.info({
-            nzTitle: '提示訊息',
-            nzContent: 'excel 匯出完成' ,
-            nzOkText:'知道了'
-          })
-        }else{
-          this.Modal.error({
-            nzTitle: "失敗",
-            nzContent: `${this.fcpMo} ， 獲取資料失敗`
-          });
-        }
-      });
-      
-      
-    }
     sucessMSG(_title, _plan): void {
       this.Modal.success({
         nzTitle: _title,
