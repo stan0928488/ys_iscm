@@ -122,6 +122,10 @@ import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.comp
 import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
 import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
 
+import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
+import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
+
+
 const routes: Routes = [
   {
     path: "AccessDined",
@@ -225,8 +229,12 @@ const routes: Routes = [
         ],
       },
       { path: 'I205', component: PPSI205Component, data : { pageName : "公版設定維護" } },
-      { path: 'I205_100', component: PPSI205_100Component },
       { path: 'I205_401', component: PPSI205_401Component },
+      { path: 'I205_a401', component: PPSI205A401Component },
+      { path: 'I205_a100', component: PPSI205A100Component },
+      { path: 'I205_100', component: PPSI205_100Component },
+      
+      { path: 'I204', component: PPSI204Component },
       { path: 'I204', component: PPSI204Component, data : { pageName : "Campaign 限制" } },
       { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
       { path: 'I203', component: PPSI203Component, data : { pageName : "最早可投產時間調整" } },

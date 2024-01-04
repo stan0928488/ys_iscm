@@ -178,6 +178,8 @@ import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.comp
 import { BtnCellRendererType2 } from './pages/RENDERER/BtnCellRendererType2.component';
 import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
 import { CommonApiEditComponent } from './pages/SYSTEM/manage-menu/common-api-edit-component';
+import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
+import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 
 registerLocaleData(zh);
 
@@ -329,6 +331,8 @@ registerLocaleData(zh);
     BtnCellRendererType2,
     UserProfileComponent,
     CommonApiEditComponent,
+    PPSI205A100Component,
+    PPSI205A401Component,
   ],
   imports: [
     BrowserModule,

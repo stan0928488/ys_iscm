@@ -235,10 +235,10 @@ export class PPSI205_401Component implements AfterViewInit {
       // this.getTbppsm113List();
     } else if (tab === 4) {
       // this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=1&innerSelect=0';
+      window.location.href = '#/PlanSet/I205_a401';
     } else if (tab === 5) {
       // this.getTbppsm100List();
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=4&innerSelect=0';
+      window.location.href = '#/PlanSet/I205_a100';
     }
   }
 
