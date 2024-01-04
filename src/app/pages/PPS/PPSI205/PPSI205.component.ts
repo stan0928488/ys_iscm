@@ -128,7 +128,6 @@ export class PPSI205Component implements AfterViewInit {
       this.innerSelect = +params['innerSelect'] || 0;
       
     });
-    this.ngAfterViewInit();
   }
 
   ngAfterViewInit() {
