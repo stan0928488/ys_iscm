@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit } from "@angular/core";
+import { Component, ElementRef, AfterViewInit, ChangeDetectorRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import { ExcelService } from "src/app/services/common/excel.service";
@@ -7,6 +7,10 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
+import { CellEditingStoppedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams, ValueFormatterParams } from "ag-grid-community";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
+import { DecimalPipe } from "@angular/common";
 
 
 interface ItemData {
@@ -63,6 +67,90 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
 
+
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  decimalPipe : DecimalPipe;
+  
+  ppsinptb05ColumnDefs : ColDef[] = [
+    { 
+      headerName:'站別', 
+      field:'schShopCode',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機台', 
+      field:'equipCode',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'機群', 
+      field:'equipGroup',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'製程代號', 
+      field:'equipProcessCode',
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'尺寸MIN', 
+      field:'diaMin',
+      width: 120,
+      valueFormatter : (params: ValueFormatterParams) => {
+        return this.decimalPipe.transform(params.value);
+      },
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'尺寸MAX', 
+      field:'diaMax',
+      width: 120,
+      valueFormatter : (params: ValueFormatterParams) => {
+        return this.decimalPipe.transform(params.value);
+      },
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'生產速度', 
+      field:'wkSpeed',
+      valueFormatter : (params: ValueFormatterParams) => {
+        return this.decimalPipe.transform(params.value);
+      },
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      width: 150,
+      editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: AGCustomActionCellComponent,
+      cellRendererParams:{
+        edit : this.rowEditHandler.bind(this),
+        cancelEdit: this.rowCancalEditHandler.bind(this),
+        saveEdit : this.saveEditHandler.bind(this),
+        delete : this.deleteHandler.bind(this)
+      }
+    }
+  ];
+
+  
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      editable: true,
+      resizable: true,
+      autoHeight: true,
+    }
+  };
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -71,12 +159,118 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
     this.plantCode = this.cookieService.getCookie("plantCode");
+    this.decimalPipe = new DecimalPipe('en-US');
   }
 
+   /**
+   * 
+   * @param params 刪除資料
+   */
+   deleteHandler(params: ICellRendererParams<any, any>){
+    this.deleteRow(params.data.id);
+    }
+
+  async saveEditHandler(params: ICellRendererParams<any, any>){
+    // 關閉編輯狀態讓資料生效進到當前陣列中的某條row之中
+    params.api.stopEditing(false);
+
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache[params.data.idx.toString()].data;
+
+    // 排除非業務的資料(isEditing)進行比較
+    // 若一樣，表示使用者未修改任何資料，不給予更新
+    if(_.isEqual(_.omit(params.data, ['isEditing']), _.omit(cacheRowData, ['isEditing']))){
+        // 無法轉換提示錯誤
+        this.message.warning('無法更新，你尚未修改任何資料');
+        return;
+    }
+
+    // 執行更新
+    await this.saveEdit(params.data, params.rowIndex);
+  }
+
+   /**
+   * 取消編輯並還原已變動的資料
+   * @param params 
+   */
+   rowCancalEditHandler(params: ICellRendererParams<any, any>){
+    params.api.stopEditing(false);
+     // 透過id取得緩存的舊資料
+     const cacheRowData = this.editCache[params.data.idx.toString()].data;
+     // 還原為原資料
+     this.displayPpsinptb05List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+     // 渲染資料
+     this.gridApi.setRowData(this.displayPpsinptb05List);
+     // Y軸滾動到此row的位置
+     this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+  }
+
+   /**
+ * 開始編輯
+ * @param params 
+ */
+   rowEditHandler(params: ICellRendererParams<any, any>){
+    // 控制編輯按鈕的顯示切換
+    params.data.isEditing = true;
+    
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，且帶的該欄位是要可編輯的
+    params.api.startEditingCell({
+      rowIndex : params.rowIndex,
+      colKey : 'wkSpeed' 
+    });
+  }
+
+  /**
+   * 做寬度適應的調整
+   */
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+
+  /**
+   * 首次渲染資料完畢後被調用
+   * @param event 
+   */
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，做寬度適應的調整
+    this.autoSizeAll();
+  }
+
+  /**
+   * 獲取ag-grid的Api函數
+   * @param params 
+   */
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.editCache[event.data.idx].data, ['isEditing']);
+    
+
+    if(_.isEqual(newValue, oldValue)){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+    }
+    
+  }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
@@ -131,33 +325,50 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
   ppsinptb05List: ItemData[] = [];
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayPpsinptb05List: ItemData[] = [];
-  getPpsinptb05List() {
+  
+  getPpsinptb05List() :Promise<void> {
     this.loading = true;
     let myObj = this;
-    this.PPSService.getPPSINP05List('2').subscribe(res => {
-      this.ppsinptb05Tmp = res;
-      const data = [];
-      for (let i = 0; i < this.ppsinptb05Tmp.length ; i++) {
-        data.push({
-          idx: `${i}`,
-          id: this.ppsinptb05Tmp[i].id,
-          plantCode: this.ppsinptb05Tmp[i].plantCode,
-          schShopCode: this.ppsinptb05Tmp[i].schShopCode,
-          equipCode: this.ppsinptb05Tmp[i].equipCode,
-          equipGroup: this.ppsinptb05Tmp[i].equipGroup,
-          equipProcessCode: this.ppsinptb05Tmp[i].equipProcessCode,
-          diaMin: this.ppsinptb05Tmp[i].diaMin,
-          diaMax: this.ppsinptb05Tmp[i].diaMax,
-          wkSpeed: this.ppsinptb05Tmp[i].wkSpeed
-        });
-      }
-      this.ppsinptb05List = data;
-      this.displayPpsinptb05List = this.ppsinptb05List;
-      this.updateEditCache();
-      console.log(this.ppsinptb05List);
-      myObj.loading = false;
+    return new Promise((resolve, reject) => {
+      this.PPSService.getPPSINP05List('2').subscribe(res => {
+        if(res.code === 200) {
+
+          if(res.length <= 0){
+            this.sucessMSG("無資料", "線速工時非直棒目前尚無資料");
+            resolve();
+            return;
+          }
+
+          this.ppsinptb05Tmp = res.data;
+          const data = [];
+          for (let i = 0; i < this.ppsinptb05Tmp.length ; i++) {
+            data.push({
+              idx: `${i}`,
+              id: this.ppsinptb05Tmp[i].id,
+              plantCode: this.ppsinptb05Tmp[i].plantCode,
+              schShopCode: this.ppsinptb05Tmp[i].schShopCode,
+              equipCode: this.ppsinptb05Tmp[i].equipCode,
+              equipGroup: this.ppsinptb05Tmp[i].equipGroup,
+              equipProcessCode: this.ppsinptb05Tmp[i].equipProcessCode,
+              diaMin: this.ppsinptb05Tmp[i].diaMin,
+              diaMax: this.ppsinptb05Tmp[i].diaMax,
+              wkSpeed: this.ppsinptb05Tmp[i].wkSpeed
+            });
+          }
+          this.ppsinptb05List = data;
+          this.displayPpsinptb05List = this.ppsinptb05List;
+          this.updateEditCache();
+          console.log(this.ppsinptb05List);
+          myObj.loading = false;
+          resolve();
+        }
+      },err => {
+        this.errorMSG("獲取資料失敗", "獲取資料失敗，請聯繫系統工程師");
+        myObj.loading = false;
+        reject();
+      });
     });
-    
+      
   }
 
  
@@ -213,23 +424,16 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: number): void {
+  async saveEdit(rowData : ItemData, rowIndex : number) : Promise<void> {
     let myObj = this;
-    if (this.editCache[id].data.schShopCode === undefined) {
+    if (rowData.schShopCode === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache[id].data.equipCode === undefined && this.editCache[id].data.equipGroup === undefined) {
+    } else if (rowData.equipCode === undefined && rowData.equipGroup === undefined) {
       myObj.message.create("error", "「機台」和「機群」至少填一項");
       return;
     } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(id)
-        },
-        nzOnCancel: () =>
-          console.log("cancel")
-      });
+        await this.updateSave(rowData, rowIndex)
     }
   }
   
@@ -264,12 +468,12 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
       })
 
       myObj.PPSService.insertI105Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+        if(res.message === "Y") {
           this.onInit();
           this.getPpsinptb05List();
           this.sucessMSG("新增成功", ``);
         } else {
-          this.errorMSG("新增失敗", res[0].MSG);
+          this.errorMSG("新增失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -281,37 +485,41 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData : ItemData, rowIndex : number) : Promise<void>{
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        id : this.editCache[_id].data.id,
-        plantCode : this.editCache[_id].data.plantCode,
-        schShopCode : this.editCache[_id].data.schShopCode,
-        equipCode : this.editCache[_id].data.equipCode,
-        equipGroup : this.editCache[_id].data.equipGroup,
-        equipProcessCode : this.editCache[_id].data.equipProcessCode,
-        diaMin : this.editCache[_id].data.diaMin,
-        diaMax : this.editCache[_id].data.diaMax,
-        wkSpeed : this.editCache[_id].data.wkSpeed,
+        id : rowData.id,
+        plantCode : rowData.plantCode,
+        schShopCode : rowData.schShopCode,
+        equipCode : rowData.equipCode,
+        equipGroup : rowData.equipGroup,
+        equipProcessCode : rowData.equipProcessCode,
+        diaMin : rowData.diaMin,
+        diaMax : rowData.diaMax,
+        wkSpeed : rowData.wkSpeed,
         userName : this.userName
       })
-      myObj.PPSService.updateI105Save('2', obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      myObj.PPSService.updateI105Save('2', obj).subscribe( async res => {
+        if(res.message === "Y") {
           this.onInit();
           this.sucessMSG("修改成功", ``);
-          const index = this.ppsinptb05List.findIndex(item => item.idx === _id);
-          Object.assign(this.ppsinptb05List[index], this.editCache[_id].data);
-          this.editCache[_id].edit = false;
+          await this.getPpsinptb05List();
+          this.changeDetectorRef.detectChanges();
+          // Y軸滾動到此row的位置
+          this.gridApi.ensureIndexVisible(rowIndex, 'middle');
+          resolve();
         } else {
-          this.errorMSG("修改失敗", res[0].MSG);
+          this.LoadingPage = false;
+          this.errorMSG("修改失敗", res.message);
+          reject();
         }
       },err => {
-        reject('upload fail');
         this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
+        reject();
       })
     });
   }
@@ -321,9 +529,8 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
   delID(_id) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let id = this.editCache[_id].data.id;
-      myObj.PPSService.delI105Data('2', id).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      myObj.PPSService.delI105Data('2', _id).subscribe(res => {
+        if(res.message === "Y") {
           this.onInit();
           this.sucessMSG("刪除成功", ``);
           this.getPpsinptb05List();
@@ -487,7 +694,7 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
           userName : this.userName
         })
         myObj.PPSService.importI105Excel('2', obj).subscribe(res => {
-          if(res[0].MSG === "Y") {
+          if(res.message === "Y") {
             this.loading = false;
             this.LoadingPage = false;
 
@@ -496,7 +703,7 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
             this.clearFile();
             this.onInit();
           } else {
-            this.errorMSG("匯入錯誤", res[0].MSG);
+            this.errorMSG("匯入錯誤", res.message);
             this.clearFile();
             this.importdata_new = [];
             this.LoadingPage = false;

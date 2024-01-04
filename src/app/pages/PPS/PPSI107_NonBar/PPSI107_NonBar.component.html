@@ -1,328 +1,345 @@
 <nz-content style="margin: 0 16px">
+
+  <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="LoadingPage">
+
   <app-list-pps-nonbar [childrenTabName]="thisTabName"></app-list-pps-nonbar>
-
   <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['../I107']" style="color: gray">
-        直棒
-      </a>
-    </nz-tab>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link [routerLink]="['../I107']" style="color: gray">
+          直棒
+        </a>
+      </nz-tab>
 
-    <nz-tab>
-      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
-        非直棒
-      </a>
-      <div style="background: rgb(255, 255, 255); min-height: 1200px">
-        <table>
-          <tr>
-            <td>
-              <button
-                nz-button
-                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-                nzType="primary"
-                (click)="openSpeedInput()"
-              >
-                <span nz-icon nzType="plus" nzTheme="outline"></span>
-                新增
-              </button>
-            </td>
-            <td style="text-align: right; width: 35%">
-              <input
-                type="file"
-                id="fileupload"
-                style="display: inline-block"
-                (change)="incomingfile($event)"
-                placeholder="Upload file"
-                accept=".xlsx, .xls, .csv"
-              />
-              <button
-                nz-button
-                style="
-                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                  background-color: #4caf50;
-                  border: 2px blue none;
-                "
-                nzType="primary"
-                (click)="Upload()"
-              >
-                <span nz-icon nzType="upload" nzTheme="outline"></span>
-                E X C E L 匯入
-              </button>
-              &nbsp;&nbsp;
-              <button
-                nz-button
-                style="
-                  box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                  background-color: #4caf50;
-                  border: 2px blue none;
-                "
-                nzType="primary"
-                (click)="convertToExcel()"
-              >
-                <span nz-icon nzType="download" nzTheme="outline"></span>
-                E X C E L 匯出
-              </button>
-            </td>
-          </tr>
-        </table>
-        <p></p>
-        <p></p>
+      <nz-tab>
+        <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+          非直棒
+        </a>
+        <div style="background: rgb(255, 255, 255); min-height: 1200px">
+          <table>
+            <tr>
+              <td>
+                <button
+                  nz-button
+                  style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+                  nzType="primary"
+                  (click)="openSpeedInput()"
+                >
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                  新增
+                </button>
+              </td>
+              <td style="text-align: right; width: 35%">
+                <input
+                  type="file"
+                  id="fileupload"
+                  style="display: inline-block"
+                  (change)="incomingfile($event)"
+                  placeholder="Upload file"
+                  accept=".xlsx, .xls, .csv"
+                />
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #4caf50;
+                    border: 2px blue none;
+                  "
+                  nzType="primary"
+                  (click)="Upload()"
+                >
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  E X C E L 匯入
+                </button>
+                &nbsp;&nbsp;
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #4caf50;
+                    border: 2px blue none;
+                  "
+                  nzType="primary"
+                  (click)="convertToExcel()"
+                >
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                  E X C E L 匯出
+                </button>
+              </td>
+            </tr>
+          </table>
+          <p></p>
+          <p></p>
 
-        <div nz-col [nzSpan]="25">
-          <nz-table
-            #RowTable
-            nzBordered
-            [nzData]="displayPpsinptb05List"
-            [nzPageSize]="20"
-            [nzScroll]="{ y: '500px' }"
-          >
-            <thead>
-              <tr>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  站別
-                  <nz-filter-trigger
-                    [nzActive]="searchSchShopCodeValue.length > 0"
-                    [nzDropdownMenu]="schShopCodeMenu"
+          <div nz-col [nzSpan]="25">
+            <ag-grid-angular
+              style="width:100%; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+              class="ag-theme-alpine"
+              [rowData]="displayPpsinptb05List"
+              [columnDefs]="ppsinptb05ColumnDefs"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [suppressClickEdit]="true"
+              [editType]="'fullRow'"
+              (firstDataRendered)="onFirstDataRendered($event)"
+              (cellEditingStopped)="cellEditingStoppedHandler($event)"
+              (gridReady)="onGridReady($event)"
+              [paginationPageSize]="20">
+            </ag-grid-angular>
+            <!-- <nz-table
+              #RowTable
+              nzBordered
+              [nzData]="displayPpsinptb05List"
+              [nzPageSize]="20"
+              [nzScroll]="{ y: '500px' }"
+            >
+              <thead>
+                <tr>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
                   >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  機台
-                  <nz-filter-trigger
-                    [nzActive]="searchEquipCodeValue.length > 0"
-                    [nzDropdownMenu]="equipCodeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  機群
-                  <nz-filter-trigger
-                    [nzActive]="searchEquipGroupValue.length > 0"
-                    [nzDropdownMenu]="equipGroupMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  製程代號
-                  <nz-filter-trigger
-                    [nzActive]="searchEquipProcessCodeValue.length > 0"
-                    [nzDropdownMenu]="equipProcessCodeMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  尺寸MIN
-                  <nz-filter-trigger
-                    [nzActive]="searchDiaMinValue.length > 0"
-                    [nzDropdownMenu]="diaMinMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  尺寸MAX
-                  <nz-filter-trigger
-                    [nzActive]="searchDiaMaxValue.length > 0"
-                    [nzDropdownMenu]="diaMaxMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  生產速度
-                  <nz-filter-trigger
-                    [nzActive]="searchWkSpeedValue.length > 0"
-                    [nzDropdownMenu]="wkSpeedMenu"
-                  >
-                    <span nz-icon nzType="search"></span>
-                  </nz-filter-trigger>
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let data of RowTable.data; let i = index"
-                class="editable-row"
-              >
-                <ng-container
-                  *ngIf="!editCache[data.idx].edit; else editTemplate"
-                >
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.schShopCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.equipCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.equipGroup }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.equipProcessCode }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.diaMin | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.diaMax | number }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 60px">
-                    {{ data.wkSpeed | number }}
-                  </td>
-                  <td style="text-align: center; padding: 0px; height: 60px">
-                    <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to delete?"
-                      (nzOnConfirm)="deleteRow(data.idx)"
-                      >刪除</a
+                    站別
+                    <nz-filter-trigger
+                      [nzActive]="searchSchShopCodeValue.length > 0"
+                      [nzDropdownMenu]="schShopCodeMenu"
                     >
-                  </td>
-                </ng-container>
-                <ng-template #editTemplate>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入站別"
-                      [(ngModel)]="editCache[data.idx].data.schShopCode"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入機台"
-                      [(ngModel)]="editCache[data.idx].data.equipCode"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入機群"
-                      [(ngModel)]="editCache[data.idx].data.equipGroup"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入製程代號"
-                      [(ngModel)]="editCache[data.idx].data.equipProcessCode"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入尺寸MIN"
-                      [(ngModel)]="editCache[data.idx].data.diaMin"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入尺寸MAX"
-                      [(ngModel)]="editCache[data.idx].data.diaMax"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      nz-width="20%"
-                      nz-input
-                      placeholder="輸入生產速度"
-                      [(ngModel)]="editCache[data.idx].data.wkSpeed"
-                    />
-                  </td>
-                  <td>
-                    <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to cancel?"
-                      (nzOnConfirm)="cancelEdit(data.idx)"
-                      >取消</a
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    機台
+                    <nz-filter-trigger
+                      [nzActive]="searchEquipCodeValue.length > 0"
+                      [nzDropdownMenu]="equipCodeMenu"
                     >
-                  </td>
-                </ng-template>
-              </tr>
-            </tbody>
-          </nz-table>
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    機群
+                    <nz-filter-trigger
+                      [nzActive]="searchEquipGroupValue.length > 0"
+                      [nzDropdownMenu]="equipGroupMenu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    製程代號
+                    <nz-filter-trigger
+                      [nzActive]="searchEquipProcessCodeValue.length > 0"
+                      [nzDropdownMenu]="equipProcessCodeMenu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    尺寸MIN
+                    <nz-filter-trigger
+                      [nzActive]="searchDiaMinValue.length > 0"
+                      [nzDropdownMenu]="diaMinMenu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    尺寸MAX
+                    <nz-filter-trigger
+                      [nzActive]="searchDiaMaxValue.length > 0"
+                      [nzDropdownMenu]="diaMaxMenu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    生產速度
+                    <nz-filter-trigger
+                      [nzActive]="searchWkSpeedValue.length > 0"
+                      [nzDropdownMenu]="wkSpeedMenu"
+                    >
+                      <span nz-icon nzType="search"></span>
+                    </nz-filter-trigger>
+                  </th>
+                  <th
+                    nzWidth="3%"
+                    style="
+                      text-align: center;
+                      background-color: #eee;
+                      padding: 0px;
+                      height: 55px;
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let data of RowTable.data; let i = index"
+                  class="editable-row"
+                >
+                  <ng-container
+                    *ngIf="!editCache[data.idx].edit; else editTemplate"
+                  >
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.schShopCode }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.equipCode }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.equipGroup }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.equipProcessCode }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.diaMin | number }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.diaMax | number }}
+                    </td>
+                    <td style="text-align: center; padding: 5px; height: 60px">
+                      {{ data.wkSpeed | number }}
+                    </td>
+                    <td style="text-align: center; padding: 0px; height: 60px">
+                      <a (click)="editRow(data.idx)">修改</a>&nbsp;&nbsp;&nbsp;
+                      <a
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to delete?"
+                        (nzOnConfirm)="deleteRow(data.idx)"
+                        >刪除</a
+                      >
+                    </td>
+                  </ng-container>
+                  <ng-template #editTemplate>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入站別"
+                        [(ngModel)]="editCache[data.idx].data.schShopCode"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入機台"
+                        [(ngModel)]="editCache[data.idx].data.equipCode"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入機群"
+                        [(ngModel)]="editCache[data.idx].data.equipGroup"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入製程代號"
+                        [(ngModel)]="editCache[data.idx].data.equipProcessCode"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入尺寸MIN"
+                        [(ngModel)]="editCache[data.idx].data.diaMin"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入尺寸MAX"
+                        [(ngModel)]="editCache[data.idx].data.diaMax"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        nz-width="20%"
+                        nz-input
+                        placeholder="輸入生產速度"
+                        [(ngModel)]="editCache[data.idx].data.wkSpeed"
+                      />
+                    </td>
+                    <td>
+                      <a (click)="saveEdit(data.idx)">確認</a>&nbsp;&nbsp;&nbsp;
+                      <a
+                        nz-popconfirm
+                        nzPopconfirmTitle="Sure to cancel?"
+                        (nzOnConfirm)="cancelEdit(data.idx)"
+                        >取消</a
+                      >
+                    </td>
+                  </ng-template>
+                </tr>
+              </tbody>
+            </nz-table> -->
+          </div>
         </div>
-      </div>
-    </nz-tab>
-  </nz-tabset>
+      </nz-tab>
+    </nz-tabset>
+  </nz-spin>
 </nz-content>
 
 <!-- 線速工時新增 -->
