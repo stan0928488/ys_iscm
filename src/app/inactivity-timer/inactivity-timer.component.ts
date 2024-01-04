@@ -4,6 +4,7 @@ import { takeUntil, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
 import { AppEventBusComponent } from '../app-event-bus.component';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-inactivity-timer',
@@ -18,6 +19,7 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
     private authService:AuthService,
     private cookieService: CookieService,
     private appEventBusComponent: AppEventBusComponent,
+    private router: Router,
   ) { }
   unsubscribe$: Subject<void> = new Subject();
   timerSubscription: Subscription;
@@ -54,6 +56,15 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
               logingSuccess:false,
             },
           });
+        }else{
+          this.router.events.subscribe(
+            (event:any)=>{
+              if(event instanceof NavigationEnd){
+                if(!event.url.includes('login') && this.appEventBusComponent.hasPermission(event.url) == false){
+                  this.router.navigate(['/AccessDined']);
+                }
+              }
+          })
         }
         this.render((duration - +value)*interval,value,duration)
       },

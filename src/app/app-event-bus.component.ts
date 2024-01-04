@@ -6,9 +6,7 @@ import { Subject, Subscription, filter, map } from 'rxjs';
 })
 export class AppEventBusComponent {
 
-  logingObj = {
-    logingSuccess:false,
-  };
+  menus: TreeNode[] = [];
 
   private subscription: Subscription;
   private subject$ = new Subject();
@@ -33,8 +31,51 @@ export class AppEventBusComponent {
     this.subscription.unsubscribe();
   }
 
-  logingObjAdd(logingObj: any) {
-    this.logingObj = logingObj;
+  logingObjAdd(menus: any) {
+    this.menus = menus;
   }
 
+  hasPermission(path:string) : boolean {
+    let pathArr:string[] = [];
+    recursionPath(this.menus,pathArr)
+    const found = pathArr.find((item) => path.includes(item));
+    if(found){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+}
+
+interface TreeNode {
+  id?: number;
+  level:any;
+  useStatus?: string;
+  delStatus?: string;
+  createUser?: string;
+  createTime?: string;
+  updateUser?: string;
+  updateTime?: string;
+  applicationFrom?: string;
+  menuType?: string;
+  icon?: string;
+  sortIndex?: string;
+  path?: string;
+  parentId?: string;
+  selected: boolean;
+  code?: string;
+  menuName: string;
+  open?: boolean;
+  roles?: string;
+  children?: TreeNode[];
+}
+
+function recursionPath(obj:TreeNode[],pathArr:string[]) {
+  obj.forEach(function (item) {
+    pathArr.push(item.path)
+    if(item.children){
+      recursionPath(item.children,pathArr)
+    }
+  }); 
 }
