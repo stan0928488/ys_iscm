@@ -116,6 +116,8 @@ import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
+import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 
 const routes: Routes = [
   {
@@ -216,7 +218,9 @@ const routes: Routes = [
       },
       { path: 'I205', component: PPSI205Component },
       { path: 'I205_100', component: PPSI205_100Component },
+      { path: 'I205_a100', component: PPSI205A100Component },
       { path: 'I205_401', component: PPSI205_401Component },
+      { path: 'I205_a401', component: PPSI205A401Component },
       { path: 'I204', component: PPSI204Component },
       { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
       { path: 'I203', component: PPSI203Component },
