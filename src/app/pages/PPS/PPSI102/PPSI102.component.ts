@@ -103,7 +103,7 @@ export class PPSI102Component implements OnInit {
       headerName: 'Action',
       editable: false,
       filter: false,
-      width: 160,
+      width: 150,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {

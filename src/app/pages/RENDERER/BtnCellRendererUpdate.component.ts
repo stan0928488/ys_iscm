@@ -5,7 +5,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
   selector: 'app-button-renderer',
-  template: `
+  template: `    
     <button class="updateButton" *ngIf="isNew == false" (click)="editOnClick($event)">編輯</button>
     <button class="updateButton" *ngIf="isNew == true" (click)="updateOnClick($event)">保存</button>
     <button class="deleteButton" *ngIf="isNew == true" (click)="calcelOnClick($event)">取消</button>
