@@ -44,7 +44,9 @@ import { PPSI220Component } from './pages/PPS/PPSI220_TabMenu/PPSI220/PPSI220.co
 import { PPSI230Component } from './pages/PPS/PPSI230_TabMenu/PPSI230/PPSI230.component';
 import { PPSR301Component } from './pages/PPS/PPSR301/PPSR301.component';
 import { PPSR302Component } from './pages/PPS/PPSR302/PPSR302.component';
-import { PPSR303Component } from './pages/PPS/PPSR303/PPSR303.component';
+import { PPSR303TabMenuComponent } from './pages/PPS/PPSR303_TabMenu/PPSR303_TabMenu.component';
+import { PPSR303Component } from './pages/PPS/PPSR303_TabMenu/PPSR303/PPSR303.component';
+import { PPSR303FcpComponent } from './pages/PPS/PPSR303_TabMenu/PPSR303_Fcp/PPSR303_Fcp.component';
 import { PPSR304Component } from './pages/PPS/PPSR304/PPSR304.component';
 import { PPSR305Component } from './pages/PPS/PPSR305/PPSR305.component';
 import { PPSR306Component } from './pages/PPS/PPSR306/PPSR306.component';
@@ -281,7 +283,21 @@ const routes: Routes = [
     path: 'FCPBarRepo',
     children: [
       { path: '', redirectTo: '/FCPBarRepo/R302', pathMatch: 'full' },
-      { path: 'R303', component: PPSR303Component },
+      { 
+        path: 'R303_TabMenu', 
+        component: PPSR303TabMenuComponent,
+        children: [
+          { path: '', redirectTo: '/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
+          { 
+            path: 'R303', 
+            component: PPSR303Component 
+          },
+          { 
+            path: 'R303_Fcp', 
+            component: PPSR303FcpComponent
+          }
+        ]
+      },
       { path: 'R302', component: PPSR302Component },
       { path: 'R301', component: PPSR301Component },
     ],

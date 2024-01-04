@@ -926,60 +926,7 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-
-  /* 之後要刪掉 */
-  /*
-    //importExcelPPSI203 ASAP調整EXCEL匯入
-    importExcelPPSI203(_result) {
-      const body = _result;
-      // console.log("JSON.stringify");
-      console.log(body);
-      let queryUrl = this.APIURL + "/FCP/I203/importExcelPPSI203";
-      return this.http.post(queryUrl, body, this.httpOptions);
-    }
-
-
-    // 取得客戶清單
-    getCustomerList() {
-      console.log("api service getCustomerList")
-      let queryUrl = this.APIURL + `/FCP/I203/getCustomerList`;
-      console.log(queryUrl);
-      return this.http.get(queryUrl);
-    }
-
-    // 取得鋼種清單
-    getSteelTypeList() {
-      console.log("api service getSteelTypeList")
-      let queryUrl = this.APIURL + `/FCP/I203/getSteelTypeList`;
-      console.log(queryUrl);
-      return this.http.get(queryUrl);
-    }
-
-    // 取得ASAP滾表結果
-    getPPSI203ListData(){
-      console.log("api service getPPSI203List")
-      let queryUrl = this.APIURL + `/FCP/I203/getPPSI203ListData`;
-      console.log(queryUrl);
-      return this.http.get(queryUrl);
-    }
-    // editPPSI203Data ASAP調整update存檔
-    editPPSI203Data(_result){
-      const body = JSON.stringify(_result);
-      console.log("JSON.stringify");
-      console.log(body);
-      let queryUrl = this.APIURL + "/FCP/I203/editPPSI203Data";
-      return this.http.post(queryUrl, body, this.httpOptions);
-    }
-    //Get getPPSI203ListUseInExportExcel ASAP調整 (ppsinptb19)
-    // getPPSI203DtlList(){
-    getPPSI203ListUseInExportExcel(){
-      console.log("api service getPPSI203ListUseInExportExcel")
-      let queryUrl = this.APIURL + `/FCP/I203/getPPSI203ListUseInExportExcel`;
-      console.log(queryUrl);
-      return this.http.get(queryUrl);
-    }
-    */
-  /* 之後要刪掉 */
+  
 
   //importExcelPPSI203 ASAP調整EXCEL匯入
   importExcelPPSI203(_result) {
