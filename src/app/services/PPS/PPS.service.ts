@@ -1090,13 +1090,13 @@ export class PPSService {
   //getppsfcptb16_ms_cust_sortList getppsfcptb16_ms_cust_sortList
   getPpsfcptb16MsCustSortList(_fcpEditionList) {
     let queryUrl =
-      this.APIURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_fcpEditionList}`;
+      this.APINEWURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_fcpEditionList}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
   getTbppsm100List(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm100List/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm100List/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1104,13 +1104,13 @@ export class PPSService {
   convertToTbppsm100(_data) {
     const body = JSON.stringify(_data);
     console.log(body);
-    let queryUrl = this.APIURL + `/FCP/I205/convertToTbppsm100`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/convertToTbppsm100`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getFcpList(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getFcpEditionList/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getFcpEditionList/${_plantCode}`;
     console.log(`API Url : ${queryUrl}`);
     return this.http.get<any>(queryUrl);
   }
@@ -1149,7 +1149,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I205/importI205Excel';
+    let queryUrl = this.APINEWURL + '/FCP/I205/importI205Excel';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   // 上傳到Compaign
