@@ -11,6 +11,8 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
 
 
@@ -21,6 +23,7 @@ registerLocaleData(zh);
 })
 export class PPSI205A100Component implements AfterViewInit {
 
+  frameworkComponents: any;
   panels = [
     {
       active: true,
@@ -64,6 +67,106 @@ export class PPSI205A100Component implements AfterViewInit {
   ];
   currentDate = new Date();
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 100,
+      headerName: '站別',
+      field: 'schShopCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '投產機台',
+      field: 'pstMachine',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '製程碼',
+      field: 'processCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '投入型態',
+      field: 'inputType',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出型態',
+      field: 'outputShape',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '投入尺寸',
+      field: 'inputDia',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產出尺寸',
+      field: 'outDia',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '產品種類',
+      field: 'kindType',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '下站別',
+      field: 'nextSchShopCode',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '鋼種群組',
+      field: 'gradeGroup',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '自訂月份',
+      field: 'newEpstYymm',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '自訂排序',
+      field: 'campaignSort',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '創建時間',
+      field: 'dateCreate',
+      headerComponent: AGCustomHeaderComponent
+    },
+    {
+      width: 100,
+      headerName: '創建者',
+      field: 'userCreate',
+      headerComponent: AGCustomHeaderComponent
+    }
+  ];
+
   constructor(
     private router: ActivatedRoute,
     private getPPSService: PPSService,
@@ -79,6 +182,9 @@ export class PPSI205A100Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
     this.myContext = {
       componentParent: this,
+    };
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
     };
   }
 
