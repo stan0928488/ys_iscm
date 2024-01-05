@@ -634,185 +634,21 @@
           </td>
         </tr>
       </div>
-
+      
       <p></p>
-      <div style="background: rgb(255, 255, 255); min-height: 800px">
-        <div nz-col [nzSpan]="20">
-          <nz-table
-            #RowTable3
-            nzBordered
-            [nzData]="tbppsm113List"
-            [nzPageSize]="15"
-            [nzScroll]="{ y: '600px' }"
-          >
-            <thead>
-              <tr>
-                <!-- <th nzWidth="6%" style="text-align:center; background-color: #eee; padding: 0px; height: 55px;">匯入時間</th> -->
-                <th
-                  nzWidth="4%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  公版月份
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  產品
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  軋延尺寸
-                </th>
-                <th
-                  nzWidth="3%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  CYCLE_NO
-                </th>
-                <th
-                  nzWidth="5%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  日期(起)
-                </th>
-                <th
-                  nzWidth="5%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  日期(迄)
-                </th>
-                <th
-                  nzWidth="4%"
-                  style="
-                    text-align: center;
-                    background-color: #eee;
-                    padding: 0px;
-                    height: 55px;
-                  "
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let data of RowTable3.data; let i = index"
-                class="editable-row"
-              >
-                <ng-container *ngIf="!EditMode[i]; else editModeTD">
-                  <!-- <ng-container> -->
-                  <!-- <td style="text-align:center; padding: 5px; height: 40px;">{{ data.IMPORTDATETIME | date:'yyyy-MM-dd hh:mm:ss' }}</td> -->
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.publicMonth }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.productType }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.dia }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.cycleNo }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.startDate }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    {{ data.endDate }}
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <a
-                      [attr.disabled]="isRunFCP ? true : null"
-                      (click)="upd_dtlRow(i, data)"
-                      >編輯</a
-                    >&nbsp;
-                    <!-- <a *ngIf="!isRunFCP" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a>
-                    <a *ngIf="isRunFCP" disabled="true" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delete_dtlRow(i, data)">刪除</a> -->
-                  </td>
-                </ng-container>
 
-                <ng-template #editModeTD>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-date-picker
-                      nzMode="month"
-                      [(ngModel)]="data.publicMonth"
-                      (ngModelChange)="onChange('3-0', i, $event)"
-                    ></nz-date-picker>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <input
-                      type="text"
-                      nz-input
-                      [(ngModel)]="data.productType"
-                    />
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <input type="text" nz-input [(ngModel)]="data.dia" />
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <input type="text" nz-input [(ngModel)]="data.cycleNo" />
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-date-picker
-                      [(ngModel)]="data.startDate"
-                      (ngModelChange)="onChange('3-1', i, $event)"
-                    ></nz-date-picker>
-                  </td>
-                  <td style="text-align: center; padding: 5px; height: 40px">
-                    <nz-date-picker
-                      [(ngModel)]="data.endDate"
-                      (ngModelChange)="onChange('3-2', i, $event)"
-                    ></nz-date-picker>
-                  </td>
-
-                  <td style="width: 120px; text-align: center">
-                    <a (click)="save113_dtlRow(i, data)">確認</a>&nbsp;&nbsp;
-                    <a
-                      nz-popconfirm
-                      nzPopconfirmTitle="Sure to cancel?"
-                      (nzOnConfirm)="cancel113_dtlRow(i, data)"
-                      >取消</a
-                    >
-                  </td>
-                </ng-template>
-              </tr>
-            </tbody>
-          </nz-table>
-        </div>
-      </div>
+      <ag-grid-angular  style="width: 100%; height: calc(100vh - 220px); overflow: scroll;" class="ag-theme-alpine" 
+      [rowData]="tbppsm113List"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      class="ag-theme-alpine"
+      [frameworkComponents]="frameworkComponents"
+      [gridOptions]="gridOptions"
+      editType="fullRow"
+      [suppressClickEdit]="true"
+      >
+      </ag-grid-angular>
+      
     </nz-tab>
 
    <!-- 401 Auto Campaign -->

@@ -1082,7 +1082,7 @@ export class PPSService {
 
   //getTbppsm113List getTbppsm113List
   getTbppsm113List(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm113List/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1141,7 +1141,7 @@ export class PPSService {
   upd113ListData(obj) {
     const body = JSON.stringify(obj);
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I205/upd113ListData';
+    let queryUrl = this.APINEWURL + '/FCP/I205/upd113ListData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //importI205Excel 優先順序表EXCEL匯入 1. 420/430尺寸  2.401COMPAIGN
