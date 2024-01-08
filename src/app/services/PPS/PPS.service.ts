@@ -1042,7 +1042,7 @@ export class PPSService {
 
   //getTbppsm102List 取得getTbppsm102List
   getTbppsm102List(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102List/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm102List/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1056,7 +1056,7 @@ export class PPSService {
 
   //getTbppsm102ListAll 取得getTbppsm102ListAll
   getTbppsm102ListAll(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1133,7 +1133,7 @@ export class PPSService {
   upd401AutoCampaignData(obj) {
     const body = JSON.stringify(obj);
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I205/upd401AutoCampaignData';
+    let queryUrl = this.APINEWURL + '/FCP/I205/upd401AutoCampaignData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
