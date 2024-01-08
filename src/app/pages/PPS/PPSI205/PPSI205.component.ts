@@ -11,6 +11,8 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
+import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
+import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
 registerLocaleData(zh);
 
 interface data {}
@@ -23,6 +25,7 @@ interface data {}
 })
 export class PPSI205Component implements AfterViewInit {
 
+  frameworkComponents: any;
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
@@ -92,6 +95,87 @@ export class PPSI205Component implements AfterViewInit {
   forTbppsm100Date;
   currentDate = new Date();
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {
+      width: 150,
+      headerName: '公版月份',
+      field: 'publicMonth',
+      cellEditor: DatePickerCellEditor,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY/MM/DD')
+        }
+      }
+    },
+    {
+      width: 150,
+      headerName: '產品',
+      field: 'productType',
+    },
+    {
+      width: 150,
+      headerName: '軋延尺寸',
+      field: 'dia',
+    },
+    {
+      width: 150,
+      headerName: 'CYCLE_NO',
+      field: 'cycleNo',
+    },
+    {
+      width: 150,
+      headerName: '日期(起)',
+      field: 'startDate',
+      cellEditor: DatePickerCellEditor,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY/MM/DD')
+        }
+      }
+    },
+    {
+      width: 150,
+      headerName: '日期(迄)',
+      field: 'endDate',
+      cellEditor: DatePickerCellEditor,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY/MM/DD')
+        }
+      }
+    },
+    {
+      headerName: 'Action',
+      width: 200,
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.editOnClick1.bind(this)
+        },
+        {
+          onClick: this.updateOnClick2.bind(this)
+        },
+        {
+          onClick: this.calcelOnClick3.bind(this)
+        },
+      ]
+    }
+  ];
+
   dateTimeFormatter(params) {
     return moment(params.value).format('YYYY-MM-DD HH:mm:ss');
   }
@@ -119,6 +203,9 @@ export class PPSI205Component implements AfterViewInit {
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
     this.myContext = {
       componentParent: this,
+    };
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRendererUpdate,
     };
   }
 
@@ -1113,7 +1200,7 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   // 修改存檔
-  save113_dtlRow(i, data) {
+  save113_dtlRow(data) {
     console.log('-------save113_dtlRow------');
 
     this.newlist = data;
@@ -1148,15 +1235,17 @@ export class PPSI205Component implements AfterViewInit {
       this.Modal.confirm({
         nzTitle: '是否確定存檔',
         nzOnOk: () => {
-          this.Save113OK(i), (this.EditMode[i] = true);
+          this.Save113OK();
         },
-        nzOnCancel: () => (this.EditMode[i] = true),
+        nzOnCancel: () => {
+
+        }
       });
     }
   }
 
   // 確定修改存檔
-  Save113OK(col) {
+  Save113OK() {
     console.log('oldlist :');
     console.log(this.oldlist);
 
@@ -1178,7 +1267,6 @@ export class PPSI205Component implements AfterViewInit {
         (res) => {
           if (res[0].MSG === 'Y') {
             this.LoadingPage = false;
-            this.EditMode[col] = false;
             this.oldlist = [];
             this.newlist = [];
             this.getTbppsm102List();
@@ -1187,7 +1275,6 @@ export class PPSI205Component implements AfterViewInit {
           } else {
             this.errorMSG('修改存檔失敗', res[0].MSG);
             this.LoadingPage = false;
-            this.EditMode[col] = true;
           }
         },
         (err) => {
@@ -1200,24 +1287,6 @@ export class PPSI205Component implements AfterViewInit {
     });
   }
 
-  // 取消修改
-  cancel113_dtlRow(i, data) {
-    console.log();
-    this.EditMode[i] = false;
-
-    this.tbppsm113List[i].publicMonth = this.dateFormat(
-      this.oldlist['publicMonth'],
-      6
-    );
-    this.tbppsm113List[i].productType = this.oldlist['productType'];
-    this.tbppsm113List[i].dia = this.oldlist['dia'];
-    this.tbppsm113List[i].cycleNo = this.oldlist['cycleNo'];
-    this.tbppsm113List[i].startDate = this.dateFormat(
-      this.oldlist['startDate'],
-      2
-    );
-    this.tbppsm113List[i].endDate = this.dateFormat(this.oldlist['endDate'], 2);
-  }
   sucessMSG(_title, _context): void {
     this.Modal.success({
       nzTitle: _title,
@@ -1236,6 +1305,24 @@ export class PPSI205Component implements AfterViewInit {
   ERR_Cancel() {
     this.errorTXT = [];
     this.isErrorMsg = false;
+  }
+
+  editOnClick1(e) {
+    console.log("Clicked" + e);
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "productType");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "productType"
+    });
+  }
+
+  updateOnClick2(e) {
+    console.log(e);
+    console.log("rowData = " , e.params.node.data);
+    this.save113_dtlRow(e.rowData);
+  }
+
+  calcelOnClick3(e) {
   }
 
 }

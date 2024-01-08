@@ -174,6 +174,7 @@ import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPS
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
+import { DatePickerCellEditor } from './pages/RENDERER/DatePickerCellEditor.component';
 
 registerLocaleData(zh);
 
@@ -321,6 +322,7 @@ registerLocaleData(zh);
     AGCustomActionCellComponent,
     PPSI205A100Component,
     PPSI205A401Component,
+    DatePickerCellEditor
   ],
   imports: [
     BrowserModule,
