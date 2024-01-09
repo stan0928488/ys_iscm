@@ -83,7 +83,7 @@ export class PPSService {
   //Get getPPSINP16List
   getPPSINP16List() {
     console.log('api service getPPSINP16List');
-    let queryUrl = this.APIURL + '/FCP/I116/getPPSINP16List';
+    let queryUrl = this.APINEWURL + '/FCP/I116/getPPSINP16List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -91,7 +91,7 @@ export class PPSService {
   // I116 insertI116Tab1Save
   insertI116Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I116/insertI116Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I116/insertI116Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -100,7 +100,7 @@ export class PPSService {
   // I116 updateI116Tab1Save修改存檔
   updateI116Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I116/updateI116Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I116/updateI116Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -124,7 +124,7 @@ export class PPSService {
   }
   // I116 delI116Tab1Data 刪除資料
   delI116Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I116/delI116Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I116/delI116Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
 
@@ -2166,7 +2166,7 @@ export class PPSService {
   //importPPSI116Excel
   importExcelPPSI116(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I116/importExcelPPSI116`;
+    let queryUrl = this.APINEWURL + `/FCP/I116/importExcelPPSI116`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
