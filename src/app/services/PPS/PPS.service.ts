@@ -1049,7 +1049,7 @@ export class PPSService {
 
   // MO I205_401 DataList
   getTbppsm119ListAll(_plantCode) {
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1064,19 +1064,19 @@ export class PPSService {
   // MO I205_401 MO Edition
   getTbppsm119VerList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I205/getTbppsm119VerList`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm119VerList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   converTBPPSM119Data(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I205/converTBPPSM119Data`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/converTBPPSM119Data`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   convertTBPPSM102AutoCampaign(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I205/convertTBPPSM102AutoCampaign`;
+    let queryUrl = this.APINEWURL + `/FCP/I205/convertTBPPSM102AutoCampaign`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
