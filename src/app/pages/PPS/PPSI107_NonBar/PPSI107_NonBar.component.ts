@@ -201,10 +201,10 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
      this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
   }
 
-   /**
- * 開始編輯
- * @param params 
- */
+  /**
+   * 開始編輯
+   * @param params 
+   */
    rowEditHandler(params: ICellRendererParams<any, any>){
     // 控制編輯按鈕的顯示切換
     params.data.isEditing = true;

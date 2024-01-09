@@ -686,7 +686,7 @@ export class PPSService {
   //Get getFCPTB26List 取得combine資料設定
   getFCPTB26List() {
     console.log('api service getFCPTB26List');
-    let queryUrl = this.APIURL + '/FCP/I200/getFCPTB26List';
+    let queryUrl = this.APINEWURL + '/FCP/I200/getFCPTB26List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -709,18 +709,18 @@ export class PPSService {
   // I200 Tab1新增存檔
   insertTab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/insertTab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/insertTab1Save`;
     console.log(queryUrl);
     console.log(body);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
   // I200 Tab1修改存檔
   updateTab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I200/updateTab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I200/updateTab1Save`;
     console.log(queryUrl);
     console.log(body);
-    return this.http.post(queryUrl, body, this.httpOptions);
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   // I200 Tab4新增存檔
@@ -758,8 +758,8 @@ export class PPSService {
 
   // I200 刪除資料
   delI200Data(_ID, _type) {
-    let queryUrl = this.APIURL + `/FCP/I200/delI200Data/${_ID}/${_type}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I200/delI200Data/${_ID}/${_type}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
 
   // I200Tab5 刪除資料
@@ -831,7 +831,7 @@ export class PPSService {
   getPickerShopEQUIP(_type, _ShopArr) {
     console.log('api service getPickerShopEQUIP');
     let queryUrl =
-      this.APIURL + `/FCP/I202/getPickerShopEQUIP/${_type}/${_ShopArr}`;
+      this.APINEWURL + `/FCP/I202/getPickerShopEQUIP/${_type}/${_ShopArr}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
