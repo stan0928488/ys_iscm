@@ -156,7 +156,6 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 
@@ -217,7 +216,7 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     },
     { 
       headerName:'Action', 
-      width: 140,
+      width: 180,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: AGCustomActionCellComponent,

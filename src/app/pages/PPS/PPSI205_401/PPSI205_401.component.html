@@ -18,71 +18,75 @@
     <nz-tab nzTitle="205站公版尺寸" (nzClick)="changeTab(3)"></nz-tab>
 
     <!-- 401 Auto Campaign -->
-    <nz-tab nzTitle="401 Auto Campaign">
-      <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
-        <nz-tab class="Tab5-a" style="background-color: #ffffff">
-          <a
-            *nzTabLink
-            nz-tab-link
-            [routerLink]="['/PlanSet/I205_a401']"
-            style="color: black"
-          >
-          Auto campaign表
-          </a>
-        </nz-tab>
-        <nz-tab
-          class="Tab5-a"
-          style="background-color: #ffffff; color: dodgerblue"
-        >
-          <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_401']">
-            彙整資料</a
-          >
-          <nz-collapse>
-            <nz-collapse-panel 
-            nzHeader="資料結轉與EXCEL匯出" 
-            nzActive="true">
-
-            <button nz-button 
-                    nzType="primary"
-                    (click)="convertTBPPSM102AutoCampaign()"
-            ><span nz-icon nzType="import" nzTheme="outline"></span>
-            轉入 401 Auto Campaign
-            </button>
-              <button nz-button nzType="primary" 
-                style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
-                (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
-                資料結轉
-              </button>
-              <button
-                  nz-button
-                  style="
-                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                    background-color: #4caf50;
-                    border: 2px blue none;
-                    margin-left:25px; 
-                  "
-                  nzType="primary"
-                  (click)="excelExport()">
-                  <span nz-icon nzType="download" nzTheme="outline"></span>
-                  E X C E L 匯出
-                </button>
-
-            </nz-collapse-panel>
-          </nz-collapse>
-
-          <ag-grid-angular [columnDefs]="columnDefs" [defaultColDef]="ColGroupDef" [headerHeight]="40" [rowHeight]="40"
-            style="width: 100%; height:500px;" class="ag-theme-alpine" [rowData]="rowData"
-            [suppressRowClickSelection]="true" [groupSelectsChildren]="true" [rowSelection]="'multiple'"
-            [animateRows]="true" [pagination]="true">
-          </ag-grid-angular>
-
-        </nz-tab>
-      </nz-tabset>      
-    </nz-tab>
+    <nz-tab nzTitle="401 Auto Campaign">  </nz-tab>
 
     <nz-tab nzTitle="公版排程維護" (nzClick)="changeTab(5)"></nz-tab>
 
   </nz-tabset>
+
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'" [nzSelectedIndex]="1">
+    <nz-tab class="Tab5-a" style="background-color: #ffffff">
+      <a
+        *nzTabLink
+        nz-tab-link
+        [routerLink]="['/PlanSet/I205_a401']"
+        style="color: black"
+      >
+      Auto campaign表
+      </a>
+    </nz-tab>
+    <nz-tab
+      class="Tab5-a"
+      style="background-color: #ffffff; color: dodgerblue"
+    >
+      <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_401']">
+        彙整資料</a
+      >
+      <nz-collapse>
+        <nz-collapse-panel 
+        nzHeader="資料結轉與EXCEL匯出" 
+        nzActive="true">
+
+        <button nz-button 
+                nzType="primary"
+                (click)="convertTBPPSM102AutoCampaign()"
+        ><span nz-icon nzType="import" nzTheme="outline"></span>
+        轉入 401 Auto Campaign
+        </button>
+          <button nz-button nzType="primary" 
+            style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
+            (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
+            資料結轉
+          </button>
+          <button
+              nz-button
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+                margin-left:25px; 
+              "
+              nzType="primary"
+              (click)="excelExport()">
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
+            </button>
+
+        </nz-collapse-panel>
+      </nz-collapse>
+
+      <ag-grid-angular
+      style="width: 100%; height: calc(100vh - 220px); overflow: scroll; "
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [defaultColDef]="ColGroupDef" 
+      >
+      </ag-grid-angular>
+    </nz-tab>
+  </nz-tabset>    
+
 </nz-content>
 
 

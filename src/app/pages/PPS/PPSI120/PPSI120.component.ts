@@ -1,12 +1,18 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import {
+  ColDef,
+  ColGroupDef
+} from 'ag-grid-community';
+import * as _ from 'lodash';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import * as _ from 'lodash';
-import * as XLSX from 'xlsx';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { CommonService } from 'src/app/services/common/common.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
+import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface ItemData9 {
   id: string;
@@ -32,6 +38,8 @@ interface ItemData9 {
   providers: [NzMessageService],
 })
 export class PPSI120Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "直棒退火爐工時(PPSI120)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -72,6 +80,50 @@ export class PPSI120Component implements AfterViewInit {
 
   excelImportFile: File;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {headerComponent: AGCustomHeaderComponent,headerName: '站號',field: 'SHOP_CODE',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '機台',field: 'EQUIP_CODE',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '作業代碼',field: 'OP_CODE',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '作業代碼1',field: 'OP_CODE1',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '作業代碼2',field: 'OP_CODE2',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '作業代碼3',field: 'OP_CODE3',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '溫度',field: 'TEMPERATURE',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '頻率',field: 'FREQUENCY',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '每噸花時間',field: 'STEEL_GRADE_MIN',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '每爐工時',field: 'HEAT_MIN',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '穿插設定',field: 'ALTERNATE_SET',filter: true,width: 120,editable: true},
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -84,6 +136,9 @@ export class PPSI120Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -109,35 +164,41 @@ export class PPSI120Component implements AfterViewInit {
     this.PPSService.getPPSINP09List().subscribe((res) => {
       console.log('getFCPTB26List success');
       this.PPSINP09List_tmp = res;
-
-      console.log('OP_CODE', this.PPSINP09List_tmp[0].OP_CODE);
-
-      console.table(this.PPSINP09List_tmp);
-
-      const data = [];
-      for (let i = 0; i < this.PPSINP09List_tmp.length; i++) {
-        data.push({
-          id: `${i}`,
-          tab9ID: this.PPSINP09List_tmp[i].ID,
-          PLANT_CODE: this.PPSINP09List_tmp[i].PLANT_CODE,
-          SHOP_CODE: this.PPSINP09List_tmp[i].SHOP_CODE,
-          EQUIP_CODE: this.PPSINP09List_tmp[i].EQUIP_CODE,
-          OP_CODE: this.PPSINP09List_tmp[i].OP_CODE,
-          OP_CODE1: this.PPSINP09List_tmp[i].OP_CODE1,
-          OP_CODE2: this.PPSINP09List_tmp[i].OP_CODE2,
-          OP_CODE3: this.PPSINP09List_tmp[i].OP_CODE3,
-          TEMPERATURE: this.PPSINP09List_tmp[i].TEMPERATURE,
-          FREQUENCY: this.PPSINP09List_tmp[i].FREQUENCY,
-          STEEL_GRADE_MIN: this.PPSINP09List_tmp[i].STEEL_GRADE_MIN,
-          HEAT_MIN: this.PPSINP09List_tmp[i].HEAT_MIN,
-          ALTERNATE_SET: this.PPSINP09List_tmp[i].ALTERNATE_SET,
-        });
+      if(this.PPSINP09List_tmp.length > 0){
+        console.log('OP_CODE', this.PPSINP09List_tmp[0].OP_CODE);
+  
+        console.table(this.PPSINP09List_tmp);
+  
+        const data = [];
+        for (let i = 0; i < this.PPSINP09List_tmp.length; i++) {
+          data.push({
+            id: `${i}`,
+            tab9ID: this.PPSINP09List_tmp[i].ID,
+            PLANT_CODE: this.PPSINP09List_tmp[i].PLANT_CODE,
+            SHOP_CODE: this.PPSINP09List_tmp[i].SHOP_CODE,
+            EQUIP_CODE: this.PPSINP09List_tmp[i].EQUIP_CODE,
+            OP_CODE: this.PPSINP09List_tmp[i].OP_CODE,
+            OP_CODE1: this.PPSINP09List_tmp[i].OP_CODE1,
+            OP_CODE2: this.PPSINP09List_tmp[i].OP_CODE2,
+            OP_CODE3: this.PPSINP09List_tmp[i].OP_CODE3,
+            TEMPERATURE: this.PPSINP09List_tmp[i].TEMPERATURE,
+            FREQUENCY: this.PPSINP09List_tmp[i].FREQUENCY,
+            STEEL_GRADE_MIN: this.PPSINP09List_tmp[i].STEEL_GRADE_MIN,
+            HEAT_MIN: this.PPSINP09List_tmp[i].HEAT_MIN,
+            ALTERNATE_SET: this.PPSINP09List_tmp[i].ALTERNATE_SET,
+          });
+        }
+        this.PPSINP09List = data;
+        this.displayPPSINP09List = this.PPSINP09List;
+        this.updateEditCache();
+        myObj.loading = false;
+        myObj.isSpinning = false;
+      }else{
+        myObj.loading = false;
+        myObj.isSpinning = false;
+        this.displayPPSINP09List = []
       }
-      this.PPSINP09List = data;
-      this.displayPPSINP09List = this.PPSINP09List;
-      this.updateEditCache();
-      myObj.loading = false;
-      myObj.isSpinning = false;
+
     });
   }
 
@@ -182,11 +243,11 @@ export class PPSI120Component implements AfterViewInit {
   }
 
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData9): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id);
+        this.delID(rowData);
       },
       nzOnCancel: () => console.log('cancel'),
     });
@@ -202,34 +263,34 @@ export class PPSI120Component implements AfterViewInit {
   }
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData9): void {
     let myObj = this;
-    if (this.editCache9[id].data.SHOP_CODE === undefined) {
+    if (rowData.SHOP_CODE === undefined) {
       myObj.message.create('error', '「站號」不可為空');
       return;
-    } else if (this.editCache9[id].data.EQUIP_CODE === undefined) {
+    } else if (rowData.EQUIP_CODE === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    } else if (this.editCache9[id].data.OP_CODE === undefined) {
+    } else if (rowData.OP_CODE === undefined) {
       myObj.message.create('error', '「作業代碼」不可為空');
       return;
-    } else if (this.editCache9[id].data.TEMPERATURE === undefined) {
+    } else if (rowData.TEMPERATURE === undefined) {
       myObj.message.create('error', '「溫度」不可為空');
       return;
-    } else if (this.editCache9[id].data.FREQUENCY === undefined) {
+    } else if (rowData.FREQUENCY === undefined) {
       myObj.message.create('error', '「頻率」不可為空');
       return;
-    } else if (this.editCache9[id].data.STEEL_GRADE_MIN === undefined) {
+    } else if (rowData.STEEL_GRADE_MIN === undefined) {
       myObj.message.create('error', '「每噸花時間」不可為空');
       return;
-    } else if (this.editCache9[id].data.HEAT_MIN === undefined) {
+    } else if (rowData.HEAT_MIN === undefined) {
       myObj.message.create('error', '「每爐工時」不可為空');
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id);
+          this.updateSave(rowData);
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -300,25 +361,25 @@ export class PPSI120Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData9) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID: this.editCache9[_id].data.tab9ID,
-        PLANT_CODE: this.editCache9[_id].data.PLANT_CODE,
-        SHOP_CODE: this.editCache9[_id].data.SHOP_CODE,
-        EQUIP_CODE: this.editCache9[_id].data.EQUIP_CODE,
-        OP_CODE: this.editCache9[_id].data.OP_CODE,
-        OP_CODE1: this.editCache9[_id].data.OP_CODE1,
-        OP_CODE2: this.editCache9[_id].data.OP_CODE2,
-        OP_CODE3: this.editCache9[_id].data.OP_CODE3,
-        TEMPERATURE: this.editCache9[_id].data.TEMPERATURE,
-        FREQUENCY: this.editCache9[_id].data.FREQUENCY,
-        STEEL_GRADE_MIN: this.editCache9[_id].data.STEEL_GRADE_MIN,
-        HEAT_MIN: this.editCache9[_id].data.HEAT_MIN,
-        ALTERNATE_SET: this.editCache9[_id].data.ALTERNATE_SET,
+        ID: rowData.tab9ID,
+        PLANT_CODE: rowData.PLANT_CODE,
+        SHOP_CODE: rowData.SHOP_CODE,
+        EQUIP_CODE: rowData.EQUIP_CODE,
+        OP_CODE: rowData.OP_CODE,
+        OP_CODE1: rowData.OP_CODE1,
+        OP_CODE2: rowData.OP_CODE2,
+        OP_CODE3: rowData.OP_CODE3,
+        TEMPERATURE: rowData.TEMPERATURE,
+        FREQUENCY: rowData.FREQUENCY,
+        STEEL_GRADE_MIN: rowData.STEEL_GRADE_MIN,
+        HEAT_MIN: rowData.HEAT_MIN,
+        ALTERNATE_SET: rowData.ALTERNATE_SET,
       });
       myObj.PPSService.updateI109Tab1Save(obj).subscribe(
         (res) => {
@@ -337,11 +398,6 @@ export class PPSI120Component implements AfterViewInit {
             this.ALTERNATE_SET = undefined;
 
             this.sucessMSG('修改成功', ``);
-            const index = this.PPSINP09List.findIndex(
-              (item) => item.id === _id
-            );
-            Object.assign(this.PPSINP09List[index], this.editCache9[_id].data);
-            this.editCache9[_id].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -356,10 +412,10 @@ export class PPSI120Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData9) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache9[_id].data.tab9ID;
+      let _ID = rowData.tab9ID;
       myObj.PPSService.delI109Tab1Data(_ID).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
@@ -398,122 +454,6 @@ export class PPSI120Component implements AfterViewInit {
   // 取消退火爐工時之彈出視窗
   cancelStoveInput(): void {
     this.isVisibleStove = false;
-  }
-
-  // ============= 過濾資料之menu ========================
-  // 退火爐工時
-  ppsInp09ListFilter(property: string, keyWord: string) {
-    if (_.isEmpty(keyWord)) {
-      this.displayPPSINP09List = this.PPSINP09List;
-      return;
-    }
-
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP09List.filter((item) => filterFunc(item));
-    this.displayPPSINP09List = data;
-  }
-
-  // 資料過濾---退火爐工時 --> 站號
-  searchByShopCode(): void {
-    this.ppsInp09ListFilter('SHOP_CODE', this.searchShopCodeValue);
-  }
-  resetByShopCode(): void {
-    this.searchShopCodeValue = '';
-    this.ppsInp09ListFilter('SHOP_CODE', this.searchShopCodeValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 機台
-  searchByEquipCode(): void {
-    this.ppsInp09ListFilter('EQUIP_CODE', this.searchEquipCodeValue);
-  }
-  resetByEquipCode(): void {
-    this.searchEquipCodeValue = '';
-    this.ppsInp09ListFilter('EQUIP_CODE', this.searchEquipCodeValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 作業代碼
-  searchByOpCode(): void {
-    this.ppsInp09ListFilter('OP_CODE', this.searchOpCodeValue);
-  }
-  resetByOpCode(): void {
-    this.searchOpCodeValue = '';
-    this.ppsInp09ListFilter('OP_CODE', this.searchOpCodeValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 作業代碼1
-  searchByOpCode1(): void {
-    this.ppsInp09ListFilter('OP_CODE1', this.searchOpCode1Value);
-  }
-  resetByOpCode1(): void {
-    this.searchOpCode1Value = '';
-    this.ppsInp09ListFilter('OP_CODE1', this.searchOpCode1Value);
-  }
-
-  // 資料過濾---退火爐工時 --> 作業代碼2
-  searchByOpCode2(): void {
-    this.ppsInp09ListFilter('OP_CODE2', this.searchOpCode2Value);
-  }
-  resetByOpCode2(): void {
-    this.searchOpCode2Value = '';
-    this.ppsInp09ListFilter('OP_CODE2', this.searchOpCode2Value);
-  }
-
-  // 資料過濾---退火爐工時 --> 作業代碼3
-  searchByOpCode3(): void {
-    this.ppsInp09ListFilter('OP_CODE3', this.searchOpCode3Value);
-  }
-  resetByOpCode3(): void {
-    this.searchOpCode3Value = '';
-    this.ppsInp09ListFilter('OP_CODE3', this.searchOpCode3Value);
-  }
-
-  // 資料過濾---退火爐工時 --> 溫度
-  searchByTemperature(): void {
-    this.ppsInp09ListFilter('TEMPERATURE', this.searchTemperatureValue);
-  }
-  resetByTemperature(): void {
-    this.searchTemperatureValue = '';
-    this.ppsInp09ListFilter('TEMPERATURE', this.searchTemperatureValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 頻率
-  searchByFrequency(): void {
-    this.ppsInp09ListFilter('FREQUENCY', this.searchFrequencyValue);
-  }
-  resetByFrequency(): void {
-    this.searchFrequencyValue = '';
-    this.ppsInp09ListFilter('FREQUENCY', this.searchFrequencyValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 每噸花時間
-  searchBySteelGradeMin(): void {
-    this.ppsInp09ListFilter('STEEL_GRADE_MIN', this.searchSteelGradeMinValue);
-  }
-  resetBySteelGradeMin(): void {
-    this.searchSteelGradeMinValue = '';
-    this.ppsInp09ListFilter('STEEL_GRADE_MIN', this.searchSteelGradeMinValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 每爐工時
-  searchByHeateMin(): void {
-    this.ppsInp09ListFilter('HEAT_MIN', this.searchHeatMinValue);
-  }
-  resetByHeateMin(): void {
-    this.searchHeatMinValue = '';
-    this.ppsInp09ListFilter('HEAT_MIN', this.searchHeatMinValue);
-  }
-
-  // 資料過濾---退火爐工時 --> 穿插設定
-  searchByAlternateSet(): void {
-    this.ppsInp09ListFilter('ALTERNATE_SET', this.searchAlternateSetValue);
-  }
-  resetByAlternateSet(): void {
-    this.searchAlternateSetValue = '';
-    this.ppsInp09ListFilter('ALTERNATE_SET', this.searchAlternateSetValue);
   }
 
   //=============================================
@@ -560,12 +500,11 @@ export class PPSI120Component implements AfterViewInit {
       const sheets = workbook.SheetNames;
 
       if (sheets.length) {
-        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]], {
-          defval: '', // 單元格為空的預設值
-        });
+        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheets[0]]);
         this.jsonExcelData = jsonData;
 
         if (this.jsonExcelData.length != 0) {
+          console.log(this.jsonExcelData)
           this.importExcel();
         } else {
           this.errorMSG('匯入失敗', `此檔案無任何數據`);
@@ -610,20 +549,15 @@ export class PPSI120Component implements AfterViewInit {
     console.log('匯入的Excle中的資料皆無重複');
 
     // 將資料全刪除，再匯入EXCEL檔內的資料
-    const myThis = this;
-    const p = this.deleteAllData();
-    p.then((deleteSuccess) => {
-      // 批次新增Excle中的資料
-      return myThis.barchInsertExcelData();
+    this.barchInsertExcelData()
+    .then((barchInsertSuccess) => {
+      this.sucessMSG(barchInsertSuccess, ``);
+      this.getPPSINP09List();
     })
-      .then((barchInsertSuccess) => {
-        myThis.sucessMSG(barchInsertSuccess, ``);
-        this.getPPSINP09List();
-      })
-      .catch(function (error) {
-        myThis.isSpinning = false;
-        myThis.errorMSG(error, ``);
-      });
+    .catch(function (error) {
+      this.isSpinning = false;
+      this.errorMSG(error, ``);
+    });
     (<HTMLInputElement>document.getElementById('importExcel')).value = '';
   }
 
@@ -632,10 +566,10 @@ export class PPSI120Component implements AfterViewInit {
     return new Promise(function (resolve, reject) {
       myThis.PPSService.batchSaveI109Data(myThis.jsonExcelData).subscribe(
         (response) => {
-          if (response.success === true) {
+          if (response.code === 200) {
             resolve('匯入成功');
           } else {
-            reject(response.success);
+            reject(response.message);
           }
         },
         (error) => {
@@ -976,4 +910,24 @@ export class PPSI120Component implements AfterViewInit {
         myObj.equipCodeLoading = false;
       });
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'ALTERNATE_SET');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'ALTERNATE_SET',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData)
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData);
+  }
+
 }
