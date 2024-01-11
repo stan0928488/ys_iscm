@@ -32,7 +32,7 @@ export class PPSService {
   //Get getPPSINP13List
   getPPSINP13List() {
     console.log('api service getPPSINP13List');
-    let queryUrl = this.APIURL + '/FCP/I113/getPPSINP13List';
+    let queryUrl = this.APINEWURL + '/FCP/I113/getPPSINP13List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -40,7 +40,7 @@ export class PPSService {
   // I113 insertI113Tab1Save
   insertI113Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I113/insertI113Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/insertI113Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -49,7 +49,7 @@ export class PPSService {
   // I113 updateI113Tab1Save修改存檔
   updateI113Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I113/updateI113Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/updateI113Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -57,13 +57,13 @@ export class PPSService {
 
   // I113 delI113Tab1Data 刪除資料
   delI113Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I113/delI113Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/delI113Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
 
   // I113 刪除所有資料
   deleteI113AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I113/deleteI113AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I113/deleteI113AllData`;
     console.log('刪除「直棒研磨道次」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -73,7 +73,7 @@ export class PPSService {
   // I113 批次新增資料
   batchSaveI113Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I113/batchInsertI113Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I113/batchInsertI113Data`;
     console.log('批次新增「直棒研磨道次」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
