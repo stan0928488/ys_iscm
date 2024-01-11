@@ -1,7 +1,7 @@
 import { DatePipe, registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import { AfterViewInit, Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
@@ -13,6 +13,7 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
 
 interface data {}
@@ -110,6 +111,7 @@ export class PPSI205Component implements AfterViewInit {
 
   columnDefs = [
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: '公版月份',
       field: 'publicMonth',
@@ -121,21 +123,25 @@ export class PPSI205Component implements AfterViewInit {
       }
     },
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: '產品',
       field: 'productType',
     },
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: '軋延尺寸',
       field: 'dia',
     },
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: 'CYCLE_NO',
       field: 'cycleNo',
     },
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: '日期(起)',
       field: 'startDate',
@@ -147,6 +153,7 @@ export class PPSI205Component implements AfterViewInit {
       }
     },
     {
+      headerComponent: AGCustomHeaderComponent,
       width: 150,
       headerName: '日期(迄)',
       field: 'endDate',
@@ -189,7 +196,7 @@ export class PPSI205Component implements AfterViewInit {
   }
 
   constructor(
-    private router: ActivatedRoute,
+    private router: Router,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
@@ -317,12 +324,12 @@ export class PPSI205Component implements AfterViewInit {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
     } else*/ if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      this.router.navigateByUrl('/PlanSet/I205?selectedTabIndex=0');
       this.getTbppsm113List();
     } else if (tab === 4) {
-      window.location.href = '#/PlanSet/I205_a401';
+      this.router.navigateByUrl('/PlanSet/I205_a401');
     } else if (tab === 5) {
-      window.location.href = '#/PlanSet/I205_a100';
+      this.router.navigateByUrl('/PlanSet/I205_a100');
     }
   }
 

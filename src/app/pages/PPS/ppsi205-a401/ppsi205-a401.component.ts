@@ -1,7 +1,7 @@
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import { AfterViewInit, Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ColDef,
   ColGroupDef,
@@ -21,6 +21,7 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
 
 @Component({
@@ -88,6 +89,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 120,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '站別',
@@ -95,6 +97,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 100,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '機台',
@@ -102,12 +105,14 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 100,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '下一站站別',
       field: 'NEXT_SHOP_CODE',
       filter: true,
       width: 120,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '天數',
@@ -115,6 +120,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: true,
       width: 100,
+      headerComponent: AGCustomHeaderComponent,
       valueParser: (params: ValueParserParams): number => {
         return Number.isNaN(Number(params.newValue))
           ? params.oldValue
@@ -127,6 +133,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 170,
       cellEditor: DatePickerCellEditor,
+      headerComponent: AGCustomHeaderComponent,
       cellRenderer: (data) => {
         if(data.value){
           return moment(data.value).format('YYYY-MM')
@@ -139,6 +146,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 130,
       cellEditor: DatePickerCellEditor,
+      headerComponent: AGCustomHeaderComponent,
       cellRenderer: (data) => {
         if(data.value){
           return moment(data.value).format('YYYY-MM-DD')
@@ -151,6 +159,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 130,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: 'TC頻率升降冪',
@@ -158,6 +167,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 140,
       cellEditor: 'agSelectCellEditor',
+      headerComponent: AGCustomHeaderComponent,
       cellEditorParams: {
         values: ['ASC', 'DESC'],
       },
@@ -171,6 +181,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 150,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '轉入COMPAIGN表時間',
@@ -178,6 +189,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 220,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: 'Action',
@@ -199,14 +211,13 @@ export class PPSI205A401Component implements AfterViewInit {
   ];
 
   constructor(
-    private router: ActivatedRoute,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private route: ActivatedRoute
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -220,22 +231,19 @@ export class PPSI205A401Component implements AfterViewInit {
   }
 
   changeTab(tab): void {
-    console.log(tab);
-   /* if (tab === 1) {
+    // this.isTabVisible = false;
+    /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm101List();
-    } elseif (tab === 2) {
+      this.getTbppsm101List();
+    } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm102List();
-    } else  */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm113List();
+      this.getTbppsm102List();
+    } else*/ if (tab === 3) {
+      this.router.navigateByUrl('/PlanSet/I205?selectedTabIndex=0');
     } else if (tab === 4) {
-      // this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205_a401';
+      this.router.navigateByUrl('/PlanSet/I205_a401');
     } else if (tab === 5) {
-      // this.getTbppsm100List();
-      window.location.href = '#/PlanSet/I205_a100';
+      this.router.navigateByUrl('/PlanSet/I205_a100');
     }
   }
 
