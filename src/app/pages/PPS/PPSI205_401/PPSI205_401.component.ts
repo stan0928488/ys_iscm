@@ -17,6 +17,7 @@ import { Router } from "@angular/router";
 import * as moment from 'moment';
 import * as _ from "lodash";
 import zh from '@angular/common/locales/zh';
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 registerLocaleData(zh);
 
 interface data {
@@ -97,19 +98,21 @@ export class PPSI205_401Component implements AfterViewInit {
         field: 'moEdition' , 
         filter: true,
         width: 150,
+        headerComponent: AGCustomHeaderComponent
         },
       { headerName:'EPST',
         field: 'epst' , 
         filter: true,
         width: 120, 
         valueFormatter: this.dateFormatter,
+        headerComponent: AGCustomHeaderComponent
       },
-      { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 160 },
-      { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 160},
-      { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 160 },
-      { headerName:'405 剩餘工時(天)',field: 'leastTime2' , filter: true,width: 160 },
-      { headerName:'401 投產日_起', field:'startDate', filter:true, width: 150},
-      { headerName: '401 投產日_迄' ,field: 'endDate' , filter: true,width: 150 },
+      { headerName: '401 到料工時(天)' ,field: 'workTIme1' , filter: true,width: 160,headerComponent: AGCustomHeaderComponent },
+      { headerName:'405 到料工時(天)',field: 'workTIme2' , filter: true,width: 160,headerComponent: AGCustomHeaderComponent },
+      { headerName:'401 剩餘工時(天)',field: 'leastTime1' , filter: true,width: 160,headerComponent: AGCustomHeaderComponent  },
+      { headerName:'405 剩餘工時(天)',field: 'leastTime2' , filter: true,width: 160,headerComponent: AGCustomHeaderComponent  },
+      { headerName:'401 投產日_起', field:'startDate', filter:true, width: 150,headerComponent: AGCustomHeaderComponent },
+      { headerName: '401 投產日_迄' ,field: 'endDate' , filter: true,width: 150,headerComponent: AGCustomHeaderComponent  },
     ];
     public ColGroupDef: ColDef = {
       filter: true,

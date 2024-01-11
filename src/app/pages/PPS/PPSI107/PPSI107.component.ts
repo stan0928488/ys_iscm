@@ -84,73 +84,61 @@ export class PPSI107Component implements AfterViewInit {
     { 
       headerName:'站號', 
       field:'SHOP_CODE_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機台', 
       field:'EQUIP_CODE_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'產出型態', 
       field:'SHAPE_TYPE_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'鋼種類別', 
       field:'GRADE_GROUP_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'線速分類', 
       field:'SPEED_TYPE_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'減面率MIN', 
       field:'REDUCTION_RATE_MIN_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent,
     },
     { 
       headerName:'減面率MAX', 
       field:'REDUCTION_RATE_MAX_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'產出尺寸最小值', 
       field:'DIA_MIN_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'產出尺寸最大值', 
       field:'DIA_MAX_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'線速(公尺/分)', 
       field:'SPEED_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'日產出量', 
       field:'EQUIP_CAP_5',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'Action',
       field:'action',
-      width: 150,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: AGCustomActionCellComponent,
@@ -169,7 +157,6 @@ export class PPSI107Component implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 

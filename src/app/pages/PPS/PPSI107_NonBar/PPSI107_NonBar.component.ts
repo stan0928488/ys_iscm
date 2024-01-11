@@ -76,31 +76,26 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     { 
       headerName:'站別', 
       field:'schShopCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機台', 
       field:'equipCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機群', 
       field:'equipGroup',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'製程代號', 
       field:'equipProcessCode',
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'尺寸MIN', 
       field:'diaMin',
-      width: 120,
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
@@ -109,7 +104,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
     { 
       headerName:'尺寸MAX', 
       field:'diaMax',
-      width: 120,
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
@@ -121,13 +115,11 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
       valueFormatter : (params: ValueFormatterParams) => {
         return this.decimalPipe.transform(params.value);
       },
-      width: 120,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'Action',
       field:'action',
-      width: 150,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: AGCustomActionCellComponent,
@@ -147,7 +139,6 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
-      autoHeight: true,
     }
   };
 
@@ -210,10 +201,10 @@ export class PPSI107_NonBarComponent implements AfterViewInit {
      this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
   }
 
-   /**
- * 開始編輯
- * @param params 
- */
+  /**
+   * 開始編輯
+   * @param params 
+   */
    rowEditHandler(params: ICellRendererParams<any, any>){
     // 控制編輯按鈕的顯示切換
     params.data.isEditing = true;

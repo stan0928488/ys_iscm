@@ -180,6 +180,10 @@ import { UserProfileComponent } from './pages/USER/user-profile/user-profile.com
 import { CommonApiEditComponent } from './pages/SYSTEM/manage-menu/common-api-edit-component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
+import { PPSI111EditShopCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditShopCellEditorComponent';
+import { PPSI111EditMachineCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditMachineCellEditorComponent';
+import { PPSI111EditCombinCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditCombinCellEditorComponent';
+import { DatePickerCellEditor } from './pages/RENDERER/DatePickerCellEditor.component';
 
 registerLocaleData(zh);
 
@@ -333,6 +337,10 @@ registerLocaleData(zh);
     CommonApiEditComponent,
     PPSI205A100Component,
     PPSI205A401Component,
+    PPSI111EditShopCellEditorComponent,
+    PPSI111EditMachineCellEditorComponent,
+    PPSI111EditCombinCellEditorComponent,
+    DatePickerCellEditor
   ],
   imports: [
     BrowserModule,

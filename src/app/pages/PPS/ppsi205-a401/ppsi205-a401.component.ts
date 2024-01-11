@@ -1,10 +1,8 @@
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import { AfterViewInit, Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
-  CellDoubleClickedEvent,
-  CellEditingStoppedEvent,
   ColDef,
   ColGroupDef,
   GridApi,
@@ -21,8 +19,9 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
-import { AutoCampaignUpdateSaveCellRenderer } from '../PPSI205/AutoCampaign-UpdateSave-Cell-Renderer.component';
-import { SummaryDatePickerCellEditorComponent } from '../PPSI205/SummaryDatePickerCellEditor.Component';
+import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
+import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
 
 @Component({
@@ -32,8 +31,8 @@ registerLocaleData(zh);
 })
 export class PPSI205A401Component implements AfterViewInit {
 
+  frameworkComponents;
   isEditing = false;
-  editType: 'fullRow' = 'fullRow';
   myContext: any;
   tbppsm102ListAll;
   isSpinning = false;
@@ -52,11 +51,9 @@ export class PPSI205A401Component implements AfterViewInit {
   importdata_new = [];
   importdata = [];
   arrayBuffer: any;
-  tbppsm102EditCacheList: { [id: string]: { data: any } } = {};
   gridApi: GridApi;
   oldlist = {};
   newlist;
-  EditMode = [];
 
   titleArray4 = [
     '站別',
@@ -72,15 +69,12 @@ export class PPSI205A401Component implements AfterViewInit {
 
   gridOptions = {
     defaultColDef: {
-      filter: true,
       editable: true,
       sortable: false,
       resizable: true,
+      filter: true,
     },
-    components: {
-      summaryDatePickerCellEditorComponent:
-        SummaryDatePickerCellEditorComponent,
-    },
+    api: null,
   };
 
   ngAfterViewInit() {
@@ -95,6 +89,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 120,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '站別',
@@ -102,6 +97,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 100,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '機台',
@@ -109,12 +105,14 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 100,
       editable: false,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '下一站站別',
       field: 'NEXT_SHOP_CODE',
       filter: true,
       width: 120,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '天數',
@@ -122,6 +120,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: true,
       width: 100,
+      headerComponent: AGCustomHeaderComponent,
       valueParser: (params: ValueParserParams): number => {
         return Number.isNaN(Number(params.newValue))
           ? params.oldValue
@@ -133,16 +132,26 @@ export class PPSI205A401Component implements AfterViewInit {
       field: 'MAX_DATE',
       filter: true,
       width: 170,
-      valueFormatter: this.yearMonthFormatter,
-      cellEditor: 'summaryDatePickerCellEditorComponent',
+      cellEditor: DatePickerCellEditor,
+      headerComponent: AGCustomHeaderComponent,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM')
+        }
+      }
     },
     {
       headerName: '生產開始日',
       field: 'STARTDATE',
       filter: true,
-      cellEditor: 'summaryDatePickerCellEditorComponent',
       width: 130,
-      //valueFormatter: this.dayDateFormatter,
+      cellEditor: DatePickerCellEditor,
+      headerComponent: AGCustomHeaderComponent,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }
+      }
     },
     {
       headerName: '生產結束日',
@@ -150,6 +159,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 130,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: 'TC頻率升降冪',
@@ -157,6 +167,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       width: 140,
       cellEditor: 'agSelectCellEditor',
+      headerComponent: AGCustomHeaderComponent,
       cellEditorParams: {
         values: ['ASC', 'DESC'],
       },
@@ -170,6 +181,7 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 150,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '轉入COMPAIGN表時間',
@@ -177,35 +189,35 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
       editable: false,
       width: 220,
+      headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: 'Action',
       editable: false,
       width: 170,
-      cellRenderer: AutoCampaignUpdateSaveCellRenderer,
+      cellRenderer: BtnCellRendererUpdate,
       cellRendererParams: [
         {
-          onclick: this.editOnClick.bind(this),
+          onClick: this.editOnClick.bind(this)
         },
         {
-          onClick: this.updateOnClick.bind(this),
+          onClick: this.updateOnClick.bind(this)
         },
         {
-          onClick: this.calcelOnClick.bind(this),
-        },
-      ],
+          onClick: this.calcelOnClick.bind(this)
+        }
+      ]
     },
   ];
 
   constructor(
-    private router: ActivatedRoute,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private route: ActivatedRoute
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -213,25 +225,25 @@ export class PPSI205A401Component implements AfterViewInit {
     this.myContext = {
       componentParent: this,
     };
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRendererUpdate,
+    }
   }
 
   changeTab(tab): void {
-    console.log(tab);
-   /* if (tab === 1) {
+    // this.isTabVisible = false;
+    /*if (tab === 1) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm101List();
-    } elseif (tab === 2) {
+      this.getTbppsm101List();
+    } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm102List();
-    } else  */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
-      // this.getTbppsm113List();
+      this.getTbppsm102List();
+    } else*/ if (tab === 3) {
+      this.router.navigateByUrl('/PlanSet/I205?selectedTabIndex=0');
     } else if (tab === 4) {
-      // this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205_a401';
+      this.router.navigateByUrl('/PlanSet/I205_a401');
     } else if (tab === 5) {
-      // this.getTbppsm100List();
-      window.location.href = '#/PlanSet/I205_a100';
+      this.router.navigateByUrl('/PlanSet/I205_a100');
     }
   }
 
@@ -588,7 +600,6 @@ export class PPSI205A401Component implements AfterViewInit {
         this.rowData.forEach((item) => {
           item['isEditing'] = false;
         });
-        this.setupUpdateEditCache();
       } else {
         this.message.error('無資料');
         return;
@@ -596,14 +607,6 @@ export class PPSI205A401Component implements AfterViewInit {
       this.isSpinning = false;
       console.log('getTbppsm102ListAll success');
       this.tbppsm102ListAll = this.rowData;
-    });
-  }
-
-  setupUpdateEditCache(): void {
-    this.rowData.forEach((item, index) => {
-      this.tbppsm102EditCacheList[index] = {
-        data: _.cloneDeep(item),
-      };
     });
   }
 
@@ -657,42 +660,21 @@ export class PPSI205A401Component implements AfterViewInit {
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api;
   }
- 
-  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>) {
-    event.data.isEditing = true;
-  }
 
-  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
-    // 排除 "isEditing" 屬性，不列入後續的資料比較
-    const newValue = _.omit(event.data, ['isEditing']);
-    const oldValue = _.omit(this.tbppsm102EditCacheList[event.rowIndex].data, [
-      'isEditing',
-    ]);
-    if (_.isEqual(oldValue, newValue)) {
-      event.data.isEditing = false;
-    } else {
-      event.data.isEditing = true;
-    }
+  editOnClick(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, "TC_FREQUENCE_LIFT");
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: "TC_FREQUENCE_LIFT"
+    });
   }
-
-  yearMonthFormatter(params) {
-    return moment(params.value).format('YYYY-MM');
-  }
-
-  editOnClick(e) {}
 
   updateOnClick(e) {
-    // this.upd_dtlRow(e.index, e.rowData);
+    e.params.api.stopEditing();
     this.save401_dtlRow(e.index, e.rowData);
-    this.isEditing = false;
   }
 
   calcelOnClick(e) {
-    //this.cancel401_dtlRow(e.index, e.rowData);
-    this.rowData[e.index] = _.cloneDeep(
-      this.tbppsm102EditCacheList[e.index].data
-    );
-    this.gridApi.setRowData(this.rowData);
   }
 
   save401_dtlRow(i, data) {
@@ -700,6 +682,9 @@ export class PPSI205A401Component implements AfterViewInit {
     // oldlist存放更新根據的條件(複合主鍵:IMPORTDATETIME+PLANT_CODE+ORDER_ID)
     this.oldlist = data;
     this.newlist = data;
+    this.newlist.startDate = moment(this.newlist.startDate).format('YYYY-MM-DD')
+    this.newlist.MAX_DATE = moment(this.newlist.MAX_DATE).format('YYYY-MM-DD')
+    this.newlist.STARTDATE = moment(this.newlist.STARTDATE).format('YYYY-MM-DD')
 
     let importdatetime = this.newlist.IMPORTDATETIME;
     let plantCode = this.newlist.PLANT_CODE;
@@ -727,9 +712,9 @@ export class PPSI205A401Component implements AfterViewInit {
       this.Modal.confirm({
         nzTitle: '是否確定存檔',
         nzOnOk: () => {
-          this.Save401OK(i), (this.EditMode[i] = true);
+          this.Save401OK(i);
         },
-        nzOnCancel: () => (this.EditMode[i] = true),
+        nzOnCancel: () => {},
       });
     }
   }
@@ -754,7 +739,6 @@ export class PPSI205A401Component implements AfterViewInit {
           console.log(res);
           if (res[0].MSG === 'Y') {
             this.LoadingPage = true;
-            this.EditMode[col] = false;
             this.oldlist = [];
             this.newlist = [];
             this.getTbppsm102ListAll();
@@ -764,7 +748,6 @@ export class PPSI205A401Component implements AfterViewInit {
           } else {
             this.errorMSG('修改存檔失敗', res[0].MSG);
             this.LoadingPage = false;
-            this.EditMode[col] = true;
           }
         },
         (err) => {
