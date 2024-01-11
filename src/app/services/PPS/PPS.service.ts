@@ -839,7 +839,7 @@ export class PPSService {
   getCalendarList(_YM, _SHOP, _EQUIP) {
     console.log('api service getCalendarList');
     let queryUrl =
-      this.APIURL + `/FCP/I202/getCalendarList/${_YM}/${_SHOP}/${_EQUIP}`;
+      this.APINEWURL + `/FCP/I202/getCalendarList/${_YM}/${_SHOP}/${_EQUIP}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -847,17 +847,17 @@ export class PPSService {
   getCalendarDtlList(_type, _date, _mode, _PickShopCode, _equip) {
     console.log('api service getCalendarDtlList');
     let queryUrl =
-      this.APIURL +
+      this.APINEWURL +
       `/FCP/I202/getCalendarDtlList/${_type}/${_date}/${_mode}/${_PickShopCode}/${_equip}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //addCalendarData 定修計畫insert存檔
   addCalendarData(_result) {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/addCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/addCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //importExcelCalendar 定修計畫EXCEL匯入
@@ -865,7 +865,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/importExcel';
+    let queryUrl = this.APINEWURL + '/FCP/I202/importExcel';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -874,7 +874,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/updCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/updCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //delCalendarData 定修計畫刪除資料
@@ -882,7 +882,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/delCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/delCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 

@@ -178,6 +178,11 @@ import { PPSI111EditShopCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_
 import { PPSI111EditMachineCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditMachineCellEditorComponent';
 import { PPSI111EditCombinCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditCombinCellEditorComponent';
 import { DatePickerCellEditor } from './pages/RENDERER/DatePickerCellEditor.component';
+import { PPSI202EditEndTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditEndTimeeCellEditorComponent';
+import { PPSI202EditEquipCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditEquipCellEditorComponent';
+import { PPSI202EditShopCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShopCellEditorComponent';
+import { PPSI202EditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShutdownTypeCellEditorComponent';
+import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditStartTimeCellEditorComponent';
 
 registerLocaleData(zh);
 
@@ -328,7 +333,12 @@ registerLocaleData(zh);
     PPSI111EditShopCellEditorComponent,
     PPSI111EditMachineCellEditorComponent,
     PPSI111EditCombinCellEditorComponent,
-    DatePickerCellEditor
+    DatePickerCellEditor,
+    PPSI202EditEndTimeCellEditorComponent,
+    PPSI202EditEquipCellEditorComponent,
+    PPSI202EditShopCellEditorComponent,
+    PPSI202EditShutdownTypeCellEditorComponent,
+    PPSI202EditStartTimeCellEditorComponent
   ],
   imports: [
     BrowserModule,

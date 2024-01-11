@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators';
 import { Component, AfterViewInit, NgZone } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
@@ -17,6 +18,14 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import zh from '@angular/common/locales/zh';
 import { PPSI202DataTransferService } from "../PPSI202_TabMenu/PPSI202DataTransferService";
+import { CellDoubleClickedEvent, CellEditingStoppedEvent, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams } from "ag-grid-community";
+import { PPSI202_NonBarEditButtonRendererComponent } from "../PPSI202_NonBar/PPSI202_NonBarEditButtonRendererComponent";
+import { PPSI202EditStartTimeCellEditorComponent } from "./PPSI202EditStartTimeCellEditorComponent";
+import { PPSI202EditEndTimeCellEditorComponent } from "./PPSI202EditEndTimeeCellEditorComponent";
+import { DisabledTimeConfig } from "ng-zorro-antd/date-picker";
+import { PPSI202EditShopCellEditorComponent } from "./PPSI202EditShopCellEditorComponent";
+import { PPSI202EditEquipCellEditorComponent } from "./PPSI202EditEquipCellEditorComponent";
+import { PPSI202EditShutdownTypeCellEditorComponent } from "./PPSI202EditShutdownTypeCellEditorComponent";
 registerLocaleData(zh);
 
 
@@ -47,6 +56,7 @@ export class PPSI202Component implements AfterViewInit {
 
   CalendarList;            // 定修時間清單
   CalendarDtlList;         // 定修時間清單(明細)
+  calendarDtlCacheList = [];// 定修時間清單(明細)更新用的緩存
   CalendarDisplay;         // 定修時間清單(excel)
   selectedValue;           // 日曆
   pickCalendar = [];       // 已挑選日期
@@ -63,7 +73,7 @@ export class PPSI202Component implements AfterViewInit {
   MODEL_TYPE;   // 停機模式
   showShopEquip;  // 氣泡顯示--暫不使用
   currentmonth;   // 目前顯示月份
-
+  shopListForEdit : any[] = []; // 編輯專用的站別選項清單
 
   titleArray = [
     "停機開始時間",
@@ -88,6 +98,70 @@ export class PPSI202Component implements AfterViewInit {
   
   nzPagination:any ;
 
+  // ag grid Api物件
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext : any;
+
+  // 表格共有設定定義
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      resizable: true,
+      autoHeight: true,
+      editable: true
+    }
+  };
+
+  // 共用使用非直棒的cellEditor component
+  ppsinptb06ColumnDefs: ColDef[] = [
+    { 
+      headerName:'開始時間',
+      field: 'START_TIME', 
+      width: 220,
+      cellEditor : PPSI202EditStartTimeCellEditorComponent,
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
+      },
+    },
+    { 
+      headerName:'結束時間',
+      field: 'END_TIME', 
+      width: 220,
+      cellEditor : PPSI202EditEndTimeCellEditorComponent,
+      valueFormatter: (params: ValueFormatterParams): string => {
+        return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
+      },
+    },
+    { 
+      headerName:'站別',
+      field: 'SCH_SHOP_CODE', 
+      cellEditor : PPSI202EditShopCellEditorComponent,
+      width: 120 
+    },
+    { 
+      headerName:'機台',
+      field: 'EQUIP_CODE', 
+      cellEditor : PPSI202EditEquipCellEditorComponent,
+      width: 120 
+    },
+    { 
+      headerName:'停機模式',
+      field: 'MODEL_TYPE', 
+      cellEditor : PPSI202EditShutdownTypeCellEditorComponent,
+      width: 140 
+    },
+    { 
+      headerName:'Action',
+      field: 'action', 
+      width: 180,
+      editable: false,
+      filter : false,
+      cellRenderer : PPSI202_NonBarEditButtonRendererComponent
+    }
+  ];
+
   constructor(
     private router: Router,
     private getPPSService: PPSService,
@@ -103,11 +177,14 @@ export class PPSI202Component implements AfterViewInit {
 
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.agGridContext = {
+      componentParent: this,
+    };
   }
 
   ngAfterViewInit() {
     console.log("ngAfterViewChecked");
-    this.getSHOP_CODEList();
+    this.getSHOP_CODEList(false);
     this.getCalendarList("1911-01", "　", "　");
     this.getRunFCPCount();
     setTimeout(()=>{
@@ -128,9 +205,232 @@ export class PPSI202Component implements AfterViewInit {
     });
   }
 
+  async deleteRow(params: ICellRendererParams<any, any>){
+
+    this.Modal.confirm({
+      nzTitle: '確定刪除資料?',
+      nzOkText: '確定',
+      nzCancelText:'取消',
+       nzOnOk: async () => {
+        this.delete_dtlRow(params.rowIndex, params.data);
+      },
+      nzOnCancel: () => {
+      },
+    });
+
+  }
+
+  editSave(params: ICellRendererParams<any, any>){
+    this.save_dtlRow(params.rowIndex, params.data);
+  }
+
+  cancalEditRow(params: ICellRendererParams<any, any>){
+    params.api.stopEditing(false);
+    this.CalendarDtlList[params.node.rowIndex] = _.cloneDeep(
+      this.calendarDtlCacheList[params.node.rowIndex]
+    );
+    this.gridApi.setRowData(this.CalendarDtlList);
+  }
+
+  editRow(params: ICellRendererParams<any, any>){
+    // 控制編輯按鈕的顯示切換
+    params.data.hasEdit = true;
+    // 使用ag-grid提供的api開啟整行進入編輯狀態
+    // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+    // 但一定要帶值，且帶的該欄位是要可編輯的
+    params.api.startEditingCell({
+      rowIndex : params.rowIndex,
+      colKey : 'START_TIME' 
+    });
+
+    this.upd_dtlRow(params.rowIndex, params.data);
+  }
+
+  cellDoubleClickedHandler(event: CellDoubleClickedEvent<any, any>) {
+    event.data.hasEdit = true;
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    // 排除 "hasEdit" 屬性，不列入後續的資料比較
+    const newValue = _.omit(event.data, ['hasEdit', 'equipOptionListForUpdate', 'disabledShutdownEndtime', 'isDisabledHourPlusOne', 'shutdownEndtimeTooltipTitle']) as any;
+    const oldValue = _.omit(this.calendarDtlCacheList[event.rowIndex], ['hasEdit', 'equipOptionListForUpdate', 'disabledShutdownEndtime', 'isDisabledHourPlusOne', 'shutdownEndtimeTooltipTitle']) as any;
+
+    newValue.START_TIME = newValue.START_TIME.toString();
+    newValue.END_TIME = newValue.END_TIME.toString();
+    oldValue.START_TIME = oldValue.START_TIME.toString();
+    oldValue.END_TIME = oldValue.END_TIME.toString();
+
+    if (_.isEqual(oldValue, newValue)) {
+      event.data.hasEdit = false;
+    } else {
+      event.data.hasEdit = true;
+    } 
+  }
+
+  // 獲取ag-grid的Api物件
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+  
+
+  startTimeStartChange(params: ICellEditorParams) : void {
+
+    if(_.isNil(params.data.START_TIME)){
+      params.data.END_TIME = null;
+      params.data.disabledShutdownEndtime = true;
+      params.data.shutdownEndtimeTooltipTitle = '請先選擇「開始時間」';
+      return;
+    }
+  
+    const selectedholidayTimeStartHour = params.data.START_TIME.getHours();
+    const selectedholidayTimeStartMinute = params.data.START_TIME.getMinutes();
+    const selectedholidayTimeStartSecond = params.data.START_TIME.getSeconds();
+
+    if(selectedholidayTimeStartHour === 23 &&
+       selectedholidayTimeStartMinute === 59 &&
+       selectedholidayTimeStartSecond === 59){
+        params.data.disabledShutdownEndtime = true;
+        params.data.shutdownEndtimeTooltipTitle = '「開始時間」已達最後時刻，無「休假時間」可選，請調整開始時間';
+    }
+    else{
+      params.data.disabledShutdownEndtime = false;
+      params.data.shutdownEndtimeTooltipTitle = '';
+    }
+  }
+
+  disabledDate(params: ICellEditorParams){
+
+    return (current: Date): boolean => {
+  
+      const currentDate = moment(moment(current).format('YYYY-MM-DD'));
+      const startDate = moment(moment(params.data.START_TIME).format('YYYY-MM-DD'));
+  
+      // 禁止選擇比停機開始時間還早的時間
+      const disabledBeforeStratTime = currentDate.isBefore(startDate, 'days');
+  
+      // 禁止選擇比停機開始時間還晚超過一天時間
+      const disabledAfterMoreThanOneDayLaterStratTime = currentDate.diff(startDate, 'days') > 1;
+  
+      return disabledBeforeStratTime || disabledAfterMoreThanOneDayLaterStratTime;
+    }
+  }
+
+  disabledEndTime(params: ICellEditorParams) {
+
+    return () : DisabledTimeConfig => (
+        {
+          nzDisabledHours:  this.disabledHours(params),
+          nzDisabledMinutes: this.disabledMinutes(params),
+          nzDisabledSeconds: this.disabledSeconds(params)
+        } 
+    );
+ }
+
+ // 限制使用者的休假結束時間不能小於休假開始時間
+ disabledHours(params: ICellEditorParams){
+  const _holidayTimeStart = params.data.START_TIME;
+
+  return () :  number[] => {
+
+    params.data.END_TIME = null;
+
+    let disabledHoursNums : number[] = [];
+    let selectedholidayTimeStartHour = _holidayTimeStart.getHours();
+    const selectedholidayTimeStartMinute = _holidayTimeStart.getMinutes();
+    const selectedholidayTimeStartSecond = _holidayTimeStart.getSeconds();
+
+    if(selectedholidayTimeStartMinute === 59 && selectedholidayTimeStartSecond === 59){
+      selectedholidayTimeStartHour++;
+    params.data.isDisabledHourPlusOne = true;
+    }
+    else{
+      params.data.isDisabledHourPlusOne = false;
+    }
+
+    for (let i = 0; i < selectedholidayTimeStartHour; i++) {
+      disabledHoursNums.push(i);
+    }
+
+    return disabledHoursNums;
+  }
+}
+
+disabledMinutes(params: ICellEditorParams) {
+
+  const _holidayTimeStart = params.data.START_TIME;
+  const _isDisabledHourPlusOne = params.data.isDisabledHourPlusOne;
+
+  return  (hour: number) : number[] => {
+    const selectedholidayTimeStartHour = _holidayTimeStart.getHours();
+
+    if(_isDisabledHourPlusOne || selectedholidayTimeStartHour !== hour){
+      return [];
+    }
+
+    let disabledMinutesNums : number[] = [];
+
+    let selectedholidayTimeStartMinute = _holidayTimeStart.getMinutes();
+    const selectedholidayTimeStartSecond = _holidayTimeStart.getSeconds();
+
+    if(selectedholidayTimeStartSecond === 59){
+      selectedholidayTimeStartMinute++;
+    }
+
+    for (let i = 0; i < selectedholidayTimeStartMinute; i++) {
+      disabledMinutesNums.push(i);
+    }
+
+    return disabledMinutesNums;
+    }
+  }
+
+  disabledSeconds(params: ICellEditorParams) {
+
+    const _holidayTimeStart = params.data.START_TIME;
+    const _isDisabledHourPlusOne = params.data.isDisabledHourPlusOne;
+  
+    return (hour: number, minute: number) : number[] => {
+  
+      const selectedholidayTimeStartHour = _holidayTimeStart.getHours();
+  
+      if(_isDisabledHourPlusOne || selectedholidayTimeStartHour !== hour){
+        return [];
+      }
+  
+      if( _holidayTimeStart.getMinutes() !==  minute){
+        return [];
+      }
+  
+      let disabledSecondsNums : number[] = [];
+      const selectedholidayTimeStartSecond = _holidayTimeStart.getSeconds();
+      for (let i = 0; i <= selectedholidayTimeStartSecond; i++) {
+        disabledSecondsNums.push(i);
+      }
+  
+      return disabledSecondsNums;
+    }
+  }
+
+  holidayTimeEndChange(params: ICellEditorParams){
+
+    // 如果停機開始日期與停機結束日期相差一天
+    // 停機開始時間與停機結束時間調整為一樣
+    // 這樣才符合相差一天(不能跨天)
+
+    const startDate = moment(params.data.START_TIME);
+    const endDate = moment(params.data.END_TIME);
+    
+    if(Math.abs(startDate.diff(endDate)) > 86400000){
+      params.data.END_TIME = moment(`${endDate.year()}-${endDate.month()+1}-${endDate.date()} 00:00:00`).toDate();
+      this.message.warning('停機時段不得跨天，停機結束時間自動調整為零點');
+    }
+  }
+
   //Get Data
   //站別
-  getSHOP_CODEList() {
+  getSHOP_CODEList(forEdit : boolean) {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
@@ -141,6 +441,13 @@ export class PPSI202Component implements AfterViewInit {
       for(let i=0 ; i < this.SHOP_CODEList.length ; i++) {
         newres.push({label: this.SHOP_CODEList[i].SHOP_CODE, value: this.SHOP_CODEList[i].SHOP_CODE, checked :false});
       }
+
+      if(forEdit){
+        this.shopListForEdit = [...newres];
+        myObj.LoadingPage = false;
+        return;
+      }
+
       this.SHOP_CODEList = [...newres]; 
       this.SHOP_splitList =  _.chunk(newres, 5);    // list 6組 一分群
       
@@ -148,8 +455,26 @@ export class PPSI202Component implements AfterViewInit {
       myObj.LoadingPage = false;
     });
   }
+
+  async getEquipsByShopsForEditHandler(params : ICellEditorParams, shop : string) {
+
+
+
+    // 如果該站別對應的機台已有緩存則從緩存拿
+    // if(this.shopEquipMapPersist.has(shop)){
+    //   params.data.equipOptionList = _.cloneDeep(this.shopEquipMapPersist.get(shop))
+    // }
+    // // 沒有該站別對應機台，則發請求跟後端要
+    // // 一樣存到緩存中後，從緩存拿
+    // else{
+    //   await this.getEquipsByShops([shop]);
+    //   params.data.equipOptionList = _.cloneDeep(this.shopEquipMapPersist.get(shop))
+    // }
+
+  }
+
   //機台別
-  getEQUIP_CODEList(_ShopArr) {
+  getEQUIP_CODEList(_ShopArr, forUpdate : boolean, rowData : any) {
     if (_ShopArr.toString() !== "") {
       this.loading = true;
       this.LoadingPage = true;
@@ -158,9 +483,23 @@ export class PPSI202Component implements AfterViewInit {
         console.log("EQUIP_CODEList success");
         this.EQUIP_CODEList = res;
         var newres = [];
+        let _equipOptionListForUpdate = [];
         for(let i=0 ; i < this.EQUIP_CODEList.length ; i++) {
-          newres.push({SHOP_CODE: this.EQUIP_CODEList[i].SHOP_CODE, value: this.EQUIP_CODEList[i].EQUIP_CODE, checked :false});
+          if(forUpdate){
+            _equipOptionListForUpdate.push(this.EQUIP_CODEList[i].EQUIP_CODE);
+           
+          }
+          else{
+            newres.push({SHOP_CODE: this.EQUIP_CODEList[i].SHOP_CODE, value: this.EQUIP_CODEList[i].EQUIP_CODE, checked :false});
+          }
         }
+
+        // 每行休假資訊站別對應的機台
+        if(forUpdate){
+          rowData.equipOptionListForUpdate = _equipOptionListForUpdate;
+          return;
+        }
+
         if(this.PickEquipCode.length > 0) {
           for (let j=0; j< newres.length; j++) {    // 判斷目前機台及已挑選機台
             for(let k=0 ; k< this.PickEquipCode.length; k++) {
@@ -183,7 +522,7 @@ export class PPSI202Component implements AfterViewInit {
     }
   }
   // 取得定修計畫內容
-  getCalendarList(_YM, _SHOP, _EQUIP) {
+    getCalendarList(_YM, _SHOP, _EQUIP) {
     this.loading = true;
     this.LoadingPage = true;
     let myObj = this;
@@ -195,7 +534,6 @@ export class PPSI202Component implements AfterViewInit {
     });
   }
 
-  
   // 點擊站別控制項
   clickShopCode(_value) {
     console.log("clickShopCode ")
@@ -219,7 +557,7 @@ export class PPSI202Component implements AfterViewInit {
       })
       this.PickEquipCode = [...newEquip];
     }
-    this.getEQUIP_CODEList(this.PickShopCode);
+    this.getEQUIP_CODEList(this.PickShopCode, false, null);
 
     if (this.PickShopCode.length > 0 && this.PickEquipCode.length > 0) {
       this.queryEquip = [];
@@ -283,7 +621,7 @@ export class PPSI202Component implements AfterViewInit {
         this.PickShopCode.push(e.value);
       });      
 
-      this.getEQUIP_CODEList(this.PickShopCode);
+      this.getEQUIP_CODEList(this.PickShopCode, false, null);
     } else {
       this.SHOP_CODEList = this.SHOP_CODEList.map(item => ({
         ...item,
@@ -294,7 +632,7 @@ export class PPSI202Component implements AfterViewInit {
 
       this.PickShopCode = [];
       this.PickEquipCode = [];
-      this.getEQUIP_CODEList(this.PickShopCode);
+      this.getEQUIP_CODEList(this.PickShopCode, false, null);
     }
   }
   // 站別單選
@@ -399,47 +737,101 @@ export class PPSI202Component implements AfterViewInit {
       this.pickCalendar.splice(i, 1);
     }
   }
+
+  currentGetDtlParams;
+
   // 取得停機內容 (站別-機台-時間)
-  getDtl(_item) {
+  getDtl(_item) : Promise<void> {
     this.isVisibleDtl = true;
     this.EditMode = [];
     let newShopCode;
     let newEquip;
     if(this.PickShopCode.length === 0) newShopCode = ['x']; else newShopCode = this.PickShopCode;
     if(this.queryEquip.length === 0) newEquip = ['x']; else newEquip = this.queryEquip;
-    this.getPPSService.getCalendarDtlList('2', _item.S_DATE, _item.MODEL_TYPE, newShopCode, newEquip).subscribe(res => {
-      console.log("getCalendarDtlList success");
-      this.CalendarDtlList = res;
-      console.log(this.CalendarDtlList)
+    
+    console.log('this.queryEquip--->', this.queryEquip);
+
+    console.log('this.queryEquip.length--->', this.queryEquip.length);
+    
+
+
+    this.currentGetDtlParams = {
+      S_DATE : _item.S_DATE,
+      MODEL_TYPE : _item.MODEL_TYPE
+    };
+    return new Promise((resolve, reject) => {
+      this.getPPSService.getCalendarDtlList('2', _item.S_DATE, _item.MODEL_TYPE, newShopCode, newEquip).subscribe(res => {
+        console.log("getCalendarDtlList success");
+        this.CalendarDtlList = res.map(item => {
+          item.START_TIME = new Date(item.START_TIME);
+          item.END_TIME = new Date(item.END_TIME);
+          item.disabledShutdownEndtime = false;
+          item.shutdownEndtimeTooltipTitle = '';
+          item.isDisabledHourPlusOne = false;
+          item.equipOptionListForUpdate = [];
+          return item;
+        });
+        this.setupUpdateEditCache();
+        console.log('this.CalendarDtlList--->', this.CalendarDtlList)
+        resolve();
+      });
     });
+
   }
+
+   // 深拷貝緩存一份停機詳細資訊
+   setupUpdateEditCache(): void {
+    this.calendarDtlCacheList = _.cloneDeep(this.CalendarDtlList);
+  }
+
+
+
   //關閉定修計畫詳細資料
   Cdtl_Cancel() {
-    let colsed = false;
+    // let colsed = false;
 
-    if(this.EditMode.length > 0) {
-      for(let i=0 ; i < this.EditMode.length; i++) {
-        if(this.EditMode[i]) {
-          colsed = true;
-          break;
-        }
-      }
-    }
+    // if(this.EditMode.length > 0) {
+    //   for(let i=0 ; i < this.EditMode.length; i++) {
+    //     if(this.EditMode[i]) {
+    //       colsed = true;
+    //       break;
+    //     }
+    //   }
+    // }
 
-    if(colsed) {
-      this.isVisibleDtl = true;
+    // if(colsed) {
+    //   this.isVisibleDtl = true;
 
-      this.Modal.confirm({
-        nzTitle: '訊息提示',
-        nzContent: '<b style="color: red;"> 修改模式中，尚未存檔，是否繼續修改？</b>',
-        nzOkText: '繼續修改',
-        nzOnOk: () => this.isVisibleDtl = true,
-        nzCancelText: '放棄修改',
-        nzOnCancel: () => this.Cdtl_ok()
+    //   this.Modal.confirm({
+    //     nzTitle: '訊息提示',
+    //     nzContent: '<b style="color: red;"> 修改模式中，尚未存檔，是否繼續修改？</b>',
+    //     nzOkText: '繼續修改',
+    //     nzOnOk: () => this.isVisibleDtl = true,
+    //     nzCancelText: '放棄修改',
+    //     nzOnCancel: () => this.Cdtl_ok()
 
+    //   });
+    // }
+
+    this.gridApi.stopEditing(false);
+    
+    setTimeout(()=> {
+      const hasEditingRowData = this.CalendarDtlList.filter(item => {
+        return item.hasEdit;
       });
+  
+      if(hasEditingRowData.length > 0){
+           this.Modal.confirm({
+          nzTitle: '訊息提示',
+          nzContent: '<b style="color: red;"> 尚有未提交的資料，是否回頭保存？</b>',
+          nzOkText: '回頭保存',
+          nzOnOk: () => this.isVisibleDtl = true,
+          nzCancelText: '放棄保存',
+          nzOnCancel: () => this.Cdtl_ok()
+        });
+      }  
+    }, 1);
 
-    }
     this.isVisibleDtl = false;
   }
   //確定定修計畫詳細資料
@@ -517,7 +909,7 @@ export class PPSI202Component implements AfterViewInit {
           this.indeterminate_shop = false;
           this.allChecked = false;
           this.indeterminate = false;
-          this.getSHOP_CODEList();
+          this.getSHOP_CODEList(false);
 
           this.loading = false;
           this.LoadingPage = false;
@@ -630,7 +1022,9 @@ export class PPSI202Component implements AfterViewInit {
   }
 
   clearFile() {
-    var objFile = document.getElementsByTagName('input')[1];
+    var objFile = document.querySelector('#fileupload') as HTMLInputElement;
+    console.log('objFile--->', objFile);
+    
     console.log(objFile.value + "已清除");
     objFile.value = "";
     console.log(this.file)
@@ -749,13 +1143,14 @@ export class PPSI202Component implements AfterViewInit {
             this.indeterminate_shop = false;
             this.allChecked = false;
             this.indeterminate = false;
-            this.getSHOP_CODEList();
+            this.getSHOP_CODEList(false);
 
             this.loading = false;
             this.LoadingPage = false;
 
             this.sucessMSG("EXCCEL上傳成功", "");
             this.getCalendarList("1911-01", "　", "　");
+            this.clearFile();
           } else {
             this.errorMSG("匯入錯誤", res[0].MSG);
             this.clearFile();
@@ -777,11 +1172,15 @@ export class PPSI202Component implements AfterViewInit {
     console.log("--------upd_dtlRow-----");
     this.oldlist = {...data};
 
+    this.oldlist['START_TIME'] = moment(this.oldlist['START_TIME']).format('YYYY-MM-DD HH:mm:ss');
+    this.oldlist['END_TIME'] = moment(this.oldlist['END_TIME']).format('YYYY-MM-DD HH:mm:ss');
+
+
     if (this.EQUIP_CODEList === undefined) {
-      this.EQUIP_CODEList = this.getEQUIP_CODEList(data.SCH_SHOP_CODE);
+      this.EQUIP_CODEList = this.getEQUIP_CODEList(data.SCH_SHOP_CODE, false, null);
     } else {
       if(this.EQUIP_CODEList[0].SCH_SHOP_CODE !== data.SCH_SHOP_CODE) {
-        this.EQUIP_CODEList = this.getEQUIP_CODEList(data.SCH_SHOP_CODE);
+        this.EQUIP_CODEList = this.getEQUIP_CODEList(data.SCH_SHOP_CODE, false, null);
       }
     }
     let colsed = false;
@@ -795,8 +1194,8 @@ export class PPSI202Component implements AfterViewInit {
     }
 
     if(colsed) {
-      this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
-      return;
+      // this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
+      // return;
     } else {
       this.EditMode[i] = true;
     }
@@ -810,11 +1209,16 @@ export class PPSI202Component implements AfterViewInit {
 
     let START_TIME = this.newlist.START_TIME;
     let END_TIME = this.newlist.END_TIME;
+    let diff = this.dayDiff(START_TIME, END_TIME);
+
+    START_TIME = moment(START_TIME).format('YYYY-MM-DD HH:mm:ss');
+    END_TIME = moment(END_TIME).format('YYYY-MM-DD HH:mm:ss');
     let SCH_SHOP_CODE = this.newlist.SCH_SHOP_CODE;
     let EQUIP_CODE = this.newlist.EQUIP_CODE;
     let MODEL_TYPE = this.newlist.MODEL_TYPE;
 
-    let diff = this.dayDiff(new Date(START_TIME), new Date(END_TIME));
+    this.newlist.START_TIME = START_TIME;
+    this.newlist.END_TIME = END_TIME;
 
     console.log(START_TIME)
     console.log(END_TIME)
@@ -857,11 +1261,8 @@ export class PPSI202Component implements AfterViewInit {
   // 確定修改存檔
   SaveOK(col) {
     console.log("SaveOK-------------------------------------")
-    console.log("oldlist :")
-    console.log(this.oldlist);
-
-    console.log("newlist :")
-    console.log(this.newlist)
+    console.log("oldlist-->", this.oldlist)
+    console.log("newlist-->", this.newlist)
 
     this.LoadingPage = true;
     let myObj = this;
@@ -874,13 +1275,18 @@ export class PPSI202Component implements AfterViewInit {
         USERCODE : this.USERNAME,
         DATETIME : this.datetime.format('YYYY-MM-DD HH:mm:ss')
 			})
-      myObj.getPPSService.updCalendarData(obj).subscribe(res => {
+      myObj.getPPSService.updCalendarData(obj).subscribe(async res => {
         if(res[0].MSG === "Y") {
           this.LoadingPage = false;
           this.isVisibleDtl = true;
           this.EditMode[col] = false;
           this.oldlist = [];
           this.getCalendarList("1911-01", "　", "　");
+          this.gridApi.stopEditing(false);
+          this.queryEquip = [];
+          await this.getDtl(this.currentGetDtlParams);
+          // 重新渲染停機資訊
+          this.gridApi.setRowData(this.CalendarDtlList);
           this.sucessMSG("修改存檔成功", "");
         } else {
           this.errorMSG("修改存檔失敗", res[0].MSG);
@@ -917,11 +1323,13 @@ export class PPSI202Component implements AfterViewInit {
       }
     }
     if(colsed) {
-      this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
-      return;
+      // this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
+      // return;
     } else {
       console.log("------delete_dtlRow-------");
       this.oldlist = data;
+      this.oldlist['START_TIME'] = moment(this.oldlist['START_TIME']).format('YYYY-MM-DD HH:mm:ss');
+      this.oldlist['END_TIME'] = moment(this.oldlist['END_TIME']).format('YYYY-MM-DD HH:mm:ss');
 
       this.LoadingPage = true;
       let myObj = this;
@@ -934,7 +1342,7 @@ export class PPSI202Component implements AfterViewInit {
           USERCODE : this.USERNAME,
           DATETIME : this.datetime.format('YYYY-MM-DD HH:mm:ss')
         })
-        myObj.getPPSService.delCalendarData(obj).subscribe(res => {
+        myObj.getPPSService.delCalendarData(obj).subscribe(async res => {
           if(res[0].MSG === "Y") {
 
             this.LoadingPage = false;
@@ -943,6 +1351,21 @@ export class PPSI202Component implements AfterViewInit {
             this.oldlist = [];
 
             this.sucessMSG("刪除成功", "");
+            this.queryEquip = [];
+            this.getCalendarList("1911-01", "　", "　");
+            await this.getDtl(this.currentGetDtlParams);
+             // 如果該顯示停機資訊的表格中資料被刪完
+            // 則關閉modal彈出視窗
+            if(_.isEmpty(this.CalendarDtlList)){
+              this.message.success('停機資訊已被刪除完了');
+              this.isVisibleDtl = false;
+              return;
+            }
+
+            // 重新渲染停機資訊
+            this.gridApi.setRowData(this.CalendarDtlList);
+
+            this.LoadingPage = false;
           } else {
             this.errorMSG("刪除失敗", res[0].MSG);
             this.LoadingPage = false;

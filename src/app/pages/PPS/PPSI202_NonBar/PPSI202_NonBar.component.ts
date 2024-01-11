@@ -1349,10 +1349,15 @@ holidayTimeEndChange(params: ICellEditorParams){
 
   cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
     // 排除 "hasEdit" 屬性，不列入後續的資料比較
-    const newValue = _.omit(event.data, ['hasEdit']);
+    const newValue = _.omit(event.data, ['hasEdit']) as any;
     const oldValue = _.omit(this.ppsinptb06EditCacheList[event.rowIndex], [
       'hasEdit',
-    ]);
+    ]) as any;
+
+    newValue.startTime = newValue.startTime.toString();
+    newValue.endTime = newValue.endTime.toString();
+    oldValue.startTime = oldValue.startTime.toString();
+    oldValue.endTime = oldValue.endTime.toString();
 
     if (_.isEqual(oldValue, newValue)) {
       event.data.hasEdit = false;
