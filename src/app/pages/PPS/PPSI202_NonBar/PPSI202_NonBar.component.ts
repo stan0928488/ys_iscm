@@ -19,6 +19,7 @@ import { PPSI202_NonBarEditShopCellEditorComponent } from './PPSI202_NonBarEditS
 import { PPSI202_NonBarEditEquipCellEditorComponent } from './PPSI202_NonBarEditEquipCellEditorComponent';
 import { PPSI202_NonBarEditShutdownTypeCellEditorComponent } from './PPSI202_NonBarEditShutdownTypeCellEditorComponent';
 import { DisabledTimeConfig, DisabledTimeFn } from 'ng-zorro-antd/date-picker';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 @Component({
   selector: 'app-ppsi202-non-bar',
@@ -143,6 +144,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
       },
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'停機結束時間',
@@ -152,24 +154,28 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
       },
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'站別',
       field: 'shopCode', 
       cellEditor : PPSI202_NonBarEditShopCellEditorComponent,
-      width: 120 
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機台',
       field: 'equipCode', 
       cellEditor : PPSI202_NonBarEditEquipCellEditorComponent,
-      width: 120 
+      width: 120,
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'停機模式',
       field: 'shutdownModelType', 
       cellEditor : PPSI202_NonBarEditShutdownTypeCellEditorComponent,
-      width: 140 
+      width: 140,
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'Action',
@@ -177,7 +183,8 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       width: 180,
       editable: false,
       filter : false,
-      cellRenderer : PPSI202_NonBarEditButtonRendererComponent
+      cellRenderer : PPSI202_NonBarEditButtonRendererComponent,
+      headerComponent : AGCustomHeaderComponent
     }
   ];
 
@@ -369,7 +376,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       const resObservable$ = this.ppsService.getNonBarShopList();
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取非直棒站別失敗',
           `請聯繫系統工程師。錯誤訊息 --> ${res.message}`
@@ -569,7 +576,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       const resObservable$ = this.ppsService.getEquipsByShopList(payload);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取非直棒機台資料異常',
           `請聯繫系統工程師。錯誤訊息 --> ${res.message}`
@@ -715,7 +722,7 @@ export class PPSI202NonBarComponent implements OnInit, AfterViewInit {
       const resObservable$ = this.ppsService.batchSaveShutdownList(payload);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '新增失敗',
           res.message
@@ -1185,7 +1192,7 @@ holidayTimeEndChange(params: ICellEditorParams){
       const resObservable$ = this.ppsService.updateShutdownData(shutdownData);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '更新失敗',
           res.message
@@ -1292,7 +1299,7 @@ holidayTimeEndChange(params: ICellEditorParams){
       const resObservable$ = this.ppsService.deleteShutdownData({oldData:oldData});
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '刪除失敗',
           res.message
@@ -1349,10 +1356,8 @@ holidayTimeEndChange(params: ICellEditorParams){
 
   cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
     // 排除 "hasEdit" 屬性，不列入後續的資料比較
-    const newValue = _.omit(event.data, ['hasEdit']) as any;
-    const oldValue = _.omit(this.ppsinptb06EditCacheList[event.rowIndex], [
-      'hasEdit',
-    ]) as any;
+    const newValue = _.omit(event.data, ['hasEdit', 'disabledShutdownEndtime', 'shutdownEndtimeTooltipTitle', 'isDisabledHourPlusOne', 'equipOptionList']) as any;
+    const oldValue = _.omit(this.ppsinptb06EditCacheList[event.rowIndex], ['hasEdit', 'disabledShutdownEndtime', 'shutdownEndtimeTooltipTitle', 'isDisabledHourPlusOne', 'equipOptionList']) as any;
 
     newValue.startTime = newValue.startTime.toString();
     newValue.endTime = newValue.endTime.toString();
@@ -1424,7 +1429,7 @@ holidayTimeEndChange(params: ICellEditorParams){
       const resObservable$ = this.ppsService.getShutdownDataListForExcelExport(year, month);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
+      if(res.code !== 200){
         this.errorMSG(
           '獲取當月停機資料失敗',
           res.message
@@ -1588,12 +1593,12 @@ holidayTimeEndChange(params: ICellEditorParams){
       const resObservable$ = this.ppsService.batchSaveShutdownListForExcelImport(this.jsonExcelData);
       const res = await firstValueFrom<any>(resObservable$);
 
-      if(res.code !== 1){
-        this.errorMSG('新增失敗', res.message);
+      if(res.code !== 200){
+        this.errorMSG('匯入失敗', res.message);
       }
       else{
         await this.getShutdownDataList();
-        this.sucessMSG('新增成功', res.message);
+        this.sucessMSG('匯入成功', res.message);
       }
     }
     catch (error) {

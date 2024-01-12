@@ -2174,7 +2174,7 @@ export class PPSService {
 
   getNonBarShopList() {
     console.log('Api Service 獲取非直棒站別資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShopList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShopList`;
     console.log(`Api Service 獲取非直棒站別資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取非直棒站別資料 參數 -> 無`);
     return this.http.get(queryUrl);
@@ -2182,7 +2182,7 @@ export class PPSService {
 
   getEquipsByShopList(shopList: any) {
     console.log('Api Service 獲取非直棒機台資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getEquipsByShopList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getEquipsByShopList`;
     console.log(`Api Service 獲取非直棒機台資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 獲取非直棒機台資料 參數 -> ${JSON.stringify(shopList)}`
@@ -2192,7 +2192,7 @@ export class PPSService {
 
   batchSaveShutdownList(ppsI202NonBarRequest: any) {
     console.log('Api Service 批次新增非直棒停機定修表');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/batchSaveShutdownList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/batchSaveShutdownList`;
     console.log(`Api Service 批次新增非直棒停機定修表 url -> ${queryUrl}`);
     console.log(
       `Api Service 批次新增非直棒停機定修表 參數 -> ${JSON.stringify(
@@ -2204,7 +2204,7 @@ export class PPSService {
 
   batchSaveShutdownListForExcelImport(jsonExcelData: any[]) {
     console.log('Api Service 批次Excel匯入非直棒停機定修資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/batchSaveShutdownListForExcelImport`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/batchSaveShutdownListForExcelImport`;
     console.log(
       `Api Service 批次Excel匯入非直棒停機定修資料 url -> ${queryUrl}`
     );
@@ -2218,7 +2218,7 @@ export class PPSService {
 
   getShutdownDataList(parms: any) {
     console.log('Api Service 獲取非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShutdownDataList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShutdownDataList`;
     console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(parms)}`
@@ -2229,7 +2229,7 @@ export class PPSService {
   getShutdownDataListForExcelExport(year: string, month: string) {
     const httpParams = new HttpParams().set('year', year).set('month', month);
     console.log('Api Service 獲取非直棒停機資料(for Excel下載)');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShutdownDataListForExcelExport`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShutdownDataListForExcelExport`;
     console.log(
       `Api Service 獲取非直棒停機資料(for Excel下載) url -> ${queryUrl}`
     );
@@ -2244,7 +2244,7 @@ export class PPSService {
 
   updateShutdownData(shutdownData: any) {
     console.log('Api Service 更新非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/updateShutdownData`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/updateShutdownData`;
     console.log(`Api Service 更新非直棒停機資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 更新非直棒停機資料 參數 -> ${JSON.stringify(shutdownData)}`
@@ -2254,7 +2254,7 @@ export class PPSService {
 
   deleteShutdownData(deleteCondition: any) {
     console.log('Api Service 刪除非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/deleteShutdownData`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/deleteShutdownData`;
     // console.log(`Api Service 刪除非直棒停機資料 url -> ${queryUrl}`);
     // console.log(
     //   `Api Service 刪除非直棒停機資料 參數 -> ${JSON.stringify(

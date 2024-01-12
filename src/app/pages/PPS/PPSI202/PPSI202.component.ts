@@ -26,6 +26,7 @@ import { DisabledTimeConfig } from "ng-zorro-antd/date-picker";
 import { PPSI202EditShopCellEditorComponent } from "./PPSI202EditShopCellEditorComponent";
 import { PPSI202EditEquipCellEditorComponent } from "./PPSI202EditEquipCellEditorComponent";
 import { PPSI202EditShutdownTypeCellEditorComponent } from "./PPSI202EditShutdownTypeCellEditorComponent";
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
 
 
@@ -124,6 +125,7 @@ export class PPSI202Component implements AfterViewInit {
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
       },
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'結束時間',
@@ -133,32 +135,33 @@ export class PPSI202Component implements AfterViewInit {
       valueFormatter: (params: ValueFormatterParams): string => {
         return moment(params.value).format('YYYY-MM-DD HH:mm:ss')
       },
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'站別',
       field: 'SCH_SHOP_CODE', 
       cellEditor : PPSI202EditShopCellEditorComponent,
-      width: 120 
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'機台',
       field: 'EQUIP_CODE', 
       cellEditor : PPSI202EditEquipCellEditorComponent,
-      width: 120 
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'停機模式',
       field: 'MODEL_TYPE', 
       cellEditor : PPSI202EditShutdownTypeCellEditorComponent,
-      width: 140 
+      headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'Action',
       field: 'action', 
-      width: 180,
       editable: false,
       filter : false,
-      cellRenderer : PPSI202_NonBarEditButtonRendererComponent
+      cellRenderer : PPSI202_NonBarEditButtonRendererComponent,
+      headerComponent : AGCustomHeaderComponent
     }
   ];
 
