@@ -751,12 +751,6 @@ disabledMinutes(params: ICellEditorParams) {
     let newEquip;
     if(this.PickShopCode.length === 0) newShopCode = ['x']; else newShopCode = this.PickShopCode;
     if(this.queryEquip.length === 0) newEquip = ['x']; else newEquip = this.queryEquip;
-    
-    console.log('this.queryEquip--->', this.queryEquip);
-
-    console.log('this.queryEquip.length--->', this.queryEquip.length);
-    
-
 
     this.currentGetDtlParams = {
       S_DATE : _item.S_DATE,
@@ -826,16 +820,19 @@ disabledMinutes(params: ICellEditorParams) {
       if(hasEditingRowData.length > 0){
            this.Modal.confirm({
           nzTitle: '訊息提示',
-          nzContent: '<b style="color: red;"> 尚有未提交的資料，是否回頭保存？</b>',
-          nzOkText: '回頭保存',
-          nzOnOk: () => this.isVisibleDtl = true,
-          nzCancelText: '放棄保存',
-          nzOnCancel: () => this.Cdtl_ok()
+          nzContent: '<b style="color: red;"> 尚有未提交的資料，是否仍然關閉？</b>',
+          nzOkText: '關閉',
+          nzOnOk: () => {
+            this.isVisibleDtl = false;
+          },
+          nzCancelText: '取消',
+          nzOnCancel: () => {}
         });
+      }
+      else{
+        this.isVisibleDtl = false;
       }  
     }, 1);
-
-    this.isVisibleDtl = false;
   }
   //確定定修計畫詳細資料
   Cdtl_ok() {
@@ -1317,18 +1314,18 @@ disabledMinutes(params: ICellEditorParams) {
   // 明細刪除
   delete_dtlRow(i, data) {
     let colsed = false;
-    if(this.EditMode.length > 0) {
-      for(let i=0 ; i < this.EditMode.length; i++) {
-        if(this.EditMode[i]) {
-          colsed = true;
-          break;
-        }
-      }
-    }
-    if(colsed) {
-      // this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
-      // return;
-    } else {
+    // if(this.EditMode.length > 0) {
+    //   for(let i=0 ; i < this.EditMode.length; i++) {
+    //     if(this.EditMode[i]) {
+    //       colsed = true;
+    //       break;
+    //     }
+    //   }
+    // }
+    // if(colsed) {
+    //   // this.errorMSG("錯誤", "尚有資料未完成修改，請先存檔或取消");
+    //   // return;
+    // } else {
       console.log("------delete_dtlRow-------");
       this.oldlist = data;
       this.oldlist['START_TIME'] = moment(this.oldlist['START_TIME']).format('YYYY-MM-DD HH:mm:ss');
@@ -1383,7 +1380,7 @@ disabledMinutes(params: ICellEditorParams) {
         })
       });
 
-    }
+    // }
   }
 
 
