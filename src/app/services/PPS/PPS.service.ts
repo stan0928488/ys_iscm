@@ -507,19 +507,19 @@ export class PPSService {
   //Get getPPSINP10List 取得10tab data
   getPPSINP10List() {
     console.log('api service getPPSINP10List');
-    let queryUrl = this.APIURL + '/FCP/I110/getPPSINP10List';
+    let queryUrl = this.APINEWURL + '/FCP/I110_2/getPPSINP10List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I110 delI110Tab1Data 刪除資料
   delI110Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I110/delI110Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/delI110Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I110 insertI110Tab1Save
   insertI110Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I110/insertI110Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/insertI110Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -527,7 +527,7 @@ export class PPSService {
   // I110 updateI110Tab1Save修改存檔
   updateI110Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I110/updateI110Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/updateI110Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -535,7 +535,7 @@ export class PPSService {
 
   // I110 刪除所有資料
   deleteI110AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I110/deleteI110AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I110_2/deleteI110AllData`;
     console.log('刪除「直棒桶槽式工時」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -545,7 +545,7 @@ export class PPSService {
   // I110 批次新增資料
   batchSaveI110Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I110/batchSaveI110Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I110_2/batchSaveI110Data`;
     console.log('批次新增「直棒桶槽式工時」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
