@@ -1,13 +1,18 @@
-import { CommonService } from './../../../services/common/common.service';
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import {
+  ColDef,
+  ColGroupDef
+} from 'ag-grid-community';
+import * as _ from 'lodash';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { CommonService } from './../../../services/common/common.service';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface ItemData13 {
   id: string;
@@ -27,6 +32,8 @@ interface ItemData13 {
   providers: [NzMessageService],
 })
 export class PPSI121Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "直棒研磨道次(PPSI121)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -52,6 +59,45 @@ export class PPSI121Component implements AfterViewInit {
   isSpinning = false;
   excelImportFile: File;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {headerComponent: AGCustomHeaderComponent,headerName: '鋼種類別',field: 'GRADE_NO_13',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '產出型態',field: 'OUT_TYPE',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '產出成品尺寸最小值',field: 'DIA_MIN',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '產出成品尺寸最大值',field: 'DIA_MAX',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '研磨道次',field: 'GRINDING_PASS',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '每刀研磨尺寸',field: 'GRINDING_SIZE',filter: true,width: 120,editable: true},
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -64,6 +110,9 @@ export class PPSI121Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -148,11 +197,11 @@ export class PPSI121Component implements AfterViewInit {
   }
 
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData13): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id);
+        this.delID(rowData);
       },
       nzOnCancel: () => console.log('cancel'),
     });
@@ -168,31 +217,31 @@ export class PPSI121Component implements AfterViewInit {
   }
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData13): void {
     let myObj = this;
-    if (this.editCache13[id].data.GRADE_NO_13 === undefined) {
+    if (rowData.GRADE_NO_13 === undefined) {
       myObj.message.create('error', '「輸入鋼種」不可為空');
       return;
-    } else if (this.editCache13[id].data.OUT_TYPE === undefined) {
+    } else if (rowData.OUT_TYPE === undefined) {
       myObj.message.create('error', '「產出型態」不可為空');
       return;
-    } else if (this.editCache13[id].data.DIA_MIN === undefined) {
+    } else if (rowData.DIA_MIN === undefined) {
       myObj.message.create('error', '「產出成品尺寸最小值」不可為空');
       return;
-    } else if (this.editCache13[id].data.DIA_MAX === undefined) {
+    } else if (rowData.DIA_MAX === undefined) {
       myObj.message.create('error', '「產出成品尺寸最大值」不可為空');
       return;
-    } else if (this.editCache13[id].data.GRINDING_PASS === undefined) {
+    } else if (rowData.GRINDING_PASS === undefined) {
       myObj.message.create('error', '「研磨道次」不可為空');
       return;
-    } else if (this.editCache13[id].data.GRINDING_SIZE === undefined) {
+    } else if (rowData.GRINDING_SIZE === undefined) {
       myObj.message.create('error', '「每刀研磨尺寸」不可為空');
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id);
+          this.updateSave(rowData);
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -251,19 +300,19 @@ export class PPSI121Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData13) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID: this.editCache13[_id].data.tab1ID,
-        GRADE_NO: this.editCache13[_id].data.GRADE_NO_13,
-        OUT_TYPE: this.editCache13[_id].data.OUT_TYPE,
-        DIA_MIN: this.editCache13[_id].data.DIA_MIN,
-        DIA_MAX: this.editCache13[_id].data.DIA_MAX,
-        GRINDING_PASS: this.editCache13[_id].data.GRINDING_PASS,
-        GRINDING_SIZE: this.editCache13[_id].data.GRINDING_SIZE,
+        ID: rowData.tab1ID,
+        GRADE_NO: rowData.GRADE_NO_13,
+        OUT_TYPE: rowData.OUT_TYPE,
+        DIA_MIN: rowData.DIA_MIN,
+        DIA_MAX: rowData.DIA_MAX,
+        GRINDING_PASS: rowData.GRINDING_PASS,
+        GRINDING_SIZE: rowData.GRINDING_SIZE,
       });
 
       myObj.PPSService.updateI113Tab1Save(obj).subscribe(
@@ -278,11 +327,6 @@ export class PPSI121Component implements AfterViewInit {
 
             this.sucessMSG('修改成功', ``);
 
-            const index = this.PPSINP13List.findIndex(
-              (item) => item.id === _id
-            );
-            Object.assign(this.PPSINP13List[index], this.editCache13[_id].data);
-            this.editCache13[_id].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -297,10 +341,10 @@ export class PPSI121Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData13) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache13[_id].data.tab1ID;
+      let _ID = rowData.tab1ID;
       myObj.PPSService.delI113Tab1Data(_ID).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
@@ -339,77 +383,6 @@ export class PPSI121Component implements AfterViewInit {
   // 取消研磨道次之彈出視窗
   cancelGrindingInput(): void {
     this.isVisibleGrinding = false;
-  }
-
-  // ============= 過濾資料之menu ========================
-  // 研磨道次
-  ppsInp13ListFilter(property: string, keyWord: string): void {
-    if (_.isEmpty(keyWord)) {
-      this.displayPPSINP13List = this.PPSINP13List;
-      return;
-    }
-
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP13List.filter((item) => filterFunc(item));
-    this.displayPPSINP13List = data;
-  }
-
-  // 資料過濾---研磨道次 --> 鋼種類別
-  searchByGradeNo13(): void {
-    this.ppsInp13ListFilter('GRADE_NO_13', this.searchGradeNo13Value);
-  }
-  resetByGradeNo13(): void {
-    this.searchGradeNo13Value = '';
-    this.ppsInp13ListFilter('GRADE_NO_13', this.searchGradeNo13Value);
-  }
-
-  // 資料過濾---研磨道次 --> 產出型態
-  searchByOutType(): void {
-    this.ppsInp13ListFilter('OUT_TYPE', this.searchOutTypeValue);
-  }
-  resetByOutType(): void {
-    this.searchOutTypeValue = '';
-    this.ppsInp13ListFilter('OUT_TYPE', this.searchOutTypeValue);
-  }
-
-  // 資料過濾---研磨道次 --> 產出成品尺寸最小值
-  searchByDiaMin(): void {
-    this.ppsInp13ListFilter('DIA_MIN', this.searchDiaMinValue);
-  }
-  resetByDiaMin(): void {
-    this.searchDiaMinValue = '';
-    this.ppsInp13ListFilter('DIA_MIN', this.searchDiaMinValue);
-  }
-
-  // 資料過濾---研磨道次 --> 產出成品尺寸最大值
-  searchByDiaMax(): void {
-    this.ppsInp13ListFilter('DIA_MAX', this.searchDiaMaxValue);
-  }
-  resetByDiaMax(): void {
-    this.searchDiaMaxValue = '';
-    this.ppsInp13ListFilter('DIA_MAX', this.searchDiaMaxValue);
-  }
-
-  // 資料過濾---研磨道次 --> 研磨道次
-  searchByGrindingPass(): void {
-    this.ppsInp13ListFilter('GRINDING_PASS', this.searchGrindingPassValue);
-  }
-  resetByGrindingPass(): void {
-    this.searchGrindingPassValue = '';
-    this.ppsInp13ListFilter('GRINDING_PASS', this.searchGrindingPassValue);
-  }
-
-  // 資料過濾---研磨道次 --> 每刀研磨尺寸
-  searchByGrindingsize(): void {
-    this.ppsInp13ListFilter('GRINDING_SIZE', this.searchGrindingSizeValue);
-  }
-  resetByGrindingsize(): void {
-    this.searchGrindingSizeValue = '';
-    this.ppsInp13ListFilter('GRINDING_SIZE', this.searchGrindingSizeValue);
   }
 
   // excel檔案
@@ -502,19 +475,15 @@ export class PPSI121Component implements AfterViewInit {
 
     // 將資料全刪除，再匯入EXCEL檔內的資料
     const myThis = this;
-    const p = this.deleteAllData();
-    p.then((deleteSuccess) => {
-      // 批次新增Excle中的資料
-      return myThis.barchInsertExcelData();
+    myThis.barchInsertExcelData()
+    .then((barchInsertSuccess) => {
+      myThis.sucessMSG(barchInsertSuccess, ``);
+      this.getPPSINP13List();
     })
-      .then((barchInsertSuccess) => {
-        myThis.sucessMSG(barchInsertSuccess, ``);
-        this.getPPSINP13List();
-      })
-      .catch(function (error) {
-        myThis.isSpinning = false;
-        myThis.errorMSG(error, ``);
-      });
+    .catch(function (error) {
+      myThis.isSpinning = false;
+      myThis.errorMSG(error, ``);
+    });
     (<HTMLInputElement>document.getElementById('importExcel')).value = '';
   }
 
@@ -523,10 +492,10 @@ export class PPSI121Component implements AfterViewInit {
     return new Promise(function (resolve, reject) {
       myThis.PPSService.batchSaveI113Data(myThis.jsonExcelData).subscribe(
         (response) => {
-          if (response.success === true) {
+          if (response.code === 200) {
             resolve('匯入成功');
           } else {
-            reject(response.success);
+            reject(response.message);
           }
         },
         (error) => {
@@ -728,4 +697,24 @@ export class PPSI121Component implements AfterViewInit {
     this.isSpinning = false;
     this.sucessMSG('匯出成功!', ``);
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'GRADE_NO_13');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'GRADE_NO_13',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData)
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData)
+  }
+
 }
