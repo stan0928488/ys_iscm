@@ -11,6 +11,7 @@ import { CookieService } from '../config/cookie.service';
 export class PPSService {
   APIURL: string = '';
   APINEWURL: string = '';
+  API;
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -225,7 +226,8 @@ export class PPSService {
   getPPSINP03List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APINEWURL + `/FCP/I103` + nonbarUrl + `/getPPSINP03List`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I103` + nonbarUrl + `/getPPSINP03List`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -316,7 +318,8 @@ export class PPSService {
   getPPSINP05List(_type) {
     let nonbarUrl = '';
     if (_type === '2') nonbarUrl = `/NonBar`;
-    let queryUrl = this.APINEWURL + `/FCP/I107` + nonbarUrl + `/getPPSINP05List`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I107` + nonbarUrl + `/getPPSINP05List`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }
@@ -926,7 +929,6 @@ export class PPSService {
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
-  
 
   //importExcelPPSI203 ASAP調整EXCEL匯入
   importExcelPPSI203(_result) {
@@ -1049,14 +1051,16 @@ export class PPSService {
 
   // MO I205_401 DataList
   getTbppsm119ListAll(_plantCode) {
-    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I205/getTbppsm119ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
 
   //getTbppsm102ListAll 取得getTbppsm102ListAll
   getTbppsm102ListAll(_plantCode) {
-    let queryUrl = this.APINEWURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
+    let queryUrl =
+      this.APINEWURL + `/FCP/I205/getTbppsm102ListAll/${_plantCode}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -1090,7 +1094,8 @@ export class PPSService {
   //getppsfcptb16_ms_cust_sortList getppsfcptb16_ms_cust_sortList
   getPpsfcptb16MsCustSortList(_fcpEditionList) {
     let queryUrl =
-      this.APINEWURL + `/FCP/I205/getPpsfcptb16MsCustSortList/${_fcpEditionList}`;
+      this.APINEWURL +
+      `/FCP/I205/getPpsfcptb16MsCustSortList/${_fcpEditionList}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -2554,5 +2559,33 @@ export class PPSService {
     console.log(`Api Service 獲取「成品庫存現況」資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取「成品庫存現況」資料 參數 -> 無參數`);
     return this.http.get(queryUrl);
+  }
+
+  //取得歷史工時當前資料
+  getPPSOUTTB01HISTORY() {
+    const queryUrl = `${this.APINEWURL}/ppsouttb01history/getDataList`;
+    console.log(queryUrl);
+    return this.http.get(queryUrl);
+  }
+
+  //取得歷史工時當前時間區間
+  getHisrotyStartEnd() {
+    const queryUrl = `${this.APINEWURL}/ppsouttb01history/getStartEnd`;
+    return this.http.get(queryUrl);
+  }
+
+  //取得新一版歷史工時
+  getPPSOUTTB01HISTORYbyDate(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.APINEWURL}/ppsouttb01history/mesDataList`;
+    console.log(queryUrl);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  //取得站別平均工時
+  getAverageByShopCodeByDate(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.APINEWURL}/ppsouttb01history/getAverage`;
+    return this.http.post(queryUrl, body, this.httpOptions);
   }
 }

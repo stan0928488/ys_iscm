@@ -1,0 +1,98 @@
+@import url("../../../../standard.less");
+
+:host ::ng-deep .ag-root-wrapper.ag-layout-normal {
+  border-radius: 7px;
+}
+
+:host ::ng-deep .ag-row {
+  background-color: #ffffff;
+}
+
+:host ::ng-deep .ant-btn-primary {
+  border-radius: 5px;
+}
+
+th {
+  background-color: #9cb6ce;
+  border-radius: 7px;
+  padding: 0 0 0 5px;
+  text-align: left;
+  width: 150px;
+}
+
+td {
+  border-radius: 7px;
+  background-color: #eee;
+}
+
+:host ::ng-deep .ant-modal-body {
+  padding: 10px 24px;
+}
+
+:host .updateButton {
+  color: #fff;
+  background-color: #1677ff;
+  border-style: none;
+  width: calc(50% - 5px);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  height: 70%;
+  border-radius: 3px;
+}
+
+:host .updateButton:hover {
+  // background-color: #bfd4e4;
+  // font-weight: bold;
+  cursor: pointer;
+}
+
+:host .deleteButton {
+  color: #fff;
+  background-color: rgba(255, 0, 0, 0.664);
+  border-style: none;
+  width: calc(50% - 5px);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  line-height: 0 !important;
+  height: 70%;
+  border-radius: 3px;
+  margin: 0px 0px 0px 10px;
+}
+
+:host .deleteButton:hover {
+  // background-color: #edb1b1;
+  // font-weight: 700;
+  cursor: pointer;
+}
+
+:host .container {
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+:host .search {
+  border-radius: 10px;
+  text-align: center;
+  font-size: 16px;
+  padding: 0px 15px 0px 0px;
+  font-weight: 900;
+  color: #717070;
+}
+
+:host ::ng-deep .ant-picker {
+  margin: 0px 18px 0px 0px;
+  width: 230px;
+  height: 32px;
+  padding: 0px 10px;
+  border-radius: 7px;
+  border: 1px solid #cdcecf;
+  background: #f5f5f5;
+  font-size: 14px;
+}

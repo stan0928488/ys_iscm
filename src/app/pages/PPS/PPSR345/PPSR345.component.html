@@ -1,0 +1,72 @@
+<nz-content style="margin: 0 16px">
+  <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+    <nz-breadcrumb-item>業務報表</nz-breadcrumb-item>
+    <nz-breadcrumb-item>報表檢視</nz-breadcrumb-item>
+    <nz-breadcrumb-item>歷史工時結果表(PPSR345)</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-tabset nzLinkRouter [nzTabPosition]="'top'" [nzType]="'card'">
+    <nz-tab>
+      <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
+        歷史工時結果表
+      </a>
+    </nz-tab>
+    <nz-tab>
+      <a
+        *nzTabLink
+        nz-tab-link
+        [routerLink]="['../R345average']"
+        style="color: gray"
+      >
+        歷史站別平均工時
+      </a>
+    </nz-tab>
+  </nz-tabset>
+
+  <div
+    style="display: flex; justify-content: space-between; margin: 0 0 16px 0"
+  >
+    <div style="display: flex; align-items: center">
+      <span class="search">時間區間</span>
+      <nz-range-picker
+        style="background: #f0f2f5"
+        [(ngModel)]="dateRange"
+        (ngModelChange)="onDateSelect($event)"
+      >
+      </nz-range-picker>
+      <button nz-button nzType="primary" (click)="search()">開始計算</button>
+      <button
+        nz-button
+        style="
+          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+          background-color: #4caf50;
+          border: none;
+          margin: 0 0 0 15px;
+        "
+        nzType="primary"
+        (click)="convertToExcel()"
+      >
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        E X C E L 匯出
+      </button>
+    </div>
+
+    <div style="display: flex; align-items: center">
+      <span class="search">目前時間區間: {{ originalDate }}</span>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <ag-grid-angular
+      style="width: auto; height: calc(100vh - 230px)"
+      class="ag-theme-alpine"
+      [rowData]="rowData"
+      [columnDefs]="colDefs"
+      [defaultColDef]="defaultColDef"
+      [editType]="editType"
+      (gridReady)="onGridReady($event)"
+      [suppressClickEdit]="true"
+    >
+    </ag-grid-angular>
+  </nz-spin>
+</nz-content>

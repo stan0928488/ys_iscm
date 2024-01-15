@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-
 import { PPSI101Component } from './pages/PPS/PPSI101/PPSI101.component';
 import { PPSI102Component } from './pages/PPS/PPSI102/PPSI102.component';
 import { PPSI102_NonBarComponent } from './pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component';
@@ -99,6 +98,8 @@ import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Re
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+import { PPSR345Component } from './pages/PPS/PPSR345/PPSR345.component';
+import { PPSR345AVERAGEComponent } from './pages/PPS/PPSR345AVERAGE/PPSR345AVERAGE.component';
 
 import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
@@ -123,7 +124,7 @@ import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.comp
 
 const routes: Routes = [
   {
-    path: "AccessDined",
+    path: 'AccessDined',
     component: AccessDinedPageComponent,
     canActivate: [AuthGuard],
   },
@@ -186,20 +187,24 @@ const routes: Routes = [
     path: 'PlanSet',
     children: [
       { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
-      { 
-        path: 'I112_TabMenu', 
+      {
+        path: 'I112_TabMenu',
         component: PPSI112TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/PlanSet/I112_TabMenu/I112', pathMatch: 'full' },
-          { 
-            path: 'I112', 
-            component: PPSI112Component 
+          {
+            path: '',
+            redirectTo: '/PlanSet/I112_TabMenu/I112',
+            pathMatch: 'full',
           },
-          { 
-            path: 'I112_Refining', 
-            component: PPSI112RefinIngComponent 
+          {
+            path: 'I112',
+            component: PPSI112Component,
           },
-        ]
+          {
+            path: 'I112_Refining',
+            component: PPSI112RefinIngComponent,
+          },
+        ],
       },
       {
         path: 'I202_TabMenu',
@@ -213,7 +218,11 @@ const routes: Routes = [
         path: 'I206_TabMenu',
         component: PPSI206TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
+          {
+            path: '',
+            redirectTo: '/PlanSet/I206_TabMenu/I206_SET',
+            pathMatch: 'full',
+          },
           { path: 'I206_SET', component: PPSI206SETComponent },
           { path: 'I206_RES', component: PPSI206RESComponent },
         ],
@@ -235,51 +244,63 @@ const routes: Routes = [
     path: 'FCPBarData',
     children: [
       { path: '', redirectTo: '/FCPBarData/P201_TabMenu', pathMatch: 'full' },
-      { 
-        path: 'P201_TabMenu', 
+      {
+        path: 'P201_TabMenu',
         component: PPSI210TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/FCPBarData/P201_TabMenu/P201', pathMatch: 'full' },
+          {
+            path: '',
+            redirectTo: '/FCPBarData/P201_TabMenu/P201',
+            pathMatch: 'full',
+          },
           {
             path: 'P201',
-            component: PPSI210Component
+            component: PPSI210Component,
           },
           {
             path: 'P201_Refining',
-            component: PPSI210RefiningComponent
-          }
-        ]
+            component: PPSI210RefiningComponent,
+          },
+        ],
       },
-      { 
-        path: 'P202_TabMenu', 
+      {
+        path: 'P202_TabMenu',
         component: PPSI220TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
-          { 
-            path: 'P202', 
-            component: PPSI220Component 
+          {
+            path: '',
+            redirectTo: '/FCPBarData/P202_TabMenu/P202',
+            pathMatch: 'full',
           },
-          { 
-            path: 'P202_Refining', 
-            component: PPSI220RefiningComponent 
+          {
+            path: 'P202',
+            component: PPSI220Component,
           },
-        ]
+          {
+            path: 'P202_Refining',
+            component: PPSI220RefiningComponent,
+          },
+        ],
       },
-      { 
-        path: 'P203_TabMenu', 
+      {
+        path: 'P203_TabMenu',
         component: PPSI230TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
-          { 
-            path: 'P203', 
-            component: PPSI230Component 
+          {
+            path: '',
+            redirectTo: '/FCPBarData/P203_TabMenu/P203',
+            pathMatch: 'full',
           },
-          { 
-            path: 'P203_Refining', 
-            component: PPSI230RefiningComponent 
-          }
-        ]
-      }
+          {
+            path: 'P203',
+            component: PPSI230Component,
+          },
+          {
+            path: 'P203_Refining',
+            component: PPSI230RefiningComponent,
+          },
+        ],
+      },
     ],
     canActivate: [AuthGuard],
   },
@@ -287,23 +308,29 @@ const routes: Routes = [
     path: 'FCPBarRepo',
     children: [
       { path: '', redirectTo: '/FCPBarRepo/R302', pathMatch: 'full' },
-      { 
-        path: 'R303_TabMenu', 
+      {
+        path: 'R303_TabMenu',
         component: PPSR303TabMenuComponent,
         children: [
-          { path: '', redirectTo: '/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
-          { 
-            path: 'R303', 
-            component: PPSR303Component 
+          {
+            path: '',
+            redirectTo: '/FCPBarRepo/R303_TabMenu/R303',
+            pathMatch: 'full',
           },
-          { 
-            path: 'R303_Fcp', 
-            component: PPSR303FcpComponent
-          }
-        ]
+          {
+            path: 'R303',
+            component: PPSR303Component,
+          },
+          {
+            path: 'R303_Fcp',
+            component: PPSR303FcpComponent,
+          },
+        ],
       },
       { path: 'R302', component: PPSR302Component },
       { path: 'R301', component: PPSR301Component },
+      { path: 'R345', component: PPSR345Component },
+      { path: 'R345average', component: PPSR345AVERAGEComponent },
     ],
     canActivate: [AuthGuard],
   },
@@ -377,7 +404,7 @@ const routes: Routes = [
           { path: 'R322_5', component: PPSR322Child5Component },
           { path: 'R322_6', component: PPSR322Child6Component },
           { path: 'R322_7', component: PPSR322Child7Component },
-          { path: 'R322_8', component: PPSR322Child8Component }
+          { path: 'R322_8', component: PPSR322Child8Component },
         ],
       },
     ],
@@ -453,22 +480,22 @@ const routes: Routes = [
   /* TRA */
 
   /* POM  */
-  
+
   /* system  */
   {
     path: 'system',
     children: [
       { path: '', redirectTo: '/system/ACCSetting', pathMatch: 'full' },
       {
-        path: "ACCSetting",
+        path: 'ACCSetting',
         component: ACCP100component,
       },
       {
-        path: "manageMenu",
-        component: ManageMenuComponent
-      }
+        path: 'manageMenu',
+        component: ManageMenuComponent,
+      },
     ],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: '**',
