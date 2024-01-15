@@ -18,7 +18,7 @@ import { map } from 'lodash';
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
-      <span style='margin-left:5px;'   nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
       <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
@@ -87,6 +87,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   agInit(params: IHeaderParams): void {
     this.params = params;
     this.column = params.column;
+   // console.log(this.params.column.getColDef().headerComponentParams.isMenuShow)
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
     //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
