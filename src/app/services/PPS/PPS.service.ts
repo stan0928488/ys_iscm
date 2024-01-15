@@ -2039,7 +2039,7 @@ export class PPSService {
   //importI109NonBarExcel
   importI109NonBarExcel(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I109/NonBar/importI109NonBarExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/importI109NonBarExcel`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -2077,13 +2077,13 @@ export class PPSService {
 
   getI109ShopCodeList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I109/NonBar/getI109ShopCodeList`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/getI109ShopCodeList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getI109GradeNoList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APINEWURL + `/FCP/I101/NonBar/getI109GradeNoList`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/getI109GradeNoList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
