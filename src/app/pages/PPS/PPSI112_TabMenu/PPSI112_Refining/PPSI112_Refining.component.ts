@@ -201,6 +201,7 @@ export class PPSI112RefinIngComponent implements AfterViewInit {
       {
         headerName: 'Action',
         editable: false,
+        width: 100,
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
           {
