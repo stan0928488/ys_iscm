@@ -1618,20 +1618,20 @@ export class PPSService {
   /*** 機台負荷表*/
   getR301DataList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R301/queryDataList';
+    let queryUrl = this.APINEWURL + '/FCP/R301/queryDataList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   //Get getVerList
   getR301VerList() {
-    let queryUrl = this.APIURL + '/FCP/R301/VerList';
+    let queryUrl = this.APINEWURL + '/FCP/R301/VerList';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // 機台負荷明細資料
   getR301DtlList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + '/FCP/R301/getR301DtlList';
+    let queryUrl = this.APINEWURL + '/FCP/R301/getR301DtlList';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
