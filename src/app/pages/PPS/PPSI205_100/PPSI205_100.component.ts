@@ -1,21 +1,15 @@
-import { Component, AfterViewInit, NgZone, EventEmitter } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { ExcelService } from 'src/app/services/common/excel.service';
-import { registerLocaleData, DatePipe } from '@angular/common';
-import * as XLSX from 'xlsx';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import { AfterViewInit, Component } from '@angular/core';
+import { ColDef, ColGroupDef } from 'ag-grid-community';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { CellClickedEvent, ColDef, ColGroupDef } from 'ag-grid-community';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
 
-import { Router } from '@angular/router';
-import * as moment from 'moment';
-import * as _ from 'lodash';
 import zh from '@angular/common/locales/zh';
-import { promise } from 'protractor';
+import * as _ from 'lodash';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 registerLocaleData(zh);
-interface data {}
 
 @Component({
   selector: 'app-PPSI205_100',
@@ -24,74 +18,17 @@ interface data {}
   providers: [NzMessageService, DatePipe],
 })
 export class PPSI205_100Component implements AfterViewInit {
+  
   PLANT_CODE;
   USERNAME;
   loading = false; //loaging data flag
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
-  isErrorMsg = false;
 
   PickShopCode = [];
   preinsert = [];
 
-  titleArray1 = [
-    '月份',
-    '站別',
-    '機台',
-    '產出型態',
-    '產出尺寸',
-    '現況尺寸',
-    '最終製程',
-    '鋼種群組',
-    '製程碼',
-  ];
-  titleArray2 = [
-    '站別',
-    '機台',
-    '下一站站別',
-    '天數',
-    '最大值的EPST或LPST',
-    '生產開始日',
-    '生產結束日',
-    'TC頻率升降冪',
-    'COMPAIGN_ID',
-  ];
-  titleArray3 = ['公版月份', '產品', '軋延尺寸', 'CYCLE', '日期~起', '日期~迄'];
-  titleArray4 = [
-    'MO版本',
-    '轉入COMPAIGN限制表時間',
-    '401工時(天)',
-    '405工時(天)',
-    '401剩餘工時(天)',
-    '405剩餘工時(天)',
-    '401投產日期(起)',
-    '401投產日期(迄)',
-  ];
-  datetime = moment();
-  arrayBuffer: any;
-  file: File;
-  importdata = [];
-  importdata_new = [];
-  isERROR = false;
-  errorTXT = [];
   maxFcp;
-
-  EditMode = [];
-  oldlist = {};
-  newlist;
-
-  rowData: data[] = [];
-
-  fileType: string = '.xls, .xlsx, .csv'; //檔案類型
-
-  // tab 1
-  tbppsm101List;
-  // tab 2
-  tbppsm102List;
-  // tab 2 All
-  tbppsm102ListAll;
-  // tab 3
-  tbppsm113List;
 
   ppsfcptb16_ms_cust_sortList;
   fcpEditionList;
@@ -106,68 +43,44 @@ export class PPSI205_100Component implements AfterViewInit {
     },
   ];
 
-  isSpinning = false;
-
   columnDefs: (ColDef | ColGroupDef)[] = [
-    {
-      headerName: '匯入時間',
-      field: 'IMPORTDATETIME',
-      filter: true,
-      width: 200,
-    },
-    { headerName: '優先順序', field: 'ORDER_ID', filter: true, width: 100 },
-    { headerName: '站別', field: 'SCH_SHOP_CODE', filter: true, width: 100 },
-    { headerName: '機台', field: 'EQUIP_CODE', filter: true, width: 100 },
-    {
-      headerName: '下一站站別',
-      field: 'NEXT_SHOP_CODE',
-      filter: true,
-      width: 120,
-    },
-    {
-      headerName: 'max(EPST/ASAP)',
-      field: 'MAX_DATE',
-      filter: true,
-      width: 150,
-    },
-    { headerName: '天數', field: 'DAYS', filter: true, width: 100 },
-    {
-      headerName: '生產時間(起)',
-      field: 'STARTDATE',
-      filter: true,
-      width: 120,
-    },
-    {
-      headerName: 'TC頻率升降冪',
-      field: 'TC_FREQUENCE_LIFT',
-      filter: true,
-      width: 150,
-    },
-    {
-      headerName: '轉入COMPAIGN限制表時間',
-      field: 'EXPORTDATETIME',
-      filter: true,
-      width: 200,
-    },
-    { headerName: '建立日期', field: 'DATE_CREATE', filter: true, width: 200 },
-    { headerName: '建立者', field: 'USER_CREATE', filter: true, width: 100 },
-    { headerName: '異動日期', field: 'DATE_UPDATE', filter: true, width: 200 },
-    { headerName: '異動者', field: 'USER_UPDATE', filter: true, width: 100 },
+    {headerName: 'FCP版本',field: 'fcpEdition',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '站別',field: 'schShopCode',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '投產機台',field: 'pstMachine',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '製程碼',field: 'processCode',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '投入型態',field: 'inputType',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '產出型態',field: 'outputShape',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '投入尺寸',field: 'inputDia',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '產出尺寸',field: 'outDia',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '產品種類',field: 'kindType',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '下站別',field: 'nextSchShopCode',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '鋼種群組',field: 'gradeGroup',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '自訂月份',field: 'newEpstYymm',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '寫入排序',field: 'campaignSort',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '開始時間',field: 'planStartTime',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '結束時間',field: 'planEndTime',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '創建時間',field: 'dateCreate',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '創建者',field: 'userCreate',width: 100,headerComponent: AGCustomHeaderComponent}
   ];
-  public ColGroupDef: ColDef = {
-    filter: true,
-    sortable: true,
-    resizable: true,
+
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
   };
 
   constructor(
-    private router: Router,
     private getPPSService: PPSService,
-    private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');

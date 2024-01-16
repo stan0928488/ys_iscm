@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-
 import { PPSI101Component } from './pages/PPS/PPSI101/PPSI101.component';
 import { PPSI102Component } from './pages/PPS/PPSI102/PPSI102.component';
 import { PPSI102_NonBarComponent } from './pages/PPS/PPSI102_NonBar/PPSI102_NonBar.component';
@@ -99,6 +98,8 @@ import { PPSI210RefiningComponent } from './pages/PPS/PPSI210_TabMenu/PPSI210_Re
 import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_TabMenu.component';
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
+import { PPSR345Component } from './pages/PPS/PPSR345/PPSR345.component';
+import { PPSR345AVERAGEComponent } from './pages/PPS/PPSR345AVERAGE/PPSR345AVERAGE.component';
 
 import { MSHI001Component } from './pages/MSH/MSHI001/MSHI001.component';
 import { MSHI002Component } from './pages/MSH/MSHI002/MSHI002.component';
@@ -128,7 +129,7 @@ import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.comp
 
 const routes: Routes = [
   {
-    path: "AccessDined",
+    path: 'AccessDined',
     component: AccessDinedPageComponent,
     canActivate: [AuthGuard],
   },
@@ -207,7 +208,7 @@ const routes: Routes = [
             component: PPSI112RefinIngComponent, 
             data : { pageName : "累計生產(非直棒)" },
           },
-        ]
+        ],
       },
       {
         path: 'I202_TabMenu',
@@ -247,12 +248,16 @@ const routes: Routes = [
     path: 'FCPBarData',
     children: [
       { path: '', redirectTo: '/FCPBarData/P201_TabMenu', pathMatch: 'full' },
-      { 
-        path: 'P201_TabMenu', 
+      {
+        path: 'P201_TabMenu',
         component: PPSI210TabMenuComponent,
         data : { pageName : "建立規劃策略" },
         children: [
-          { path: '', redirectTo: '/FCPBarData/P201_TabMenu/P201', pathMatch: 'full' },
+          {
+            path: '',
+            redirectTo: '/FCPBarData/P201_TabMenu/P201',
+            pathMatch: 'full',
+          },
           {
             path: 'P201',
             component: PPSI210Component,
@@ -265,8 +270,8 @@ const routes: Routes = [
           }
         ]
       },
-      { 
-        path: 'P202_TabMenu', 
+      {
+        path: 'P202_TabMenu',
         component: PPSI220TabMenuComponent,
         data : { pageName : "規劃策略清單" },
         children: [
@@ -281,10 +286,10 @@ const routes: Routes = [
             component: PPSI220RefiningComponent,
             data : { pageName : "規劃策略清單(精整)" }
           },
-        ]
+        ],
       },
-      { 
-        path: 'P203_TabMenu', 
+      {
+        path: 'P203_TabMenu',
         component: PPSI230TabMenuComponent,
         data : { pageName : "生產規劃執行" },
         children: [
@@ -320,6 +325,8 @@ const routes: Routes = [
       },
       { path: 'R302', component: PPSR302Component, data : { pageName : "交期-計畫彙總表" } },
       { path: 'R301', component: PPSR301Component, data : { pageName : "機台產能分析表" } },
+      { path: 'R345', component: PPSR345Component, data : { pageName : "工時計算結果表" } },
+      { path: 'R345average', component: PPSR345AVERAGEComponent, data : { pageName : "工時計算平均結果表" }  },
     ],
     canActivate: [AuthGuard],
   },
@@ -395,7 +402,7 @@ const routes: Routes = [
           { path: 'R322_5', component: PPSR322Child5Component },
           { path: 'R322_6', component: PPSR322Child6Component },
           { path: 'R322_7', component: PPSR322Child7Component },
-          { path: 'R322_8', component: PPSR322Child8Component }
+          { path: 'R322_8', component: PPSR322Child8Component },
         ],
       },
     ],
@@ -472,14 +479,14 @@ const routes: Routes = [
   /* TRA */
 
   /* POM  */
-  
+
   /* system  */
   {
     path: 'system',
     children: [
       { path: '', redirectTo: '/system/ACCSetting', pathMatch: 'full' },
       {
-        path: "ACCSetting",
+        path: 'ACCSetting',
         component: ACCP100component,
         data : {
           pageName:"權限設定"
@@ -521,7 +528,7 @@ const routes: Routes = [
         },
       }
     ],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: '**',

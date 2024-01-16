@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef } from "@angular/core";
+import { Component, AfterViewInit, ElementRef, ChangeDetectorRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
 import {zh_TW ,NzI18nService} from "ng-zorro-antd/i18n";
@@ -9,6 +9,12 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { CellEditingStoppedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams, ValueFormatterParams } from "ag-grid-community";
+import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
+import { PPSI111EditShopCellEditorComponent } from "./PPSI111_EditShopCellEditorComponent";
+import { PPSI111EditMachineCellEditorComponent } from "./PPSI111_EditMachineCellEditorComponent";
+import { PPSI111EditCombinCellEditorComponent } from "./PPSI111_EditCombinCellEditorComponent";
 
 
 interface ItemData1 {
@@ -70,6 +76,68 @@ export class PPSI111Component implements AfterViewInit {
   //類型
   PLANT = '直棒';
 
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      editable: true,
+      resizable: true,
+    }
+  };
+
+  fcptb26ColumnDefs : ColDef[] = [
+    { 
+      headerName:'站別', 
+      field:'SCH_SHOP_CODE_1',
+      headerComponent : AGCustomHeaderComponent,
+      cellEditor : PPSI111EditShopCellEditorComponent
+    },
+    { 
+      headerName:'機台', 
+      field:'MACHINE',
+      headerComponent : AGCustomHeaderComponent,
+      cellEditor : PPSI111EditMachineCellEditorComponent
+    },
+    { 
+      headerName:'combin條件', 
+      field:'COLUMN_COMMENT',
+      headerComponent : AGCustomHeaderComponent,
+      cellEditor : PPSI111EditCombinCellEditorComponent,
+      valueFormatter : (params: ValueFormatterParams) => {
+        if(Array.isArray(this.COLUMN_NAMEList)){
+          for(let combin of this.COLUMN_NAMEList){
+              if(_.isEqual(params.value, combin.value)){
+                return combin.label;
+              }
+          }
+        }
+      }
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: AGCustomActionCellComponent,
+      cellRendererParams:{
+        edit : this.rowEditHandler.bind(this),
+        cancelEdit: this.rowCancalEditHandler.bind(this),
+        saveEdit : this.saveEditHandler.bind(this),
+        delete : this.deleteHandler.bind(this)
+      }
+    }
+  ];
+
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext : any;
+
+  // 編輯模式下，站別選項載入中
+  shopListLoading = false;
+  // 編輯模式下，combin條件選項載入中	
+  combinListLoading = false;
+
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -79,10 +147,14 @@ export class PPSI111Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.agGridContext = {
+      componentParent: this
+    };
   }
 
 
@@ -109,29 +181,144 @@ export class PPSI111Component implements AfterViewInit {
     });
   }
 
+  /**
+   * 
+   * @param params 刪除資料
+   */
+  deleteHandler(params: ICellRendererParams<any, any>){
+    this.deleteRow(params.data.tab1ID);
+  }
+
+  /**
+   * 儲存編輯的資料
+   * @param params 
+   * @returns 
+   */
+  async saveEditHandler(params: ICellRendererParams<any, any>){
+    // 關閉編輯狀態讓資料生效進到當前陣列中的某條row之中
+    params.api.stopEditing(false);
+
+    // 透過id取得緩存的舊資料
+    const cacheRowData = this.editCache1[params.data.id.toString()].data;
+
+    // 排除非業務的資料(isEditing)進行比較
+    // 若一樣，表示使用者未修改任何資料，不給予更新
+    if(_.isEqual(_.omit(params.data, ['isEditing']), _.omit(cacheRowData, ['isEditing']))){
+        // 無法轉換提示錯誤
+        this.message.warning('無法更新，你尚未修改任何資料');
+        return;
+    }
+
+    // 執行更新
+    await this.saveEdit(params.data, params.rowIndex);
+  }
+
+  /**
+   * 取消編輯並還原已變動的資料
+   * @param params 
+   */
+     rowCancalEditHandler(params: ICellRendererParams<any, any>){
+      params.api.stopEditing(false);
+       // 透過id取得緩存的舊資料
+       const cacheRowData = this.editCache1[params.data.id.toString()].data;
+       // 還原為原資料
+       this.FCPTB26List[params.node.rowIndex] = _.cloneDeep(cacheRowData);
+       // 渲染資料
+       this.gridApi.setRowData(this.FCPTB26List);
+       // Y軸滾動到此row的位置
+       this.gridApi.ensureIndexVisible(params.node.rowIndex, 'middle');
+    }
+
+    /**
+   * 開始編輯
+   * @param params 
+   */
+    rowEditHandler(params: ICellRendererParams<any, any>){
+      // 控制編輯按鈕的顯示切換
+      params.data.isEditing = true;
+      
+      // 使用ag-grid提供的api開啟整行進入編輯狀態
+      // colKey設定進入編輯狀態後焦點要是哪個cloumn，
+      // 但一定要帶值，且帶的該欄位是要可編輯的
+      params.api.startEditingCell({
+        rowIndex : params.rowIndex,
+        colKey : 'COLUMN_COMMENT' 
+      });
+
+      this.autoSizeAll();
+    }
+
   
-  getFCPTB26List() {
+  // 獲取ag-grid的Api函數
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  /**
+   * 做寬度適應的調整
+   */
+  autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+
+  /**
+   * 首次渲染資料完畢後被調用
+   * @param event 
+   */
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，做寬度適應的調整
+    this.autoSizeAll();
+  }
+
+  cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {
+    
+    const newValue = _.omit(event.data, ['isEditing']);
+    const oldValue = _.omit(this.editCache1[event.data.id].data, ['isEditing']);
+    
+    if(_.isEqual(newValue, oldValue)){
+      event.data.isEditing = false;
+    }
+    else{
+      event.data.isEditing = true;
+    }
+    
+  }
+  
+  getFCPTB26List(): Promise<void> {
     this.loading = true;
     let myObj = this;
-    this.getPPSService.getFCPTB26List().subscribe(res => {
-      console.log("getFCPTB26List success");
-      this.FCPTB26List_tmp = res;
 
-      const data = [];
-      for (let i = 0; i < this.FCPTB26List_tmp.length ; i++) {
-        data.push({
-          id: `${i}`,
-          tab1ID: this.FCPTB26List_tmp[i].ID,
-          SCH_SHOP_CODE_1: this.FCPTB26List_tmp[i].SCH_SHOP_CODE_1,
-          MACHINE: this.FCPTB26List_tmp[i].MACHINE,
-          COLUMN_COMMENT: this.FCPTB26List_tmp[i].COLUMN_COMMENT,
-          COLUMN_NAME: this.FCPTB26List_tmp[i].COLUMN_NAME
-        });
-      }
-      this.FCPTB26List = data;
-      this.updateEditCache();
-      console.log(this.FCPTB26List);
-      myObj.loading = false;
+    return new Promise((resolve, reject) => {
+      this.getPPSService.getFCPTB26List().subscribe(res => {
+        console.log("getFCPTB26List success");
+        this.FCPTB26List_tmp = res;
+
+        const data = [];
+        for (let i = 0; i < this.FCPTB26List_tmp.length ; i++) {
+          data.push({
+            id: `${i}`,
+            tab1ID: this.FCPTB26List_tmp[i].ID,
+            SCH_SHOP_CODE_1: this.FCPTB26List_tmp[i].SCH_SHOP_CODE_1,
+            MACHINE: this.FCPTB26List_tmp[i].MACHINE,
+            COLUMN_COMMENT: this.FCPTB26List_tmp[i].COLUMN_COMMENT,
+            COLUMN_NAME: this.FCPTB26List_tmp[i].COLUMN_NAME
+          });
+        }
+        this.FCPTB26List = data;
+        this.updateEditCache();
+        console.log(this.FCPTB26List);
+        myObj.loading = false;
+        resolve();
+      },err => {
+        this.errorMSG("查詢失敗", "查詢失敗，請聯繫系統工程師");
+        this.LoadingPage = false;
+        reject();
+      });
     });
   }
 
@@ -188,6 +375,7 @@ export class PPSI111Component implements AfterViewInit {
   // combine條件
   getRequierList(): void {
     this.loading = true;
+    this.combinListLoading = true;
     let myObj = this;
     this.getPPSService.getOrignListData(this.PLANT).subscribe(res => {
       console.log("getOrignListData success");
@@ -202,6 +390,7 @@ export class PPSI111Component implements AfterViewInit {
       }
       this.COLUMN_NAMEList = optionListTemp ;
       myObj.loading = false;
+      this.combinListLoading = false;
     });
   }
   // 點擊站別控制項
@@ -272,12 +461,13 @@ export class PPSI111Component implements AfterViewInit {
   getPickerShopData(_idx) {
     console.log(_idx)
     this.loading = true;
+    this.shopListLoading = true;
     let myObj = this;
     this.getPPSService.getPickerShopData('直棒').subscribe(res => {
       console.log("getPickerShopData success");
-      this.pickerShopList = res;
+      this.pickerShopList = JSON.parse(res.data);
       const SchShopCode = [];
-      this.editCache1[_idx].data.MACHINE = '';
+      //this.editCache1[_idx].data.MACHINE = '';
       for(let i = 0 ; i<this.pickerShopList.length ; i++) {
         SchShopCode.push(this.pickerShopList[i].SCH_SHOP_CODE);
       }
@@ -287,6 +477,7 @@ export class PPSI111Component implements AfterViewInit {
 
       this.ShopList = newSchShopCode;
       myObj.loading = false;
+      this.shopListLoading = false;
     });
   }
   // 撈取 sorting 表中的機台 by 站別
@@ -295,7 +486,7 @@ export class PPSI111Component implements AfterViewInit {
     let myObj = this;
     this.getPPSService.getPickerMachineData('直棒', _shop).subscribe(res => {
       console.log("getPickerMachineData success");
-      this.pickerMachineList = res;
+      this.pickerMachineList = JSON.parse(res.data);
       const machine = [];
       for(let i = 0 ; i<this.pickerMachineList.length ; i++) {
         machine.push(this.pickerMachineList[i].MACHINE);
@@ -370,7 +561,7 @@ export class PPSI111Component implements AfterViewInit {
     this.getPickerShopData(id);
     this.getPickerMachineData(this.editCache1[id].data.SCH_SHOP_CODE_1, id);
   }
-  deleteRow(id: string): void {
+  deleteRow(id: number): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
@@ -387,19 +578,19 @@ export class PPSI111Component implements AfterViewInit {
       edit: false
     };
   }
-  saveEdit(id: string): void {
+  saveEdit(rowData : ItemData1, rowIndex : number): void {
     let myObj = this;
-    if (this.editCache1[id].data.SCH_SHOP_CODE_1 === undefined) {
+    if (_.isEmpty(rowData.SCH_SHOP_CODE_1)) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache1[id].data.COLUMN_COMMENT === undefined) {
+    } else if (_.isEmpty(rowData.COLUMN_COMMENT)) {
       myObj.message.create("error", "「combin條件」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData, rowIndex)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -436,7 +627,7 @@ export class PPSI111Component implements AfterViewInit {
       myObj.getPPSService.insertTab1Save(obj).subscribe(res => {
 
         console.log(res)
-        if(res[0].MSG === "Y") {
+        if(res.message === "Y") {
           this.COLUMN_NAME = undefined;
           this.shopCodeAndEquipCodeList = [];
           this.PickShopCode = [];
@@ -446,7 +637,7 @@ export class PPSI111Component implements AfterViewInit {
           this.sucessMSG("新增成功", ``);
           this.panels[0].disabled = false;
         } else {
-          this.errorMSG("新增失敗", res[0].MSG);
+          this.errorMSG("新增失敗", res.message);
         }
       },err => {
         reject('upload fail');
@@ -457,37 +648,41 @@ export class PPSI111Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData : ItemData1, rowIndex : number) : Promise<void>{
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache1[_id].data.tab1ID,
-        SCH_SHOP_CODE : this.editCache1[_id].data.SCH_SHOP_CODE_1,
-        MACHINE : this.editCache1[_id].data.MACHINE,
-        COLUMN_NAME : this.editCache1[_id].data.COLUMN_NAME,
+        ID : rowData.tab1ID,
+        SCH_SHOP_CODE : rowData.SCH_SHOP_CODE_1,
+        MACHINE : rowData.MACHINE,
+        COLUMN_NAME :rowData.COLUMN_NAME,
         USERNAME : this.USERNAME,
         DATETIME : moment().format('YYYY-MM-DD HH:mm:ss')
       })
-      myObj.getPPSService.updateTab1Save(obj).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      myObj.getPPSService.updateTab1Save(obj).subscribe(async res => {
+        if(res.message === "Y") {
           this.COLUMN_NAME = undefined;
           this.PickShopCode = [];
           this.PickEquipCode = [];
 
           this.sucessMSG("修改成功", ``);
-
-          const index = this.FCPTB26List.findIndex(item => item.id === _id);
-          Object.assign(this.FCPTB26List[index], this.editCache1[_id].data);
-          this.editCache1[_id].edit = false;
+          await this.getFCPTB26List();
+          this.changeDetectorRef.detectChanges();
+          // Y軸滾動到此row的位置
+          this.gridApi.ensureIndexVisible(rowIndex, 'middle');
+          this.LoadingPage = false;
+          resolve();
         } else {
-          this.errorMSG("修改失敗", res[0].MSG);
+          this.errorMSG("修改失敗", res.message);
+          this.LoadingPage = false;
+          reject();
         }
       },err => {
-        reject('upload fail');
         this.errorMSG("修改失敗", "後台修改錯誤，請聯繫系統工程師");
         this.LoadingPage = false;
+        reject();
       })
     });
   }
@@ -495,21 +690,26 @@ export class PPSI111Component implements AfterViewInit {
   // 刪除資料
   delID(_id) {
     let myObj = this;
+    this.loading = true;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache1[_id].data.tab1ID;
-      myObj.getPPSService.delI200Data(_ID, 1).subscribe(res => {
-        if(res[0].MSG === "Y") {
+      myObj.getPPSService.delI200Data(_id, 1).subscribe(res => {
+        if(res.message === "Y") {
           this.COLUMN_NAME = undefined;
           this.PickShopCode = [];
           this.PickEquipCode = [];
 
           this.sucessMSG("刪除成功", ``);
           this.getFCPTB26List();
+          this.loading = false;
+        }
+        else{
+          this.errorMSG("刪除失敗", res.message);
+          this.loading = false;
         }
       },err => {
         reject('upload fail');
         this.errorMSG("刪除失敗", "後台刪除錯誤，請聯繫系統工程師");
-        this.LoadingPage = false;
+        this.loading = false;
       })
     });
   }

@@ -7,6 +7,8 @@ import {NzModalService} from "ng-zorro-antd/modal"
 import { ExcelService } from "src/app/services/common/excel.service";
 import * as XLSX from 'xlsx';
 import * as _ from "lodash";
+import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 
 
@@ -35,6 +37,8 @@ interface ItemData16 {
   providers:[NzMessageService]
 })
 export class PPSI204Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
   loading = false; //loaging data flag
@@ -76,6 +80,55 @@ export class PPSI204Component implements AfterViewInit {
   searchStartTimeValue = '';
   searchEndTimeValue = '';
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs = [
+    {width: 100,headerName: '站別',field: 'SHOP_CODE_SCHE',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '機台',field: 'CHOOSE_EQUIP_CODE',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: 'Campaign ID',field: 'COMPAIGN_ID',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '欄位',field: 'PARAMETER_COL',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '條件',field: 'PARAMETER_CONDITION',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '參數',field: 'PARAMETER_NAME',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '產出尺寸MIN',field: 'TURN_DIA_MAX_MIN',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '產出尺寸MAX',field: 'TURN_DIA_MAX_MAX',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '抽數別',field: 'SCHE_TYPE',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '交期區間MIN',field: 'DATA_DELIVERY_RANGE_MIN',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '交期區間MAX',field: 'DATA_DELIVERY_RANGE_MAX',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '生產日期 起',field: 'START_TIME',headerComponent: AGCustomHeaderComponent},
+    {width: 100,headerName: '生產日期 訖',field: 'END_TIME',headerComponent: AGCustomHeaderComponent},
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private PPSService: PPSService,
     private i18n: NzI18nService,
@@ -88,6 +141,9 @@ export class PPSI204Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
     this.PLANT_CODE = this.cookieService.getCookie("plantCode");
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -198,11 +254,11 @@ export class PPSI204Component implements AfterViewInit {
   }
   
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData16): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id)
+        this.delID(rowData)
       },
       nzOnCancel: () =>
         console.log("cancel")
@@ -221,52 +277,52 @@ export class PPSI204Component implements AfterViewInit {
 
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData16): void {
     let myObj = this;
-    if (this.editCache16[id].data.SHOP_CODE_SCHE === undefined) {
+    if (rowData.SHOP_CODE_SCHE === undefined) {
       myObj.message.create("error", "「站別」不可為空");
       return;
-    } else if (this.editCache16[id].data.CHOOSE_EQUIP_CODE === undefined) {
+    } else if (rowData.CHOOSE_EQUIP_CODE === undefined) {
       myObj.message.create("error", "「機台」不可為空");
       return;
-    } else if (this.editCache16[id].data.COMPAIGN_ID === undefined) {
+    } else if (rowData.COMPAIGN_ID === undefined) {
       myObj.message.create("error", "「Campaign ID」不可為空");
       return;
-    } else if (this.editCache16[id].data.PARAMETER_COL === undefined) {
+    } else if (rowData.PARAMETER_COL === undefined) {
       myObj.message.create("error", "「欄位」不可為空");
       return;
-    } else if (this.editCache16[id].data.PARAMETER_CONDITION === undefined) {
+    } else if (rowData.PARAMETER_CONDITION === undefined) {
       myObj.message.create("error", "「條件」不可為空");
       return;
-    } else if (this.editCache16[id].data.PARAMETER_NAME === undefined) {
+    } else if (rowData.PARAMETER_NAME === undefined) {
       myObj.message.create("error", "「參數」不可為空");
       return;
-    } else if (this.editCache16[id].data.TURN_DIA_MAX_MIN === undefined) {
+    } else if (rowData.TURN_DIA_MAX_MIN === undefined) {
       myObj.message.create("error", "「產出尺寸MIN」不可為空");
       return;
-    } else if (this.editCache16[id].data.TURN_DIA_MAX_MAX === undefined) {
+    } else if (rowData.TURN_DIA_MAX_MAX === undefined) {
       myObj.message.create("error", "「產出尺寸MAX」不可為空");
       return;
-    } else if (this.editCache16[id].data.SCHE_TYPE === undefined) {
+    } else if (rowData.SCHE_TYPE === undefined) {
       myObj.message.create("error", "「抽數別」不可為空");
       return;
-    } else if (this.editCache16[id].data.DATA_DELIVERY_RANGE_MIN === undefined) {
+    } else if (rowData.DATA_DELIVERY_RANGE_MIN === undefined) {
       myObj.message.create("error", "「交期區間MIN」不可為空");
       return;
-    } else if (this.editCache16[id].data.DATA_DELIVERY_RANGE_MAX === undefined) {
+    } else if (rowData.DATA_DELIVERY_RANGE_MAX === undefined) {
       myObj.message.create("error", "「交期區間MAX」不可為空");
       return;
-    } else if (this.editCache16[id].data.START_TIME === undefined) {
+    } else if (rowData.START_TIME === undefined) {
       myObj.message.create("error", "「生產日期 起」不可為空");
       return;
-    } else if (this.editCache16[id].data.END_TIME === undefined) {
+    } else if (rowData.END_TIME === undefined) {
       myObj.message.create("error", "「生產日期 訖」不可為空");
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id)
+          this.updateSave(rowData)
         },
         nzOnCancel: () =>
           console.log("cancel")
@@ -342,26 +398,26 @@ export class PPSI204Component implements AfterViewInit {
 
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData16) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID : this.editCache16[_id].data.tab1ID,
-        SHOP_CODE_SCHE : this.editCache16[_id].data.SHOP_CODE_SCHE,
-        CHOOSE_EQUIP_CODE : this.editCache16[_id].data.CHOOSE_EQUIP_CODE,
-        COMPAIGN_ID : this.editCache16[_id].data.COMPAIGN_ID,
-        PARAMETER_COL : this.editCache16[_id].data.PARAMETER_COL,
-        PARAMETER_CONDITION : this.editCache16[_id].data.PARAMETER_CONDITION,
-        PARAMETER_NAME : this.editCache16[_id].data.PARAMETER_NAME,
-        TURN_DIA_MAX_MIN : this.editCache16[_id].data.TURN_DIA_MAX_MIN,
-        TURN_DIA_MAX_MAX : this.editCache16[_id].data.TURN_DIA_MAX_MAX,
-        SCHE_TYPE : this.editCache16[_id].data.SCHE_TYPE,
-        DATA_DELIVERY_RANGE_MIN : this.editCache16[_id].data.DATA_DELIVERY_RANGE_MIN,
-        DATA_DELIVERY_RANGE_MAX : this.editCache16[_id].data.DATA_DELIVERY_RANGE_MAX,
-        START_TIME : this.editCache16[_id].data.START_TIME,
-        END_TIME : this.editCache16[_id].data.END_TIME,
+        ID : rowData.tab1ID,
+        SHOP_CODE_SCHE : rowData.SHOP_CODE_SCHE,
+        CHOOSE_EQUIP_CODE : rowData.CHOOSE_EQUIP_CODE,
+        COMPAIGN_ID : rowData.COMPAIGN_ID,
+        PARAMETER_COL : rowData.PARAMETER_COL,
+        PARAMETER_CONDITION : rowData.PARAMETER_CONDITION,
+        PARAMETER_NAME : rowData.PARAMETER_NAME,
+        TURN_DIA_MAX_MIN : rowData.TURN_DIA_MAX_MIN,
+        TURN_DIA_MAX_MAX : rowData.TURN_DIA_MAX_MAX,
+        SCHE_TYPE : rowData.SCHE_TYPE,
+        DATA_DELIVERY_RANGE_MIN : rowData.DATA_DELIVERY_RANGE_MIN,
+        DATA_DELIVERY_RANGE_MAX : rowData.DATA_DELIVERY_RANGE_MAX,
+        START_TIME : rowData.START_TIME,
+        END_TIME : rowData.END_TIME,
       })
 
       myObj.PPSService.updateI116Tab1Save(obj).subscribe(res => {
@@ -382,9 +438,6 @@ export class PPSI204Component implements AfterViewInit {
 
           this.sucessMSG("修改成功", ``);
 
-          const index = this.PPSINP16List.findIndex(item => item.id === _id);
-          Object.assign(this.PPSINP16List[index], this.editCache16[_id].data);
-          this.editCache16[_id].edit = false;
         } else {
           this.errorMSG("修改失敗", res[0].MSG);
         }
@@ -398,10 +451,10 @@ export class PPSI204Component implements AfterViewInit {
 
   
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData16) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache16[_id].data.tab1ID;
+      let _ID = rowData.tab1ID;
       myObj.PPSService.delI116Tab1Data(_ID).subscribe(res => {
         if(res[0].MSG === "Y") {
           this.SHOP_CODE_SCHE = undefined;
@@ -452,142 +505,6 @@ export class PPSI204Component implements AfterViewInit {
   cancelCampaignInput() : void {
     this.isVisibleCampaign = false;
   } 
-
-
-// ============= 過濾資料之menu ========================.
-  // Campaign限制
-   ppsInp16ListFilter(property:string, keyWord:string) : void {
-
-    if(_.isEmpty(keyWord)){
-      this.displayPPSINP16List = this.PPSINP16List;
-      return;
-    }
-
-    const filterFunc = item => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP16List.filter(item => filterFunc(item));
-    this.displayPPSINP16List = data;
-  }
-
-  // 資料過濾---Campaign限制 --> 站別
-  searchByShopCodeSche() : void {
-    this.ppsInp16ListFilter("SHOP_CODE_SCHE", this.searchShopCodeScheValue);
-  } 
-  resetByShopCodeSche() : void {
-    this.searchShopCodeScheValue = '';
-    this.ppsInp16ListFilter("SHOP_CODE_SCHE", this.searchShopCodeScheValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 機台
-  searchByChooseEquipCode() : void {
-    this.ppsInp16ListFilter("CHOOSE_EQUIP_CODE", this.searchChooseEquipCodeValue);
-  } 
-  resetByChooseEquipCode() : void {
-    this.searchChooseEquipCodeValue = '';
-    this.ppsInp16ListFilter("CHOOSE_EQUIP_CODE", this.searchChooseEquipCodeValue);
-  }
-
-  // 資料過濾---Campaign限制 --> Campaign ID
-  searchByCompaignId() : void {
-    this.ppsInp16ListFilter("COMPAIGN_ID", this.searchCompaignIdValue);
-  } 
-  resetByCompaignId() : void {
-    this.searchCompaignIdValue = '';
-    this.ppsInp16ListFilter("COMPAIGN_ID", this.searchCompaignIdValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 欄位
-  searchByParameterCol() : void {
-    this.ppsInp16ListFilter("PARAMETER_COL", this.searchParameterColValue);
-  } 
-  resetByParameterCol() : void {
-    this.searchParameterColValue = '';
-    this.ppsInp16ListFilter("PARAMETER_COL", this.searchParameterColValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 欄位
-  searchByParameterCondition() : void {
-    this.ppsInp16ListFilter("PARAMETER_CONDITION", this.searchParameterConditionValue);
-  } 
-  resetByParameterCondition() : void {
-    this.searchParameterConditionValue = '';
-    this.ppsInp16ListFilter("PARAMETER_CONDITION", this.searchParameterConditionValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 參數
-  searchByParameterName() : void {
-    this.ppsInp16ListFilter("PARAMETER_NAME", this.searchParameterNameValue);
-  } 
-  resetByParameterName() : void {
-    this.searchParameterNameValue = '';
-    this.ppsInp16ListFilter("PARAMETER_NAME", this.searchParameterNameValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 產出尺寸MIN
-  searchByTurnDiaMaxMin() : void {
-    this.ppsInp16ListFilter("TURN_DIA_MAX_MIN", this.searchTurnDiaMaxMinValue);
-  } 
-  resetByTurnDiaMaxMin() : void {
-    this.searchTurnDiaMaxMinValue = '';
-    this.ppsInp16ListFilter("TURN_DIA_MAX_MIN", this.searchTurnDiaMaxMinValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 產出尺寸MAX
-  searchByTurnDiaMaxMax() : void {
-    this.ppsInp16ListFilter("TURN_DIA_MAX_MAX", this.searchTurnDiaMaxMaxValue);
-  } 
-  resetByTurnDiaMaxMax() : void {
-    this.searchTurnDiaMaxMaxValue = '';
-    this.ppsInp16ListFilter("TURN_DIA_MAX_MAX", this.searchTurnDiaMaxMaxValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 抽數別
-  searchByScheType() : void {
-    this.ppsInp16ListFilter("SCHE_TYPE", this.searchScheTypeValue);
-  } 
-  resetByScheType() : void {
-    this.searchScheTypeValue = '';
-    this.ppsInp16ListFilter("SCHE_TYPE", this.searchScheTypeValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 交期區間MIN
-  searchByDataDeliveryRangeMin() : void {
-    this.ppsInp16ListFilter("DATA_DELIVERY_RANGE_MIN", this.searchDataDeliveryRangeMinValue);
-  } 
-  resetByDataDeliveryRangeMin() : void {
-    this.searchDataDeliveryRangeMinValue = '';
-    this.ppsInp16ListFilter("DATA_DELIVERY_RANGE_MIN", this.searchDataDeliveryRangeMinValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 交期區間MAX
-  searchByDataDeliveryRangeMax() : void {
-    this.ppsInp16ListFilter("DATA_DELIVERY_RANGE_MAX", this.searchDataDeliveryRangeMaxValue);
-  } 
-  resetByDataDeliveryRangeMax() : void {
-    this.searchDataDeliveryRangeMaxValue = '';
-    this.ppsInp16ListFilter("DATA_DELIVERY_RANGE_MAX", this.searchDataDeliveryRangeMaxValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 生產日期 起
-  searchByStartTime() : void {
-    this.ppsInp16ListFilter("START_TIME", this.searchStartTimeValue);
-  } 
-  resetByStartTime() : void {
-    this.searchStartTimeValue = '';
-    this.ppsInp16ListFilter("START_TIME", this.searchStartTimeValue);
-  }
-
-  // 資料過濾---Campaign限制 --> 生產日期 起
-  searchByEndTime() : void {
-    this.ppsInp16ListFilter("END_TIME", this.searchEndTimeValue);
-  } 
-  resetByEndTime() : void {
-    this.searchEndTimeValue = '';
-    this.ppsInp16ListFilter("END_TIME", this.searchEndTimeValue);
-  }
 
   // 匯出 Excel
   convertToExcel() {
@@ -792,6 +709,25 @@ export class PPSI204Component implements AfterViewInit {
         })
       });
       this.getPPSINP16List();
+    }
+
+    onBtnClick1(e) {
+      e.params.api.setFocusedCell(e.params.node.rowIndex, 'END_TIME');
+      e.params.api.startEditingCell({
+        rowIndex: e.params.node.rowIndex,
+        colKey: 'END_TIME',
+      });
+    }
+  
+    onBtnClick2(e) {
+      this.saveEdit(e.rowData)
+    }
+  
+    onBtnClick3(e) {
+    }
+  
+    onBtnClick4(e) {
+      this.deleteRow(e.rowData);
     }
 
 }

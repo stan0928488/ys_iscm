@@ -1,13 +1,19 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import {
+  ColDef,
+  ColGroupDef
+} from 'ag-grid-community';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import * as moment from 'moment';
-import * as _ from 'lodash';
-import * as XLSX from 'xlsx';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { CommonService } from 'src/app/services/common/common.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 
 interface ItemData10 {
   id: string;
@@ -33,6 +39,8 @@ interface ItemData10 {
   providers: [NzMessageService],
 })
 export class PPSI122Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "直棒桶槽式工時(PPSI122)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -70,6 +78,51 @@ export class PPSI122Component implements AfterViewInit {
   isSpinning = false;
   excelImportFile: File;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {headerComponent: AGCustomHeaderComponent,headerName: '站號',field: 'SHOP_CODE_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '機台碼',field: 'EQUIP_CODE_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '鋼種',field: 'GRADE_NO_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '長度-最小值(mm)',field: 'LENGTH_MIN_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '長度-最大值(mm)',field: 'LENGTH_MAX_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '尺寸最小',field: 'DIA_MIN_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '尺寸最大',field: 'DIA_MAX_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '總時間(分/批)',field: 'TOTAL_TIMES_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '浸酸時間(分/批)',field: 'PICKLING_TIMES_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '清洗時間(分/批)',field: 'WASHING_TIMES_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '瀝乾時間(分/批)',field: 'DRAINING_TIMES_10',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '投入上限值(捆/批)',field: 'BATCH_CNT_10',filter: true,width: 120,editable: true},
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -82,6 +135,9 @@ export class PPSI122Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -190,11 +246,11 @@ export class PPSI122Component implements AfterViewInit {
   }
 
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData10): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id);
+        this.delID(rowData);
       },
       nzOnCancel: () => console.log('cancel'),
     });
@@ -210,49 +266,49 @@ export class PPSI122Component implements AfterViewInit {
   }
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData10): void {
     let myObj = this;
-    if (this.editCache10[id].data.SHOP_CODE_10 === undefined) {
+    if (rowData.SHOP_CODE_10 === undefined) {
       myObj.message.create('error', '「站號」不可為空');
       return;
-    } else if (this.editCache10[id].data.EQUIP_CODE_10 === undefined) {
+    } else if (rowData.EQUIP_CODE_10 === undefined) {
       myObj.message.create('error', '「機台碼」不可為空');
       return;
-    } else if (this.editCache10[id].data.GRADE_NO_10 === undefined) {
+    } else if (rowData.GRADE_NO_10 === undefined) {
       myObj.message.create('error', '「鋼種」不可為空');
       return;
-    } else if (this.editCache10[id].data.LENGTH_MIN_10 === undefined) {
+    } else if (rowData.LENGTH_MIN_10 === undefined) {
       myObj.message.create('error', '「長度最小值」不可為空');
       return;
-    } else if (this.editCache10[id].data.LENGTH_MAX_10 === undefined) {
+    } else if (rowData.LENGTH_MAX_10 === undefined) {
       myObj.message.create('error', '「長度最大值」不可為空');
       return;
-    } else if (this.editCache10[id].data.DIA_MIN_10 === undefined) {
+    } else if (rowData.DIA_MIN_10 === undefined) {
       myObj.message.create('error', '「最小尺寸」不可為空');
       return;
-    } else if (this.editCache10[id].data.DIA_MAX_10 === undefined) {
+    } else if (rowData.DIA_MAX_10 === undefined) {
       myObj.message.create('error', '「最大尺寸」不可為空');
       return;
-    } else if (this.editCache10[id].data.TOTAL_TIMES_10 === undefined) {
+    } else if (rowData.TOTAL_TIMES_10 === undefined) {
       myObj.message.create('error', '「總時間」不可為空');
       return;
-    } else if (this.editCache10[id].data.PICKLING_TIMES_10 === undefined) {
+    } else if (rowData.PICKLING_TIMES_10 === undefined) {
       myObj.message.create('error', '「浸酸時間」不可為空');
       return;
-    } else if (this.editCache10[id].data.WASHING_TIMES_10 === undefined) {
+    } else if (rowData.WASHING_TIMES_10 === undefined) {
       myObj.message.create('error', '「清洗時間」不可為空');
       return;
-    } else if (this.editCache10[id].data.DRAINING_TIMES_10 === undefined) {
+    } else if (rowData.DRAINING_TIMES_10 === undefined) {
       myObj.message.create('error', '「瀝乾時間」不可為空');
       return;
-    } else if (this.editCache10[id].data.DIA_MAX_10 === undefined) {
+    } else if (rowData.DIA_MAX_10 === undefined) {
       myObj.message.create('error', '「投入上限值」不可為空');
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id);
+          this.updateSave(rowData);
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -328,25 +384,25 @@ export class PPSI122Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData10) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID: this.editCache10[_id].data.tab10ID,
-        SHOP_CODE_10: this.editCache10[_id].data.SHOP_CODE_10,
-        EQUIP_CODE_10: this.editCache10[_id].data.EQUIP_CODE_10,
-        GRADE_NO_10: this.editCache10[_id].data.GRADE_NO_10,
-        LENGTH_MIN_10: this.editCache10[_id].data.LENGTH_MIN_10,
-        LENGTH_MAX_10: this.editCache10[_id].data.LENGTH_MAX_10,
-        DIA_MIN_10: this.editCache10[_id].data.DIA_MIN_10,
-        DIA_MAX_10: this.editCache10[_id].data.DIA_MAX_10,
-        TOTAL_TIMES_10: this.editCache10[_id].data.TOTAL_TIMES_10,
-        PICKLING_TIMES_10: this.editCache10[_id].data.PICKLING_TIMES_10,
-        WASHING_TIMES_10: this.editCache10[_id].data.WASHING_TIMES_10,
-        DRAINING_TIMES_10: this.editCache10[_id].data.DRAINING_TIMES_10,
-        BATCH_CNT_10: this.editCache10[_id].data.BATCH_CNT_10,
+        ID: rowData.tab10ID,
+        SHOP_CODE_10: rowData.SHOP_CODE_10,
+        EQUIP_CODE_10: rowData.EQUIP_CODE_10,
+        GRADE_NO_10: rowData.GRADE_NO_10,
+        LENGTH_MIN_10: rowData.LENGTH_MIN_10,
+        LENGTH_MAX_10: rowData.LENGTH_MAX_10,
+        DIA_MIN_10: rowData.DIA_MIN_10,
+        DIA_MAX_10: rowData.DIA_MAX_10,
+        TOTAL_TIMES_10: rowData.TOTAL_TIMES_10,
+        PICKLING_TIMES_10: rowData.PICKLING_TIMES_10,
+        WASHING_TIMES_10: rowData.WASHING_TIMES_10,
+        DRAINING_TIMES_10: rowData.DRAINING_TIMES_10,
+        BATCH_CNT_10: rowData.BATCH_CNT_10,
 
         USERNAME: this.USERNAME,
         DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -367,11 +423,6 @@ export class PPSI122Component implements AfterViewInit {
             this.DRAINING_TIMES_10 = undefined;
             this.BATCH_CNT_10 = undefined;
             this.sucessMSG('修改成功', ``);
-            const index = this.PPSINP10List.findIndex(
-              (item) => item.id === _id
-            );
-            Object.assign(this.PPSINP10List[index], this.editCache10[_id].data);
-            this.editCache10[_id].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -386,10 +437,10 @@ export class PPSI122Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData10) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache10[_id].data.tab10ID;
+      let _ID = rowData.tab10ID;
       myObj.PPSService.delI110Tab1Data(_ID).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
@@ -441,143 +492,6 @@ export class PPSI122Component implements AfterViewInit {
   // 取消桶槽式工時之彈出視窗
   cancelOtherShopInput(): void {
     this.isVisibleOtherShop = false;
-  }
-
-  // ============= 過濾資料之menu ========================
-  // 桶槽式工時
-  ppsInp10ListFilter(property: string, keyWord: string): void {
-    if (_.isEmpty(keyWord)) {
-      this.displayPPSINP10List = this.PPSINP10List;
-      return;
-    }
-
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP10List.filter((item) => filterFunc(item));
-    this.displayPPSINP10List = data;
-  }
-
-  // 資料過濾---桶槽式工時 --> 站號
-  searchByShopCode10(): void {
-    this.ppsInp10ListFilter('SHOP_CODE_10', this.searchShopCode10Value);
-  }
-  resetByShopCode10(): void {
-    this.searchShopCode10Value = '';
-    this.ppsInp10ListFilter('SHOP_CODE_10', this.searchShopCode10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 機台碼
-  searchByEquipCode10(): void {
-    this.ppsInp10ListFilter('EQUIP_CODE_10', this.searchEquipCode10Value);
-  }
-  resetByEquipCode10(): void {
-    this.searchEquipCode10Value = '';
-    this.ppsInp10ListFilter('EQUIP_CODE_10', this.searchEquipCode10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 鋼種
-  searchByGradeNo10(): void {
-    this.ppsInp10ListFilter('GRADE_NO_10', this.searchGradeNo10Value);
-  }
-  resetByGradeNo10(): void {
-    this.searchGradeNo10Value = '';
-    this.ppsInp10ListFilter('GRADE_NO_10', this.searchGradeNo10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 長度最小值
-  searchByLengthMin10(): void {
-    this.ppsInp10ListFilter('LENGTH_MIN_10', this.searchLengthMin10Value);
-  }
-  resetByLengthMin10(): void {
-    this.searchLengthMin10Value = '';
-    this.ppsInp10ListFilter('LENGTH_MIN_10', this.searchLengthMin10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 長度最大值
-  searchByLengthMax10(): void {
-    this.ppsInp10ListFilter('LENGTH_MAX_10', this.searchLengthMax10Value);
-  }
-  resetByLengthMax10(): void {
-    this.searchLengthMax10Value = '';
-    this.ppsInp10ListFilter('LENGTH_MAX_10', this.searchLengthMax10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 最小尺寸
-  searchByDiaMin10(): void {
-    this.ppsInp10ListFilter('DIA_MIN_10', this.searchDiaMin10Value);
-  }
-  resetByDiaMin10(): void {
-    this.searchDiaMin10Value = '';
-    this.ppsInp10ListFilter('DIA_MIN_10', this.searchDiaMin10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 最大尺寸
-  searchByDiaMax10(): void {
-    this.ppsInp10ListFilter('DIA_MAX_10', this.searchDiaMax10Value);
-  }
-  resetByDiaMax10(): void {
-    this.searchDiaMax10Value = '';
-    this.ppsInp10ListFilter('DIA_MAX_10', this.searchDiaMax10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 總時間
-  searchByTotalTimes10(): void {
-    this.ppsInp10ListFilter('TOTAL_TIMES_10', this.searchTotalTimes10Value);
-  }
-  resetByTotalTimes10(): void {
-    this.searchTotalTimes10Value = '';
-    this.ppsInp10ListFilter('TOTAL_TIMES_10', this.searchTotalTimes10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 浸酸時間
-  searchByPicklingTimes10(): void {
-    this.ppsInp10ListFilter(
-      'PICKLING_TIMES_10',
-      this.searchPicklingTimes10Value
-    );
-  }
-  resetByPicklingTimes10(): void {
-    this.searchPicklingTimes10Value = '';
-    this.ppsInp10ListFilter(
-      'PICKLING_TIMES_10',
-      this.searchPicklingTimes10Value
-    );
-  }
-
-  // 資料過濾---桶槽式工時 --> 清洗時間
-  searchByWashingTimes10(): void {
-    this.ppsInp10ListFilter('WASHING_TIMES_10', this.searchWashingTimes10Value);
-  }
-  resetByWashingTimes10(): void {
-    this.searchWashingTimes10Value = '';
-    this.ppsInp10ListFilter('WASHING_TIMES_10', this.searchWashingTimes10Value);
-  }
-
-  // 資料過濾---桶槽式工時 --> 瀝乾時間
-  searchByDrainingTimes10(): void {
-    this.ppsInp10ListFilter(
-      'DRAINING_TIMES_10',
-      this.searchDrainingTimes10Value
-    );
-  }
-  resetByDrainingTimes10(): void {
-    this.searchDrainingTimes10Value = '';
-    this.ppsInp10ListFilter(
-      'DRAINING_TIMES_10',
-      this.searchDrainingTimes10Value
-    );
-  }
-
-  // 資料過濾---桶槽式工時 --> 投入上限值
-  searchByBatchCnt10(): void {
-    this.ppsInp10ListFilter('BATCH_CNT_10', this.searchBatchCnt10Value);
-  }
-  resetByBatchCnt10(): void {
-    this.searchBatchCnt10Value = '';
-    this.ppsInp10ListFilter('BATCH_CNT_10', this.searchBatchCnt10Value);
   }
 
   //=============================================
@@ -675,19 +589,14 @@ export class PPSI122Component implements AfterViewInit {
 
     // 將資料全刪除，再匯入EXCEL檔內的資料
     const myThis = this;
-    const p = this.deleteAllData();
-    p.then((deleteSuccess) => {
-      // 批次新增Excle中的資料
-      return myThis.barchInsertExcelData();
+    myThis.barchInsertExcelData().then((barchInsertSuccess:any) => {
+      myThis.sucessMSG(barchInsertSuccess, ``);
+      myThis.getPPSINP10List();
     })
-      .then((barchInsertSuccess) => {
-        myThis.sucessMSG(barchInsertSuccess, ``);
-        myThis.getPPSINP10List();
-      })
-      .catch(function (error) {
-        myThis.isSpinning = false;
-        myThis.errorMSG(error, ``);
-      });
+    .catch(function (error) {
+      myThis.isSpinning = false;
+      myThis.errorMSG(error, ``);
+    });
     (<HTMLInputElement>document.getElementById('importExcel')).value = '';
   }
 
@@ -696,10 +605,10 @@ export class PPSI122Component implements AfterViewInit {
     return new Promise(function (resolve, reject) {
       myThis.PPSService.batchSaveI110Data(myThis.jsonExcelData).subscribe(
         (response) => {
-          if (response.success === true) {
+          if (response.code === 200) {
             resolve('匯入成功');
           } else {
-            reject(response.success);
+            reject(response.message);
           }
         },
         (error) => {
@@ -1016,4 +925,24 @@ export class PPSI122Component implements AfterViewInit {
     this.isSpinning = false;
     this.sucessMSG('匯出成功!', ``);
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'BATCH_CNT_10');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'BATCH_CNT_10',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData)
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData);
+  }
+
 }
