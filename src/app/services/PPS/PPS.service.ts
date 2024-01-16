@@ -33,7 +33,7 @@ export class PPSService {
   //Get getPPSINP13List
   getPPSINP13List() {
     console.log('api service getPPSINP13List');
-    let queryUrl = this.APIURL + '/FCP/I113/getPPSINP13List';
+    let queryUrl = this.APINEWURL + '/FCP/I113/getPPSINP13List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -41,7 +41,7 @@ export class PPSService {
   // I113 insertI113Tab1Save
   insertI113Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I113/insertI113Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/insertI113Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -50,7 +50,7 @@ export class PPSService {
   // I113 updateI113Tab1Save修改存檔
   updateI113Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I113/updateI113Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/updateI113Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -58,13 +58,13 @@ export class PPSService {
 
   // I113 delI113Tab1Data 刪除資料
   delI113Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I113/delI113Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I113/delI113Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
 
   // I113 刪除所有資料
   deleteI113AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I113/deleteI113AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I113/deleteI113AllData`;
     console.log('刪除「直棒研磨道次」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -74,7 +74,7 @@ export class PPSService {
   // I113 批次新增資料
   batchSaveI113Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I113/batchInsertI113Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I113/batchInsertI113Data`;
     console.log('批次新增「直棒研磨道次」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -510,19 +510,19 @@ export class PPSService {
   //Get getPPSINP10List 取得10tab data
   getPPSINP10List() {
     console.log('api service getPPSINP10List');
-    let queryUrl = this.APIURL + '/FCP/I110/getPPSINP10List';
+    let queryUrl = this.APINEWURL + '/FCP/I110_2/getPPSINP10List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I110 delI110Tab1Data 刪除資料
   delI110Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I110/delI110Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/delI110Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I110 insertI110Tab1Save
   insertI110Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I110/insertI110Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/insertI110Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -530,7 +530,7 @@ export class PPSService {
   // I110 updateI110Tab1Save修改存檔
   updateI110Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I110/updateI110Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I110_2/updateI110Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -538,7 +538,7 @@ export class PPSService {
 
   // I110 刪除所有資料
   deleteI110AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I110/deleteI110AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I110_2/deleteI110AllData`;
     console.log('刪除「直棒桶槽式工時」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -548,7 +548,7 @@ export class PPSService {
   // I110 批次新增資料
   batchSaveI110Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I110/batchSaveI110Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I110_2/batchSaveI110Data`;
     console.log('批次新增「直棒桶槽式工時」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -842,7 +842,7 @@ export class PPSService {
   getCalendarList(_YM, _SHOP, _EQUIP) {
     console.log('api service getCalendarList');
     let queryUrl =
-      this.APIURL + `/FCP/I202/getCalendarList/${_YM}/${_SHOP}/${_EQUIP}`;
+      this.APINEWURL + `/FCP/I202/getCalendarList/${_YM}/${_SHOP}/${_EQUIP}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -850,17 +850,17 @@ export class PPSService {
   getCalendarDtlList(_type, _date, _mode, _PickShopCode, _equip) {
     console.log('api service getCalendarDtlList');
     let queryUrl =
-      this.APIURL +
+      this.APINEWURL +
       `/FCP/I202/getCalendarDtlList/${_type}/${_date}/${_mode}/${_PickShopCode}/${_equip}`;
     console.log(queryUrl);
-    return this.http.get(queryUrl);
+    return this.http.get<any>(queryUrl);
   }
   //addCalendarData 定修計畫insert存檔
   addCalendarData(_result) {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/addCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/addCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //importExcelCalendar 定修計畫EXCEL匯入
@@ -868,7 +868,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/importExcel';
+    let queryUrl = this.APINEWURL + '/FCP/I202/importExcel';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -877,7 +877,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/updCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/updCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
   //delCalendarData 定修計畫刪除資料
@@ -885,7 +885,7 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I202/delCalendarData';
+    let queryUrl = this.APINEWURL + '/FCP/I202/delCalendarData';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2044,7 +2044,7 @@ export class PPSService {
   //importI109NonBarExcel
   importI109NonBarExcel(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I109/NonBar/importI109NonBarExcel`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/importI109NonBarExcel`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -2082,13 +2082,13 @@ export class PPSService {
 
   getI109ShopCodeList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I109/NonBar/getI109ShopCodeList`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/getI109ShopCodeList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   getI109GradeNoList(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APINEWURL + `/FCP/I101/NonBar/getI109GradeNoList`;
+    let queryUrl = this.APINEWURL + `/FCP/I109/NonBar/getI109GradeNoList`;
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
@@ -2179,7 +2179,7 @@ export class PPSService {
 
   getNonBarShopList() {
     console.log('Api Service 獲取非直棒站別資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShopList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShopList`;
     console.log(`Api Service 獲取非直棒站別資料 url -> ${queryUrl}`);
     console.log(`Api Service 獲取非直棒站別資料 參數 -> 無`);
     return this.http.get(queryUrl);
@@ -2187,7 +2187,7 @@ export class PPSService {
 
   getEquipsByShopList(shopList: any) {
     console.log('Api Service 獲取非直棒機台資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getEquipsByShopList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getEquipsByShopList`;
     console.log(`Api Service 獲取非直棒機台資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 獲取非直棒機台資料 參數 -> ${JSON.stringify(shopList)}`
@@ -2197,7 +2197,7 @@ export class PPSService {
 
   batchSaveShutdownList(ppsI202NonBarRequest: any) {
     console.log('Api Service 批次新增非直棒停機定修表');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/batchSaveShutdownList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/batchSaveShutdownList`;
     console.log(`Api Service 批次新增非直棒停機定修表 url -> ${queryUrl}`);
     console.log(
       `Api Service 批次新增非直棒停機定修表 參數 -> ${JSON.stringify(
@@ -2209,7 +2209,7 @@ export class PPSService {
 
   batchSaveShutdownListForExcelImport(jsonExcelData: any[]) {
     console.log('Api Service 批次Excel匯入非直棒停機定修資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/batchSaveShutdownListForExcelImport`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/batchSaveShutdownListForExcelImport`;
     console.log(
       `Api Service 批次Excel匯入非直棒停機定修資料 url -> ${queryUrl}`
     );
@@ -2223,7 +2223,7 @@ export class PPSService {
 
   getShutdownDataList(parms: any) {
     console.log('Api Service 獲取非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShutdownDataList`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShutdownDataList`;
     console.log(`Api Service 獲取非直棒停機資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 獲取非直棒停機資料 參數 -> ${JSON.stringify(parms)}`
@@ -2234,7 +2234,7 @@ export class PPSService {
   getShutdownDataListForExcelExport(year: string, month: string) {
     const httpParams = new HttpParams().set('year', year).set('month', month);
     console.log('Api Service 獲取非直棒停機資料(for Excel下載)');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/getShutdownDataListForExcelExport`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/getShutdownDataListForExcelExport`;
     console.log(
       `Api Service 獲取非直棒停機資料(for Excel下載) url -> ${queryUrl}`
     );
@@ -2249,7 +2249,7 @@ export class PPSService {
 
   updateShutdownData(shutdownData: any) {
     console.log('Api Service 更新非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/updateShutdownData`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/updateShutdownData`;
     console.log(`Api Service 更新非直棒停機資料 url -> ${queryUrl}`);
     console.log(
       `Api Service 更新非直棒停機資料 參數 -> ${JSON.stringify(shutdownData)}`
@@ -2259,7 +2259,7 @@ export class PPSService {
 
   deleteShutdownData(deleteCondition: any) {
     console.log('Api Service 刪除非直棒停機資料');
-    const queryUrl = `${this.APIURL}/FCP/I202/NonBar/deleteShutdownData`;
+    const queryUrl = `${this.APINEWURL}/FCP/I202/NonBar/deleteShutdownData`;
     // console.log(`Api Service 刪除非直棒停機資料 url -> ${queryUrl}`);
     // console.log(
     //   `Api Service 刪除非直棒停機資料 參數 -> ${JSON.stringify(
