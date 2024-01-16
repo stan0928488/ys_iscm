@@ -208,7 +208,21 @@
 >
   <ng-template #modalTitle>Calendar 明細</ng-template>
   <ng-template #modalContent>
-    <div>
+    <ag-grid-angular
+      style="width: 100%; height:500px; overflow:scroll; padding-top:10px;"
+      class="ag-theme-alpine ag-theme-PPSI202-NonBar-custom"
+      [context]="agGridContext"
+      [columnDefs]="ppsinptb06ColumnDefs"
+      [gridOptions]="gridOptions"
+      [rowData]="CalendarDtlList"
+      [pagination]="true"
+      [animateRows]="true"
+      (cellDoubleClicked)="cellDoubleClickedHandler($event)"
+      (cellEditingStopped)="cellEditingStoppedHandler($event)"
+      editType="fullRow"
+      (gridReady)="onGridReady($event)">
+    </ag-grid-angular>
+    <!-- <div>
       <nz-table
         #DtlTable
         [nzData]="CalendarDtlList"
@@ -278,7 +292,7 @@
         </tbody>
 
       </nz-table>
-    </div>
+    </div> -->
   </ng-template>
 
   <ng-template #modalFooter>
