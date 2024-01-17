@@ -1844,7 +1844,7 @@ export class PPSService {
 
   savetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/saveI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/saveI131Data`;
     console.log('新增「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -1856,7 +1856,7 @@ export class PPSService {
       .set('pageIndex', pageIndex)
       .set('pageSize', pageSize);
     console.log('查詢「直棒批次爐表」資料');
-    let endpointUrl = this.APIURL + `/FCP/I131/listI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/listI131Data`;
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:pageIndex=>${pageIndex}, pageSize=>${pageSize}`);
     return this.http.get<any>(endpointUrl, { params: httpParams });
@@ -1864,7 +1864,7 @@ export class PPSService {
 
   updatetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/updateI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/updateI131Data`;
     console.log('更新「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -1872,7 +1872,7 @@ export class PPSService {
   }
 
   deletetbppsm114Data(id: number) {
-    let endpointUrl = this.APIURL + `/FCP/I131/deleteI131Data/${id}`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/deleteI131Data/${id}`;
     console.log('刪除「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${id}`);
@@ -1897,7 +1897,7 @@ export class PPSService {
   }
 
   deletetbppsm114AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I131/deleteI131AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/deleteI131AllData`;
     console.log('刪除「直棒批次爐表」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -1906,7 +1906,7 @@ export class PPSService {
 
   batchSavetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/batchInsertI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/batchInsertI131Data`;
     console.log('批次新增「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
