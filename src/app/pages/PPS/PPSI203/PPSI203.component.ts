@@ -1,3 +1,4 @@
+import { PPSI203ActionCellComponent } from './PPSI203-action-cell-component';
 import { Component, AfterViewInit, NgZone, EventEmitter, ViewChild, ElementRef } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { PPSService } from "src/app/services/PPS/PPS.service";
@@ -14,6 +15,8 @@ import {NzUploadModule} from "ng-zorro-antd/upload"
 import { Router } from "@angular/router";
 import * as moment from 'moment';
 import * as _ from "lodash";
+import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent } from "ag-grid-community";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 interface ItemData {
   id: string;
@@ -35,6 +38,7 @@ export class PPSI203Component implements AfterViewInit {
   USERNAME;
 	loading              = false; //loaging data flag
   LoadingPage          = false;
+  LoadingDetailPage    = false;
   isVisibleAdd         = false;
   isVisibleEdit        = false;
   isVisibleExportExcel = false;
@@ -132,6 +136,11 @@ export class PPSI203Component implements AfterViewInit {
   isRunFCP = false; // 如為true則不可異動
   newlist;
 
+  // ag grid Api物件
+  gridApi : GridApi;
+  gridColumnApi : ColumnApi;
+  agGridContext : any;
+
   fileType: string = '.xls, .xlsx, .csv'; //檔案類型
 
   compareFn = (o1: any, o2: any) => (o1 && o2 ? o1.value === o2.value : o1 === o2);
@@ -153,6 +162,54 @@ export class PPSI203Component implements AfterViewInit {
     console.log("steelTypeChange:"+value) ;
   }
 
+   // ag-grid共有設定定義
+   gridOptions = {
+    defaultColDef: {
+      filter: true,
+      sortable: false,
+      resizable: true,
+      editable: false
+    }
+  };
+
+  ppsi203ColumnDefs : ColDef[] = [
+    { 
+      headerName:'交期區間MIN',
+      field: 'dataDeliveryRangeMin', 
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'交期區間MAX',
+      field: 'dataDeliveryRangeMax', 
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'製程碼',
+      field: 'processCode', 
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'站別',
+      field: 'shopCode', 
+      headerComponent : AGCustomHeaderComponent
+    }, 
+    { 
+      headerName:'抽數別',
+      field: 'scheType', 
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'最早可投產時間',
+      field: 'ASAPDate', 
+      headerComponent : AGCustomHeaderComponent
+    },
+    { 
+      headerName:'Action',
+      field:'action',
+      headerComponent : AGCustomHeaderComponent,
+      cellRenderer: PPSI203ActionCellComponent
+    }
+  ]
   
   constructor(
     private router: Router,
@@ -167,6 +224,36 @@ export class PPSI203Component implements AfterViewInit {
   ) { 
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
+    this.agGridContext = {
+      componentParent: this,
+    };
+  }
+
+ 
+  // 獲取ag-grid的Api物件
+  onGridReady(params: GridReadyEvent<any>) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+   /**
+   * 做寬度適應的調整
+   */
+   autoSizeAll() {
+    const allColumnIds: string[] = [];
+    this.gridColumnApi.getColumns()!.forEach((column) => {
+      allColumnIds.push(column.getId());
+    });
+    this.gridColumnApi.autoSizeColumns(allColumnIds, false);
+  }
+
+  /**
+   * 首次渲染資料完畢後被調用
+   * @param event 
+   */
+  onFirstDataRendered(event : FirstDataRenderedEvent<any>){
+    // 在首次資料渲染完畢後，做寬度適應的調整
+    this.autoSizeAll();
   }
 
   ngAfterViewInit() {
@@ -313,51 +400,66 @@ export class PPSI203Component implements AfterViewInit {
   getPPSI203DataList() {
     this.LoadingPage = true;
 
-    this.getPPSService.getPPSI203MasterListData().subscribe(res => {
+    this.getPPSService.getPPSI203MasterListData().subscribe(
+      res => {
       console.log("getPPSI203MasterListData success");
       this.PPSI203DataList = res;
       this.displayPPSI203DataList = this.PPSI203DataList;
       console.log(this.PPSI203DataList);
       this.LoadingPage = false;
       this.initialWatch();
-    });
+      },
+      error => {
+        this.errorMSG("獲取資料異常", `後端發生異常，異常訊息：${JSON.stringify(error)}`);
+        this.LoadingPage = false;
+      }
+      
+    );
     
   }
 
   getT19DetailDataList(_id) {
-    this.LoadingPage = true;
+    this.LoadingDetailPage = true;
     this.master_Id = _id;
     this.T19DetailDataListForEdit=[];
-    this.getPPSService.getPPSI203_DetailListData(this.master_Id).subscribe(res => {
-      console.log("getT19DetailDataList success");
-      this.T19DetailDataList = res;
-      console.log(this.T19DetailDataList);
-      let editStatus = false ;
-      this.NewCustomerList = this.CustomerList;
-      for(let i = 0; i<this.T19DetailDataList.length; i++){
-        let id                = this.T19DetailDataList[i].id;
-        let M_ID              = this.T19DetailDataList[i].M_ID;
-        let custAbbreviations = this.T19DetailDataList[i].custAbbreviations;
-        let gradeGroup        = this.T19DetailDataList[i].gradeGroup; 
-        //let T19_ID            = this.T19DetailDataList[i].T19_ID;
-        let gradeGroups       = this.T19DetailDataList[i].gradeGroup.split(',');
-        let obj2 = {
-          id: id,
-          M_ID: M_ID,
-          custAbbreviations: custAbbreviations,
-          gradeGroup: gradeGroup,
-          //T19_ID: T19_ID,
-          editStatus: editStatus,
-          gradeGroups : gradeGroups
-        };
-        
-        this.NewCustomerList = this.NewCustomerList.filter(item => item != custAbbreviations);
-        console.log(obj2);
-        this.T19DetailDataListForEdit.push(obj2);
-      }
+    this.getPPSService.getPPSI203_DetailListData(this.master_Id).subscribe(
+      
+      res => {
+        console.log("getT19DetailDataList success");
+        this.T19DetailDataList = res;
+        console.log(this.T19DetailDataList);
+        let editStatus = false ;
+        this.NewCustomerList = this.CustomerList;
+        for(let i = 0; i<this.T19DetailDataList.length; i++){
+          let id                = this.T19DetailDataList[i].id;
+          let M_ID              = this.T19DetailDataList[i].M_ID;
+          let custAbbreviations = this.T19DetailDataList[i].custAbbreviations;
+          let gradeGroup        = this.T19DetailDataList[i].gradeGroup; 
+          //let T19_ID            = this.T19DetailDataList[i].T19_ID;
+          let gradeGroups       = this.T19DetailDataList[i].gradeGroup.split(',');
+          let obj2 = {
+            id: id,
+            M_ID: M_ID,
+            custAbbreviations: custAbbreviations,
+            gradeGroup: gradeGroup,
+            //T19_ID: T19_ID,
+            editStatus: editStatus,
+            gradeGroups : gradeGroups
+          };
+          
+          this.NewCustomerList = this.NewCustomerList.filter(item => item != custAbbreviations);
+          console.log(obj2);
+          this.T19DetailDataListForEdit.push(obj2);
+        }
 
-      this.LoadingPage = false;
-    });
+        this.LoadingDetailPage = false;
+      },
+      error => {
+        this.errorMSG("獲取資料異常", `後端發生異常，異常訊息：${JSON.stringify(error)}`);
+        this.LoadingDetailPage = false;
+      }
+      
+    );
     
   }
   // ----滾表 function end---------------
@@ -600,7 +702,7 @@ export class PPSI203Component implements AfterViewInit {
 
     console.log(obj);
     myObj.getPPSService.addPPSI203Data(obj).subscribe(res => {
-      if(res[0].MSG === "Y") {
+      if(!!res[0] && res[0].MSG === "Y") {
         
         this.loading = true;
         this.LoadingPage = true;
@@ -611,15 +713,15 @@ export class PPSI203Component implements AfterViewInit {
         this.getPPSI203DataList();
         
         this.handleCancel_Add();   
-      } else if(res[0].MSG === "N"){
+      } else if(!!res[0] && res[0].MSG === "N"){
         let countExistData = res[0].countExistData;
         let message = '已有存在「交期區間MIN：'+ obj.dataDeliveryRangeMin +'，交期區間MAX：'+ obj.dataDeliveryRangeMax+'，製程碼：'+ obj.processCode+'，抽數別：'+ obj.scheType+'，最早可投產時間：'+ obj.ASAPDate + '，請進入明細並修改異動。';
         let countExistDatamsg = '<p>'+ message +'</p>';
         this.errorMSG("存檔失敗", countExistDatamsg);
         this.isVisibleAdd = false;
         this.LoadingPage = false;
-      }else {
-        this.errorMSG("存檔失敗", res[0].MSG);
+      }else if(res.code === 500){
+        this.errorMSG("存檔失敗", `錯誤訊息：${res.message}`);
         this.isVisibleAdd = false;
         this.LoadingPage = false;
       }
@@ -670,8 +772,8 @@ export class PPSI203Component implements AfterViewInit {
     myObj.getPPSService.addPPSI203DetailData(obj).subscribe(res => {
       if(res[0].MSG === "Y") {
         
-        this.loading = true;
-        this.LoadingPage = true;
+        this.loading = false;
+        this.LoadingPage = false;
         let countExistData = res[0].countExistData;
         let insertCount = res[0].insertCount;
         
@@ -689,7 +791,7 @@ export class PPSI203Component implements AfterViewInit {
         this.gradeGroupForEdit = [];
         this.LoadingPage = false;
       }else {
-        this.errorMSG("存檔失敗", res[0].MSG);
+        this.errorMSG("存檔失敗", `錯誤訊息：${res.message}`);
         this.LoadingPage = false;
       }
       this.switchWactchToAdd();
@@ -719,17 +821,23 @@ export class PPSI203Component implements AfterViewInit {
         let _ID = _id;
         
         myObj.getPPSService.deletePPSI203Data(_ID).subscribe(res => {
-          if(res[0].MSG === "Y") { 
+          if(!!res[0] && res[0].MSG === "Y") { 
             
             this.getPPSI203DataList();
             this.isVisibleDtl = true;
             this.EditMode[_id] = false;
             this.sucessMSG("刪除成功", "");
-          } else {
+          } else if(!!res[0]){
             this.errorMSG("刪除失敗", res[0].MSG);
             this.LoadingPage = false;
             this.isVisibleDtl = false;
             this.EditMode[_id] = true;           
+          }
+          else if(res.code === 500){
+            this.errorMSG("刪除失敗", `錯誤訊息：${res.message}`);
+            this.LoadingPage = false;
+            this.isVisibleDtl = false;
+            this.EditMode[_id] = true;   
           }
           this.switchWactchToupdate();
         },err => {
@@ -774,6 +882,7 @@ export class PPSI203Component implements AfterViewInit {
             this.getT19DetailDataList(this.master_Id);
             this.isVisibleDtl = true;
             this.EditMode[_id] = false;
+            this.LoadingPage = false;
             this.sucessMSG("刪除成功", "");
           } else {
             this.errorMSG("刪除失敗", res[0].MSG);
@@ -1248,7 +1357,7 @@ export class PPSI203Component implements AfterViewInit {
 
     console.log(obj);
     myObj.getPPSService.editPPSI203_M_Data(obj).subscribe(res => {
-      if(res[0].MSG === "Y") {
+      if(!!res[0] && res[0].MSG === "Y") {
 
         this.loading = true;
         this.LoadingPage = true;
@@ -1256,11 +1365,11 @@ export class PPSI203Component implements AfterViewInit {
         this.sucessMSG("存檔成功", "");
         this.getPPSI203DataList();
         this.initialEdit();
-      } else if(res[0].MSG === "DATAEXIST") {
+      } else if(!!res[0] && res[0].MSG === "DATAEXIST") {
         this.errorMSG("存檔失敗", "輸入的資料該筆資料在資料庫已存在有相同資料");
         this.LoadingPage = false;
       } else {
-        this.errorMSG("存檔失敗", res[0].MSG);
+        this.errorMSG("存檔失敗", res.message);
         this.loading = false;
         this.LoadingPage = false;
       }

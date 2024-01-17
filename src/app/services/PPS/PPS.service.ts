@@ -933,14 +933,14 @@ export class PPSService {
     const body = _result;
     // console.log("JSON.stringify");
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/importExcelPPSI203';
+    let queryUrl = this.APINEWURL + '/FCP/I203/importExcelPPSI203';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   // 取得客戶清單
   getCustomerList1() {
     console.log('api service getCustomerList');
-    let queryUrl = this.APIURL + `/FCP/I203/getCustomerList`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getCustomerList`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -948,7 +948,7 @@ export class PPSService {
   // 取得鋼種清單
   getSteelTypeList1() {
     console.log('api service getSteelTypeList');
-    let queryUrl = this.APIURL + `/FCP/I203/getSteelTypeList`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getSteelTypeList`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -964,14 +964,14 @@ export class PPSService {
   // 取得ASAP滾表結果
   getPPSI203MasterListData() {
     console.log('api service getPPSI203MasterList');
-    let queryUrl = this.APIURL + `/FCP/I203/getPPSI203_MasterListData`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getPPSI203_MasterListData`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // 取得ASAP副表滾表結果
   getPPSI203_DetailListData(_ID) {
     console.log('api service getPPSI203_DetailListData');
-    let queryUrl = this.APIURL + `/FCP/I203/getPPSI203_DetailListData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getPPSI203_DetailListData/${_ID}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -980,8 +980,8 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/addPPSI203Data';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/addPPSI203Data';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   //addPPSI203DetailData ASAP調整insert存檔
@@ -989,13 +989,13 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/addPPSI203DetailData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/addPPSI203DetailData';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   update203DetailSave(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I203/updatePPSI203DetailDataSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/updatePPSI203DetailDataSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -1006,19 +1006,19 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/editPPSI203_M_Data';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/editPPSI203_M_Data';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   //deletePPSI203Data 刪除ASAP調整(主表及副表)資料
   deletePPSI203Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I203/deletePPSI203_MD_Data/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I203/deletePPSI203_MD_Data/${_ID}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
   //deletePPSI203DetailData 刪除ASAP調整(副表)資料
   deletePPSI203DetailData(_M_ID, _cust_abbreviations) {
     let queryUrl =
-      this.APIURL +
+      this.APINEWURL +
       `/FCP/I203/deletePPSI203_D_Data/${_M_ID}/${_cust_abbreviations}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
@@ -1028,7 +1028,7 @@ export class PPSService {
     console.log('api service getPPSI203ListUse_MID_InExportExcel');
     console.log(body);
     let queryUrl =
-      this.APIURL + `/FCP/I203/getPPSI203ListUse_MID_InExportExcel`;
+      this.APINEWURL + `/FCP/I203/getPPSI203ListUse_MID_InExportExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
