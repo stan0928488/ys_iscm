@@ -878,7 +878,7 @@ export class PPSR301Component implements OnInit {
       this.tableLoading = false;
       let result:any = res ;
       this.tbodyList = [] ;
-      if(result.code === 1) {
+      if(result.code === 200) {
         this.tbodyList = result.data ;
         console.log("tbodyList :" + JSON.stringify(this.tbodyList)) ;
         //this.message.info(result.message) ;

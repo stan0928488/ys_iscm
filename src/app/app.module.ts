@@ -158,10 +158,12 @@ import { PPSI230TabMenuComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Tab
 import { PPSI230RefiningComponent } from './pages/PPS/PPSI230_TabMenu/PPSI230_Refining/PPSI230_Refining.component';
 import { PPSI220TabMenuComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_TabMenu.component';
 import { PPSI220RefiningComponent } from './pages/PPS/PPSI220_TabMenu/PPSI220_Refining/PPSI220_Refining.component';
+import { PPSR345Component } from './pages/PPS/PPSR345/PPSR345.component';
+import { PPSR345AVERAGEComponent } from './pages/PPS/PPSR345AVERAGE/PPSR345AVERAGE.component';
 
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import { AGCustomHeaderComponent } from './shared/ag-component/ag-custom-header-component';
-import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
+import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
 import { ACCP100component } from './pages/ACC/ACCP100component';
 import { JwtInterceptor } from './services/config/jwt.interceptor';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
@@ -340,7 +342,9 @@ registerLocaleData(zh);
     PPSI202EditShopCellEditorComponent,
     PPSI202EditShutdownTypeCellEditorComponent,
     PPSI202EditStartTimeCellEditorComponent,
-    PPSI203ActionCellComponent
+    PPSI203ActionCellComponent,
+    PPSR345Component,
+    PPSR345AVERAGEComponent,
   ],
   imports: [
     BrowserModule,
@@ -369,7 +373,7 @@ registerLocaleData(zh);
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: NZ_I18N, useValue: zh_TW },
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })
