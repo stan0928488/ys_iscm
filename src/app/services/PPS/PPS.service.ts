@@ -597,19 +597,19 @@ export class PPSService {
   //Get getPPSINP20List 取得20tab data
   getPPSINP20List() {
     console.log('api service getPPSINP20List');
-    let queryUrl = this.APIURL + '/FCP/I120/getPPSINP20List';
+    let queryUrl = this.APINEWURL + '/FCP/I120/getPPSINP20List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I120 delI120Tab1Data 刪除資料
   delI120Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I120/delI120Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/delI120Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I120 insertI120Tab1Save
   insertI120Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I120/insertI120Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/insertI120Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -617,7 +617,7 @@ export class PPSService {
   // I120 updateI120Tab1Save修改存檔
   updateI120Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I120/updateI120Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/updateI120Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -625,7 +625,7 @@ export class PPSService {
 
   // I120 刪除所有資料
   deleteI120AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I120/deleteI120AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I120/deleteI120AllData`;
     console.log('刪除「清洗站設備能力表」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -635,7 +635,7 @@ export class PPSService {
   // I120 批次新增資料
   batchSaveI120Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I120/batchSaveI120Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I120/batchSaveI120Data`;
     console.log('批次新增「清洗站設備能力表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
