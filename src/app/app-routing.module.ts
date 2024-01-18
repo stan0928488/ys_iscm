@@ -205,8 +205,7 @@ const routes: Routes = [
           },
           { 
             path: 'I112_Refining', 
-            component: PPSI112RefinIngComponent, 
-            data : { pageName : "累計生產(非直棒)" },
+            component: PPSI112RefinIngComponent
           },
         ],
       },
@@ -215,8 +214,8 @@ const routes: Routes = [
         component: PPSI202TabMenuComponent,
         data : { pageName : "定修計畫" },
         children: [
-          { path: 'I202', component: PPSI202Component, data : { pageName : "定修計畫(直棒)" }, },
-          { path: 'I202_NonBar', component: PPSI202NonBarComponent, data : { pageName : "定修計畫(精整)" }, },
+          { path: 'I202', component: PPSI202Component, data : { pageName : "定修計畫" }, },
+          { path: 'I202_NonBar', component: PPSI202NonBarComponent },
         ],
       },
       {
@@ -225,8 +224,8 @@ const routes: Routes = [
         data : { pageName : "虛擬訂單設定" },
         children: [
           { path: '', redirectTo: '/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
-          { path: 'I206_SET', component: PPSI206SETComponent, data : { pageName : "虛擬訂單設定表" } },
-          { path: 'I206_RES', component: PPSI206RESComponent, data : { pageName : "虛擬訂單結果表" } },
+          { path: 'I206_SET', component: PPSI206SETComponent, data : { pageName : "虛擬訂單表" } },
+          { path: 'I206_RES', component: PPSI206RESComponent },
         ],
       },
       { path: 'I205', component: PPSI205Component, data : { pageName : "公版設定維護" } },
@@ -261,12 +260,11 @@ const routes: Routes = [
           {
             path: 'P201',
             component: PPSI210Component,
-            data : { pageName : "建立規劃策略(直棒)" },
+            data : { pageName : "建立規劃策略" },
           },
           {
             path: 'P201_Refining',
-            component: PPSI210RefiningComponent,
-            data : { pageName : "建立規劃策略(精整)" },
+            component: PPSI210RefiningComponent
           }
         ]
       },
@@ -279,12 +277,11 @@ const routes: Routes = [
           { 
             path: 'P202', 
             component: PPSI220Component,
-            data : { pageName : "規劃策略清單(直棒)" }
+            data : { pageName : "規劃策略清單" }
           },
           { 
             path: 'P202_Refining', 
-            component: PPSI220RefiningComponent,
-            data : { pageName : "規劃策略清單(精整)" }
+            component: PPSI220RefiningComponent
           },
         ],
       },
@@ -297,12 +294,11 @@ const routes: Routes = [
           { 
             path: 'P203', 
             component: PPSI230Component,
-            data : { pageName : "生產規劃執行(直棒)" }
+            data : { pageName : "生產規劃執行" }
           },
           { 
             path: 'P203_Refining', 
-            component: PPSI230RefiningComponent,
-            data : { pageName : "生產規劃執行(精整)" }
+            component: PPSI230RefiningComponent
           }
         ]
       }
@@ -319,8 +315,8 @@ const routes: Routes = [
         data : { pageName : "異常表" },
         children: [
           { path: '', redirectTo: '/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
-          { path: 'R303', component: PPSR303Component, data : { pageName : "異常MO表" } },
-          { path: 'R303_Fcp', component: PPSR303FcpComponent, data : { pageName : "FCP異常MO表" } },
+          { path: 'R303', component: PPSR303Component, data : { pageName : "異常表" } },
+          { path: 'R303_Fcp', component: PPSR303FcpComponent},
         ],
       },
       { path: 'R302', component: PPSR302Component, data : { pageName : "交期-計畫彙總表" } },
@@ -334,11 +330,11 @@ const routes: Routes = [
     path: 'FCPshipRepo',
     children: [
       { path: '', redirectTo: '/FCPBarRepo/R304', pathMatch: 'full' },
-      { path: 'R304', component: PPSR304Component, data : { pageName : "報表維護" } },
+      { path: 'R304', component: PPSR304Component, data : { pageName : "出貨計畫表-維護" } },
       { path: 'R305', component: PPSR305Component },
       { path: 'R306', component: PPSR306Component },
       { path: 'R307', component: PPSR307Component },
-      { path: 'R308', component: PPSR308Component, data : { pageName : "報表檢視" } },
+      { path: 'R308', component: PPSR308Component, data : { pageName : "出貨計畫表-檢視" } },
       { path: 'R309', component: PPSR309Component },
       { path: 'R310', component: PPSR310Component },
       { path: 'R311', component: PPSR311Component },
@@ -354,7 +350,7 @@ const routes: Routes = [
       {
         path: 'R321',
         component: PPSR321Component,
-        data : { pageName : "報表維護" },
+        data : { pageName : "月推移表-維護" },
         canDeactivate: [PPSR321CanDeactivateGuard],
         children: [
           {
@@ -392,7 +388,7 @@ const routes: Routes = [
       {
         path: 'R322',
         component: PPSR322Component,
-        data : { pageName : "報表檢視" },
+        data : { pageName : "月推移表-檢視" },
         children: [
           { path: '', redirectTo: '/FCPshiftRepo/R322', pathMatch: 'full' },
           { path: 'R322_1', component: PPSR322Child1Component },
