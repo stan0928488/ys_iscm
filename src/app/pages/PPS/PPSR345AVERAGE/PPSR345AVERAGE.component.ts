@@ -21,8 +21,9 @@ import { DatePipe } from '@angular/common';
 
 interface ItemData {
   shopCode: string;
-  totalWorkingHoursByShop: number;
-  totalWeightByShop: number;
+  equipCode: string;
+  totalWorkingHoursByShopCodeEquipCode: number;
+  totalWeightByShopCodeEquipCode: number;
   averageWorkingHours: number;
 }
 
@@ -62,36 +63,54 @@ export class PPSR345AVERAGEComponent implements AfterViewInit {
     {
       headerName: '站別',
       field: 'shopCode',
-      width: 115,
+      width: 116,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '機台',
+      field: 'equipCode',
+      width: 116,
       headerComponent: AGCustomHeaderComponent,
     },
     {
       headerName: '總重量',
-      field: 'totalWeightByShop',
-      width: 115,
+      field: 'totalWeightByShopCodeEquipCode',
+      width: 129,
       headerComponent: AGCustomHeaderComponent,
-      valueFormatter: this.customNumberFormatter,
       cellStyle: { textAlign: 'right' },
+      valueFormatter: function (params) {
+        if (params.value != null || params.value != undefined) {
+          return params.value.toFixed(2);
+        }
+      },
     },
     {
       headerName: '總工時',
-      field: 'totalWorkingHoursByShop',
-      width: 115,
+      field: 'totalWorkingHoursByShopCodeEquipCode',
+      width: 129,
       headerComponent: AGCustomHeaderComponent,
-      valueFormatter: this.customNumberFormatter,
       cellStyle: { textAlign: 'right' },
+      valueFormatter: function (params) {
+        if (params.value != null || params.value != undefined) {
+          return params.value.toFixed(2);
+        }
+      },
     },
     {
       headerName: '平均工時',
       field: 'averageWorkingHours',
-      width: 115,
+      width: 141,
       headerComponent: AGCustomHeaderComponent,
-      valueFormatter: this.customNumberFormatter,
       cellStyle: { textAlign: 'right' },
+      valueFormatter: function (params) {
+        if (params.value != null || params.value != undefined) {
+          return params.value.toFixed(2);
+        }
+      },
     },
   ];
 
-  titleArray = ['站別', '總重量', '總工時', '平均工時'];
+  titleArray = ['站別', '機台', '總重量', '總工時', '平均工時'];
 
   constructor(
     private elementRef: ElementRef,
@@ -123,10 +142,6 @@ export class PPSR345AVERAGEComponent implements AfterViewInit {
         this.getDate();
       }
     });
-  }
-
-  customNumberFormatter(params: any) {
-    return params.value.toFixed(2);
   }
 
   getDate() {
@@ -184,8 +199,11 @@ export class PPSR345AVERAGEComponent implements AfterViewInit {
     for (let i = 0; i < this.rowData.length; i++) {
       var data = {
         shopCode: this.rowData[i].shopCode,
-        totalWeightByShop: this.rowData[i].totalWeightByShop,
-        totalWorkingHoursByShop: this.rowData[i].totalWorkingHoursByShop,
+        eqiupCode: this.rowData[i].equipCode,
+        totalWeightByShopCodeEquipCode:
+          this.rowData[i].totalWeightByShopCodeEquipCode,
+        totalWorkingHoursByShopCodeEquipCode:
+          this.rowData[i].totalWorkingHoursByShopCodeEquipCode,
         averageWorkingHours: this.rowData[i].averageWorkingHours,
       };
       outputDataList.push(data);

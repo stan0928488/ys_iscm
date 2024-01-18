@@ -191,6 +191,7 @@ import { PPSI202EditEquipCellEditorComponent } from './pages/PPS/PPSI202/PPSI202
 import { PPSI202EditShopCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShopCellEditorComponent';
 import { PPSI202EditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShutdownTypeCellEditorComponent';
 import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditStartTimeCellEditorComponent';
+import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-cell-component';
 
 registerLocaleData(zh);
 
@@ -353,6 +354,7 @@ registerLocaleData(zh);
     PPSI202EditShopCellEditorComponent,
     PPSI202EditShutdownTypeCellEditorComponent,
     PPSI202EditStartTimeCellEditorComponent,
+    PPSI203ActionCellComponent,
     PPSR345Component,
     PPSR345AVERAGEComponent,
   ],

@@ -3,7 +3,7 @@
 
   <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="isSpinning">
     <div
-      style="background: rgb(255, 255, 255); width: auto; min-height: 1200px"
+      style="background: rgb(255, 255, 255); width: auto;"
     >
       <table>
         <tr>
@@ -81,182 +81,20 @@
       <p></p>
 
       <div nz-col [nzSpan]="25">
-        <nz-table
-          #displaytbppsm114Rows
-          nzBordered
-          [nzFrontPagination]="false"
-          [nzTotal]="tbppsm114DataTotal"
-          [(nzPageIndex)]="currentPageIndex"
-          (nzPageIndexChange)="tablePageChange()"
-          [nzData]="displaytbppsm114List"
-          [nzPageSize]="pageSize"
-          [nzScroll]="{ y: '500px' }"
+
+        <ag-grid-angular
+        style="width: 100%; height: calc(100vh - 250px); overflow: scroll; "
+        class="ag-theme-alpine"
+        [rowData]="displaytbppsm114List"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        editType="fullRow"
+        [suppressClickEdit]="true"
+        [gridOptions]="gridOptions"
+        [frameworkComponents]="frameworkComponents"
         >
-          <thead>
-            <tr>
-              <th
-                style="
-                  text-align: center;
-                  background-color: #eee;
-                  padding: 0px;
-                  height: 55px;
-                  width: 120px;
-                "
-              >
-                尺寸下限
-                <nz-filter-trigger
-                  [(nzVisible)]="diaMinFilterVisible"
-                  [nzActive]="searchDiaMinValue.length > 0"
-                  [nzDropdownMenu]="diaMinMenu"
-                >
-                  <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
+        </ag-grid-angular>
 
-              <th
-                style="
-                  text-align: center;
-                  background-color: #eee;
-                  padding: 0px;
-                  height: 55px;
-                  width: 120px;
-                "
-              >
-                尺寸上限
-                <nz-filter-trigger
-                  [(nzVisible)]="diaMaxFilterVisible"
-                  [nzActive]="searchDiaMaxValue.length > 0"
-                  [nzDropdownMenu]="diaMaxMenu"
-                >
-                  <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-
-              <th
-                style="
-                  text-align: center;
-                  background-color: #eee;
-                  padding: 0px;
-                  height: 55px;
-                  width: 120px;
-                "
-              >
-                每爐生產時間
-                <nz-filter-trigger
-                  [(nzVisible)]="productionTimeFilterVisible"
-                  [nzActive]="searchproductionTimeValue.length > 0"
-                  [nzDropdownMenu]="productionTimeMenu"
-                >
-                  <span nz-icon nzType="search"></span>
-                </nz-filter-trigger>
-              </th>
-
-              <th
-                style="
-                  text-align: center;
-                  background-color: #eee;
-                  padding: 0px;
-                  height: 55px;
-                  width: 80px;
-                "
-              >
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let data of displaytbppsm114Rows.data; let i = index"
-              class="editable-row"
-            >
-              <ng-container
-                *ngIf="!editCache[data.id].isEdit; else editTemplate"
-              >
-                <td
-                  style="
-                    text-align: center;
-                    padding: 5px;
-                    height: 60px;
-                    width: 100px;
-                  "
-                >
-                  {{ data.diaMin }}
-                </td>
-                <td
-                  style="
-                    text-align: center;
-                    padding: 5px;
-                    height: 60px;
-                    width: 100px;
-                  "
-                >
-                  {{ data.diaMax }}
-                </td>
-                <td
-                  style="
-                    text-align: center;
-                    padding: 5px;
-                    height: 60px;
-                    width: 150px;
-                  "
-                >
-                  {{ data.productionTime }}
-                </td>
-                <td
-                  style="
-                    text-align: center;
-                    padding: 0px;
-                    height: 60px;
-                    width: 120px;
-                  "
-                >
-                  <a (click)="editRow(data.id)">修改</a>&nbsp;&nbsp;&nbsp;
-                  <a
-                    nz-popconfirm
-                    nzPopconfirmTitle="Sure to delete?"
-                    (nzOnConfirm)="deleteRow(data.id)"
-                    >刪除</a
-                  >
-                </td>
-              </ng-container>
-              <ng-template #editTemplate>
-                <td>
-                  <input
-                    nz-width="20%"
-                    nz-input
-                    placeholder="尺寸下限(含)"
-                    [(ngModel)]="editCache[data.id].data.diaMin"
-                  />
-                </td>
-                <td>
-                  <input
-                    nz-width="20%"
-                    nz-input
-                    placeholder="尺寸上限(含)"
-                    [(ngModel)]="editCache[data.id].data.diaMax"
-                  />
-                </td>
-                <td>
-                  <input
-                    nz-width="20%"
-                    nz-input
-                    placeholder="每爐生產時間"
-                    [(ngModel)]="editCache[data.id].data.productionTime"
-                  />
-                </td>
-                <td>
-                  <a (click)="saveEdit(data.id)">確認</a>&nbsp;&nbsp;&nbsp;
-                  <a
-                    nz-popconfirm
-                    nzPopconfirmTitle="Sure to cancel?"
-                    (nzOnConfirm)="cancelEdit(data.id)"
-                    >取消</a
-                  >
-                </td>
-              </ng-template>
-            </tr>
-          </tbody>
-        </nz-table>
       </div>
     </div>
   </nz-spin>
@@ -355,59 +193,3 @@
     <button nz-button nzType="primary" (click)="insertData()">確定</button>
   </ng-template>
 </nz-modal>
-
-<nz-dropdown-menu #diaMinMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchDiaMinValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByDiaMin(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByDiaMin()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #diaMaxMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchDiaMaxValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByDiaMax(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByDiaMax()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #productionTimeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchproductionTimeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByproductionTime(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByproductionTime()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>

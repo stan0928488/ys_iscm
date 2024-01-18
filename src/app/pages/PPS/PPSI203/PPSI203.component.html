@@ -65,8 +65,21 @@
       </table>
       
       &nbsp;&nbsp;
+
+      <ag-grid-angular
+        style="width: 100%; height:500px; overflow:scroll; padding-top:10px;"
+        class="ag-theme-alpine ag-theme-PPSI202-NonBar-custom"
+        [context]="agGridContext"
+        [columnDefs]="ppsi203ColumnDefs"
+        [gridOptions]="gridOptions"
+        [rowData]="displayPPSI203DataList"
+        [pagination]="true"
+        [animateRows]="true"
+        (firstDataRendered)="onFirstDataRendered($event)"
+        (gridReady)="onGridReady($event)">
+      </ag-grid-angular>
       
-      <nz-table #editRowTable nzBordered 
+      <!-- <nz-table #editRowTable nzBordered 
                 [nzData]="displayPPSI203DataList" 
                 [nzPageSize]="20" 
                 [nzScroll]="{ x: '1000px', y: tableHeight }">
@@ -139,7 +152,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- editRowTable.data -->
+       
           <tr *ngFor="let data of editRowTable.data;let i = index" class="editable-row" >
             <td style="width: 100px; height:min-content; padding: 0px; text-align:center;display: none;">
               {{data.id}}
@@ -186,7 +199,7 @@
           </tr>
         </tbody>
 
-      </nz-table>
+      </nz-table> -->
 
 
       <nz-dropdown-menu #menu01="nzDropdownMenu">
@@ -383,238 +396,239 @@
   >
   <!-- (nzOnOk)="handleOk_Edit()" -->
     <div *nzModalContent>
-      <table>
-        <tr>
-          <td>
-            <div [hidden]="!isWatchModInEdit">
-              <button nz-button nzType="primary"
-              [ngClass]="{FCPdisable: isRunFCP, FCPenable_btn: !isRunFCP}"
-              [disabled]="isRunFCP"
-                (click)="switchWactchToAdd()">增加</button>&nbsp;
-              <button nz-button nzType="primary"
-              [ngClass]="{FCPdisable: isRunFCP, FCPenable_btn: !isRunFCP}"
-              [disabled]="isRunFCP"
-                (click)="switchWactchToupdate()">修改</button>&nbsp;
-              
-            </div>
-            <div [hidden]="!isAddModInEdit">
-              <button nz-button nzType="primary" 
-                style="background-color: #4CAF50;"
-                (click)="handleDetailEdit_Add()">確認</button>&nbsp;
-              <button nz-button nzType="primary"
-              style="background-color: #4CAF50;"
-                (click)="switchWactchToAdd()">取消</button>
-            </div>
-            <div [hidden]="!isUpdateModInEdit">
-              <button nz-button nzType="primary"
-              style="background-color: #4CAF50;"
-                (click)="handleOk_Edit()">確認</button>&nbsp;
-              <button nz-button nzType="primary"
-              style="background-color: #4CAF50;"
-                (click)="switchWactchToupdate()">取消</button>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <div [hidden]="!isAddModInEdit">
-        <table style="margin-top:10px;border: 1px solid #F00;">
+      <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "LoadingDetailPage">
+        <table>
           <tr>
-            <td style = "width: 100px; text-align:center; background-color: #eee; padding: 0px; height: 36px;">不包含客戶</td>
             <td>
-              <nz-select nzShowSearch nzAllowClear style="width: 120px; margin-left:10px;"
-                [(ngModel)]="custAbbreviationsForEdit"              
-                (ngModelChange)="customerChange($event)"
-              >  
-                <nz-option *ngFor="let option1 of NewCustomerList" 
-                  [nzValue]="option1" 
-                  [nzLabel]="option1"
-                >
-                </nz-option>
-              </nz-select>
-            </td>
-            <td style = "width: 200px; text-align:center; background-color: #eee; padding: 0px; height: 36px;">不包含鋼鐵種類</td>
-            <td>
-              <nz-select style="width: 300px; margin-left:10px;"
-                nzMode="multiple"
-                [(ngModel)]="gradeGroupForEdit"              
-                (ngModelChange)="steelTypeChange($event)"
-              >
-                <nz-option 
-                  *ngFor="let option2 of SteelTypeList" 
-                  [nzValue]="option2" 
-                  [nzLabel]="option2">
-                </nz-option>
-              </nz-select>
+              <div [hidden]="!isWatchModInEdit">
+                <button nz-button nzType="primary"
+                [ngClass]="{FCPdisable: isRunFCP, FCPenable_btn: !isRunFCP}"
+                [disabled]="isRunFCP"
+                  (click)="switchWactchToAdd()">增加</button>&nbsp;
+                <button nz-button nzType="primary"
+                [ngClass]="{FCPdisable: isRunFCP, FCPenable_btn: !isRunFCP}"
+                [disabled]="isRunFCP"
+                  (click)="switchWactchToupdate()">修改</button>&nbsp;
+                
+              </div>
+              <div [hidden]="!isAddModInEdit">
+                <button nz-button nzType="primary" 
+                  style="background-color: #4CAF50;"
+                  (click)="handleDetailEdit_Add()">確認</button>&nbsp;
+                <button nz-button nzType="primary"
+                style="background-color: #4CAF50;"
+                  (click)="switchWactchToAdd()">取消</button>
+              </div>
+              <div [hidden]="!isUpdateModInEdit">
+                <button nz-button nzType="primary"
+                style="background-color: #4CAF50;"
+                  (click)="handleOk_Edit()">確認</button>&nbsp;
+                <button nz-button nzType="primary"
+                style="background-color: #4CAF50;"
+                  (click)="switchWactchToupdate()">取消</button>
+              </div>
             </td>
           </tr>
         </table>
-      </div>
 
-      <table style="margin-top:10px;">
-        <tr>
-          <td style = "width: 68px; background-color: #eee; font-weight: bold;">
-            &nbsp;&nbsp;交期區間
-          </td>
-          <td style = "width:150px;">
-            <nz-date-picker
-              nzFormat="yyyy-MM-dd"
-              [(ngModel)]="dataDeliveryRangeMinForEdit"
-              [disabled] = " UpdateModDisabledFlag ? true : false "
-            ></nz-date-picker>
-            <nz-date-picker
-              nzFormat="yyyy-MM-dd"
-              [(ngModel)]="dataDeliveryRangeMaxForEdit"
-              [disabled] = " UpdateModDisabledFlag ? true : false "
-            ></nz-date-picker>
-          </td>
-          <td style = "width: 66px; background-color: #eee; font-weight: bold; text-align: center;">
-            製程碼
-          </td>
-          <td>
-            <input style="width: 68px; color: darkblue;height:60px;" 
-                  nz-input 
-                  [(ngModel)]="processCodeForEdit"
-                  [disabled] = " UpdateModDisabledFlag ? true : false "
-                  maxlength="8" />
-          </td>
-          <td style = "width: 66px; background-color: #eee; font-weight: bold; text-align: center;">
-            站別
-          </td>
-          <td>
-            <input style="width: 68px; color: darkblue;height:60px;" 
-                  nz-input 
-                  [(ngModel)]="shopCodeForEdit"
-                  [disabled] = " UpdateModDisabledFlag ? true : false "
-                  maxlength="8" />
-          </td>
-          <td style = "width: 60px; background-color: #eee; font-weight: bold; text-align: center;">
-            抽數別
-          </td>
-          <td>
-            <input style="width: 70px; color: darkblue;height:60px;" 
-                  nz-input 
-                  [(ngModel)]="scheTypeForEdit"
-                  [disabled] = " UpdateModDisabledFlag ? true : false "
-                  maxlength="5"/>
-          </td>
-          <td style = "width: 104px; background-color: #eee; font-weight: bold; text-align: center;">
-            最早可投產時間
-          </td>
-          <td>
-            <nz-date-picker
-              nzFormat="yyyy-MM-dd"
-              [(ngModel)]="ASAPDateForEdit"
-              [disabled] = " UpdateModDisabledFlag ? true : false "
-            ></nz-date-picker>
-          </td>
-        </tr>
-      </table>
-      
-      <table>
-        <tr style="display: none;">
-          <td style = "width: 110px; background-color: #eee; font-weight: bold; border-radius: 5px;">
-            &nbsp;&nbsp;id
-          </td>
-          <td style = "width: 600px;">&nbsp;
-            <input style="width: 22%; color: darkblue;" 
-                   nz-input [disabled]="true" 
-                   [(ngModel)]="idForEdit"
-                   />
-          </td>
-        </tr>
-      </table>
-      
-      <nz-table #editRowTable01 nzBordered 
-            [nzData]="T19DetailDataListForEdit" 
-            *ngIf="T19DetailDataListForEdit.length > 0 "
-            [nzPageSize]="100" 
-            [nzScroll]="{ x: '700px', y: tableHeight }">
-        <thead>
-          <tr>
-            <th nzWidth="30px" style = "text-align:left; background-color: #eee; padding: 0px; height: 36px;">
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            </th>
-            <th nzWidth="140px" style = "text-align:left; background-color: #eee; padding: 0px; height: 36px;">
-              不包含客戶</th>
-            <th nzWidth="420px" style = " text-align:left; background-color: #eee; padding: 0px; height: 36px;">
-              不包含鋼鐵種類</th>
-            <th nzWidth="100px" style = " text-align:left; text-align:center; background-color: #eee; padding: 0px; height: 36px;">
-              操作
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item1 of editRowTable01.data;let i = index" class="editable-row">
-            <ng-container *ngIf="!item1.editStatus; else statusInputTpl">
-              <td>{{i+1}}</td>
+        <div [hidden]="!isAddModInEdit">
+          <table style="margin-top:10px;border: 1px solid #F00;">
+            <tr>
+              <td style = "width: 100px; text-align:center; background-color: #eee; padding: 0px; height: 36px;">不包含客戶</td>
               <td>
-                {{item1.custAbbreviations}}
+                <nz-select nzShowSearch nzAllowClear style="width: 120px; margin-left:10px;"
+                  [(ngModel)]="custAbbreviationsForEdit"              
+                  (ngModelChange)="customerChange($event)"
+                >  
+                  <nz-option *ngFor="let option1 of NewCustomerList" 
+                    [nzValue]="option1" 
+                    [nzLabel]="option1"
+                  >
+                  </nz-option>
+                </nz-select>
               </td>
-              <td>
-                {{item1.gradeGroup}}
-              </td>
-            </ng-container>
-            <ng-template #statusInputTpl>
-              <td>{{i+1}}</td>
-              <td>
-                <nz-select nzShowSearch nzAllowClear style="width: 140px; margin-left:10px;"
-                
-                [ngModel]="item1.custAbbreviations"              
-                (ngModelChange)="customerEdit($event,i)"
-                
-              >  
-                <nz-option *ngFor="let option1 of CustomerList" 
-                  [nzValue]="option1" 
-                  [nzLabel]="option1"
-                >
-                </nz-option>
-              </nz-select>
-              </td>
+              <td style = "width: 200px; text-align:center; background-color: #eee; padding: 0px; height: 36px;">不包含鋼鐵種類</td>
               <td>
                 <nz-select style="width: 300px; margin-left:10px;"
-                nzMode="multiple"
-                [(ngModel)]="item1.gradeGroups"              
-                (ngModelChange)="steelTypeChange($event)"
-              >
-                <nz-option 
-                  *ngFor="let option2 of SteelTypeList" 
-                  [nzValue]="option2" 
-                  [nzLabel]="option2">
-                </nz-option>
-              </nz-select>
-              </td>
-
-            </ng-template>
-            <td>
-              <ng-container *ngIf="!item1.editStatus; else saveTp2">
-                <a
-                  
-                  (click)="statusEditFunc(item1.id,i)">修改</a>
-                <a tyle="margin-left: 15px;" 
-                  nz-popconfirm 
-                  nzPopconfirmTitle="Sure to delete?" 
-                  
-                  (nzOnConfirm)="delete_detailRow(item1.id,item1.M_ID,item1.custAbbreviations)"
+                  nzMode="multiple"
+                  [(ngModel)]="gradeGroupForEdit"              
+                  (ngModelChange)="steelTypeChange($event)"
                 >
-                  刪除
-                </a>
-              </ng-container>
-              <ng-template #saveTp2>
-                <a
-                  (click)="statusSaveEdit(i)">存檔</a>
+                  <nz-option 
+                    *ngFor="let option2 of SteelTypeList" 
+                    [nzValue]="option2" 
+                    [nzLabel]="option2">
+                  </nz-option>
+                </nz-select>
+              </td>
+            </tr>
+          </table>
+        </div>
 
-                <a  style="margin-left: 15px;"
-                  nz-popconfirm
-                  nzPopconfirmTitle="Sure to cancel?"
-                  (nzOnConfirm)="statusCancelEdit(item1.id,i)">取消</a>
-
-              </ng-template>
+        <table style="margin-top:10px;">
+          <tr>
+            <td style = "width: 68px; background-color: #eee; font-weight: bold;">
+              &nbsp;&nbsp;交期區間
+            </td>
+            <td style = "width:150px;">
+              <nz-date-picker
+                nzFormat="yyyy-MM-dd"
+                [(ngModel)]="dataDeliveryRangeMinForEdit"
+                [disabled] = " UpdateModDisabledFlag ? true : false "
+              ></nz-date-picker>
+              <nz-date-picker
+                nzFormat="yyyy-MM-dd"
+                [(ngModel)]="dataDeliveryRangeMaxForEdit"
+                [disabled] = " UpdateModDisabledFlag ? true : false "
+              ></nz-date-picker>
+            </td>
+            <td style = "width: 66px; background-color: #eee; font-weight: bold; text-align: center;">
+              製程碼
+            </td>
+            <td>
+              <input style="width: 68px; color: darkblue;height:60px;" 
+                    nz-input 
+                    [(ngModel)]="processCodeForEdit"
+                    [disabled] = " UpdateModDisabledFlag ? true : false "
+                    maxlength="8" />
+            </td>
+            <td style = "width: 66px; background-color: #eee; font-weight: bold; text-align: center;">
+              站別
+            </td>
+            <td>
+              <input style="width: 68px; color: darkblue;height:60px;" 
+                    nz-input 
+                    [(ngModel)]="shopCodeForEdit"
+                    [disabled] = " UpdateModDisabledFlag ? true : false "
+                    maxlength="8" />
+            </td>
+            <td style = "width: 60px; background-color: #eee; font-weight: bold; text-align: center;">
+              抽數別
+            </td>
+            <td>
+              <input style="width: 70px; color: darkblue;height:60px;" 
+                    nz-input 
+                    [(ngModel)]="scheTypeForEdit"
+                    [disabled] = " UpdateModDisabledFlag ? true : false "
+                    maxlength="5"/>
+            </td>
+            <td style = "width: 104px; background-color: #eee; font-weight: bold; text-align: center;">
+              最早可投產時間
+            </td>
+            <td>
+              <nz-date-picker
+                nzFormat="yyyy-MM-dd"
+                [(ngModel)]="ASAPDateForEdit"
+                [disabled] = " UpdateModDisabledFlag ? true : false "
+              ></nz-date-picker>
             </td>
           </tr>
-        </tbody>
-      </nz-table>
-      
+        </table>
+        
+        <table>
+          <tr style="display: none;">
+            <td style = "width: 110px; background-color: #eee; font-weight: bold; border-radius: 5px;">
+              &nbsp;&nbsp;id
+            </td>
+            <td style = "width: 600px;">&nbsp;
+              <input style="width: 22%; color: darkblue;" 
+                    nz-input [disabled]="true" 
+                    [(ngModel)]="idForEdit"
+                    />
+            </td>
+          </tr>
+        </table>
+        
+        <nz-table #editRowTable01 nzBordered 
+              [nzData]="T19DetailDataListForEdit" 
+              *ngIf="T19DetailDataListForEdit.length > 0 "
+              [nzPageSize]="100" 
+              [nzScroll]="{ x: '700px', y: tableHeight }">
+          <thead>
+            <tr>
+              <th nzWidth="30px" style = "text-align:left; background-color: #eee; padding: 0px; height: 36px;">
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              </th>
+              <th nzWidth="140px" style = "text-align:left; background-color: #eee; padding: 0px; height: 36px;">
+                不包含客戶</th>
+              <th nzWidth="420px" style = " text-align:left; background-color: #eee; padding: 0px; height: 36px;">
+                不包含鋼鐵種類</th>
+              <th nzWidth="100px" style = " text-align:left; text-align:center; background-color: #eee; padding: 0px; height: 36px;">
+                操作
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item1 of editRowTable01.data;let i = index" class="editable-row">
+              <ng-container *ngIf="!item1.editStatus; else statusInputTpl">
+                <td>{{i+1}}</td>
+                <td>
+                  {{item1.custAbbreviations}}
+                </td>
+                <td>
+                  {{item1.gradeGroup}}
+                </td>
+              </ng-container>
+              <ng-template #statusInputTpl>
+                <td>{{i+1}}</td>
+                <td>
+                  <nz-select nzShowSearch nzAllowClear style="width: 140px; margin-left:10px;"
+                  
+                  [ngModel]="item1.custAbbreviations"              
+                  (ngModelChange)="customerEdit($event,i)"
+                  
+                >  
+                  <nz-option *ngFor="let option1 of CustomerList" 
+                    [nzValue]="option1" 
+                    [nzLabel]="option1"
+                  >
+                  </nz-option>
+                </nz-select>
+                </td>
+                <td>
+                  <nz-select style="width: 300px; margin-left:10px;"
+                  nzMode="multiple"
+                  [(ngModel)]="item1.gradeGroups"              
+                  (ngModelChange)="steelTypeChange($event)"
+                >
+                  <nz-option 
+                    *ngFor="let option2 of SteelTypeList" 
+                    [nzValue]="option2" 
+                    [nzLabel]="option2">
+                  </nz-option>
+                </nz-select>
+                </td>
+
+              </ng-template>
+              <td>
+                <ng-container *ngIf="!item1.editStatus; else saveTp2">
+                  <a
+                    
+                    (click)="statusEditFunc(item1.id,i)">修改</a>
+                  <a tyle="margin-left: 15px;" 
+                    nz-popconfirm 
+                    nzPopconfirmTitle="Sure to delete?" 
+                    
+                    (nzOnConfirm)="delete_detailRow(item1.id,item1.M_ID,item1.custAbbreviations)"
+                  >
+                    刪除
+                  </a>
+                </ng-container>
+                <ng-template #saveTp2>
+                  <a
+                    (click)="statusSaveEdit(i)">存檔</a>
+
+                  <a  style="margin-left: 15px;"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Sure to cancel?"
+                    (nzOnConfirm)="statusCancelEdit(item1.id,i)">取消</a>
+
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-spin>
     </div>
     <div *nzModalFooter>
       <div [hidden]="!isWatchModInEdit">

@@ -1,13 +1,19 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import {
+  ColDef,
+  ColGroupDef
+} from 'ag-grid-community';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import * as moment from 'moment';
-import * as _ from 'lodash';
-import * as XLSX from 'xlsx';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { CommonService } from 'src/app/services/common/common.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 
 interface ItemData20 {
   id: string;
@@ -27,6 +33,8 @@ interface ItemData20 {
   providers: [NzMessageService],
 })
 export class PPSI123Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "直棒清洗站設備能力(PPSI123)";
   LoadingPage = false;
   isRunFCP = false; // 如為true則不可異動
@@ -53,6 +61,46 @@ export class PPSI123Component implements AfterViewInit {
   isSpinning = false;
   excelImportFile: File = null;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {headerComponent: AGCustomHeaderComponent,headerName: '機台',field: 'EQUIP_CODE_20',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '產品種類',field: 'KIND_TYPE_20',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '產出型態',field: 'OUTPUT_SHAPE_20',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '製程碼',field: 'PROCESS_CODE_20',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: 'FINAL_製程',field: 'FINAL_PROCESS_20',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '抽數別',field: 'SCHE_TYPE_20',filter: true,width: 120,editable: true},
+
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -65,6 +113,9 @@ export class PPSI123Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.PLANT_CODE = this.cookieService.getCookie('plantCode');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   ngAfterViewInit() {
@@ -147,11 +198,11 @@ export class PPSI123Component implements AfterViewInit {
   }
 
   // delete
-  deleteRow(id: string): void {
+  deleteRow(rowData: ItemData20): void {
     this.Modal.confirm({
       nzTitle: '是否確定刪除',
       nzOnOk: () => {
-        this.delID(id);
+        this.delID(rowData);
       },
       nzOnCancel: () => console.log('cancel'),
     });
@@ -167,31 +218,31 @@ export class PPSI123Component implements AfterViewInit {
   }
 
   // update Save
-  saveEdit(id: string): void {
+  saveEdit(rowData: ItemData20): void {
     let myObj = this;
-    if (this.editCache20[id].data.EQUIP_CODE_20 === undefined) {
+    if (rowData.EQUIP_CODE_20 === undefined) {
       myObj.message.create('error', '「機台」不可為空');
       return;
-    } else if (this.editCache20[id].data.KIND_TYPE_20 === undefined) {
+    } else if (rowData.KIND_TYPE_20 === undefined) {
       myObj.message.create('error', '「產品種類」不可為空');
       return;
-    } else if (this.editCache20[id].data.OUTPUT_SHAPE_20 === undefined) {
+    } else if (rowData.OUTPUT_SHAPE_20 === undefined) {
       myObj.message.create('error', '「產出型態」不可為空');
       return;
-    } else if (this.editCache20[id].data.PROCESS_CODE_20 === undefined) {
+    } else if (rowData.PROCESS_CODE_20 === undefined) {
       myObj.message.create('error', '「製程碼」不可為空');
       return;
-    } else if (this.editCache20[id].data.FINAL_PROCESS_20 === undefined) {
+    } else if (rowData.FINAL_PROCESS_20 === undefined) {
       myObj.message.create('error', '「FINAL_製程」不可為空');
       return;
-    } else if (this.editCache20[id].data.SCHE_TYPE_20 === undefined) {
+    } else if (rowData.SCHE_TYPE_20 === undefined) {
       myObj.message.create('error', '「抽數別」不可為空');
       return;
     } else {
       this.Modal.confirm({
         nzTitle: '是否確定修改',
         nzOnOk: () => {
-          this.updateSave(id);
+          this.updateSave(rowData);
         },
         nzOnCancel: () => console.log('cancel'),
       });
@@ -253,19 +304,19 @@ export class PPSI123Component implements AfterViewInit {
   }
 
   // 修改資料
-  updateSave(_id) {
+  updateSave(rowData:ItemData20) {
     let myObj = this;
     this.LoadingPage = true;
     return new Promise((resolve, reject) => {
       let obj = {};
       _.extend(obj, {
-        ID: this.editCache20[_id].data.tab20ID,
-        EQUIP_CODE: this.editCache20[_id].data.EQUIP_CODE_20,
-        KIND_TYPE: this.editCache20[_id].data.KIND_TYPE_20,
-        OUTPUT_SHAPE: this.editCache20[_id].data.OUTPUT_SHAPE_20,
-        PROCESS_CODE: this.editCache20[_id].data.PROCESS_CODE_20,
-        FINAL_PROCESS: this.editCache20[_id].data.FINAL_PROCESS_20,
-        SCHE_TYPE: this.editCache20[_id].data.SCHE_TYPE_20,
+        ID: rowData.tab20ID,
+        EQUIP_CODE: rowData.EQUIP_CODE_20,
+        KIND_TYPE: rowData.KIND_TYPE_20,
+        OUTPUT_SHAPE: rowData.OUTPUT_SHAPE_20,
+        PROCESS_CODE: rowData.PROCESS_CODE_20,
+        FINAL_PROCESS: rowData.FINAL_PROCESS_20,
+        SCHE_TYPE: rowData.SCHE_TYPE_20,
         USERNAME: this.USERNAME,
         DATETIME: moment().format('YYYY-MM-DD HH:mm:ss'),
       });
@@ -281,11 +332,6 @@ export class PPSI123Component implements AfterViewInit {
 
             this.sucessMSG('修改成功', ``);
 
-            const index = this.PPSINP20List.findIndex(
-              (item) => item.id === _id
-            );
-            Object.assign(this.PPSINP20List[index], this.editCache20[_id].data);
-            this.editCache20[_id].edit = false;
           } else {
             this.errorMSG('修改失敗', res[0].MSG);
           }
@@ -300,10 +346,10 @@ export class PPSI123Component implements AfterViewInit {
   }
 
   // 刪除資料
-  delID(_id) {
+  delID(rowData:ItemData20) {
     let myObj = this;
     return new Promise((resolve, reject) => {
-      let _ID = this.editCache20[_id].data.tab20ID;
+      let _ID = rowData.tab20ID;
       myObj.PPSService.delI120Tab1Data(_ID).subscribe(
         (res) => {
           if (res[0].MSG === 'Y') {
@@ -349,77 +395,6 @@ export class PPSI123Component implements AfterViewInit {
   // 取消清洗站設備能力表之彈出視窗
   cancelWashInput(): void {
     this.isVisibleWash = false;
-  }
-
-  // ============= 過濾資料之menu ========================
-  // 清洗站設備能力表
-  ppsInp20ListFilter(property: string, keyWord: string): void {
-    if (_.isEmpty(keyWord)) {
-      this.displayPPSINP20List = this.PPSINP20List;
-      return;
-    }
-
-    const filterFunc = (item) => {
-      let propertyValue = _.get(item, property);
-      return _.startsWith(propertyValue, keyWord);
-    };
-
-    const data = this.PPSINP20List.filter((item) => filterFunc(item));
-    this.displayPPSINP20List = data;
-  }
-
-  // 資料過濾---清洗站設備能力表 --> 機台
-  searchByEquipCode20(): void {
-    this.ppsInp20ListFilter('EQUIP_CODE_20', this.searchEquipCode20Value);
-  }
-  resetByEquipCode20(): void {
-    this.searchEquipCode20Value = '';
-    this.ppsInp20ListFilter('EQUIP_CODE_20', this.searchEquipCode20Value);
-  }
-
-  // 資料過濾---清洗站設備能力表 --> 產品種類
-  searchByKindType20(): void {
-    this.ppsInp20ListFilter('KIND_TYPE_20', this.searchKindType20Value);
-  }
-  resetByKindType20(): void {
-    this.searchKindType20Value = '';
-    this.ppsInp20ListFilter('KIND_TYPE_20', this.searchKindType20Value);
-  }
-
-  // 資料過濾---清洗站設備能力表 --> 產出型態
-  searchByOutputShape20(): void {
-    this.ppsInp20ListFilter('OUTPUT_SHAPE_20', this.searchOutputShape20Value);
-  }
-  resetByOutputShape20(): void {
-    this.searchOutputShape20Value = '';
-    this.ppsInp20ListFilter('OUTPUT_SHAPE_20', this.searchOutputShape20Value);
-  }
-
-  // 資料過濾---清洗站設備能力表 --> 製程碼
-  searchByProcessCode20(): void {
-    this.ppsInp20ListFilter('PROCESS_CODE_20', this.searchProcessCode20Value);
-  }
-  resetByProcessCode20(): void {
-    this.searchProcessCode20Value = '';
-    this.ppsInp20ListFilter('PROCESS_CODE_20', this.searchProcessCode20Value);
-  }
-
-  // 資料過濾---清洗站設備能力表 --> FINAL_製程
-  searchByFinalProcess20(): void {
-    this.ppsInp20ListFilter('FINAL_PROCESS_20', this.searchFinalProcess20Value);
-  }
-  resetByFinalProcess20(): void {
-    this.searchFinalProcess20Value = '';
-    this.ppsInp20ListFilter('FINAL_PROCESS_20', this.searchFinalProcess20Value);
-  }
-
-  // 資料過濾---清洗站設備能力表 --> 抽數別
-  searchByScheType20(): void {
-    this.ppsInp20ListFilter('SCHE_TYPE_20', this.searchScheType20Value);
-  }
-  resetByScheType20(): void {
-    this.searchScheType20Value = '';
-    this.ppsInp20ListFilter('SCHE_TYPE_20', this.searchScheType20Value);
   }
 
   //=============================================
@@ -516,19 +491,15 @@ export class PPSI123Component implements AfterViewInit {
     console.log('匯入的Excle中的資料皆無重複');
 
     // 將資料全刪除，再匯入EXCEL檔內的資料
-    const p = this.deleteAllData();
-    p.then((deleteSuccess) => {
-      // 批次新增Excle中的資料
-      return this.barchInsertExcelData();
-    })
-      .then((barchInsertSuccess) => {
+    this.barchInsertExcelData()
+    .then((barchInsertSuccess) => {
         this.sucessMSG(barchInsertSuccess, ``);
         this.getPPSINP20List();
       })
-      .catch(function (error) {
-        this.isSpinning = false;
-        this.errorMSG(error, ``);
-      });
+    .catch(function (error) {
+      this.isSpinning = false;
+      this.errorMSG(error, ``);
+    });
     (<HTMLInputElement>document.getElementById('importExcel')).value = '';
   }
 
@@ -537,7 +508,7 @@ export class PPSI123Component implements AfterViewInit {
     return new Promise(function (resolve, reject) {
       myThis.PPSService.batchSaveI120Data(myThis.jsonExcelData).subscribe(
         (response) => {
-          if (response.success === true) {
+          if (response.code === 200) {
             resolve('匯入成功');
           } else {
             reject(response.success);
@@ -742,4 +713,24 @@ export class PPSI123Component implements AfterViewInit {
     this.isSpinning = false;
     this.sucessMSG('匯出成功!', ``);
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'EQUIP_CODE_20');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'EQUIP_CODE_20',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData)
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData)
+  }
+
 }
