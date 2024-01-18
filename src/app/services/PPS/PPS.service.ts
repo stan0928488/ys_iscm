@@ -597,19 +597,19 @@ export class PPSService {
   //Get getPPSINP20List 取得20tab data
   getPPSINP20List() {
     console.log('api service getPPSINP20List');
-    let queryUrl = this.APIURL + '/FCP/I120/getPPSINP20List';
+    let queryUrl = this.APINEWURL + '/FCP/I120/getPPSINP20List';
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // I120 delI120Tab1Data 刪除資料
   delI120Tab1Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I120/delI120Tab1Data/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/delI120Tab1Data/${_ID}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
   // I120 insertI120Tab1Save
   insertI120Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I120/insertI120Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/insertI120Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -617,7 +617,7 @@ export class PPSService {
   // I120 updateI120Tab1Save修改存檔
   updateI120Tab1Save(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I120/updateI120Tab1Save`;
+    let queryUrl = this.APINEWURL + `/FCP/I120/updateI120Tab1Save`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -625,7 +625,7 @@ export class PPSService {
 
   // I120 刪除所有資料
   deleteI120AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I120/deleteI120AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I120/deleteI120AllData`;
     console.log('刪除「清洗站設備能力表」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -635,7 +635,7 @@ export class PPSService {
   // I120 批次新增資料
   batchSaveI120Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I120/batchSaveI120Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I120/batchSaveI120Data`;
     console.log('批次新增「清洗站設備能力表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -935,14 +935,14 @@ export class PPSService {
     const body = _result;
     // console.log("JSON.stringify");
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/importExcelPPSI203';
+    let queryUrl = this.APINEWURL + '/FCP/I203/importExcelPPSI203';
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
   // 取得客戶清單
   getCustomerList1() {
     console.log('api service getCustomerList');
-    let queryUrl = this.APIURL + `/FCP/I203/getCustomerList`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getCustomerList`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -950,7 +950,7 @@ export class PPSService {
   // 取得鋼種清單
   getSteelTypeList1() {
     console.log('api service getSteelTypeList');
-    let queryUrl = this.APIURL + `/FCP/I203/getSteelTypeList`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getSteelTypeList`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -966,14 +966,14 @@ export class PPSService {
   // 取得ASAP滾表結果
   getPPSI203MasterListData() {
     console.log('api service getPPSI203MasterList');
-    let queryUrl = this.APIURL + `/FCP/I203/getPPSI203_MasterListData`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getPPSI203_MasterListData`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
   // 取得ASAP副表滾表結果
   getPPSI203_DetailListData(_ID) {
     console.log('api service getPPSI203_DetailListData');
-    let queryUrl = this.APIURL + `/FCP/I203/getPPSI203_DetailListData/${_ID}`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/getPPSI203_DetailListData/${_ID}`;
     console.log(queryUrl);
     return this.http.get(queryUrl);
   }
@@ -982,8 +982,8 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/addPPSI203Data';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/addPPSI203Data';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   //addPPSI203DetailData ASAP調整insert存檔
@@ -991,13 +991,13 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/addPPSI203DetailData';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/addPPSI203DetailData';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   update203DetailSave(_data) {
     const body = JSON.stringify(_data);
-    let queryUrl = this.APIURL + `/FCP/I203/updatePPSI203DetailDataSave`;
+    let queryUrl = this.APINEWURL + `/FCP/I203/updatePPSI203DetailDataSave`;
     console.log(queryUrl);
     console.log(body);
     return this.http.post(queryUrl, body, this.httpOptions);
@@ -1008,19 +1008,19 @@ export class PPSService {
     const body = JSON.stringify(_result);
     console.log('JSON.stringify');
     console.log(body);
-    let queryUrl = this.APIURL + '/FCP/I203/editPPSI203_M_Data';
-    return this.http.post(queryUrl, body, this.httpOptions);
+    let queryUrl = this.APINEWURL + '/FCP/I203/editPPSI203_M_Data';
+    return this.http.post<any>(queryUrl, body, this.httpOptions);
   }
 
   //deletePPSI203Data 刪除ASAP調整(主表及副表)資料
   deletePPSI203Data(_ID) {
-    let queryUrl = this.APIURL + `/FCP/I203/deletePPSI203_MD_Data/${_ID}`;
-    return this.http.post(queryUrl, '', this.httpOptions);
+    let queryUrl = this.APINEWURL + `/FCP/I203/deletePPSI203_MD_Data/${_ID}`;
+    return this.http.post<any>(queryUrl, '', this.httpOptions);
   }
   //deletePPSI203DetailData 刪除ASAP調整(副表)資料
   deletePPSI203DetailData(_M_ID, _cust_abbreviations) {
     let queryUrl =
-      this.APIURL +
+      this.APINEWURL +
       `/FCP/I203/deletePPSI203_D_Data/${_M_ID}/${_cust_abbreviations}`;
     return this.http.post(queryUrl, '', this.httpOptions);
   }
@@ -1030,7 +1030,7 @@ export class PPSService {
     console.log('api service getPPSI203ListUse_MID_InExportExcel');
     console.log(body);
     let queryUrl =
-      this.APIURL + `/FCP/I203/getPPSI203ListUse_MID_InExportExcel`;
+      this.APINEWURL + `/FCP/I203/getPPSI203ListUse_MID_InExportExcel`;
     console.log(queryUrl);
     return this.http.post(queryUrl, body, this.httpOptions);
   }
@@ -1844,7 +1844,7 @@ export class PPSService {
 
   savetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/saveI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/saveI131Data`;
     console.log('新增「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -1856,7 +1856,7 @@ export class PPSService {
       .set('pageIndex', pageIndex)
       .set('pageSize', pageSize);
     console.log('查詢「直棒批次爐表」資料');
-    let endpointUrl = this.APIURL + `/FCP/I131/listI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/listI131Data`;
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:pageIndex=>${pageIndex}, pageSize=>${pageSize}`);
     return this.http.get<any>(endpointUrl, { params: httpParams });
@@ -1864,7 +1864,7 @@ export class PPSService {
 
   updatetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/updateI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/updateI131Data`;
     console.log('更新「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -1872,7 +1872,7 @@ export class PPSService {
   }
 
   deletetbppsm114Data(id: number) {
-    let endpointUrl = this.APIURL + `/FCP/I131/deleteI131Data/${id}`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/deleteI131Data/${id}`;
     console.log('刪除「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${id}`);
@@ -1897,7 +1897,7 @@ export class PPSService {
   }
 
   deletetbppsm114AllData() {
-    let endpointUrl = this.APIURL + `/FCP/I131/deleteI131AllData`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/deleteI131AllData`;
     console.log('刪除「直棒批次爐表」所有資料');
     console.log(`請求API Endpoint Url : ${endpointUrl}`);
     console.log(`請求API 參數 : 無`);
@@ -1906,7 +1906,7 @@ export class PPSService {
 
   batchSavetbppsm114Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I131/batchInsertI131Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I131/batchInsertI131Data`;
     console.log('批次新增「直棒批次爐表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);

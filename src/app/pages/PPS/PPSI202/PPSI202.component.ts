@@ -115,7 +115,6 @@ export class PPSI202Component implements AfterViewInit {
     }
   };
 
-  // 共用使用非直棒的cellEditor component
   ppsinptb06ColumnDefs: ColDef[] = [
     { 
       headerName:'開始時間',

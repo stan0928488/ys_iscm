@@ -1,14 +1,18 @@
-import { map } from 'rxjs/operators';
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { CookieService } from 'src/app/services/config/cookie.service';
-import { PPSService } from 'src/app/services/PPS/PPS.service';
-import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService, NzModalRef } from 'ng-zorro-antd/modal';
-import * as moment from 'moment';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import {
+  ColDef,
+  ColGroupDef
+} from 'ag-grid-community';
 import * as _ from 'lodash';
-import * as XLSX from 'xlsx';
+import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { CommonService } from 'src/app/services/common/common.service';
+import { CookieService } from 'src/app/services/config/cookie.service';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import * as XLSX from 'xlsx';
+import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 
 class tbppsm114 {
   id: number;
@@ -76,6 +80,8 @@ class Displaytbppsm114 extends tbppsm114 {
   providers: [NzMessageService],
 })
 export class PPSI131Component implements AfterViewInit {
+  
+  frameworkComponents: any;
   thisTabName = "直棒BA1批次爐工時維護(PPSI131)";
   USERNAME;
   id;
@@ -139,6 +145,42 @@ export class PPSI131Component implements AfterViewInit {
   // 使用者匯入的Excel檔案
   excelImportFile: File;
 
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+  };
+
+  columnDefs: (ColDef | ColGroupDef)[] = [
+    {headerComponent: AGCustomHeaderComponent,headerName: '尺寸下限',field: 'diaMin',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '尺寸上限',field: 'diaMax',filter: true,width: 120,editable: true},
+    {headerComponent: AGCustomHeaderComponent,headerName: '每爐生產時間',field: 'productionTime',filter: true,width: 120,editable: true},
+    {
+      width: 150,
+      headerName: 'Action',
+      editable: false,
+      cellRenderer: 'buttonRenderer',
+      cellRendererParams: [
+        {
+          onClick: this.onBtnClick1.bind(this),
+        },
+        {
+          onClick: this.onBtnClick2.bind(this),
+        },
+        {
+          onClick: this.onBtnClick3.bind(this),
+        },
+        {
+          onClick: this.onBtnClick4.bind(this),
+        },
+      ],
+    },
+  ];
+
   constructor(
     private elementRef:ElementRef,
     private PPSService: PPSService,
@@ -151,6 +193,9 @@ export class PPSI131Component implements AfterViewInit {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
     this.id = this.cookieService.getCookie('id');
+    this.frameworkComponents = {
+      buttonRenderer: BtnCellRenderer,
+    };
   }
 
   async ngAfterViewInit() {
@@ -188,7 +233,7 @@ export class PPSI131Component implements AfterViewInit {
 
   handleData(resData) {
     const response = resData['response'];
-    if (response.success === true) {
+    if (response.code === 200) {
       this.setupTable(response);
       this.setupUpdateEditCache();
       if (response.data.length <= 0) {
@@ -247,35 +292,13 @@ export class PPSI131Component implements AfterViewInit {
     });
   }
 
-  editRow(id: number): void {
-    // 紀錄有哪筆資料處於編輯中
-    this.editingItemList.push(id);
-    this.editCache[id].isEdit = true;
-    //去重，以避免不可知的情況同一筆ID被加入超過第1次
-    this.editingItemList = _.uniq(this.editingItemList);
-
-    // 紀錄此筆資料使用者是否有修改
-    this.wasModifiedData[id] = { data: _.cloneDeep(this.editCache[id].data) };
-  }
-
-  cancelEdit(id: number): void {
-    _.remove(this.editingItemList, (_id) => _id === id);
-    this.editCache[id].isEdit = false;
-
-    //將儲存編輯中的資料還原
-    this.editCache[id].data = _.cloneDeep(this.wasModifiedData[id].data);
-
-    //移除「紀錄此筆資料使用者是否有修改」的資料
-    delete this.wasModifiedData[id];
-  }
-
-  deleteRow(id: number): void {
+  deleteRow(rowData: tbppsm114): void {
     this.isSpinning = true;
     const myThis = this;
     new Promise<any>(function (resolve, reject) {
-      myThis.PPSService.deletetbppsm114Data(id).subscribe(
+      myThis.PPSService.deletetbppsm114Data(rowData.id).subscribe(
         (response) => {
-          if (response.success == true) {
+          if (response.code == 200) {
             resolve(true);
           } else {
             reject(response.message);
@@ -290,8 +313,7 @@ export class PPSI131Component implements AfterViewInit {
       );
     })
       .then((updateSuccess) => {
-        if (_.isEmpty(myThis.searchingColumn)) return this.getPPSI131List();
-        else return this.switchGetSearchtbppsm114ColumnDataByKeyWord();
+        return this.getPPSI131List();
       })
       .then((resData) => {
         this.handleData(resData);
@@ -304,14 +326,8 @@ export class PPSI131Component implements AfterViewInit {
       });
   }
 
-  saveEdit(id: number) {
-    let updateItem = this.editCache[id].data;
-    let wasModifiedItem = this.wasModifiedData[id].data;
-
-    if (_.isEqual(updateItem, wasModifiedItem)) {
-      this.message.create('error', '無法更新，資料與原來相同');
-      return;
-    }
+  saveEdit(rowData: tbppsm114) {
+    let updateItem = rowData;
 
     this.Modal.confirm({
       nzTitle: '是否確定修改?',
@@ -322,7 +338,7 @@ export class PPSI131Component implements AfterViewInit {
         new Promise<any>(function (resolve, reject) {
           myThis.PPSService.updatetbppsm114Data(updateItem).subscribe(
             (response) => {
-              if (response.success == true) {
+              if (response.code === 200) {
                 resolve(true);
               } else {
                 reject(response.message);
@@ -337,13 +353,10 @@ export class PPSI131Component implements AfterViewInit {
           );
         })
           .then((updateSuccess) => {
-            myThis.cancelEdit(id);
-
-            if (_.isEmpty(myThis.searchingColumn)) return this.getPPSI131List();
-            else return this.switchGetSearchtbppsm114ColumnDataByKeyWord();
+            this.getPPSI131List()
           })
           .then((resData) => {
-            this.handleData(resData);
+            this.getPPSI131List()
             myThis.sucessMSG('更新成功', ``);
             myThis.isSpinning = false;
           })
@@ -380,7 +393,7 @@ export class PPSI131Component implements AfterViewInit {
         new Promise<any>(function (resolve, reject) {
           myThis.PPSService.savetbppsm114Data(tbppsm114Data).subscribe(
             (response) => {
-              if (response.success === true) resolve(response.message);
+              if (response.code === 200) resolve(response.message);
               else reject(response.message);
             },
             (error) => {
@@ -431,19 +444,6 @@ export class PPSI131Component implements AfterViewInit {
     return true;
   }
 
-  tablePageChange(): void {
-    this.isSpinning = true;
-
-    if (!_.isEmpty(this.searchingColumn)) {
-      const p = this.switchGetSearchtbppsm114ColumnDataByKeyWord();
-      this.setupTableAndEditCache(p);
-      return;
-    }
-
-    const p = this.getPPSI131List();
-    this.setupTableAndEditCache(p);
-  }
-
   sucessMSG(_title, _plan): void {
     this.Modal.success({
       nzTitle: _title,
@@ -459,7 +459,6 @@ export class PPSI131Component implements AfterViewInit {
 
     this.Modal.afterAllClose.subscribe((result) => {
       console.log('重新刷新.....');
-      this.reset();
     });
   }
 
@@ -471,162 +470,6 @@ export class PPSI131Component implements AfterViewInit {
   // 取消 批次爐鋼種捲數製程碼對應表 之彈出視窗
   cancelBFSGCCPCInput(): void {
     this.isVisibleBFSGCCPC = false;
-  }
-
-  // ============= filter資料 ========================
-
-  searchByDiaMin(isUserClick: boolean) {
-    if (_.isEmpty(this.searchDiaMinValue)) {
-      this.message.create('error', '請輸入搜尋關鍵字');
-      return;
-    }
-
-    this.searchingColumn = this.DB_DIA_MIN_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_DIA_MIN_COLUMN_NAME);
-    const p = this.searchtbppsm114ColumnDataByKeyWord(
-      this.searchingColumn,
-      this.searchDiaMinValue
-    );
-
-    if (!isUserClick) {
-      return p;
-    } else {
-      this.setupTableAndEditCache(p);
-      this.diaMinFilterVisible = false;
-    }
-  }
-  resetByDiaMin() {
-    this.searchDiaMinValue = '';
-    this.reset();
-    this.diaMinFilterVisible = false;
-  }
-
-  searchByDiaMax(isUserClick: boolean) {
-    if (_.isEmpty(this.searchDiaMaxValue)) {
-      this.message.create('error', '請輸入搜尋關鍵字');
-      return;
-    }
-
-    this.searchingColumn = this.DB_DIA_MAX_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_DIA_MAX_COLUMN_NAME);
-    const p = this.searchtbppsm114ColumnDataByKeyWord(
-      this.searchingColumn,
-      this.searchDiaMaxValue
-    );
-
-    if (!isUserClick) {
-      return p;
-    } else {
-      this.setupTableAndEditCache(p);
-      this.diaMaxFilterVisible = false;
-    }
-  }
-  resetByDiaMax() {
-    this.searchDiaMaxValue = '';
-    this.reset();
-    this.diaMaxFilterVisible = false;
-  }
-
-  searchByproductionTime(isUserClick: boolean) {
-    if (_.isEmpty(this.searchproductionTimeValue)) {
-      this.message.create('error', '請輸入搜尋關鍵字');
-      return;
-    }
-
-    this.searchingColumn = this.DB_PRODUCTION_TIME_COLUMN_NAME;
-    this.clearOtherSearchValue(this.DB_PRODUCTION_TIME_COLUMN_NAME);
-    const p = this.searchtbppsm114ColumnDataByKeyWord(
-      this.searchingColumn,
-      this.searchproductionTimeValue
-    );
-
-    if (!isUserClick) {
-      return p;
-    } else {
-      this.setupTableAndEditCache(p);
-      this.productionTimeFilterVisible = false;
-    }
-  }
-  resetByproductionTime() {
-    this.searchproductionTimeValue = '';
-    this.reset();
-    this.productionTimeFilterVisible = false;
-  }
-
-  reset(): void {
-    this.isSpinning = true;
-    this.currentPageIndex = 1;
-    this.searchingColumn = '';
-    this.clearOtherSearchValue('All Clear');
-    const p = this.getPPSI131List();
-    this.setupTableAndEditCache(p);
-  }
-
-  clearOtherSearchValue(currentField: string) {
-    if (!_.isEqual(currentField, this.DB_DIA_MIN_COLUMN_NAME)) {
-      this.searchDiaMinValue = '';
-    }
-
-    if (!_.isEqual(currentField, this.DB_DIA_MAX_COLUMN_NAME)) {
-      this.searchDiaMaxValue = '';
-    }
-
-    if (!_.isEqual(currentField, this.DB_PRODUCTION_TIME_COLUMN_NAME)) {
-      this.searchproductionTimeValue = '';
-    }
-  }
-
-  searchtbppsm114ColumnDataByKeyWord(column: string, keyword: string) {
-    this.isSpinning = true;
-    const myThis = this;
-    return new Promise(function (resolve, reject) {
-      myThis.PPSService.searchtbppsm114ColumnDataByKeyword(
-        column,
-        keyword,
-        myThis.currentPageIndex,
-        myThis.pageSize
-      ).subscribe(
-        (response) => {
-          if (response.success === true) {
-            const resData = { response: response, isSearch: true };
-            resolve(resData);
-          } else {
-            reject(response.message);
-          }
-        },
-        (error) => {
-          reject(
-            `查詢失敗，後台查詢錯誤，請聯繫系統工程師。Error Msg : ${JSON.stringify(
-              error['error']
-            )}`
-          );
-        }
-      );
-    });
-  }
-
-  switchGetSearchtbppsm114ColumnDataByKeyWord() {
-    let p: Promise<any>;
-
-    switch (this.searchingColumn) {
-      case this.DB_DIA_MIN_COLUMN_NAME: {
-        p = this.searchByDiaMin(false);
-        break;
-      }
-      case this.DB_DIA_MAX_COLUMN_NAME: {
-        p = this.searchByDiaMax(false);
-        break;
-      }
-      case this.DB_PRODUCTION_TIME_COLUMN_NAME: {
-        p = this.searchByproductionTime(false);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-
-    return p;
   }
 
   // excel檔案
@@ -742,7 +585,7 @@ export class PPSI131Component implements AfterViewInit {
     return new Promise(function (resolve, reject) {
       myThis.PPSService.batchSavetbppsm114Data(myThis.jsonExcelData).subscribe(
         (response) => {
-          if (response.success === true) {
+          if (response.code === 200) {
             resolve('匯入成功');
           } else {
             reject(response.success);
@@ -893,4 +736,24 @@ export class PPSI131Component implements AfterViewInit {
       );
     });
   }
+
+  onBtnClick1(e) {
+    e.params.api.setFocusedCell(e.params.node.rowIndex, 'productionTime');
+    e.params.api.startEditingCell({
+      rowIndex: e.params.node.rowIndex,
+      colKey: 'productionTime',
+    });
+  }
+
+  onBtnClick2(e) {
+    this.saveEdit(e.rowData)
+  }
+
+  onBtnClick3(e) {
+  }
+
+  onBtnClick4(e) {
+    this.deleteRow(e.rowData)
+  }
+
 }
