@@ -126,13 +126,18 @@
     </div>
 
     <div style="margin-top: 20px" class="flexContainer">
-        <label class="edit-label-not-required">節點圖示</label>
-        <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="editMenuIcon" type="text" nzSize="default"/>
+        <label class="edit-label-required">節點名稱</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="editNodeName" type="text" nzSize="default"/>
+    </div>
+
+    <div *ngIf = "editMenuType == 'C'" style="margin-top: 20px" class="flexContainer">
+        <label class="edit-label-not-required">菜單顯示</label>
+        <nz-switch [(ngModel)]="editIsShow" nzCheckedChildren="顯示" nzUnCheckedChildren="隱藏"></nz-switch>
     </div>
 
     <div style="margin-top: 20px" class="flexContainer">
-        <label class="edit-label-required">節點名稱</label>
-        <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="editNodeName" type="text" nzSize="default"/>
+        <label class="edit-label-not-required">節點圖示</label>
+        <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="editMenuIcon" type="text" nzSize="default"/>
     </div>
 
     <div style="margin-top: 20px" class="flexContainer">
@@ -141,8 +146,8 @@
     </div>
 
     <div style="margin-top: 20px" class="flexContainer">
-        <label class="edit-label-not-required">節點排序索引</label>
-        <input style="width: 200px;" nz-input placeholder="請輸入節點序索引" [(ngModel)]="editMenuSortIndex" type="text" nzSize="default"/>
+        <label class="edit-label-not-required">節點排序</label>
+        <input style="width: 50px;" nz-input placeholder="請輸入節點序" [(ngModel)]="editMenuSortIndex" type="text" nzSize="default"/>
     </div>
   </ng-template>
 </nz-modal>
@@ -176,20 +181,25 @@
                     
                 </div>
                 <div style="margin-top: 20px;" class="flexContainer">
-                    <div>節點圖示：</div>
-                    <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
-                </div>
-                <div style="margin-top: 20px;" class="flexContainer">
                     <label style="padding: inherit;" class="edit-label-required">節點名稱：</label>
                     <input style="width: 200px;" nz-input placeholder="請輸入節點名稱" [(ngModel)]="newNodeName" type="text" nzSize="default"/>
+                </div>
+                
+                <div *ngIf = "newMenuType == 'C'" style="margin-top: 20px" class="flexContainer">
+                    <label class="edit-label-not-required">菜單顯示：</label>
+                    <nz-switch [(ngModel)]="newIsShow" nzCheckedChildren="顯示" nzUnCheckedChildren="隱藏"></nz-switch>
+                </div>
+                <div style="margin-top: 20px;" class="flexContainer">
+                    <div>節點圖示：</div>
+                    <input style="width: 200px;" nz-input placeholder="請輸入節點圖示名稱" [(ngModel)]="newNodeIcon" type="text" nzSize="default"/>
                 </div>
                 <div style="margin-top: 20px;" class="flexContainer">
                     <div>節點路徑：</div>
                     <input style="width: 300px;" nz-input placeholder="請輸入節點路徑" [(ngModel)]="newNodePath" type="text" nzSize="default"/>
                 </div>
                 <div style="margin-top: 20px;" class="flexContainer">
-                    <div>節點排序索引：</div>
-                    <input style="width: 300px;" nz-input placeholder="請輸入節點排序索引" [(ngModel)]="newNodeSortIdx" type="text" nzSize="default"/>
+                    <div>節點排序：</div>
+                    <input style="width: 50px;" nz-input placeholder="請輸入節點排序" [(ngModel)]="newNodeSortIdx" type="text" nzSize="default"/>
                 </div>
             </nz-spin>
         </div>

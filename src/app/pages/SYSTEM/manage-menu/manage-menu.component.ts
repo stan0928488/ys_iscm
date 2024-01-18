@@ -22,6 +22,7 @@ interface FlatNode {
   level: number;
   parentId : number | string;
   menuType: string;
+  isShow: boolean;
   icon: string;
   sortIndex: string;
   path: string;
@@ -54,6 +55,9 @@ export class ManageMenuComponent implements AfterViewInit {
   // 新節點類型(是頁面路徑或API路徑)
   newMenuType : 'C'| 'F' = 'C';
 
+  // 新節點頁面是否顯示
+  newIsShow = true;
+
   // 新節點路徑
   newNodePath = '';
 
@@ -72,6 +76,8 @@ export class ManageMenuComponent implements AfterViewInit {
   editNodelevel = 0;
   // 編輯的節點類型(是頁面路徑或API路徑)
   editMenuType = '';
+  // 編輯的節點頁面是否顯示
+  editIsShow = true;
   // 編輯的節點圖示
   editMenuIcon = '';
   // 編輯的節點路徑
@@ -93,6 +99,7 @@ export class ManageMenuComponent implements AfterViewInit {
     parentId : node.parentId,
     menuType : node.menuType,
     icon : node.icon,
+    isShow : node.isShow == '1' ? true : false,
     sortIndex : node.sortIndex,
     path : node.path
   });
@@ -184,6 +191,7 @@ export class ManageMenuComponent implements AfterViewInit {
     this.editNodelevel = currentNode.level;
     this.editNodeName = currentNode.menuName;
     this.editMenuType = currentNode.menuType;
+    this.editIsShow = currentNode.isShow;
     this.editMenuIcon = currentNode.icon;
     this.editMenuPath = currentNode.path;
     this.editMenuSortIndex = currentNode.sortIndex;
@@ -219,6 +227,7 @@ export class ManageMenuComponent implements AfterViewInit {
       id: this.editId,
       menuType : this.editMenuType,   // 新節點類型(菜單/權限API)
       icon : _.isEmpty(this.editMenuIcon) ? null : this.editMenuIcon, //新節點圖示
+      isShow : this.editIsShow == true ? '1' : '0', //新節點是否顯示頁面
       menuName : this.editNodeName,   // 新節點名稱
       sortIndex : _.isEmpty(this.editMenuSortIndex) ? null : this.editMenuSortIndex, // 新節點的排序索引
       level : String(this.editNodelevel), // 新節點在樹中的層級
@@ -237,6 +246,7 @@ export class ManageMenuComponent implements AfterViewInit {
       expandable: true,
       menuName: '添加頂級菜單',
       menuType: '',
+      isShow: true,
       icon: '',
       sortIndex: '',
       path: '',
@@ -282,6 +292,7 @@ export class ManageMenuComponent implements AfterViewInit {
     // 裝配要保存的資料
     const requestSaveNodeData = {
       menuType : this.newMenuType,   // 新節點類型(菜單/權限API)
+      isShow : this.newIsShow == true ? '1' : '0',   // 新節點頁面是否顯示
       icon : _.isEmpty(this.newNodeIcon) ? null : this.newNodeIcon, //新節點圖示
       menuName : this.newNodeName,   // 新節點名稱
       sortIndex : _.isEmpty(this.newNodeSortIdx) ? null : this.newNodeSortIdx, // 新節點的排序索引
@@ -317,6 +328,7 @@ export class ManageMenuComponent implements AfterViewInit {
           // 關閉側邊欄輸入
           this.addNewNodeClose();
           this.newNodeIcon = '';
+          this.newIsShow = true;
           this.newNodeName = '';
           this.newMenuType = 'C';
           this.newNodePath = '';
@@ -363,6 +375,7 @@ export class ManageMenuComponent implements AfterViewInit {
     const newChildNode : Menu = {
       id : dbId,
       menuType: requestNodeData.menuType,
+      isShow : requestNodeData.isShow,
       icon : requestNodeData.icon,
       menuName : requestNodeData.menuName,
       sortIndex : requestNodeData.sortIndex,
