@@ -11,7 +11,7 @@
       <ng-template #menuTpl let-menus>
         <ng-container *ngFor="let menu of menus">
           <li
-            *ngIf="!menu.children || menu.children.length <= 0"
+            *ngIf="menu.isShow == 1 && (!menu.children || menu.children.length <= 0)"
             nz-menu-item
             [nzDisabled]="menu.disabled"
             [nzSelected]="menu.selected"
@@ -21,7 +21,7 @@
             <a [routerLink]="[menu.path]"> {{menu.menuName}} </a>
           </li>
           <li
-            *ngIf="menu.children && menu.children.length > 0"
+            *ngIf="menu.isShow == 1 && menu.children && menu.children.length > 0"
             nz-submenu
             [nzOpen]="menu.open"
             [nzTitle]="menu.menuName"

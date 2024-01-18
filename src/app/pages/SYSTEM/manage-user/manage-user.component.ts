@@ -6,6 +6,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import {NzMessageService} from "ng-zorro-antd/message";
+import {AGHeaderParams} from "../../../shared/ag-component/types"
 
 @Component({
   selector: 'app-manage-user',
@@ -84,8 +85,14 @@ export class ManageUserComponent implements AfterViewInit {
     });
   }
 
+  agCustomHeaderParams : AGHeaderParams = {
+    isMenuShow: true,// true 顯示抽屜菜單
+    agName: 'AGName1' , // AG 表名
+    isSave:true , // 是否顯示保存
+  }
+
   colDefs: ColDef<IRow>[] = [
-    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent,headerComponentParams:this.agCustomHeaderParams},
     {headerName: '工號',field: 'userCode', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '使用者名稱',field: 'userNickName', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '職位',field: 'positionName', width:200, headerComponent : AGCustomHeaderComponent},

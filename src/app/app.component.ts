@@ -442,6 +442,7 @@ export class AppComponent implements OnInit,OnDestroy, AfterViewInit {
 }
 
 interface TreeNode {
+  isShow?:number;
   id?: number;
   level:any;
   useStatus?: string;
