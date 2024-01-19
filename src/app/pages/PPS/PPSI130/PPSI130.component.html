@@ -3,7 +3,7 @@
 
   <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="isSpinning">
     <div
-      style="background: rgb(255, 255, 255); width: auto; min-height: 1200px"
+      style="background: rgb(255, 255, 255); width: auto;"
     >
       <table>
         <tr>
@@ -80,8 +80,25 @@
       <p></p>
       <p></p>
 
-      <div nz-col [nzSpan]="25">
-        <nz-table
+      <div>
+
+        <ag-grid-angular
+          style="width:100%; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+          class="ag-theme-alpine"
+          [rowData]="displayTbppsm014List"
+          [columnDefs]="tbppsm014ColumnDefs"
+          [gridOptions]="gridOptions"
+          [pagination]="true"
+          [suppressClickEdit]="true"
+          [editType]="'fullRow'"
+          (firstDataRendered)="onFirstDataRendered($event)"
+          (cellEditingStopped)="cellEditingStoppedHandler($event)"
+          (gridReady)="onGridReady($event)"
+          [paginationPageSize]="20">
+        </ag-grid-angular>
+
+
+        <!-- <nz-table
           #displayTbppsm014Rows
           nzBordered
           [nzFrontPagination]="false"
@@ -399,7 +416,7 @@
               </ng-template>
             </tr>
           </tbody>
-        </nz-table>
+        </nz-table> -->
       </div>
     </div>
   </nz-spin>
@@ -438,6 +455,51 @@
               />
             </td>
           </tr>
+
+          <tr>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;機台
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入機台"
+                [(ngModel)]="equipCodeInput"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              style="
+                width: 110px;
+                background-color: rgb(156, 182, 206);
+                font-weight: bold;
+                border-radius: 5px;
+              "
+            >
+              &nbsp;&nbsp;機群
+            </td>
+            <td style="width: 600px; background-color: #eee">
+              &nbsp;
+              <input
+                style="width: 22%; color: darkblue"
+                nz-input
+                placeholder="輸入機群"
+                [(ngModel)]="equipGroupInput"
+              />
+            </td>
+          </tr>
+
 
           <tr>
             <td
@@ -567,137 +629,3 @@
     <button nz-button nzType="primary" (click)="insertData()">確定</button>
   </ng-template>
 </nz-modal>
-
-<nz-dropdown-menu #plantCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchPlantCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByPlantCode(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByPlantCode()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #shopCodeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchShopCodeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByShopCode(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByShopCode()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #steelTypeMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchSteelTypeValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchBySteelType(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetBySteelType()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #diaMinMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchDiaMinValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByDiaMin(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByDiaMin()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #diaMaxMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchDiaMaxValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByDiaMax(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByDiaMax()">重設</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #processCode2pcsMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchProcessCode2pcsValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByProcessCode2pcs(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByProcessCode2pcs()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #processCode4pcsMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input type="text" nz-input [(ngModel)]="searchProcessCode4pcsValue" />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="searchByProcessCode4pcs(true)"
-        class="search-button"
-      >
-        查詢
-      </button>
-      <button nz-button nzSize="small" (click)="resetByProcessCode4pcs()">
-        重設
-      </button>
-    </div>
-  </div>
-</nz-dropdown-menu>
