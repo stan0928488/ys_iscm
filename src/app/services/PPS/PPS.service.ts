@@ -1693,27 +1693,23 @@ export class PPSService {
 
   saveTbppsm014Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I130/saveI130Data`;
+    let endpointUrl = `${this.APINEWURL}/FCP/I130/saveI130Data`;
     console.log('新增「批次爐鋼種捲數製程碼對應表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
     return this.http.post<any>(endpointUrl, body, this.httpOptions);
   }
 
-  listTbppsm014DataByPagination(pageIndex: number, pageSize: number) {
-    const httpParams = new HttpParams()
-      .set('pageIndex', pageIndex)
-      .set('pageSize', pageSize);
+  listTbppsm014Data() {
     console.log('查詢「批次爐鋼種捲數製程碼對應表」資料');
-    let endpointUrl = this.APIURL + `/FCP/I130/listI130Data`;
+    let endpointUrl = `${this.APINEWURL}/FCP/I130/listI130Data`;
     console.log(`請求API Endpoint Url:${endpointUrl}`);
-    console.log(`請求API 參數:pageIndex=>${pageIndex}, pageSize=>${pageSize}`);
-    return this.http.get<any>(endpointUrl, { params: httpParams });
+    return this.http.get<any>(endpointUrl);
   }
 
   updateTbppsm014Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I130/updateI130Data`;
+    let endpointUrl = this.APINEWURL + `/FCP/I130/updateI130Data`;
     console.log('更新「批次爐鋼種捲數製程碼對應表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
@@ -1721,7 +1717,7 @@ export class PPSService {
   }
 
   deleteTbppsm014Data(id: number) {
-    let endpointUrl = this.APIURL + `/FCP/I130/deleteI130Data/${id}`;
+    let endpointUrl = `${this.APINEWURL}/FCP/I130/deleteI130Data/${id}`;
     console.log('刪除「批次爐鋼種捲數製程碼對應表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${id}`);
@@ -1755,7 +1751,7 @@ export class PPSService {
 
   batchSaveTbppsm014Data(_data) {
     const body = JSON.stringify(_data);
-    let endpointUrl = this.APIURL + `/FCP/I130/batchInsertI130Data`;
+    let endpointUrl = `${this.APINEWURL}/FCP/I130/batchInsertI130Data`;
     console.log('批次新增「批次爐鋼種捲數製程碼對應表」資料');
     console.log(`請求API Endpoint Url:${endpointUrl}`);
     console.log(`請求API 參數:${body}`);
