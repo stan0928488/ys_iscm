@@ -44,7 +44,7 @@ export class PPSI205_100Component implements AfterViewInit {
   ];
 
   columnDefs: (ColDef | ColGroupDef)[] = [
-    {headerName: 'FCP版本',field: 'fcpEdition',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: 'FCP版本',field: 'fcpEdition',width: 150,headerComponent: AGCustomHeaderComponent},
     {headerName: '站別',field: 'schShopCode',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '投產機台',field: 'pstMachine',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '製程碼',field: 'processCode',width: 100,headerComponent: AGCustomHeaderComponent},
@@ -57,9 +57,9 @@ export class PPSI205_100Component implements AfterViewInit {
     {headerName: '鋼種群組',field: 'gradeGroup',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '自訂月份',field: 'newEpstYymm',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '寫入排序',field: 'campaignSort',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '開始時間',field: 'planStartTime',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '結束時間',field: 'planEndTime',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '創建時間',field: 'dateCreate',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '開始時間',field: 'planStartTime',width: 120,headerComponent: AGCustomHeaderComponent},
+    {headerName: '結束時間',field: 'planEndTime',width: 120,headerComponent: AGCustomHeaderComponent},
+    {headerName: '創建時間',field: 'dateCreate',width: 120,headerComponent: AGCustomHeaderComponent},
     {headerName: '創建者',field: 'userCreate',width: 100,headerComponent: AGCustomHeaderComponent}
   ];
 

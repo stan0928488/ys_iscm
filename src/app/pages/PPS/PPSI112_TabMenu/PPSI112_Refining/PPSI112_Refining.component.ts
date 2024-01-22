@@ -153,7 +153,7 @@ export class PPSI112RefinIngComponent implements AfterViewInit {
       {
         headerName: '機台',
         field: 'equipCode',
-        width: 75,
+        width: 90,
         editable: false,
       },
       {
@@ -201,7 +201,7 @@ export class PPSI112RefinIngComponent implements AfterViewInit {
       {
         headerName: 'Action',
         editable: false,
-        width: 100,
+        width: 150,
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
           {

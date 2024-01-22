@@ -154,7 +154,7 @@ export class PPSI205A100Component implements AfterViewInit {
       headerComponent: AGCustomHeaderComponent
     },
     {
-      width: 100,
+      width: 120,
       headerName: '創建時間',
       field: 'dateCreate',
       headerComponent: AGCustomHeaderComponent
@@ -230,7 +230,7 @@ export class PPSI205A100Component implements AfterViewInit {
     } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
     } else */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/PlanSet/I205';
     } else if (tab === 4) {
       window.location.href = '#/PlanSet/I205_a401';
     } else if (tab === 5) {

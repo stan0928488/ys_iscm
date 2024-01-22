@@ -166,7 +166,7 @@ export class PPSI205Component implements AfterViewInit {
     },
     {
       headerName: 'Action',
-      width: 200,
+      width: 150,
       editable: false,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [

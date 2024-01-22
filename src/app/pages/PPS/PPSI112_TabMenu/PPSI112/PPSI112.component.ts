@@ -153,7 +153,7 @@ export class PPSI112Component implements AfterViewInit {
       {
         headerName: '機台',
         field: 'equipCode',
-        width: 75,
+        width: 90,
         editable: false,
       },
       {
