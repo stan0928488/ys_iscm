@@ -31,6 +31,17 @@ export class SYSTEMService {
     this.CONTEXT_PATH = this.configService.CONTEXT_PATH;
   }
 
+  getHeaderComponentStatus(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/system/componemt/getHeaderComponentStatus`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  saveHeaderComponentStatus(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/system/componemt/saveHeaderComponentStatus`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
 
   /**
    * 獲取系統所有功能菜單
@@ -130,5 +141,6 @@ export class SYSTEMService {
     const queryUrl = `${this.CONTEXT_PATH}/user/getCurrentUserMenuFunction`;
     return this.http.post(queryUrl, null, this.httpOptions);
   }
+  
 
 }
