@@ -1,0 +1,403 @@
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { CookieService } from "../services/config/cookie.service";
+import { AuthService } from "../services/auth/auth.service";
+import { Router, CanActivate, ActivatedRoute } from "@angular/router";
+
+import * as _ from "lodash";
+import * as moment from "moment";
+import { NzHeaderComponent } from "ng-zorro-antd/layout";
+import { MainEventBusComponent } from "./app-event-bus.component";
+import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
+import { NzModalService } from "ng-zorro-antd/modal";
+import { TabService } from "../services/common/tab.service";
+
+@Component({
+  selector: 'app-main',
+  templateUrl: './main.component.html',
+  styleUrls: ['./main.component.css']
+})
+export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  title = "YS_iSCM";
+  isCollapsed = true;
+  triggerTemplate = null;
+
+  navClass = "";
+  userName;
+  plantCode;
+  envName;
+  envInfoClass = "";
+  envMenuClass = "";
+
+  menus: TreeNode[] = [];
+
+  @ViewChild("trigger") customTrigger: TemplateRef<void>;
+  @HostListener('document:keyup', ['$event'])
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:wheel', ['$event'])
+  resetTimer() {
+    this.authService.notifyUserLoginAction();
+  }
+
+  @ViewChild('headerElement', { static: true }) headerElement: NzHeaderComponent;
+  @ViewChild("menuElement") menuElement: ElementRef;
+
+  constructor(
+    private cookieService: CookieService,
+    public router: Router,
+    private authService: AuthService,
+    private mainEventBusComponent: MainEventBusComponent,
+    private systemService : SYSTEMService,
+    private nzModalService: NzModalService,
+    private activatedRoute: ActivatedRoute,
+    private tabService: TabService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.isLatestVersion();
+    const hostName = window.location.hostname;
+    if (_.startsWith(hostName, "ys-webapp")) {
+      if (window.location.protocol != "https:") {
+        location.href = location.href.replace("http://", "https://");
+      }
+    }
+    console.log("=====>");
+    this.getEnvClass();
+    this.userName = this.cookieService.getCookie("USERNAME");
+    this.plantCode = this.cookieService.getCookie("plantCode");
+    this.envName = this.getEnvName(hostName);
+  }
+
+  ngOnInit(): void {
+    let logTime = localStorage.getItem('logTime');
+    if(logTime){
+      let today = new Date().getTime();
+      let diffMs = (today - Number(logTime));
+      let second_diff = diffMs/1000; 
+      //3秒內視為刷新
+      if(second_diff <= 3){
+        localStorage.removeItem('logTime');
+        console.log("刷新")
+      }else{
+        localStorage.removeItem('logTime');
+        this.authService.authLogOut();
+        console.log("視窗關閉")
+      }
+    }
+
+    //刷新菜單要重撈
+    if(this.userName){
+      this.systemService.getCurrentUserMenu().subscribe((res) => {
+        let result:any = res;
+        if(result.code == 200){
+          this.menus = result.data;
+          recursionSet(this.menus,1);
+          this.mainEventBusComponent.logingObjAdd(this.menus);
+          console.log('菜單===>', this.menus);
+        }else{
+          this.nzModalService.error({
+            nzTitle: '獲取菜單失敗',
+            nzContent: result.message,
+          });
+        }
+      });
+    }else{
+      this.menus = [];
+    }
+
+    this.mainEventBusComponent.on('logingSuccess', (data: any) => {
+      if (data.data.logingSuccess) {
+        this.systemService.getCurrentUserMenu().subscribe((res) => {
+          let result:any = res;
+          if(result.code == 200){
+            this.menus = result.data;
+            recursionSet(this.menus,1);
+            this.mainEventBusComponent.logingObjAdd(this.menus);
+          }else{
+            this.nzModalService.error({
+              nzTitle: '獲取菜單失敗',
+              nzContent: result.message,
+            });
+          }
+        });
+      }else{
+        this.menus = [];
+      }
+    });
+    
+  }
+
+  ngOnDestroy(): void {
+    this.mainEventBusComponent.unsubscribe();
+  }
+
+  @HostListener('window:unload', ['$event'])
+  unloadHandler(event) {
+    localStorage.setItem('logTime', new Date().getTime().toString())
+  }
+
+
+  ngAfterViewInit(): void {
+    this.headerBarHandler();
+    //this.router.navigateByUrl("/main/FCPBarData/P202_TabMenu/P202");
+  }
+
+
+  headerBarHandler(){
+
+    if(_.isNil(this.headerElement)){
+      return;
+    }
+
+    const nativeHeaderElement = this.headerElement.elementRef.nativeElement
+    const nativeMenuElement = this.menuElement.nativeElement;
+    let backgroundColor = '#da6c72';
+    if(this.envName === "正式環境"){
+      backgroundColor = '#0054b6'
+    }
+    else if(this.envName === "測試環境"){
+      backgroundColor = '#da6c72';
+    }
+    else if (this.envName === "本機環境"){
+      backgroundColor = '#e8e8e8';
+    }
+    nativeHeaderElement.style.backgroundColor = backgroundColor; 
+    nativeHeaderElement.style.padding = '0 0';
+    nativeHeaderElement.style.position = 'sticky';
+    nativeHeaderElement.style.left = '0';
+    nativeHeaderElement.style.top = '0';
+    nativeHeaderElement.style.zIndex = '1';
+
+    nativeMenuElement.style.backgroundColor = backgroundColor;
+    nativeMenuElement.style.display = 'flex';
+
+  }
+
+
+  /** custom trigger can be TemplateRef **/
+  changeTrigger(): void {
+    console.log("==>changeTrigger");
+    this.triggerTemplate = this.customTrigger;
+  }
+
+  //檢查是否是最新版本
+  isLatestVersion() {
+    const dateID = "check_YS_iSCM_Date";
+    const checkDate = localStorage.getItem(dateID);
+    console.log("checkDate");
+    console.log(checkDate);
+    if (
+      checkDate === undefined ||
+      checkDate !== moment().format("YYYY.MM.DD")
+    ) {
+      localStorage.setItem(dateID, moment().format("YYYY.MM.DD"));
+      console.log("hard reload to update");
+      // window.location.reload(true);
+    } else {
+      //good to go
+      console.log("good to go");
+    }
+  }
+
+  getEnvClass() {
+    const hostName = window.location.hostname;
+    let className = "navBar ";
+    let envInfo = "";
+    let envMenu = "";
+    switch (hostName) {
+      case "ys-ppsapp01.walsin.corp":
+        className += " nav-bar-prod";
+        envInfo = "info info-prod";
+        envMenu = "menu menu-prod";
+        break;
+      case "localhost":
+        className += " nav-bar-local";
+        envInfo = "info info-local";
+        envMenu = "menu menu-local"
+        break;
+      default:
+        className += " nav-bar-tst";
+        envInfo = "info info-tst";
+        envMenu = "menu menu-tst";
+    }
+    this.navClass = className;
+    this.envInfoClass = envInfo;
+    this.envMenuClass = envMenu;
+  }
+
+  onLogout() {
+    console.log("onLogout");
+    this.cookieService.setCookie("USERNAME", "", 1);
+    this.cookieService.setCookie("plantCode", "", 1);
+    this.userName = "";
+    this.plantCode = "";
+    this.router.navigate(["login"]);
+     
+  }
+
+  componentAdded(_event) {}
+
+  componentRemoved(_event) {
+    this.userName = this.cookieService.getCookie("USERNAME");
+    this.plantCode = this.cookieService.getCookie("plantCode");
+  }
+
+  toggleCollapsed(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  
+  getEnvName(_name){
+    let env;
+    switch (_name) {
+      case "ys-pps.walsin.corp":
+        env = "驗證環境";
+        break;
+      case "ys-ppsapp01.walsin.corp":
+        env = "正式環境";
+        break;
+      case "localhost":
+        env = "本機環境";
+        break;
+      default:
+        env = "測試環境";
+    }
+
+    return env;
+  }
+
+  // 日期相差
+  dayDiff(d1:Date, d2:Date) {
+    var diff = Math.abs(d2.getTime() - d1.getTime());
+    var diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+    return diffDays;
+  }
+
+  // 日期轉換
+  dateFormat(_dateString, _flag) {
+    if (_dateString == undefined || _dateString == '' || _dateString == null) {
+      return "";
+    } else {
+      if (_flag == '1') {
+        let date = moment(_dateString, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+        return date;
+      } else if (_flag == '2') {
+        let date = moment(_dateString, "YYYY-MM-DD").format("YYYY-MM-DD");
+        return date;
+      } else if (_flag == '3') {
+        let date = moment(_dateString, "HH:mm:ss").format("HH:mm:ss");
+        return date;
+      } else if (_flag == '4') {
+        let date = moment(_dateString, "HH:mm").format("HH:mm");
+        return date;
+      } else if (_flag == '5') {
+        let date = moment(_dateString, "MM").format("MM");
+        return date;
+      } else if (_flag == '6') {
+        let date = moment(_dateString, "YYYY-MM").format("YYYY-MM");
+        return date;
+      } else if (_flag == '7') {
+        let date = moment(_dateString, "YYYYMMDDHHmmss").format("YYYYMMDDHHmmss");
+        return date;
+      } else if (_flag == '8') {
+        let date = moment(_dateString, "MM-DD").format("MM-DD");
+        return date;
+      } 
+    }
+  }
+
+  //日期物件format
+  dateObjFormat(_date, _flag) {
+    if (_date) {
+      if (_flag == '1') {
+        let date = moment(_date).format("YYYY/MM/DD HH:mm:ss");
+        return date;
+      } else if (_flag == '2') {
+        let date = moment(_date).format("YYYY/MM/DD");
+        return date;
+      } else if (_flag == '3') {
+        let date = moment(_date).format("HH:mm:ss");
+        return date;
+      } else if (_flag == '4') {
+        let date = moment(_date).format("HH:mm");
+        return date;
+      } else if (_flag == '5') {
+        let date = moment(_date).format("MM");
+        return date;
+      } else if (_flag == '6') {
+        let date = moment(_date).format("YYYY/MM");
+        return date;
+      } else if (_flag == '7') {
+        let date = moment(_date).format("YYYYMMDDHHmmss");
+        return date;
+      } else if (_flag == '8') {
+        let date = moment(_date).format("MM/DD");
+        return date;
+      } 
+    }
+  }
+
+  //pipe 數字3位一撇 (數值, 小數點幾位)
+  toThousandNumber(param, point) {
+    const paramStr = param.toFixed(point).toString();
+    if (paramStr.length > 3) {
+      return paramStr.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    }
+    if (param === 0) {
+      return '　';
+    }
+    return paramStr;
+  }
+
+  // date 轉換
+  dateStringFormat(dateString) {
+    if(dateString !== undefined) {
+      const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+      const parts = dateString.split(' ');
+      const month = months.indexOf(parts[0]) + 1;
+      const day = parseInt(parts[1].replace(',', ''));
+      const year = parseInt(parts[2]);
+      const isoDateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      return isoDateString;
+    }
+    return '';
+  }
+
+}
+
+
+interface TreeNode {
+  isShow?:number;
+  id?: number;
+  level:any;
+  useStatus?: string;
+  delStatus?: string;
+  createUser?: string;
+  createTime?: string;
+  updateUser?: string;
+  updateTime?: string;
+  applicationFrom?: string;
+  menuType?: string;
+  icon?: string;
+  sortIndex?: string;
+  path?: string;
+  parentId?: string;
+  selected: boolean;
+  code?: string;
+  menuName: string;
+  open?: boolean;
+  roles?: string;
+  children?: TreeNode[];
+}
+
+function recursionSet(obj:TreeNode[],parentLevel:any) {
+  obj.forEach(function (item) {
+    if(item.parentId){
+      item.level = parentLevel + 1;
+    }else{
+      item.level = 1;
+    }
+    if(item.children){
+      recursionSet(item.children,item.level)
+    }
+  }); 
+}

@@ -3,7 +3,7 @@ import { Subject, timer, Subscription,interval } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
-import { AppEventBusComponent } from '../app-event-bus.component';
+import { MainEventBusComponent } from '../main/app-event-bus.component';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
@@ -18,7 +18,7 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
   constructor(
     private authService:AuthService,
     private cookieService: CookieService,
-    private appEventBusComponent: AppEventBusComponent,
+    private appEventBusComponent: MainEventBusComponent,
     private router: Router,
   ) { }
   unsubscribe$: Subject<void> = new Subject();

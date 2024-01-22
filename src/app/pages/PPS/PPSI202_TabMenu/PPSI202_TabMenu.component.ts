@@ -26,8 +26,8 @@ export class PPSI202TabMenuComponent implements OnInit, AfterViewInit {
     this.i202NonBar = this.elementRef.nativeElement.querySelector('#i202NonBar');
     this.i202NonBar.style.color = 'gray';
 
-    if(this.router.url === '/PlanSet/I202_TabMenu'){
-      this.router.navigateByUrl("/PlanSet/I202_TabMenu/I202");
+    if(this.router.url === '/main/PlanSet/I202_TabMenu'){
+      this.router.navigateByUrl("/main/PlanSet/I202_TabMenu/I202");
     }
     else{
       this.router.navigateByUrl(this.router.url);

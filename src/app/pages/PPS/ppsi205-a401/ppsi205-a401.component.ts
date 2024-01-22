@@ -239,11 +239,11 @@ export class PPSI205A401Component implements AfterViewInit {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
     } else*/ if (tab === 3) {
-      this.router.navigateByUrl('/PlanSet/I205');
+      this.router.navigateByUrl('/main/PlanSet/I205');
     } else if (tab === 4) {
-      this.router.navigateByUrl('/PlanSet/I205_a401');
+      this.router.navigateByUrl('/main/PlanSet/I205_a401');
     } else if (tab === 5) {
-      this.router.navigateByUrl('/PlanSet/I205_a100');
+      this.router.navigateByUrl('/main/PlanSet/I205_a100');
     }
   }
 

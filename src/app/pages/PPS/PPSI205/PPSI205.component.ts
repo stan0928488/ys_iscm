@@ -318,18 +318,18 @@ export class PPSI205Component implements AfterViewInit {
   changeTab(tab): void {
     // this.isTabVisible = false;
     /*if (tab === 1) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm101List();
     } else if (tab === 2) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
     } else*/ if (tab === 3) {
-      this.router.navigateByUrl('/PlanSet/I205?selectedTabIndex=0');
+      this.router.navigateByUrl('/main/PlanSet/I205?selectedTabIndex=0');
       this.getTbppsm113List();
     } else if (tab === 4) {
-      this.router.navigateByUrl('/PlanSet/I205_a401');
+      this.router.navigateByUrl('/main/PlanSet/I205_a401');
     } else if (tab === 5) {
-      this.router.navigateByUrl('/PlanSet/I205_a100');
+      this.router.navigateByUrl('/main/PlanSet/I205_a100');
     }
   }
 

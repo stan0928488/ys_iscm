@@ -192,6 +192,8 @@ import { PPSI202EditShopCellEditorComponent } from './pages/PPS/PPSI202/PPSI202E
 import { PPSI202EditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShutdownTypeCellEditorComponent';
 import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditStartTimeCellEditorComponent';
 import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-cell-component';
+import { MainComponent } from './main/main.component';
+import { RecursionMenusComponent } from './main/recursion-menus.component';
 
 registerLocaleData(zh);
 
@@ -357,6 +359,8 @@ registerLocaleData(zh);
     PPSI203ActionCellComponent,
     PPSR345Component,
     PPSR345AVERAGEComponent,
+    MainComponent,
+    RecursionMenusComponent
   ],
   imports: [
     BrowserModule,

@@ -226,15 +226,15 @@ export class PPSI205A100Component implements AfterViewInit {
   changeTab(tab): void {
     console.log(tab);
     /*if (tab === 1) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
     } else if (tab === 2) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
     } else */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205';
+      window.location.href = '#/main//PlanSet/I205';
     } else if (tab === 4) {
-      window.location.href = '#/PlanSet/I205_a401';
+      window.location.href = '#/main/PlanSet/I205_a401';
     } else if (tab === 5) {
-      window.location.href = '#/PlanSet/I205_a100';
+      window.location.href = '#/main/PlanSet/I205_a100';
     }
   }
 

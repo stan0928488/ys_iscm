@@ -4,7 +4,7 @@ import { Subject, Subscription, filter, map } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class AppEventBusComponent {
+export class MainEventBusComponent {
 
   menus: TreeNode[] = [];
 

@@ -1,0 +1,118 @@
+@font-face {
+    font-family: "anticon";
+    font-display: fallback;
+    src: url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.eot");
+    /* IE9*/
+    src: url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.woff")
+        format("woff"),
+      /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+        url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.ttf")
+        format("truetype"),
+      /* iOS 4.1- */
+        url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.svg#iconfont")
+        format("svg");
+  }
+  
+  /* muli-regular - latin */
+  
+  :host ::ng-deep .trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  :host ::ng-deep .trigger:hover {
+    color: #1890ff;
+  }
+  
+  :host ::ng-deep .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+  }
+  
+  .navBar {
+    display: flex;
+    height: 30px;
+    justify-content: space-between;
+    align-items: center;
+    /* img {
+      width: 150px;
+      height: 30px;
+      margin-right: 16px;
+      margin-top: -8px;
+    } */
+  }
+  .navBar  img {
+    width: 0px;
+    height: 0px;
+    margin-right: 16px;
+    margin-top: -8px;
+  }
+  
+  .nav-bar-prod {
+    background: #0054b6;
+    padding: 0;
+  }
+  
+  .nav-bar-tst {
+    background: #da6c72;
+    padding: 0;
+  }
+  
+  .nav-bar-local {
+    background: #e8e8e8;
+    padding: 0;
+  }
+
+  :host ::ng-deep .content-area{ 
+    height: calc(100vh - 68px);
+    z-index: 0;
+    margin-top: 3vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+  }
+  
+  :host ::ng-deep .logo{
+    background: #FFF7FB;
+    float: left;
+  }
+  
+  :host ::ng-deep .info{
+    padding: 0 20px 0 0;
+    float: right;
+  }
+  
+  :host ::ng-deep .info-prod .infoText{
+    color: white;
+  }
+  
+  :host ::ng-deep .info-prod .logoutText{
+    color: white;
+  }
+
+  :host ::ng-deep .info-local .infoText{
+    color: black;
+  }
+  
+  :host ::ng-deep .info-tst .infoText{
+    color: black;
+  }
+
+  :host ::ng-deep .menu-prod .menuItemText{
+    color: white;
+  }
+
+  :host ::ng-deep .menu-prod .ant-menu-submenu-title:hover {
+    color: white !important;
+  }
+
+  :host ::ng-deep .menu-local .menuItemText{
+    color: black;
+  }
+
+  :host ::ng-deep .menu-tst .menuItemText{
+    color: black;
+  }

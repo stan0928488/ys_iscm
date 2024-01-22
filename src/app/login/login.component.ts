@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import { CommonService } from '../services/common/common.service';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
-import { AppEventBusComponent } from '../app-event-bus.component';
+import { MainEventBusComponent } from '../main/app-event-bus.component';
 //import * as base64 from "base64-encode-decode";
 
 @Component({
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
     private cookieService: CookieService,
     private authService: AuthService,
     private commonService: CommonService,
-    private appEventBusComponent: AppEventBusComponent,
+    private appEventBusComponent: MainEventBusComponent,
   ) {}
 
   ngOnInit() {
@@ -114,6 +114,7 @@ export class LoginComponent implements OnInit {
       password,
       env,
     };
+
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
    const  _param = {userName:username,password:password,saveLogin:true}
@@ -146,7 +147,7 @@ export class LoginComponent implements OnInit {
             },
           });
 
-          this.router.navigate(['/user/profile']);
+          this.router.navigate(['/main/user/profile']);
           
         } else {
           console.log('login fail err');

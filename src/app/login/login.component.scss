@@ -86,8 +86,10 @@
 :host .all {
   background: url("MicrosoftTeams-image.png "), lightgray 50% / cover no-repeat;
   background-size: cover;
-  width: calc(100vw - 97px);
-  height: calc(100vh - 30px);
+  // width: calc(100vw - 97px);
+  // height: calc(100vh - 30px);
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-content: center;

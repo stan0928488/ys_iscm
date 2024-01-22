@@ -125,14 +125,10 @@ import { UserProfileComponent } from './pages/USER/user-profile/user-profile.com
 
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
+import { MainComponent } from './main/main.component';
 
 
 const routes: Routes = [
-  {
-    path: 'AccessDined',
-    component: AccessDinedPageComponent,
-    canActivate: [AuthGuard],
-  },
   {
     path: 'login',
     component: LoginComponent,
@@ -142,397 +138,408 @@ const routes: Routes = [
     redirectTo: '/login',
     pathMatch: 'full',
   },
-
-  /* ORP & OIP & TRA */
-
-  /* PPS & MSH */
   {
-    path: 'commonData',
+    path: 'main',
+    component: MainComponent,
     children: [
-      { path: '', redirectTo: '/commonData/I101', pathMatch: 'full' },
-      { path: 'I101', component: PPSI101Component, data : { pageName:"鋼種分類" } },
-      { path: 'I102', component: PPSI102Component, data : { pageName:"站別機台關聯表" } },
-      { path: 'I102_NonBar', component: PPSI102_NonBarComponent },
-      { path: 'I103', component: PPSI103Component, data : { pageName:"設備能力" } },
-      { path: 'I103_NonBar', component: PPSI103_NonBarComponent },
-      { path: 'I104', component: PPSI104Component, data : { pageName:"整備時間" } },
-      { path: 'I104_NonBar', component: PPSI104_NonBarComponent },
-      { path: 'I105', component: PPSI105Component, data : { pageName:"大調機" } },
-      { path: 'I105_NonBar', component: PPSI105_NonBarComponent },
-      { path: 'I106', component: PPSI106Component, data : { pageName:"小調機" } },
-      { path: 'I106_NonBar', component: PPSI106_NonBarComponent },
-      { path: 'I107', component: PPSI107Component, data : { pageName:"線速工時" } },
-      { path: 'I107_NonBar', component: PPSI107_NonBarComponent },
-      { path: 'I108', component: PPSI108Component, data : { pageName:"非線速工時" } },
-      { path: 'I108_NonBar', component: PPSI108_NonBarComponent },
-      { path: 'I109', component: PPSI109Component, data : { pageName:"產率設定" } },
-      { path: 'I109_NonBar', component: PPSI109_NonBarComponent },
-      { path: 'I110', component: PPSI110Component, data : { pageName:"產能維護" } },
-      { path: 'I110_NonBar', component: PPSI110_NonBarComponent },
-      { path: 'I111', component: PPSI111Component, data : { pageName:"combine資料設定" } },
-      { path: 'I111_NonBar', component: PPSI111_NonBarComponent },
-      { path: 'I200', component: PPSI200Component, data : { pageName:"系統設定" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'singleData',
-    children: [
-      { path: '', redirectTo: '/singleData/I120', pathMatch: 'full' },
-      { path: 'I120', component: PPSI120Component, data : { pageName:"直棒退火爐工時" } },
-      { path: 'I121', component: PPSI121Component, data : { pageName:"直棒研磨道次" } },
-      { path: 'I122', component: PPSI122Component, data : { pageName:"直棒桶槽式工時" } },
-      { path: 'I123', component: PPSI123Component, data : { pageName:"直棒清洗站設備能力" } },
-      { path: 'I130', component: PPSI130Component, data : { pageName:"精整批次爐鋼種捲數製程碼對應表" } },
-      { path: 'I131', component: PPSI131Component, data : { pageName:"直棒BA1批次爐工時維護" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'PlanSet',
-    children: [
-      { path: '', redirectTo: '/PlanSet/I202_TabMenu', pathMatch: 'full' },
-      { 
-        path: 'I112_TabMenu',
-        component: PPSI112TabMenuComponent,
-        data : { pageName : "累計生產" },
+      /* ORP & OIP & TRA */
+      /* PPS & MSH */
+      {
+        path: 'commonData',
         children: [
-          { path: '', redirectTo: '/PlanSet/I112_TabMenu/I112', pathMatch: 'full' },
+          { path: '', redirectTo: '/main/commonData/I101', pathMatch: 'full' },
+          { path: 'I101', component: PPSI101Component, data : { pageName:"鋼種分類" } },
+          { path: 'I102', component: PPSI102Component, data : { pageName:"站別機台關聯表" } },
+          { path: 'I102_NonBar', component: PPSI102_NonBarComponent },
+          { path: 'I103', component: PPSI103Component, data : { pageName:"設備能力" } },
+          { path: 'I103_NonBar', component: PPSI103_NonBarComponent },
+          { path: 'I104', component: PPSI104Component, data : { pageName:"整備時間" } },
+          { path: 'I104_NonBar', component: PPSI104_NonBarComponent },
+          { path: 'I105', component: PPSI105Component, data : { pageName:"大調機" } },
+          { path: 'I105_NonBar', component: PPSI105_NonBarComponent },
+          { path: 'I106', component: PPSI106Component, data : { pageName:"小調機" } },
+          { path: 'I106_NonBar', component: PPSI106_NonBarComponent },
+          { path: 'I107', component: PPSI107Component, data : { pageName:"線速工時" } },
+          { path: 'I107_NonBar', component: PPSI107_NonBarComponent },
+          { path: 'I108', component: PPSI108Component, data : { pageName:"非線速工時" } },
+          { path: 'I108_NonBar', component: PPSI108_NonBarComponent },
+          { path: 'I109', component: PPSI109Component, data : { pageName:"產率設定" } },
+          { path: 'I109_NonBar', component: PPSI109_NonBarComponent },
+          { path: 'I110', component: PPSI110Component, data : { pageName:"產能維護" } },
+          { path: 'I110_NonBar', component: PPSI110_NonBarComponent },
+          { path: 'I111', component: PPSI111Component, data : { pageName:"combine資料設定" } },
+          { path: 'I111_NonBar', component: PPSI111_NonBarComponent },
+          { path: 'I200', component: PPSI200Component, data : { pageName:"系統設定" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'singleData',
+        children: [
+          { path: '', redirectTo: '/main/singleData/I120', pathMatch: 'full' },
+          { path: 'I120', component: PPSI120Component, data : { pageName:"直棒退火爐工時" } },
+          { path: 'I121', component: PPSI121Component, data : { pageName:"直棒研磨道次" } },
+          { path: 'I122', component: PPSI122Component, data : { pageName:"直棒桶槽式工時" } },
+          { path: 'I123', component: PPSI123Component, data : { pageName:"直棒清洗站設備能力" } },
+          { path: 'I130', component: PPSI130Component, data : { pageName:"精整批次爐鋼種捲數製程碼對應表" } },
+          { path: 'I131', component: PPSI131Component, data : { pageName:"直棒BA1批次爐工時維護" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'PlanSet',
+        children: [
+          { path: '', redirectTo: '/main/PlanSet/I202_TabMenu', pathMatch: 'full' },
           { 
-            path: 'I112', 
-            component: PPSI112Component, 
-            data : { pageName : "累計生產(直棒)" },
-          },
-          { 
-            path: 'I112_Refining', 
-            component: PPSI112RefinIngComponent
-          },
-        ],
-      },
-      {
-        path: 'I202_TabMenu',
-        component: PPSI202TabMenuComponent,
-        data : { pageName : "定修計畫" },
-        children: [
-          { path: 'I202', component: PPSI202Component, data : { pageName : "定修計畫" }, },
-          { path: 'I202_NonBar', component: PPSI202NonBarComponent },
-        ],
-      },
-      {
-        path: 'I206_TabMenu',
-        component: PPSI206TabMenuComponent,
-        data : { pageName : "虛擬訂單設定" },
-        children: [
-          { path: '', redirectTo: '/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
-          { path: 'I206_SET', component: PPSI206SETComponent, data : { pageName : "虛擬訂單表" } },
-          { path: 'I206_RES', component: PPSI206RESComponent },
-        ],
-      },
-      { path: 'I205', component: PPSI205Component, data : { pageName : "公版設定維護" } },
-      { path: 'I205_401', component: PPSI205_401Component },
-      { path: 'I205_a401', component: PPSI205A401Component },
-      { path: 'I205_a100', component: PPSI205A100Component },
-      { path: 'I205_100', component: PPSI205_100Component },
-      
-      { path: 'I204', component: PPSI204Component },
-      { path: 'I204', component: PPSI204Component, data : { pageName : "Campaign 限制" } },
-      { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
-      { path: 'I203', component: PPSI203Component, data : { pageName : "最早可投產時間調整" } },
-      { path: 'I201', component: PPSI201Component, data : { pageName : "站別機台優先順序表" } },
-      { path: 'I201_NonBar', component: PPSI201NonBarComponent },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'FCPBarData',
-    children: [
-      { path: '', redirectTo: '/FCPBarData/P201_TabMenu', pathMatch: 'full' },
-      {
-        path: 'P201_TabMenu',
-        component: PPSI210TabMenuComponent,
-        data : { pageName : "建立規劃策略" },
-        children: [
-          {
-            path: '',
-            redirectTo: '/FCPBarData/P201_TabMenu/P201',
-            pathMatch: 'full',
+            path: 'I112_TabMenu',
+            component: PPSI112TabMenuComponent,
+            data : { pageName : "累計生產" },
+            children: [
+              { path: '', redirectTo: '/main/PlanSet/I112_TabMenu/I112', pathMatch: 'full' },
+              { 
+                path: 'I112', 
+                component: PPSI112Component, 
+                data : { pageName : "累計生產(直棒)" },
+              },
+              { 
+                path: 'I112_Refining', 
+                component: PPSI112RefinIngComponent
+              },
+            ],
           },
           {
-            path: 'P201',
-            component: PPSI210Component,
+            path: 'I202_TabMenu',
+            component: PPSI202TabMenuComponent,
+            data : { pageName : "定修計畫" },
+            children: [
+              { path: 'I202', component: PPSI202Component, data : { pageName : "定修計畫" }, },
+              { path: 'I202_NonBar', component: PPSI202NonBarComponent },
+            ],
+          },
+          {
+            path: 'I206_TabMenu',
+            component: PPSI206TabMenuComponent,
+            data : { pageName : "虛擬訂單設定" },
+            children: [
+              { path: '', redirectTo: '/main/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
+              { path: 'I206_SET', component: PPSI206SETComponent, data : { pageName : "虛擬訂單表" } },
+              { path: 'I206_RES', component: PPSI206RESComponent },
+            ],
+          },
+          { path: 'I205', component: PPSI205Component, data : { pageName : "公版設定維護" } },
+          { path: 'I205_401', component: PPSI205_401Component },
+          { path: 'I205_a401', component: PPSI205A401Component },
+          { path: 'I205_a100', component: PPSI205A100Component },
+          { path: 'I205_100', component: PPSI205_100Component },
+          
+          { path: 'I204', component: PPSI204Component },
+          { path: 'I204', component: PPSI204Component, data : { pageName : "Campaign 限制" } },
+          { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
+          { path: 'I203', component: PPSI203Component, data : { pageName : "最早可投產時間調整" } },
+          { path: 'I201', component: PPSI201Component, data : { pageName : "站別機台優先順序表" } },
+          { path: 'I201_NonBar', component: PPSI201NonBarComponent },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'FCPBarData',
+        children: [
+          { path: '', redirectTo: '/main/FCPBarData/P201_TabMenu', pathMatch: 'full' },
+          {
+            path: 'P201_TabMenu',
+            component: PPSI210TabMenuComponent,
             data : { pageName : "建立規劃策略" },
+            children: [
+              {
+                path: '',
+                redirectTo: '/main/FCPBarData/P201_TabMenu/P201',
+                pathMatch: 'full',
+              },
+              {
+                path: 'P201',
+                component: PPSI210Component,
+                data : { pageName : "建立規劃策略" },
+              },
+              {
+                path: 'P201_Refining',
+                component: PPSI210RefiningComponent
+              }
+            ]
           },
           {
-            path: 'P201_Refining',
-            component: PPSI210RefiningComponent
+            path: 'P202_TabMenu',
+            component: PPSI220TabMenuComponent,
+            data : { pageName : "規劃策略清單" },
+            children: [
+              { path: '', redirectTo: '/main/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
+              { 
+                path: 'P202', 
+                component: PPSI220Component,
+                data : { pageName : "規劃策略清單" }
+              },
+              { 
+                path: 'P202_Refining', 
+                component: PPSI220RefiningComponent
+              },
+            ],
+          },
+          {
+            path: 'P203_TabMenu',
+            component: PPSI230TabMenuComponent,
+            data : { pageName : "生產規劃執行" },
+            children: [
+              { path: '', redirectTo: '/main/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
+              { 
+                path: 'P203', 
+                component: PPSI230Component,
+                data : { pageName : "生產規劃執行" }
+              },
+              { 
+                path: 'P203_Refining', 
+                component: PPSI230RefiningComponent
+              }
+            ]
           }
-        ]
+        ],
+        canActivate: [AuthGuard],
       },
       {
-        path: 'P202_TabMenu',
-        component: PPSI220TabMenuComponent,
-        data : { pageName : "規劃策略清單" },
+        path: 'FCPBarRepo',
         children: [
-          { path: '', redirectTo: '/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
-          { 
-            path: 'P202', 
-            component: PPSI220Component,
-            data : { pageName : "規劃策略清單" }
+          { path: '', redirectTo: '/main/FCPBarRepo/R302', pathMatch: 'full' },
+          {
+            path: 'R303_TabMenu',
+            component: PPSR303TabMenuComponent,
+            data : { pageName : "異常表" },
+            children: [
+              { path: '', redirectTo: '/main/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
+              { path: 'R303', component: PPSR303Component, data : { pageName : "異常表" } },
+              { path: 'R303_Fcp', component: PPSR303FcpComponent},
+            ],
           },
-          { 
-            path: 'P202_Refining', 
-            component: PPSI220RefiningComponent
+          { path: 'R302', component: PPSR302Component, data : { pageName : "交期-計畫彙總表" } },
+          { path: 'R301', component: PPSR301Component, data : { pageName : "機台產能分析表" } },
+          { path: 'R345', component: PPSR345Component, data : { pageName : "工時計算結果表" } },
+          { path: 'R345average', component: PPSR345AVERAGEComponent, data : { pageName : "工時計算平均結果表" }  },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'FCPshipRepo',
+        children: [
+          { path: '', redirectTo: '/main/FCPBarRepo/R304', pathMatch: 'full' },
+          { path: 'R304', component: PPSR304Component, data : { pageName : "出貨計畫表-維護" } },
+          { path: 'R305', component: PPSR305Component },
+          { path: 'R306', component: PPSR306Component },
+          { path: 'R307', component: PPSR307Component },
+          { path: 'R308', component: PPSR308Component, data : { pageName : "出貨計畫表-檢視" } },
+          { path: 'R309', component: PPSR309Component },
+          { path: 'R310', component: PPSR310Component },
+          { path: 'R311', component: PPSR311Component },
+          { path: 'R312', component: PPSR312Component },
+          { path: 'R313', component: PPSR313Component },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'FCPshiftRepo',
+        children: [
+          { path: '', redirectTo: '/main/FCPshiftRepo/R321', pathMatch: 'full' },
+          {
+            path: 'R321',
+            component: PPSR321Component,
+            data : { pageName : "月推移表-維護" },
+            canDeactivate: [PPSR321CanDeactivateGuard],
+            children: [
+              {
+                path: 'detail01',
+                component: PPSR321Detail01Component,
+                canDeactivate: [PPSR321Detail01CanDeactivateGuard],
+              },
+              {
+                path: 'detail02',
+                component: PPSR321Detail02Component,
+                canDeactivate: [PPSR321Detail02CanDeactivateGuard],
+              },
+              {
+                path: 'detail0301',
+                component: PPSR321Detail0301Component,
+                canDeactivate: [PPSR321Detail0301CanDeactivateGuard],
+              },
+              {
+                path: 'detail0302',
+                component: PPSR321Detail0302Component,
+                canDeactivate: [PPSR321Detail0302CanDeactivateGuard],
+              },
+              {
+                path: 'detail0303',
+                component: PPSR321Detail0303Component,
+                canDeactivate: [PPSR321Detail0303CanDeactivateGuard],
+              },
+              {
+                path: 'detail04',
+                component: PPSR321Detail04Component,
+                canDeactivate: [PPSR321Detail04CanDeactivateGuard],
+              },
+            ],
+          },
+          {
+            path: 'R322',
+            component: PPSR322Component,
+            data : { pageName : "月推移表-檢視" },
+            children: [
+              { path: '', redirectTo: '/main/FCPshiftRepo/R322', pathMatch: 'full' },
+              { path: 'R322_1', component: PPSR322Child1Component },
+              { path: 'R322_2', component: PPSR322Child2Component },
+              { path: 'R322_3', component: PPSR322Child3Component },
+              { path: 'R322_4', component: PPSR322Child4Component },
+              { path: 'R322_5', component: PPSR322Child5Component },
+              { path: 'R322_6', component: PPSR322Child6Component },
+              { path: 'R322_7', component: PPSR322Child7Component },
+              { path: 'R322_8', component: PPSR322Child8Component },
+            ],
           },
         ],
+        canActivate: [AuthGuard],
       },
       {
-        path: 'P203_TabMenu',
-        component: PPSI230TabMenuComponent,
-        data : { pageName : "生產規劃執行" },
+        path: 'MSHSet',
         children: [
-          { path: '', redirectTo: '/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
-          { 
-            path: 'P203', 
-            component: PPSI230Component,
-            data : { pageName : "生產規劃執行" }
+          { path: '', redirectTo: '/main/MSHSet/I001', pathMatch: 'full' },
+          { path: 'I001', component: MSHI001Component, data : { pageName : "管理人員設定排序" } },
+          { path: 'I002', component: MSHI002Component, data : { pageName : "業務人員設定排序" } },
+          {
+            path: 'I003',
+            component: MSHI003Component,
+            data : { pageName : "EPST變更作業" }, 
+            canDeactivate: [MSHI003CanDeactivateGuard],
           },
-          { 
-            path: 'P203_Refining', 
-            component: PPSI230RefiningComponent
+          { path: 'I004', component: MSHI004Component, data : { pageName : "啟動發佈模式" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'MSHPlan',
+        children: [
+          { path: '', redirectTo: '/main/MSHPlan/P001', pathMatch: 'full' },
+          { path: 'P001', component: MSHP001Component, data : { pageName : "直棒排程設定" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'LABSet',
+        children: [
+          { path: '', redirectTo: '/main/LABSet/I001', pathMatch: 'full' },
+          { path: 'I001', component: LABI001Component, data : { pageName : "實驗室靜態資料" } },
+          { path: 'I002', component: LABI002Component, data : { pageName : "實驗室取樣時間設定" } }, // 實驗室取樣時間設定
+          { path: 'I003', component: LABI003Component, data : { pageName : "實驗室行事曆" } }, // 實驗室行事曆
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'LABPlan',
+        children: [
+          { path: '', redirectTo: '/main/LABPlan/P100', pathMatch: 'full' },
+          { path: 'P100', component: LABP100Component, data : { pageName : "工時擷取與結果" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'SaleInput',
+        children: [
+          { path: '', redirectTo: '/main/SaleInput/I001', pathMatch: 'full' },
+          { path: 'I001', component: PPSR340Component, data : { pageName : "訂單交期回覆" } },
+          { path: 'I002', component: PPSR341Component, data : { pageName : "成品庫存現況" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'SaleView',
+        children: [
+          { path: '', redirectTo: '/main/SaleView/R001', pathMatch: 'full' },
+          { path: 'R001', component: PPSR344Component, data : { pageName : "出貨追蹤管理報表" } },
+          // { path: 'R002', component: PPSR343Component },       // 先關閉預估周入庫計畫表
+          { path: 'R002', component: ErrorPageComponent, data : { pageName : "預估週入庫計畫" } },
+        ],
+        canActivate: [AuthGuard],
+      },
+
+      /* RMP & PAS & DCM */
+
+      /* DCM */
+
+      /* SPA */
+
+      /* TRA */
+
+      /* POM  */
+
+      /* system  */
+      {
+        path: 'system',
+        children: [
+          { path: '', redirectTo: '/main/system/ACCSetting', pathMatch: 'full' },
+          {
+            path: 'ACCSetting',
+            component: ACCP100component,
+            data : {
+              pageName:"權限設定"
+            },
+          },
+          {
+            path: "manageMenu",
+            data : {
+              pageName:"菜單功能管理"
+            },
+            component: ManageMenuComponent
+          },
+          {
+            path: "manageRole",
+            data : {
+              pageName:"職務權限管理"
+            },
+            component: ManageRoleComponent
+          },
+          {
+            path : "manageUser",
+            data : {
+              pageName:"用戶管理"
+            },
+            component: ManageUserComponent
           }
-        ]
-      }
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'FCPBarRepo',
-    children: [
-      { path: '', redirectTo: '/FCPBarRepo/R302', pathMatch: 'full' },
-      {
-        path: 'R303_TabMenu',
-        component: PPSR303TabMenuComponent,
-        data : { pageName : "異常表" },
-        children: [
-          { path: '', redirectTo: '/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
-          { path: 'R303', component: PPSR303Component, data : { pageName : "異常表" } },
-          { path: 'R303_Fcp', component: PPSR303FcpComponent},
         ],
+        canActivate: [AuthGuard]
       },
-      { path: 'R302', component: PPSR302Component, data : { pageName : "交期-計畫彙總表" } },
-      { path: 'R301', component: PPSR301Component, data : { pageName : "機台產能分析表" } },
-      { path: 'R345', component: PPSR345Component, data : { pageName : "工時計算結果表" } },
-      { path: 'R345average', component: PPSR345AVERAGEComponent, data : { pageName : "工時計算平均結果表" }  },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'FCPshipRepo',
-    children: [
-      { path: '', redirectTo: '/FCPBarRepo/R304', pathMatch: 'full' },
-      { path: 'R304', component: PPSR304Component, data : { pageName : "出貨計畫表-維護" } },
-      { path: 'R305', component: PPSR305Component },
-      { path: 'R306', component: PPSR306Component },
-      { path: 'R307', component: PPSR307Component },
-      { path: 'R308', component: PPSR308Component, data : { pageName : "出貨計畫表-檢視" } },
-      { path: 'R309', component: PPSR309Component },
-      { path: 'R310', component: PPSR310Component },
-      { path: 'R311', component: PPSR311Component },
-      { path: 'R312', component: PPSR312Component },
-      { path: 'R313', component: PPSR313Component },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'FCPshiftRepo',
-    children: [
-      { path: '', redirectTo: '/FCPshiftRepo/R321', pathMatch: 'full' },
       {
-        path: 'R321',
-        component: PPSR321Component,
-        data : { pageName : "月推移表-維護" },
-        canDeactivate: [PPSR321CanDeactivateGuard],
+        path: 'user',
         children: [
+          { path: '', redirectTo: '/main/user/profile', pathMatch: 'full' },
           {
-            path: 'detail01',
-            component: PPSR321Detail01Component,
-            canDeactivate: [PPSR321Detail01CanDeactivateGuard],
-          },
-          {
-            path: 'detail02',
-            component: PPSR321Detail02Component,
-            canDeactivate: [PPSR321Detail02CanDeactivateGuard],
-          },
-          {
-            path: 'detail0301',
-            component: PPSR321Detail0301Component,
-            canDeactivate: [PPSR321Detail0301CanDeactivateGuard],
-          },
-          {
-            path: 'detail0302',
-            component: PPSR321Detail0302Component,
-            canDeactivate: [PPSR321Detail0302CanDeactivateGuard],
-          },
-          {
-            path: 'detail0303',
-            component: PPSR321Detail0303Component,
-            canDeactivate: [PPSR321Detail0303CanDeactivateGuard],
-          },
-          {
-            path: 'detail04',
-            component: PPSR321Detail04Component,
-            canDeactivate: [PPSR321Detail04CanDeactivateGuard],
-          },
+            path: "profile",
+            component: UserProfileComponent,
+            data : {
+              pageName:"個人資料"
+            },
+          }
         ],
+        canActivate: [AuthGuard],
       },
       {
-        path: 'R322',
-        component: PPSR322Component,
-        data : { pageName : "月推移表-檢視" },
-        children: [
-          { path: '', redirectTo: '/FCPshiftRepo/R322', pathMatch: 'full' },
-          { path: 'R322_1', component: PPSR322Child1Component },
-          { path: 'R322_2', component: PPSR322Child2Component },
-          { path: 'R322_3', component: PPSR322Child3Component },
-          { path: 'R322_4', component: PPSR322Child4Component },
-          { path: 'R322_5', component: PPSR322Child5Component },
-          { path: 'R322_6', component: PPSR322Child6Component },
-          { path: 'R322_7', component: PPSR322Child7Component },
-          { path: 'R322_8', component: PPSR322Child8Component },
-        ],
-      },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'MSHSet',
-    children: [
-      { path: '', redirectTo: '/MSHSet/I001', pathMatch: 'full' },
-      { path: 'I001', component: MSHI001Component, data : { pageName : "管理人員設定排序" } },
-      { path: 'I002', component: MSHI002Component, data : { pageName : "業務人員設定排序" } },
-      {
-        path: 'I003',
-        component: MSHI003Component,
-        data : { pageName : "EPST變更作業" }, 
-        canDeactivate: [MSHI003CanDeactivateGuard],
-      },
-      { path: 'I004', component: MSHI004Component, data : { pageName : "啟動發佈模式" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'MSHPlan',
-    children: [
-      { path: '', redirectTo: '/MSHPlan/P001', pathMatch: 'full' },
-      { path: 'P001', component: MSHP001Component, data : { pageName : "直棒排程設定" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'LABSet',
-    children: [
-      { path: '', redirectTo: '/LABSet/I001', pathMatch: 'full' },
-      { path: 'I001', component: LABI001Component, data : { pageName : "實驗室靜態資料" } },
-      { path: 'I002', component: LABI002Component, data : { pageName : "實驗室取樣時間設定" } }, // 實驗室取樣時間設定
-      { path: 'I003', component: LABI003Component, data : { pageName : "實驗室行事曆" } }, // 實驗室行事曆
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'LABPlan',
-    children: [
-      { path: '', redirectTo: '/LABPlan/P100', pathMatch: 'full' },
-      { path: 'P100', component: LABP100Component, data : { pageName : "工時擷取與結果" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'SaleInput',
-    children: [
-      { path: '', redirectTo: '/SaleInput/I001', pathMatch: 'full' },
-      { path: 'I001', component: PPSR340Component, data : { pageName : "訂單交期回覆" } },
-      { path: 'I002', component: PPSR341Component, data : { pageName : "成品庫存現況" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'SaleView',
-    children: [
-      { path: '', redirectTo: '/SaleView/R001', pathMatch: 'full' },
-      { path: 'R001', component: PPSR344Component, data : { pageName : "出貨追蹤管理報表" } },
-      // { path: 'R002', component: PPSR343Component },       // 先關閉預估周入庫計畫表
-      { path: 'R002', component: ErrorPageComponent, data : { pageName : "預估週入庫計畫" } },
-    ],
-    canActivate: [AuthGuard],
-  },
-
-  /* RMP & PAS & DCM */
-
-  /* DCM */
-
-  /* SPA */
-
-  /* TRA */
-
-  /* POM  */
-
-  /* system  */
-  {
-    path: 'system',
-    children: [
-      { path: '', redirectTo: '/system/ACCSetting', pathMatch: 'full' },
-      {
-        path: 'ACCSetting',
-        component: ACCP100component,
+        path: '**',
         data : {
-          pageName:"權限設定"
+          pageName:"頁面尚未存在"
         },
+        component: ErrorPageComponent,
       },
       {
-        path: "manageMenu",
-        data : {
-          pageName:"菜單功能管理"
-        },
-        component: ManageMenuComponent
+        path: 'AccessDined',
+        component: AccessDinedPageComponent,
+        canActivate: [AuthGuard],
       },
-      {
-        path: "manageRole",
-        data : {
-          pageName:"職務權限管理"
-        },
-        component: ManageRoleComponent
-      },
-      {
-        path : "manageUser",
-        data : {
-          pageName:"用戶管理"
-        },
-        component: ManageUserComponent
-      }
-    ],
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'user',
-    children: [
-      { path: '', redirectTo: '/user/profile', pathMatch: 'full' },
-      {
-        path: "profile",
-        component: UserProfileComponent,
-        data : {
-          pageName:"個人資料"
-        },
-      }
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: '**',
-    data : {
-      pageName:"頁面尚未存在"
-    },
-    component: ErrorPageComponent,
-  },
+    ]
+  }
+
+ 
 ];
 
 @NgModule({

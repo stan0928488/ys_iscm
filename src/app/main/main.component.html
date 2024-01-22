@@ -1,0 +1,61 @@
+<nz-layout>
+    <nz-header #headerElement>
+      <!-- logo區塊 -->
+      <img 
+        class="logo" 
+        src="../assets/images/logo.png" 
+        alt="鹽水數位供應鏈管理"
+        title="鹽水數位供應鏈管理">
+      <ul 
+        [class]="envMenuClass" 
+        #menuElement 
+        nz-menu 
+        nzMode="horizontal">
+
+        <!-- 菜單區塊 -->
+        <menus 
+          style="display: flex;"
+          [menus]="menus">
+        </menus>
+
+        <!-- info與登出區塊 -->
+        <li style="flex: 1;">
+        <div [class]="envInfoClass">
+            <span style="margin: 0 5px;" class="infoText">{{ envName }}</span>
+            <span class="infoText">|</span>
+            <span style="margin-left:5px;" class="infoText" nz-icon nzType="user" nzTheme="outline"></span>
+            <span style="margin: 0 5px;" class="infoText">{{ userName }}</span>
+            <span class="infoText">|</span>
+            <a 
+            class="logoutText"
+            nz-popconfirm 
+            nzPopconfirmTitle="確定要登出嗎?"
+            (nzOnConfirm)="onLogout()"> 登出 
+            </a>
+        </div>
+        </li>
+
+      </ul>
+    </nz-header>
+  
+    <div class="content-area">
+      <nz-content>
+        <!-- router outlet area -->
+        <router-outlet
+          (activate)="componentAdded($event)"
+          (deactivate)="componentRemoved($event)"
+        ></router-outlet>
+      </nz-content> 
+  
+      <nz-footer style="text-align: center; padding: 8px">
+        Copyright © Walsin Lihwa Corp. All Rights Reserved.
+      </nz-footer>
+    </div>
+  
+  </nz-layout>
+  
+  <app-inactivity-timer></app-inactivity-timer>
+  <ng-template #trigger>
+    <i class="anticon anticon-up"></i>
+  </ng-template>
+  

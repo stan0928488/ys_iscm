@@ -234,14 +234,14 @@ export class PPSI205_401Component implements AfterViewInit {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
       // this.getTbppsm102List();
     } else  */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
       // this.getTbppsm113List();
     } else if (tab === 4) {
       // this.getTbppsm102ListAll();
-      window.location.href = '#/PlanSet/I205_a401';
+      window.location.href = '#/main/PlanSet/I205_a401';
     } else if (tab === 5) {
       // this.getTbppsm100List();
-      window.location.href = '#/PlanSet/I205_a100';
+      window.location.href = '#/main/PlanSet/I205_a100';
     }
   }
 

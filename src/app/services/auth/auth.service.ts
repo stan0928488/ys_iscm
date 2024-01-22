@@ -6,7 +6,7 @@ import * as _ from "lodash";
 import { Observable, Subject } from "rxjs";
 import { CookieService } from "../config/cookie.service";
 import { ACCService } from "src/app/services/ACC/ACC.service";
-import { AppEventBusComponent } from "src/app/app-event-bus.component";
+import { MainEventBusComponent } from "src/app/main/app-event-bus.component";
 
 @Injectable({
   providedIn: "root"
@@ -24,7 +24,7 @@ export class AuthService {
     private cookieService: CookieService,
     private router: Router,
     private http: HttpClient,
-    private appEventBusComponent: AppEventBusComponent,
+    private appEventBusComponent: MainEventBusComponent,
   ) {}
 
   isAuthenticated(): boolean {
