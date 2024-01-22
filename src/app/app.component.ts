@@ -4,7 +4,7 @@ import { AuthService } from "./services/auth/auth.service";
 import { Router, ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, ResolveEnd, GuardsCheckEnd, NavigationCancel } from "@angular/router";
 import * as _ from "lodash";
 import * as moment from "moment";
-import { MainEventBusComponent } from "./main/app-event-bus.component";
+import { MainEventBusComponent } from "./main/main-event-bus.component";
 import { SYSTEMService } from "./services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TabModel, TabService } from "./services/common/tab.service";

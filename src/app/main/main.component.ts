@@ -6,7 +6,7 @@ import { Router, CanActivate, ActivatedRoute } from "@angular/router";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { NzHeaderComponent } from "ng-zorro-antd/layout";
-import { MainEventBusComponent } from "./app-event-bus.component";
+import { MainEventBusComponent } from "./main-event-bus.component";
 import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TabService } from "../services/common/tab.service";

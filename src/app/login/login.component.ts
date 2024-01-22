@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import { CommonService } from '../services/common/common.service';
 import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
-import { MainEventBusComponent } from '../main/app-event-bus.component';
+import { MainEventBusComponent } from '../main/main-event-bus.component';
 //import * as base64 from "base64-encode-decode";
 
 @Component({
