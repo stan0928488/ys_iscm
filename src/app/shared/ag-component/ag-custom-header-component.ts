@@ -1,8 +1,10 @@
-import { Component , Input} from '@angular/core';
-import { IHeaderAngularComp } from 'ag-grid-angular';
-import { ColumnPinnedType, IFilter, IHeaderParams,ITextFilterParams ,IFilterComp,TextFilterModel} from 'ag-grid-community';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { map } from 'lodash';
+import { Component, Input } from '@angular/core';
+import { IHeaderAngularComp } from 'ag-grid-angular';
+import { ColumnPinnedType, ColumnState, IFilterComp, IHeaderParams, TextFilterModel } from 'ag-grid-community';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { LocalStorageService } from "src/app/services/config/localStorage.service";
 
 @Component({
   selector: 'custom-header',
@@ -18,7 +20,7 @@ import { map } from 'lodash';
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
-      <span style='margin-left:5px;' *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' *ngIf="isMenuShow"  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
       <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
@@ -32,6 +34,7 @@ import { map } from 'lodash';
       <nz-drawer
       [nzClosable]="false"
       [nzVisible]="visible"
+      [nzFooter]="footerTpl"
       nzPlacement="right"
       nzTitle="欄位設定"
       (nzOnClose)="handleClose()"
@@ -60,6 +63,12 @@ import { map } from 'lodash';
       </div>
     </ng-template>
 
+    <ng-template #footerTpl>
+      <div style="float: left">
+        <button *ngIf="isSave" nz-button nzType="primary" (click)="save()">保存</button>
+      </div>
+    </ng-template>
+
     </div>
   `,
   styles: [`
@@ -83,6 +92,16 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
   openFilter = false ;
   openSort = false ;
+  isSave = false;
+  isMenuShow = false;
+  is_param_flag = false;
+
+  constructor(
+    private systemService : SYSTEMService,
+    private localStorageService: LocalStorageService,
+    private message: NzMessageService,
+  ) {
+  }
 
   agInit(params: IHeaderParams): void {
     this.params = params;
@@ -93,7 +112,48 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     this.listOfData = this.params.columnApi.getColumns();
     this.openFilter = this.params.column.getColDef().filter ;
     this.openSort = this.params.column.getColDef().sortable
-    
+    //初始化索引
+    for (let i = 0; i < this.listOfData.length; i++) {
+      this.listOfData[i].setSortIndex(this.listOfData[i].instanceId)
+    }
+
+    let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
+    let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
+    this.isSave = agCustomHeaderParams['isSave']
+    this.isMenuShow = agCustomHeaderParams['isMenuShow']
+    this.is_param_flag = agCustomHeaderParams['is_param_flag']
+
+    let outthis = this;
+    if(true == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
+      //鎖一秒防止重複呼叫
+      this.localStorageService.setItem("headerComponentLock","lock",1000);
+      columnState.forEach(function (element) {
+        element['agName'] = agCustomHeaderParams['agName']
+        element['headername'] = ''
+        element['path'] = agCustomHeaderParams['path']
+      });
+      this.systemService.getHeaderComponentStatus(columnState[0]).subscribe(res=>{
+        let result:any = res ;
+        if(result.code === 200) {
+          let columnState:ColumnState[]
+          columnState = result.data;
+          
+          outthis.params.columnApi.applyColumnState({
+            state:columnState
+          });
+          columnState.forEach(function (element) {
+            if(element.sortIndex || element.sortIndex == 0){
+              console.log(element.colId+" to "+element.sortIndex)
+              outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
+            }
+          });
+        } else {
+          this.message.error("load error")
+        }
+      });
+
+    }
+
   }
 
   refresh(params: IHeaderParams) {
@@ -186,6 +246,8 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   }
 
   drop(event: CdkDragDrop<string[]>): void {
+    //鎖一秒防止重複呼叫
+    this.localStorageService.setItem("headerComponentLock","lock",1000);
     const colId = this.listOfData[event.previousIndex].colId ;
     const targetIndex = event.currentIndex; // 移動到的目標索引
     this.params.columnApi.moveColumn(colId, targetIndex);
@@ -194,8 +256,32 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   }
   //控制顯示
   handleVisible(colId:any){
+    //鎖一秒防止重複呼叫
+    this.localStorageService.setItem("headerComponentLock","lock",1000);
     const currentVisibility = this.params.columnApi.getColumn(colId).isVisible();
     this.params.columnApi.setColumnVisible(colId, !currentVisibility);
+  }
+
+  save(){
+    let outthis = this;
+    let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
+    let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
+    columnState.forEach(function (element) {
+      element['agName'] = agCustomHeaderParams['agName']
+      element['headername'] = element['headername'] = outthis.listOfData.find(
+        (el) => element.colId == el.colId
+      ).userProvidedColDef.headerName;
+      element['path'] = agCustomHeaderParams['path']
+    }); 
+
+    this.systemService.saveHeaderComponentStatus(columnState).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        this.message.success("更新成功")
+      } else {
+        this.message.success("更新失敗")
+      }
+    });
   }
 
 }
