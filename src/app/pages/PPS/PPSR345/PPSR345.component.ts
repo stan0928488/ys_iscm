@@ -110,6 +110,7 @@ export class PPSR345Component implements AfterViewInit {
         }
       },
     },
+
     {
       headerName: '支數',
       field: 'pieceCount',
@@ -207,6 +208,12 @@ export class PPSR345Component implements AfterViewInit {
       width: 165,
       headerComponent: AGCustomHeaderComponent,
     },
+    {
+      headerName: '備註',
+      field: 'comment',
+      width: 200,
+      headerComponent: AGCustomHeaderComponent,
+    },
   ];
 
   titleArray = [
@@ -229,6 +236,7 @@ export class PPSR345Component implements AfterViewInit {
     '作業代碼',
     '開始時間',
     '結束時間',
+    '備註',
   ];
 
   constructor(
