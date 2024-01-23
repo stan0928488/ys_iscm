@@ -119,9 +119,11 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
     let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
-    this.isSave = agCustomHeaderParams['isSave']
-    this.isMenuShow = agCustomHeaderParams['isMenuShow']
-    this.is_param_flag = agCustomHeaderParams['is_param_flag']
+    if(agCustomHeaderParams){
+      this.isSave = agCustomHeaderParams['isSave']
+      this.isMenuShow = agCustomHeaderParams['isMenuShow']
+      this.is_param_flag = agCustomHeaderParams['is_param_flag']
+    }
 
     let outthis = this;
     if(true == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
