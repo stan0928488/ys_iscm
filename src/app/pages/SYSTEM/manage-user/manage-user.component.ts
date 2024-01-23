@@ -1,12 +1,13 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { AfterViewInit, Component } from '@angular/core';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, Column, ColumnEvent } from 'ag-grid-community';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import {NzMessageService} from "ng-zorro-antd/message";
 import {AGHeaderParams} from "../../../shared/ag-component/types"
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-manage-user',
@@ -58,11 +59,26 @@ export class ManageUserComponent implements AfterViewInit {
       filter: true,
     },
     api: null,
+    onColumnMoved(e){
+      const found:Column = e.columnApi.getColumns().find(
+        (element) => element.sortIndex == e.toIndex
+      );
+      found.setSortIndex(e.column.sortIndex);
+      e.column.setSortIndex(e.toIndex);
+    },
+    agCustomHeaderParams : {
+      isMenuShow: true,// true 顯示抽屜菜單
+      agName: 'AGName1' , // AG 表名
+      isSave:true , // 是否顯示保存
+      path:this.router.url,
+      is_param_flag:false //是則抓取DB內的參數
+    }
   };
 
   constructor(
     private message: NzMessageService,
-    private systemService : SYSTEMService
+    private systemService : SYSTEMService,
+    private router: Router,
   ) {
     this.dataSource.setData(this.TREE_DATA);
     this.frameworkComponents = {
@@ -85,14 +101,8 @@ export class ManageUserComponent implements AfterViewInit {
     });
   }
 
-  agCustomHeaderParams : AGHeaderParams = {
-    isMenuShow: true,// true 顯示抽屜菜單
-    agName: 'AGName1' , // AG 表名
-    isSave:true , // 是否顯示保存
-  }
-
   colDefs: ColDef<IRow>[] = [
-    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent,headerComponentParams:this.agCustomHeaderParams},
+    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '工號',field: 'userCode', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '使用者名稱',field: 'userNickName', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '職位',field: 'positionName', width:200, headerComponent : AGCustomHeaderComponent},
