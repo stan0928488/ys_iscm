@@ -207,7 +207,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.routerEventsSubscription = this.router.events
     .pipe(
-      filter(event => event instanceof NavigationEnd || event instanceof NavigationCancel),
+      filter(event => event instanceof NavigationEnd),
       map(() => {
         this.routerPath = this.activatedRoute.snapshot['_routerState'].url;
         return this.activatedRoute;
