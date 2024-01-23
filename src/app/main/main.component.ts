@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
-import { Router, CanActivate, ActivatedRoute, NavigationEnd, NavigationCancel } from "@angular/router";
+import { Router, CanActivate, ActivatedRoute, NavigationEnd, NavigationCancel, ChildActivationEnd } from "@angular/router";
 
 import * as _ from "lodash";
 import * as moment from "moment";
@@ -207,7 +207,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.routerEventsSubscription = this.router.events
     .pipe(
-      filter(event => event instanceof NavigationEnd),
+      filter(event => event instanceof NavigationEnd || event instanceof ChildActivationEnd ),
       map(() => {
         this.routerPath = this.activatedRoute.snapshot['_routerState'].url;
         return this.activatedRoute;
@@ -236,7 +236,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       // 該路由頁面名稱
       let pageName = routeData['pageName'];
       // 該路由頁面路徑
-      let pagePath = this.routerPath
+      let pagePath = this.routerPath  
 
       // 若A分頁已開啟，再從側邊欄點選A分頁
       // A分頁頁簽呈現被選擇的狀態

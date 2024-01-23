@@ -189,17 +189,16 @@ const routes: Routes = [
       {
         path: 'PlanSet',
         children: [
-          { path: '', redirectTo: '/main/PlanSet/I202_TabMenu', pathMatch: 'full' },
+          { path: '', redirectTo: '/main/PlanSet/I112_TabMenu', pathMatch: 'full' },
           { 
             path: 'I112_TabMenu',
             component: PPSI112TabMenuComponent,
-            data : { pageName : "累計生產" },
             children: [
               { path: '', redirectTo: '/main/PlanSet/I112_TabMenu/I112', pathMatch: 'full' },
               { 
                 path: 'I112', 
                 component: PPSI112Component, 
-                data : { pageName : "累計生產(直棒)" },
+                data : { pageName : "累計生產" },
               },
               { 
                 path: 'I112_Refining', 
@@ -210,7 +209,6 @@ const routes: Routes = [
           {
             path: 'I202_TabMenu',
             component: PPSI202TabMenuComponent,
-            data : { pageName : "定修計畫" },
             children: [
               { path: 'I202', component: PPSI202Component, data : { pageName : "定修計畫" }, },
               { path: 'I202_NonBar', component: PPSI202NonBarComponent },
@@ -219,7 +217,6 @@ const routes: Routes = [
           {
             path: 'I206_TabMenu',
             component: PPSI206TabMenuComponent,
-            data : { pageName : "虛擬訂單設定" },
             children: [
               { path: '', redirectTo: '/main/PlanSet/I206_TabMenu/I206_SET', pathMatch: 'full' },
               { path: 'I206_SET', component: PPSI206SETComponent, data : { pageName : "虛擬訂單表" } },
@@ -246,7 +243,6 @@ const routes: Routes = [
           {
             path: 'P201_TabMenu',
             component: PPSI210TabMenuComponent,
-            data : { pageName : "建立規劃策略" },
             children: [
               {
                 path: '',
@@ -267,7 +263,6 @@ const routes: Routes = [
           {
             path: 'P202_TabMenu',
             component: PPSI220TabMenuComponent,
-            data : { pageName : "規劃策略清單" },
             children: [
               { path: '', redirectTo: '/main/FCPBarData/P202_TabMenu/P202', pathMatch: 'full' },
               { 
@@ -284,7 +279,6 @@ const routes: Routes = [
           {
             path: 'P203_TabMenu',
             component: PPSI230TabMenuComponent,
-            data : { pageName : "生產規劃執行" },
             children: [
               { path: '', redirectTo: '/main/FCPBarData/P203_TabMenu/P203', pathMatch: 'full' },
               { 
@@ -308,7 +302,6 @@ const routes: Routes = [
           {
             path: 'R303_TabMenu',
             component: PPSR303TabMenuComponent,
-            data : { pageName : "異常表" },
             children: [
               { path: '', redirectTo: '/main/FCPBarRepo/R303_TabMenu/R303', pathMatch: 'full' },
               { path: 'R303', component: PPSR303Component, data : { pageName : "異常表" } },
