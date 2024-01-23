@@ -3,13 +3,15 @@ import { Component, INJECTOR, Input } from "@angular/core";
 @Component({
     selector: 'menus',
     template: `
-        <div *ngFor="let menu of menus">
+        <ng-container *ngFor="let menu of menus">
             <li
                 *ngIf="menu.isShow == 1 && menu.children && menu.children.length > 0"
                 nz-submenu
+                [nzOpen]="menu.open"
                 [nzTitle]="menu.menuName"
                 [nzIcon]="menu.icon"
-                [nzDisabled]="menu.disabled">
+                [nzDisabled]="menu.disabled"
+                class="menuItemText">
                 <ul>
                     <menus 
                         [menus]="menu.children">
@@ -24,7 +26,7 @@ import { Component, INJECTOR, Input } from "@angular/core";
                 <span nz-icon [nzType]="menu.icon" *ngIf="menu.icon"></span>
                 <a [routerLink]="[menu.path]"> {{menu.menuName}} </a>
             </li>
-        </div>
+        </ng-container>
     `,
   })
   export class RecursionMenusComponent {

@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
-import { Router, CanActivate, ActivatedRoute } from "@angular/router";
+import { Router, CanActivate, ActivatedRoute, NavigationEnd, NavigationCancel } from "@angular/router";
 
 import * as _ from "lodash";
 import * as moment from "moment";
@@ -9,7 +9,9 @@ import { NzHeaderComponent } from "ng-zorro-antd/layout";
 import { MainEventBusComponent } from "./main-event-bus.component";
 import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
-import { TabService } from "../services/common/tab.service";
+import { TabModel, TabService } from "../services/common/tab.service";
+import { Subscription, filter, map, mergeMap } from "rxjs";
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-main',
@@ -42,6 +44,15 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('headerElement', { static: true }) headerElement: NzHeaderComponent;
   @ViewChild("menuElement") menuElement: ElementRef;
 
+   // 渲染tab元件的資料
+   tabsSourceData: TabModel[] = [];
+   // 使用者當前點選的頁面的路徑
+   routerPath = this.router.url;
+   // 當前哪個tab被選中
+   activeTabIndex = null;
+   // 路由事件監聽(哪個頁面被點擊)
+   routerEventsSubscription : Subscription = null; 
+   
   constructor(
     private cookieService: CookieService,
     public router: Router,
@@ -60,11 +71,16 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         location.href = location.href.replace("http://", "https://");
       }
     }
-    console.log("=====>");
     this.getEnvClass();
     this.userName = this.cookieService.getCookie("USERNAME");
     this.plantCode = this.cookieService.getCookie("plantCode");
     this.envName = this.getEnvName(hostName);
+
+    // 取消對路由導航的監聽處理
+    if(_.isNil(this.routerEventsSubscription)){
+      // 分頁渲染處理
+      this.tabHandler();
+    }
   }
 
   ngOnInit(): void {
@@ -78,9 +94,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         localStorage.removeItem('logTime');
         console.log("刷新")
       }else{
-        localStorage.removeItem('logTime');
-        this.authService.authLogOut();
-        console.log("視窗關閉")
+        //localStorage.removeItem('logTime');
+        //this.authService.authLogOut();
+        //console.log("視窗關閉")
       }
     }
 
@@ -92,7 +108,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.menus = result.data;
           recursionSet(this.menus,1);
           this.mainEventBusComponent.logingObjAdd(this.menus);
-          console.log('菜單===>', this.menus);
         }else{
           this.nzModalService.error({
             nzTitle: '獲取菜單失敗',
@@ -128,6 +143,16 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     this.mainEventBusComponent.unsubscribe();
+
+    // 取消對路由導航的監聽處理訂閱
+    if(!_.isNil(this.routerEventsSubscription)){
+      this.routerEventsSubscription.unsubscribe();
+    }
+
+    // 清空動態顯示的分頁
+    this.tabsSourceData = [];
+    this.tabService.clearTabDataList();
+     
   }
 
   @HostListener('window:unload', ['$event'])
@@ -138,9 +163,123 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.headerBarHandler();
-    //this.router.navigateByUrl("/main/FCPBarData/P202_TabMenu/P202");
+    //this.router.navigateByUrl('/main/user/profile');    
   }
 
+  // 當前正在瀏覽的分頁
+  isCurrentViewTabClose : boolean = null;
+  // 當前被關閉的分頁的索引
+  currentViewTabIndex : number = null;
+  tabHandler(): void {
+
+    this.tabService.getTabDataList$().subscribe(res => {
+
+       // 如果是關閉分頁，頁面顯示區塊需顯示最後一個存在的頁面
+       if(res.isClose){
+
+          // 響應被動取得當前剩下的tab
+          this.tabsSourceData = res.tabArray;
+
+          // 當前正在瀏覽的頁面被關閉(已不存在在tabsSourceData裡了)
+          // 則需要導航到下一個tab
+          if(this.isCurrentViewTabClose){
+            // tab中中間的tab被關閉，導航到它右方的tab
+            if(this.tabsSourceData.length-1 >= this.currentViewTabIndex){
+              this.goPage(this.tabsSourceData[this.currentViewTabIndex]);
+            }
+            // tab中排在最後一個的tab被關閉，導航到剩下的最後一個tab
+            else{
+              this.goPage(this.tabsSourceData[this.tabsSourceData.length - 1]);
+            }
+            return;
+          }
+       }
+       // 使用者點開頁面產生新tab
+       else{  
+          // 響應被動取得當前剩下的tab
+          this.tabsSourceData = res.tabArray;
+
+          // tab選中的效果移到最新一個開啟的tab
+          this.activeTabIndex = this.tabsSourceData.length-1;
+       }
+       
+    });
+
+    this.routerEventsSubscription = this.router.events
+    .pipe(
+      filter(event => event instanceof NavigationEnd || event instanceof NavigationCancel),
+      map(() => {
+        this.routerPath = this.activatedRoute.snapshot['_routerState'].url;
+        return this.activatedRoute;
+      }),
+      map(route => {
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        return route;
+      }),
+      filter(route => {
+        return route.outlet === 'primary';
+      }),
+      mergeMap(route => {
+        return route.data;
+      })
+    ).subscribe(routeData => {
+      let route = this.activatedRoute;
+      while (route.firstChild) {
+        route = route.firstChild;
+      }     
+      
+      // 路由相關資訊
+      let snapshot = route.snapshot;
+
+      // 該路由頁面名稱
+      let pageName = routeData['pageName'];
+      // 該路由頁面路徑
+      let pagePath = this.routerPath
+
+      // 若A分頁已開啟，再從側邊欄點選A分頁
+      // A分頁頁簽呈現被選擇的狀態
+      let existTabIdx = _.findIndex(this.tabsSourceData, item => { 
+        return item.pageName === pageName 
+      });
+
+      // 已存在該分頁，將該分頁頁簽呈現被選擇的狀態
+      if(existTabIdx !== -1){
+        this.activeTabIndex = existTabIdx;
+        return;
+      }
+
+      if(!_.isEqual(pagePath, '/login') && !_.isEqual(pagePath, '/AccessDined') && !_.isEmpty(routeData)){
+        this.tabService.setTabDataList$(
+          {
+            uuid : uuid.v4(),
+            pageName : pageName,
+            pagePath : pagePath
+          }
+        )
+      }
+
+    });
+  }
+
+  closeTab({ index } : { index: number }){
+
+    let tabIdx = Number(index);
+
+    // 是否是當前正在瀏覽的頁面被關閉
+    this.isCurrentViewTabClose = this.activeTabIndex === tabIdx;
+    // 當前被關閉的分頁的索引
+    this.currentViewTabIndex = tabIdx;
+  
+    this.tabService.closeTab(this.tabsSourceData[tabIdx]);
+  }
+
+  goPage(tab : TabModel){
+    // 導航到獲取被點擊的tab的頁面
+    this.router.navigate([tab.pagePath]);
+  }
+  
 
   headerBarHandler(){
 
@@ -223,7 +362,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.envInfoClass = envInfo;
     this.envMenuClass = envMenu;
   }
-
+  
   onLogout() {
     console.log("onLogout");
     this.cookieService.setCookie("USERNAME", "", 1);
@@ -231,7 +370,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userName = "";
     this.plantCode = "";
     this.router.navigate(["login"]);
-     
   }
 
   componentAdded(_event) {}

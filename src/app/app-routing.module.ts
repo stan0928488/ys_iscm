@@ -231,8 +231,6 @@ const routes: Routes = [
           { path: 'I205_a401', component: PPSI205A401Component },
           { path: 'I205_a100', component: PPSI205A100Component },
           { path: 'I205_100', component: PPSI205_100Component },
-          
-          { path: 'I204', component: PPSI204Component },
           { path: 'I204', component: PPSI204Component, data : { pageName : "Campaign 限制" } },
           { path: 'I204_NonBar', component: PPSI204_NonBarComponent },
           { path: 'I203', component: PPSI203Component, data : { pageName : "最早可投產時間調整" } },
@@ -244,7 +242,7 @@ const routes: Routes = [
       {
         path: 'FCPBarData',
         children: [
-          { path: '', redirectTo: '/main/FCPBarData/P201_TabMenu', pathMatch: 'full' },
+          { path: '', redirectTo: '/main/FCPBarData/P201_TabMenu/P201', pathMatch: 'full' },
           {
             path: 'P201_TabMenu',
             component: PPSI210TabMenuComponent,
@@ -275,7 +273,7 @@ const routes: Routes = [
               { 
                 path: 'P202', 
                 component: PPSI220Component,
-                data : { pageName : "規劃策略清單" }
+                data : { pageName : "規劃策略清單" },
               },
               { 
                 path: 'P202_Refining', 
@@ -388,7 +386,7 @@ const routes: Routes = [
             component: PPSR322Component,
             data : { pageName : "月推移表-檢視" },
             children: [
-              { path: '', redirectTo: '/main/FCPshiftRepo/R322', pathMatch: 'full' },
+              { path: '', redirectTo: '/main/FCPshiftRepo/R322/R322_1', pathMatch: 'full' },
               { path: 'R322_1', component: PPSR322Child1Component },
               { path: 'R322_2', component: PPSR322Child2Component },
               { path: 'R322_3', component: PPSR322Child3Component },
@@ -523,6 +521,11 @@ const routes: Routes = [
           }
         ],
         canActivate: [AuthGuard],
+      },
+      {
+        path: '',
+        redirectTo: '/main/user/profile',
+        pathMatch: 'full',
       },
       {
         path: '**',

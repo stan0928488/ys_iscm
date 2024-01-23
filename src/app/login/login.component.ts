@@ -147,8 +147,7 @@ export class LoginComponent implements OnInit {
             },
           });
 
-          this.router.navigate(['/main/user/profile']);
-          
+          this.router.navigate(['/main']);
         } else {
           console.log('login fail err');
           console.log(res);
