@@ -194,6 +194,7 @@ import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPS
 import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-cell-component';
 import { MainComponent } from './main/main.component';
 import { RecursionMenusComponent } from './main/recursion-menus.component';
+import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
 
 registerLocaleData(zh);
 
@@ -360,7 +361,8 @@ registerLocaleData(zh);
     PPSR345Component,
     PPSR345AVERAGEComponent,
     MainComponent,
-    RecursionMenusComponent
+    RecursionMenusComponent,
+    AgHeadSeetingComponent
   ],
   imports: [
     BrowserModule,

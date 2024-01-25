@@ -126,6 +126,7 @@ import { UserProfileComponent } from './pages/USER/user-profile/user-profile.com
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 import { MainComponent } from './main/main.component';
+import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
 
 
 const routes: Routes = [
@@ -497,6 +498,13 @@ const routes: Routes = [
               pageName:"用戶管理"
             },
             component: ManageUserComponent
+          },
+          {
+            path : "agHeadSeeting",
+            data : {
+              pageName:"ag表頭設定管理"
+            },
+            component: AgHeadSeetingComponent
           }
         ],
         canActivate: [AuthGuard]

@@ -31,6 +31,24 @@ export class SYSTEMService {
     this.CONTEXT_PATH = this.configService.CONTEXT_PATH;
   }
 
+  delHeaderComponentStatusSys(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/system/componemt/delHeaderComponentStatusSys`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  saveHeaderComponentStatusSys(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/system/componemt/saveHeaderComponentStatusSys`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
+  getHeaderComponentStatusSys(_data) {
+    const body = JSON.stringify(_data);
+    const queryUrl = `${this.CONTEXT_PATH}/system/componemt/getHeaderComponentStatusSys`;
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   getHeaderComponentStatus(_data) {
     const body = JSON.stringify(_data);
     const queryUrl = `${this.CONTEXT_PATH}/system/componemt/getHeaderComponentStatus`;

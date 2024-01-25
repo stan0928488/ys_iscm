@@ -1,0 +1,142 @@
+<nz-content style="margin: 20px 20px">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>系統管理</nz-breadcrumb-item>
+        <nz-breadcrumb-item>ag表頭設定管理</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <div style="height:calc(100vh - 260px);padding:5px;">
+        <div nz-row>
+            <div nz-col [nzSpan]="6">
+                <nz-card>
+                    <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+                        <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+
+                        <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+                    </nz-tree-view>
+                </nz-card>
+            </div>
+            <div nz-col [nzSpan]="18">
+                <nz-card style="margin-left: 20px">
+                    <div style="margin-bottom: 5px; min-height: 30px;">
+                        <div nz-row>
+                            <div nz-col [nzSpan]="2">
+                                <button nz-button (click)="save()" nzType="primary">儲存</button>
+                            </div>
+                            <div nz-col [nzSpan]="2">
+                                <nz-switch [(ngModel)]="switchValue" nzCheckedChildren="開" nzUnCheckedChildren="關"></nz-switch>
+                            </div>
+                            <div nz-col [nzSpan]="18"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <ag-grid-angular style="width: 100%; height: calc(100vh - 280px); overflow: scroll;" class="ag-theme-alpine" [rowData]="rowData"
+                        [columnDefs]="columnDefs" [frameworkComponents]="frameworkComponents" [pagination]="true" class="ag-theme-alpine"
+                        [gridOptions]="gridOptions" [defaultColDef]="{
+                        editable: switchValue,
+                        enableRowGroup: false,
+                        enablePivot: false,
+                        enableValue: false,
+                        sortable: false,
+                        resizable: true,
+                        filter: true
+                    }" (gridReady)="onGridReady($event)">
+                        >
+                    </ag-grid-angular>
+                </nz-card>
+            </div>
+        </div>
+    </div>
+</nz-content>
+
+<nz-modal [(nzVisible)]="isVisible" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+        <form nz-form>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="path">path</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="path" type="path" id="path">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="agName">agName</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="agName" type="agName" id="agName">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="field">field</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="field" type="field" id="field">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="headername">headername</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="headername" type="headername" id="headername">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="remark">remark</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="remark" type="remark" id="remark">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="sortIndex">sortIndex</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="sortIndex" type="sortIndex" id="sortIndex">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="width">width</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="width" type="width" id="width">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="sortable">sortable</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="sortable" type="sortable" id="sortable">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="resizable">resizable</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="resizable" type="resizable" id="resizable">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="filter">filter</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="filter" type="filter" id="filter">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="hide">hide</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="hide" type="hide" id="hide">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="is_param_flag">is_param_flag</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="is_param_flag" type="is_param_flag" id="is_param_flag">
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </ng-container>
+</nz-modal>
