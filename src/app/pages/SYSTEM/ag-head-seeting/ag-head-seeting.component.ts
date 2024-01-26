@@ -6,6 +6,7 @@ import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { number } from 'echarts';
 
 
 @Component({
@@ -48,6 +49,8 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   isExpandAll = false;
 
   //grid
+  currentNode
+  insertObj
   gridApi: GridApi|any;
   switchValue = false;
   frameworkComponents: any;
@@ -106,7 +109,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
     {
       width: 150,
       headerName: '是否啟用參數(0:啟用, 1:不啟用)',
-      field: 'is_param_flag',
+      field: 'isParamFlag',
     },
     {
       headerName: '複製', field: 'id', width: 150,
@@ -133,6 +136,15 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   ];
 
   gridOptions = {
+    defaultColDef: {
+      editable: false,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
     api: null,
     onCellValueChanged: this.onCellValueChanged,
   };
@@ -150,6 +162,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.initInsertObj();
     this.treeControl.expandAll();
     this.systemService.getSystemMenu().subscribe((res) => {
       let result: any = res;
@@ -162,6 +175,43 @@ export class AgHeadSeetingComponent implements AfterViewInit {
     });
   }
 
+  initInsertObj(){
+    this.insertObj = 
+    {
+      path:'',
+      agName: '',
+      headername:  '',
+      field:  '',
+      remark:  '',
+      sortIndex: 0,
+      width: 100,
+      sortable: '1',
+      resizable: '1',
+      filter: '1',
+      hide: '1',
+      isParamFlag: '1',
+    }
+  }
+
+  submitForm(): void {
+    let saveList = [];
+    this.insertObj.path = this.currentNode.path;
+    saveList[0] = this.insertObj;
+    this.systemService.saveHeaderComponentStatusSys(saveList).subscribe(res => {
+      let result: any = res;
+      if (result.code === 200) {
+        this.message.success("儲存成功")
+      } else {
+        this.message.error("儲存失敗")
+      }
+    });
+  }
+
+  onswitch(){
+    this.gridOptions.defaultColDef.editable = this.switchValue;
+    this.gridApi.setDefaultColDef(this.gridOptions.defaultColDef);
+  }
+
   onCellValueChanged(event) {
     event.data.hasChange = true;
   }
@@ -171,7 +221,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   }
 
   expend(node) {
-
+    this.currentNode = node;
     this.treeControl.toggle(node)
     let columnState = {};
     columnState['agName'] = '';
@@ -242,6 +292,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   }
 
   showModal(): void {
+    this.initInsertObj();
     this.isVisible = true;
   }
 
@@ -269,7 +320,7 @@ interface ItemData {
   resizable: string;
   filter: string;
   hide: string;
-  is_param_flag: string;
+  isParamFlag: string;
   del_status: number;
   hasChange: boolean;
 }

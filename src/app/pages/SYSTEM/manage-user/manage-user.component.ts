@@ -63,7 +63,9 @@ export class ManageUserComponent implements AfterViewInit {
       const found:Column = e.columnApi.getColumns().find(
         (element) => element.sortIndex == e.toIndex
       );
-      found.setSortIndex(e.column.sortIndex);
+      if(found){
+        found.setSortIndex(e.column.sortIndex);
+      }
       e.column.setSortIndex(e.toIndex);
     },
     agCustomHeaderParams : {
@@ -71,7 +73,7 @@ export class ManageUserComponent implements AfterViewInit {
       agName: 'AGName1' , // AG 表名
       isSave:true , // 是否顯示保存
       path:this.router.url,
-      is_param_flag:false //是則抓取DB內的參數
+      is_param_flag:'1' //是則抓取DB內的參數
     }
   };
 

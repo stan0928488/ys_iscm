@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { IHeaderAngularComp } from 'ag-grid-angular';
-import { ColumnPinnedType, ColumnState, IFilterComp, IHeaderParams, TextFilterModel } from 'ag-grid-community';
+import { ColDef, ColumnPinnedType, ColumnState, IFilterComp, IHeaderParams, TextFilterModel } from 'ag-grid-community';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { LocalStorageService } from "src/app/services/config/localStorage.service";
@@ -94,7 +94,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   openSort = false ;
   isSave = false;
   isMenuShow = false;
-  is_param_flag = false;
+  is_param_flag = '1';
 
   constructor(
     private systemService : SYSTEMService,
@@ -126,7 +126,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     }
 
     let outthis = this;
-    if(true == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
+    if('0' == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
       //鎖一秒防止重複呼叫
       this.localStorageService.setItem("headerComponentLock","lock",1000);
       columnState.forEach(function (element) {
@@ -137,18 +137,37 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       this.systemService.getHeaderComponentStatus(columnState[0]).subscribe(res=>{
         let result:any = res ;
         if(result.code === 200) {
-          let columnState:ColumnState[]
+          let columnState:ItemData[]
+          let colDefs:ColDef[];
           columnState = result.data;
-          
+
+          //set status
           outthis.params.columnApi.applyColumnState({
             state:columnState
           });
+
+          //set coldef
+          colDefs = this.params.api.getColumnDefs()
+          columnState.forEach(function (element) {
+            let findcolDef = colDefs.find(
+              (el) => element.colId == el.colId
+            );
+            if(findcolDef){
+              findcolDef.sortable = (element.sortable == "1" ? true : false)
+              findcolDef.resizable = (element.resizable == "1" ? true : false)
+              findcolDef.filter = (element.filter == "1" ? true : false)
+            }
+          });
+          this.params.api.setColumnDefs(colDefs);
+
+          //move
           columnState.forEach(function (element) {
             if(element.sortIndex || element.sortIndex == 0){
               console.log(element.colId+" to "+element.sortIndex)
               outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
             }
           });
+
         } else {
           this.message.error("load error")
         }
@@ -286,4 +305,10 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     });
   }
 
+}
+
+interface ItemData extends ColumnState{
+  sortable: string;
+  resizable: string;
+  filter: string;
 }
