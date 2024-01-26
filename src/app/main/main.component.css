@@ -13,6 +13,20 @@
         format("svg");
   }
   
+  /* .layout {
+    min-height: 100vh;
+  }
+  .right-layout {
+    margin-left: 200px;
+  } */
+
+  nz-sider {
+    /* overflow: auto; */
+    height: 100vh;
+    /* position: fixed;
+    left: 0; */
+  }
+
   /* muli-regular - latin */
   
   :host ::ng-deep .trigger {
@@ -27,10 +41,15 @@
     color: #1890ff;
   }
   
+  :host ::ng-deep .logoUl {
+    height: 50px;
+    width: 100%;
+    /* background-color: #e8e8e8; */
+  }
+  
   :host ::ng-deep .logo {
-    height: 32px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px;
+    height: 30px;
+    margin: 5px;
   }
   
   .navBar {
@@ -76,7 +95,6 @@
   }
   
   :host ::ng-deep .logo{
-    background: #FFF7FB;
     float: left;
   }
   
@@ -116,3 +134,22 @@
   :host ::ng-deep .menu-tst .menuItemText{
     color: black;
   }
+
+
+  /* :host ::ng-deep .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap, .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
+    background-color: #6ea8eb;
+  } 
+ 
+  :host ::ng-deep .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab {
+    border-radius: 2px 2px 0 0;
+    background: #6ea8eb;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  :host ::ng-deep .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #f7f8fa;
+    text-shadow: 0 0 0.25px currentcolor;
+    border-bottom: 3px solid rgb(248, 250, 252);
+  } */

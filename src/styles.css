@@ -6,7 +6,7 @@
 @import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 /*AGGRID 樣式引用結束  */
-html, body { height: 100%; }
+html, body { height: 100%; overflow-x: hidden; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 /* primeng樣式引用 */
 /* @import 'primeng/resources/themes/lara-light-blue/theme.css';

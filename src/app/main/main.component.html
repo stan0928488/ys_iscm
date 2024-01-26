@@ -1,72 +1,83 @@
-<nz-layout>
-    <nz-header #headerElement>
+  <nz-layout class="layout">
+    <nz-sider 
+      nzCollapsible nzWidth="180px"
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="triggerTemplate"
+    >
       <!-- logo區塊 -->
-      <img 
-        class="logo" 
-        src="../assets/images/logo.png" 
-        alt="鹽水數位供應鏈管理"
-        title="鹽水數位供應鏈管理">
-      <ul 
-        [class]="envMenuClass" 
-        #menuElement 
-        nz-menu 
-        nzMode="horizontal">
-
+      <div class="logoUl" [style.background-color]="logoBackgroundColor">
+        <img 
+          class="logo" 
+          [src]="logoImagePath" 
+          alt="鹽水數位供應鏈管理"
+          title="鹽水數位供應鏈管理"
+          (click)="toggleCollapsed()"
+        >
+      </div>
+      
+      <ul nz-menu nzMode="inline" nzTheme="light" [nzInlineCollapsed]="isCollapsed" #menuElement>
         <!-- 菜單區塊 -->
         <menus 
-          style="display: flex;"
           [menus]="menus">
         </menus>
+      </ul>
+    </nz-sider>
 
-        <!-- info與登出區塊 -->
-        <li style="flex: 1;">
-        <div [class]="envInfoClass">
+    <nz-layout class="right-layout">
+      <nz-header #headerElement style="height: 50px;">        
+        <!-- <button nz-button nzType="primary" (click)="toggleCollapsed()">
+          <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+        </button> -->
+
+        <div nz-row [nzGutter] = "5"> 
+          <div nz-col style="width: 85%; margin: 5px">
+            <!-- 動態分頁區塊 -->
+            <nz-tabset 
+                [(nzSelectedIndex)]="activeTabIndex"
+                nzType="editable-card"
+                [nzHideAdd]="true"
+                (nzClose)="closeTab($event)">
+              <nz-tab [nzClosable]="tabsSourceData.length > 1" *ngFor="let tab of tabsSourceData" [nzTitle]="tab.pageName" (nzClick)="goPage(tab)" >
+              </nz-tab>
+            </nz-tabset>
+          </div>
+            
+          <!-- info與登出區塊 -->
+          <div nz-col [class]="envInfoClass" style="width: 13%; text-align:right; color: black;">
             <span style="margin: 0 5px;" class="infoText">{{ envName }}</span>
             <span class="infoText">|</span>
             <span style="margin-left:5px;" class="infoText" nz-icon nzType="user" nzTheme="outline"></span>
             <span style="margin: 0 5px;" class="infoText">{{ userName }}</span>
             <span class="infoText">|</span>
-            <a 
-            class="logoutText"
-            nz-popconfirm 
-            nzPopconfirmTitle="確定要登出嗎?"
-            (nzOnConfirm)="onLogout()"> 登出 
+            <a style="color: black" nz-popconfirm nzPopconfirmTitle="是否要登出？" (nzOnConfirm)="onLogout()">
+              <span style="margin: 0 5px;" nz-icon nzType="logout" nzTheme="outline" ></span> 登出
             </a>
+          </div>
         </div>
-        </li>
-
-      </ul>
-    </nz-header>
-  
-    <div class="content-area">
-      <nz-content>
-
-        <!-- 動態分頁區塊 -->
-        <nz-tabset 
-          [(nzSelectedIndex)]="activeTabIndex"
-          nzType="editable-card"
-          [nzHideAdd]="true"
-          (nzClose)="closeTab($event)">
-          <nz-tab [nzClosable]="tabsSourceData.length > 1" *ngFor="let tab of tabsSourceData" [nzTitle]="tab.pageName" (nzClick)="goPage(tab)" >
-          </nz-tab>
-        </nz-tabset>
-
+      
+      </nz-header>
+      
+      <nz-content style="margin-bottom: 1px; max-height: calc(100vh - 100px); overflow: scroll;">
         <!-- router outlet area -->
         <router-outlet
           (activate)="componentAdded($event)"
           (deactivate)="componentRemoved($event)"
         ></router-outlet>
       </nz-content> 
-  
-      <nz-footer style="text-align: center; padding: 8px">
-        Copyright © Walsin Lihwa Corp. All Rights Reserved.
-      </nz-footer>
-    </div>
-  
+
+      <nz-affix [nzOffsetBottom]="'0'" >
+        <nz-footer style="height: 0px; text-align: center;">
+          Copyright © Walsin Lihwa Corp. All Rights Reserved.
+        </nz-footer>
+      </nz-affix>
+
+    </nz-layout>
   </nz-layout>
-  
+    
+      
+
   <app-inactivity-timer></app-inactivity-timer>
   <ng-template #trigger>
     <i class="anticon anticon-up"></i>
   </ng-template>
-  
+    

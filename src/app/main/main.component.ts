@@ -30,7 +30,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   envName;
   envInfoClass = "";
   envMenuClass = "";
-
+  logoImagePath = "../assets/images/headlogo.png";
+  logoBackgroundColor = '#da6c72';
   menus: TreeNode[] = [];
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
@@ -162,7 +163,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    this.headerBarHandler();
+    this.headerBarHandler();    
+    this.backgroundColor();
     //this.router.navigateByUrl('/main/user/profile');    
   }
 
@@ -291,26 +293,40 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     const nativeMenuElement = this.menuElement.nativeElement;
     let backgroundColor = '#da6c72';
     if(this.envName === "正式環境"){
-      backgroundColor = '#0054b6'
+      backgroundColor = '#6c9dd5'
     }
     else if(this.envName === "測試環境"){
       backgroundColor = '#da6c72';
     }
     else if (this.envName === "本機環境"){
-      backgroundColor = '#e8e8e8';
+      backgroundColor = '#6c9dd5'
+      // backgroundColor = '#e8e8e8';
     }
     nativeHeaderElement.style.backgroundColor = backgroundColor; 
     nativeHeaderElement.style.padding = '0 0';
     nativeHeaderElement.style.position = 'sticky';
     nativeHeaderElement.style.left = '0';
-    nativeHeaderElement.style.top = '0';
+    // nativeHeaderElement.style.top = '0';
     nativeHeaderElement.style.zIndex = '1';
 
-    nativeMenuElement.style.backgroundColor = backgroundColor;
-    nativeMenuElement.style.display = 'flex';
+    // nativeMenuElement.style.backgroundColor = backgroundColor;
+    nativeMenuElement.style.color = 'white';
+    nativeMenuElement.style.display = 'inline';
 
   }
 
+  backgroundColor(){
+    if(this.envName === "正式環境"){
+      this.logoBackgroundColor = '#6c9dd5'
+    }
+    else if(this.envName === "測試環境"){
+      this.logoBackgroundColor = '#da6c72';
+    }
+    else if (this.envName === "本機環境"){
+      this.logoBackgroundColor = '#6c9dd5'
+      // this.logoBackgroundColor = '#e8e8e8';
+    }
+  }
 
   /** custom trigger can be TemplateRef **/
   changeTrigger(): void {
@@ -381,6 +397,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleCollapsed(): void {
     this.isCollapsed = !this.isCollapsed;
+    this.logoImagePath = this.isCollapsed ? '../assets/images/headlogo.png' : '../assets/images/logo.png';
   }
 
   
