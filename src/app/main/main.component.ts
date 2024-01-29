@@ -164,7 +164,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.headerBarHandler();    
-    this.backgroundColor();
     //this.router.navigateByUrl('/main/user/profile');    
   }
 
@@ -291,7 +290,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const nativeHeaderElement = this.headerElement.elementRef.nativeElement
     const nativeMenuElement = this.menuElement.nativeElement;
-    let backgroundColor = '#da6c72';
+    let backgroundColor = '#6c9dd5';
     if(this.envName === "正式環境"){
       backgroundColor = '#6c9dd5'
     }
@@ -299,8 +298,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor = '#da6c72';
     }
     else if (this.envName === "本機環境"){
-      backgroundColor = '#6c9dd5'
-      // backgroundColor = '#e8e8e8';
+      // backgroundColor = '#6c9dd5'
+      backgroundColor = '#96a6b5';
     }
     nativeHeaderElement.style.backgroundColor = backgroundColor; 
     nativeHeaderElement.style.padding = '0 0';
@@ -313,19 +312,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     nativeMenuElement.style.color = 'black';
     // nativeMenuElement.style.display = 'inline';
 
-  }
-
-  backgroundColor(){
-    if(this.envName === "正式環境"){
-      this.logoBackgroundColor = '#6c9dd5'
-    }
-    else if(this.envName === "測試環境"){
-      this.logoBackgroundColor = '#da6c72';
-    }
-    else if (this.envName === "本機環境"){
-      this.logoBackgroundColor = '#6c9dd5'
-      // this.logoBackgroundColor = '#e8e8e8';
-    }
   }
 
   /** custom trigger can be TemplateRef **/
@@ -358,25 +344,35 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     let className = "navBar ";
     let envInfo = "";
     let envMenu = "";
+    let bgColor = "";
     switch (hostName) {
       case "ys-ppsapp01.walsin.corp":
         className += " nav-bar-prod";
         envInfo = "info info-prod";
         envMenu = "menu menu-prod";
+        bgColor = '#6c9dd5';
         break;
       case "localhost":
         className += " nav-bar-local";
         envInfo = "info info-local";
         envMenu = "menu menu-local"
+        // bgColor = '#6c9dd5';
+        bgColor = '#96a6b5';
         break;
       default:
         className += " nav-bar-tst";
         envInfo = "info info-tst";
         envMenu = "menu menu-tst";
+        bgColor = '#da6c72';
     }
+
     this.navClass = className;
     this.envInfoClass = envInfo;
     this.envMenuClass = envMenu;
+    this.logoBackgroundColor = bgColor;
+
+    // Set the value of the CSS variable
+    document.documentElement.style.setProperty('--logo-background-color', bgColor);
   }
   
   onLogout() {

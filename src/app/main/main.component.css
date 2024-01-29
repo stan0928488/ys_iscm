@@ -13,12 +13,6 @@
         format("svg");
   }
   
-  /* .layout {
-    min-height: 100vh;
-  }
-  .right-layout {
-    margin-left: 200px;
-  } */
 
   nz-sider {
     /* overflow: auto; */
@@ -26,6 +20,39 @@
     /* position: fixed;
     left: 0; */
   }
+
+  nz-content {
+    margin-bottom: 1px;
+    max-height: calc(100vh - 100px);
+    overflow: scroll;
+
+  }
+  
+  
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-button {
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid slategrey;
+  }
+
+  ::-webkit-scrollbar-track {
+    box-shadow: transparent;
+  }
+
+
 
   /* muli-regular - latin */
   
@@ -103,7 +130,31 @@
     float: right;
   }
   
-  :host ::ng-deep .info-prod .infoText{
+  :host ::ng-deep .header-tab > .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap,
+    .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
+    background-color: var(--logo-background-color, #6c9dd5);
+  }
+  
+  :host ::ng-deep .header-tab > .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab,
+    .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab {
+    border-radius: 2px 2px 0 0;
+    background-color: var(--logo-background-color, #6c9dd5);
+    border: none;
+    color: rgb(88, 88, 88);
+    font-size: 15px;
+    font-weight: 500;
+    text-shadow: 0 0 0.5px currentcolor;
+  }
+  
+  :host ::ng-deep .header-tab .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #1f3b86;
+    font-size: 16px;
+    text-shadow: 0 0 1px currentcolor;
+  }
+
+
+  
+  /* :host ::ng-deep .info-prod .infoText{
     color: white;
   }
   
@@ -133,23 +184,4 @@
 
   :host ::ng-deep .menu-tst .menuItemText{
     color: black;
-  }
-
-
-  /* :host ::ng-deep .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap, .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
-    background-color: #6ea8eb;
-  } 
- 
-  :host ::ng-deep .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab {
-    border-radius: 2px 2px 0 0;
-    background: #6ea8eb;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-  }
-  
-  :host ::ng-deep .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #f7f8fa;
-    text-shadow: 0 0 0.25px currentcolor;
-    border-bottom: 3px solid rgb(248, 250, 252);
   } */
