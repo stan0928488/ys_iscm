@@ -174,3 +174,29 @@
     --ag-background-color: white; 
     --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);    
 }
+
+
+
+:host ::ng-deep .ng-star-inserted::-webkit-scrollbar{
+	width:5px; 
+	height:2px;
+	border-radius: 10px;
+	background-color: transparent;
+  }
+   
+  :host ::ng-deep .nz-table-hide-scrollbar::-webkit-scrollbar {
+	width: 5px; 
+	background: transparent;
+  }
+   
+  :host ::ng-deep .ng-star-inserted::-webkit-scrollbar-thumb {
+	/*滚动条里面小方块*/
+	border-radius: 10px;
+	background-color: #b1d2e2;
+  }
+   
+  :host ::ng-deep .ng-star-inserted::-webkit-scrollbar-track {
+	/*滚动条里面轨道*/
+	/*border-radius: 10px;*/
+	background: transparent;
+  }

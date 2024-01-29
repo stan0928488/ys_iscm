@@ -1,4 +1,4 @@
-  <nz-layout class="layout">
+  <nz-layout>
     <nz-sider style="background-color: white;"
       nzCollapsible nzWidth="200px"
       [(nzCollapsed)]="isCollapsed"
@@ -23,14 +23,14 @@
       </ul>
     </nz-sider>
 
-    <nz-layout class="right-layout">
+    <nz-layout>
       <nz-header #headerElement style="height: 50px;">        
         <!-- <button nz-button nzType="primary" (click)="toggleCollapsed()">
           <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
         </button> -->
 
         <div nz-row [nzGutter] = "5"> 
-          <div nz-col style="width: 85%; margin: 5px">
+          <div nz-col class="header-tab" style="width: 85%; margin: 5px">
             <!-- 動態分頁區塊 -->
             <nz-tabset 
                 [(nzSelectedIndex)]="activeTabIndex"
@@ -43,7 +43,7 @@
           </div>
             
           <!-- info與登出區塊 -->
-          <div nz-col [class]="envInfoClass" style="width: 13%; text-align:right; color: black;">
+          <div nz-col style="width: 13%; text-align:right; color: black;">
             <span style="margin: 0 5px;" class="infoText">{{ envName }}</span>
             <span class="infoText">|</span>
             <span style="margin-left:5px;" class="infoText" nz-icon nzType="user" nzTheme="outline"></span>
@@ -57,7 +57,7 @@
       
       </nz-header>
       
-      <nz-content style="margin-bottom: 1px; max-height: calc(100vh - 100px); overflow: scroll;">
+      <nz-content>
         <!-- router outlet area -->
         <router-outlet
           (activate)="componentAdded($event)"
