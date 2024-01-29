@@ -8,6 +8,10 @@
         <div nz-row>
             <div nz-col [nzSpan]="6">
                 <nz-card>
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 菜單收合
+                        <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                    </button>
+                    <br><br>
                     <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
                         <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
                             <nz-tree-node-toggle>

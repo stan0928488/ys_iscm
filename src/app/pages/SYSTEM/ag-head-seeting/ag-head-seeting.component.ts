@@ -184,6 +184,22 @@ export class AgHeadSeetingComponent implements AfterViewInit {
     });
   }
 
+  expandAll(){
+    this.isExpandAll = !this.isExpandAll;
+    if(this.isExpandAll){
+      // 使用setTimeout讓expandAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.expandAll();
+      },0);
+    }
+    else{
+      // 使用setTimeout讓collapseAll在Spinning出現之後才執行
+      setTimeout(() => {
+        this.treeControl.collapseAll();
+      },0);
+    }
+  }
+
   initInsertObj(){
     this.insertObj = 
     {
