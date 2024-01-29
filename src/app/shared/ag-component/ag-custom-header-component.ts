@@ -40,7 +40,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       (nzOnClose)="handleClose()"
     >
       <ng-container *nzDrawerContent>
-      <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" [nzFrontPagination]="false" [nzShowPagination]="false">
+      <nz-table [nzData]="listOfData" [nzFrontPagination]="false" [nzShowPagination]="false">
       <thead>
         <tr>
           <th>狀態</th>
@@ -123,6 +123,13 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       this.isSave = agCustomHeaderParams['isSave']
       this.isMenuShow = agCustomHeaderParams['isMenuShow']
       this.is_param_flag = agCustomHeaderParams['is_param_flag']
+      let banFields = agCustomHeaderParams['banFields']
+      if(banFields){
+        let banFieldArr = banFields.split(",");
+        this.listOfData.forEach( (item, index) => {
+          if(banFieldArr.includes(item.colId)) this.listOfData.splice(index,1);
+        });
+      }
     }
 
     let outthis = this;
