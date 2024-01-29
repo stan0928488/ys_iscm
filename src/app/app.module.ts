@@ -195,6 +195,7 @@ import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-c
 import { MainComponent } from './main/main.component';
 import { RecursionMenusComponent } from './main/recursion-menus.component';
 import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
+import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
 
 registerLocaleData(zh);
 
@@ -362,7 +363,8 @@ registerLocaleData(zh);
     PPSR345AVERAGEComponent,
     MainComponent,
     RecursionMenusComponent,
-    AgHeadSeetingComponent
+    AgHeadSeetingComponent,
+    NumberCellEditorComponent
   ],
   imports: [
     BrowserModule,

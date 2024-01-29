@@ -7,6 +7,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { number } from 'echarts';
+import { NumberCellEditorComponent } from '../../RENDERER/number-cell-editor.component';
 
 
 @Component({
@@ -77,14 +78,22 @@ export class AgHeadSeetingComponent implements AfterViewInit {
       field: 'remark',
     },
     {
-      width: 150,
+      width: 100,
       headerName: '顯示順位',
       field: 'sortIndex',
+      cellEditor: NumberCellEditorComponent,
+      cellRenderer: (data) => {
+        return data.value;
+      }
     },
     {
-      width: 150,
+      width: 100,
       headerName: 'ag默認欄寬',
       field: 'width',
+      cellEditor: NumberCellEditorComponent,
+      cellRenderer: (data) => {
+        return data.value;
+      }
     },
     {
       width: 150,
