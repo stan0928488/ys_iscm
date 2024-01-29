@@ -200,6 +200,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
     this.systemService.saveHeaderComponentStatusSys(saveList).subscribe(res => {
       let result: any = res;
       if (result.code === 200) {
+        this.loadHeaderComponentStatusSys();
         this.message.success("儲存成功")
       } else {
         this.message.error("儲存失敗")
@@ -223,10 +224,14 @@ export class AgHeadSeetingComponent implements AfterViewInit {
   expend(node) {
     this.currentNode = node;
     this.treeControl.toggle(node)
+    this.loadHeaderComponentStatusSys();
+  }
+
+  loadHeaderComponentStatusSys(){
     let columnState = {};
     columnState['agName'] = '';
     columnState['headername'] = '';
-    columnState['path'] = node.path;
+    columnState['path'] = this.currentNode.path;
     this.systemService.getHeaderComponentStatusSys(columnState).subscribe(res => {
       let result: any = res;
       if (result.code === 200) {
@@ -235,7 +240,6 @@ export class AgHeadSeetingComponent implements AfterViewInit {
         this.message.error("load error")
       }
     });
-
   }
 
   getNode(menuName: string): FlatNode | null {
@@ -249,6 +253,7 @@ export class AgHeadSeetingComponent implements AfterViewInit {
       this.systemService.saveHeaderComponentStatusSys(saveList).subscribe(res => {
         let result: any = res;
         if (result.code === 200) {
+          this.loadHeaderComponentStatusSys();
           this.message.success("儲存成功")
         } else {
           this.message.error("儲存失敗")

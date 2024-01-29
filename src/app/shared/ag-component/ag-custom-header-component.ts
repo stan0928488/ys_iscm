@@ -153,9 +153,9 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
               (el) => element.colId == el.colId
             );
             if(findcolDef){
-              findcolDef.sortable = (element.sortable == "1" ? true : false)
-              findcolDef.resizable = (element.resizable == "1" ? true : false)
-              findcolDef.filter = (element.filter == "1" ? true : false)
+              findcolDef.sortable = (element.sortable == "0" ? true : false)
+              findcolDef.resizable = (element.resizable == "0" ? true : false)
+              findcolDef.filter = (element.filter == "0" ? true : false)
             }
           });
           this.params.api.setColumnDefs(colDefs);
@@ -263,6 +263,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     // console.log(this.params.columnApi.getAllDisplayedColumns())
   }
   handleClose(){
+    this.listOfData.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
     this.visible = !this.visible ;
   }
 
