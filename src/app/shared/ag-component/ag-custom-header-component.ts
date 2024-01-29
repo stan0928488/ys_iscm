@@ -134,8 +134,8 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
     let outthis = this;
     if('0' == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
-      //鎖一秒防止重複呼叫
-      this.localStorageService.setItem("headerComponentLock","lock",1000);
+      //鎖五秒防止重複呼叫
+      this.localStorageService.setItem("headerComponentLock","lock",5000);
       columnState.forEach(function (element) {
         element['agName'] = agCustomHeaderParams['agName']
         element['headername'] = ''
@@ -276,7 +276,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
   drop(event: CdkDragDrop<string[]>): void {
     //鎖一秒防止重複呼叫
-    this.localStorageService.setItem("headerComponentLock","lock",1000);
+    this.localStorageService.setItem("headerComponentLock","lock",5000);
     const colId = this.listOfData[event.previousIndex].colId ;
     const targetIndex = event.currentIndex; // 移動到的目標索引
     this.params.columnApi.moveColumn(colId, targetIndex);
@@ -286,7 +286,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   //控制顯示
   handleVisible(colId:any){
     //鎖一秒防止重複呼叫
-    this.localStorageService.setItem("headerComponentLock","lock",1000);
+    this.localStorageService.setItem("headerComponentLock","lock",5000);
     const currentVisibility = this.params.columnApi.getColumn(colId).isVisible();
     this.params.columnApi.setColumnVisible(colId, !currentVisibility);
   }
