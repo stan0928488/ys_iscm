@@ -309,9 +309,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     // nativeHeaderElement.style.top = '0';
     nativeHeaderElement.style.zIndex = '1';
 
-    // nativeMenuElement.style.backgroundColor = backgroundColor;
-    nativeMenuElement.style.color = 'white';
-    nativeMenuElement.style.display = 'inline';
+    // nativeMenuElement.style.backgroundColor = 'white';
+    nativeMenuElement.style.color = 'black';
+    // nativeMenuElement.style.display = 'inline';
 
   }
 
