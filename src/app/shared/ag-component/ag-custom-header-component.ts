@@ -230,13 +230,15 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       setPin = null
     }
     for (const column of allDisplayedColumns) {
-      if(setPin === null) {
-        this.params.columnApi.setColumnPinned(column, setPin);
-      } else {
-        this.params.columnApi.setColumnPinned(column, setPin);
-        if (column === currentColumn) {
+      if(column.getColDef().headerComponent){
+        if(setPin === null) {
           this.params.columnApi.setColumnPinned(column, setPin);
-          return ;
+        } else {
+          this.params.columnApi.setColumnPinned(column, setPin);
+          if (column === currentColumn) {
+            this.params.columnApi.setColumnPinned(column, setPin);
+            return ;
+          }
         }
       }
     }
