@@ -75,7 +75,10 @@ export class PPSI206RESComponent implements OnInit  {
       width: 130,
       headerName: '訂單編號',
       field: 'saleOrder',
-      headerComponent: AGCustomHeaderComponent
+      headerComponent: AGCustomHeaderComponent,
+      headerComponentParams: {
+        isMenuShow: true,// true 顯示抽屜菜單
+      }
     },
     {
       width: 110,
