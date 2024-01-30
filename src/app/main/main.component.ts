@@ -12,6 +12,8 @@ import { NzModalService } from "ng-zorro-antd/modal";
 import { TabModel, TabService } from "../services/common/tab.service";
 import { Subscription, filter, map, mergeMap } from "rxjs";
 import * as uuid from 'uuid';
+import { ModalOptions } from 'ng-zorro-antd/modal';
+import { SearchRouteService } from '../widget/search-route/search-route.service';
 
 @Component({
   selector: 'app-main',
@@ -63,7 +65,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private nzModalService: NzModalService,
     private activatedRoute: ActivatedRoute,
     private tabService: TabService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private searchRouteService: SearchRouteService,
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -515,6 +518,17 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       return isoDateString;
     }
     return '';
+  }
+
+  showSearchModal(): void {
+    const modalOptions: ModalOptions = {
+      nzClosable: false,
+      nzMaskClosable: true,
+      nzStyle: { top: '48px' },
+      nzFooter: null,
+      nzBodyStyle: { padding: '0' }
+    };
+    this.searchRouteService.show(modalOptions);
   }
 
 }
