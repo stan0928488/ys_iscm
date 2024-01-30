@@ -301,9 +301,13 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
     columnState.forEach(function (element) {
       element['agName'] = agCustomHeaderParams['agName']
-      element['headername'] = element['headername'] = outthis.listOfData.find(
+      let findElement = element['headername'] = outthis.listOfData.find(
         (el) => element.colId == el.colId
-      ).userProvidedColDef.headerName;
+      );
+      element['headername'] = '';
+      if(findElement){
+        element['headername'] = findElement.userProvidedColDef.headerName;
+      }
       element['path'] = agCustomHeaderParams['path']
     }); 
 
