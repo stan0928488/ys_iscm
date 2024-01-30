@@ -15,7 +15,7 @@
         >
       </div>
       
-      <ul nz-menu nzMode="inline" nzTheme="light" [nzInlineCollapsed]="isCollapsed" #menuElement>
+      <ul nz-menu nzMode="inline" nzTheme="light" #menuElement>
         <!-- 菜單區塊 -->
         <menus 
           [menus]="menus">
@@ -42,10 +42,12 @@
           <div nz-col style="width: 13%; text-align:right; color: black;">
             <span style="margin: 0 5px;" class="infoText">{{ envName }}</span>
             <span class="infoText">|</span>
+            <a style="color: black;" [routerLink]="['/main/user/profile']">
             <span style="margin-left:5px;" class="infoText" nz-icon nzType="user" nzTheme="outline"></span>
             <span style="margin: 0 5px;" class="infoText">{{ userName }}</span>
+            </a>
             <span class="infoText">|</span>
-            <a style="color: black" nz-popconfirm nzPopconfirmTitle="是否要登出？" (nzOnConfirm)="onLogout()">
+            <a style="color: black" (click)="onLogout()">
               <span style="margin: 0 5px;" nz-icon nzType="logout" nzTheme="outline" ></span> 登出
             </a>
           </div>

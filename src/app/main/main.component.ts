@@ -295,10 +295,10 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor = '#6c9dd5'
     }
     else if(this.envName === "測試環境"){
-      backgroundColor = '#da6c72';
+      backgroundColor = '#df878c';
     }
     else if (this.envName === "本機環境"){
-      // backgroundColor = '#6c9dd5'
+      // backgroundColor = '#df878c'
       backgroundColor = '#96a6b5';
     }
     nativeHeaderElement.style.backgroundColor = backgroundColor; 
@@ -356,14 +356,14 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         className += " nav-bar-local";
         envInfo = "info info-local";
         envMenu = "menu menu-local"
-        // bgColor = '#6c9dd5';
+        // bgColor = '#df878c';
         bgColor = '#96a6b5';
         break;
       default:
         className += " nav-bar-tst";
         envInfo = "info info-tst";
         envMenu = "menu menu-tst";
-        bgColor = '#da6c72';
+        bgColor = '#df878c';
     }
 
     this.navClass = className;
@@ -381,7 +381,11 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cookieService.setCookie("plantCode", "", 1);
     this.userName = "";
     this.plantCode = "";
+    // 清空分頁
+    this.tabsSourceData = [];
+    this.tabService.clearTabDataList();
     this.router.navigate(["login"]);
+
   }
 
   componentAdded(_event) {}

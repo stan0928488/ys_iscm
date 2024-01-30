@@ -147,7 +147,8 @@
   }
   
   :host ::ng-deep .header-tab .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #1f3b86;
+    /* color: #1f3b86; */
+    color: #ffffff;
     font-size: 16px;
     text-shadow: 0 0 1px currentcolor;
   }
