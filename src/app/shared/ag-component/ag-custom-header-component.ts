@@ -20,7 +20,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
-      <span style='margin-left:5px;' *ngIf="isMenuShow"  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
       <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
@@ -31,7 +31,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       <input type="text"  nz-input  nzSize="small" style='width:100px;' [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       </nz-input-group> -->
 
-      <nz-drawer
+      <nz-drawer *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "
       [nzClosable]="false"
       [nzVisible]="visible"
       [nzFooter]="footerTpl"
@@ -49,7 +49,9 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
         <tr *ngFor="let data of listOfData" cdkDrag>
-          <td> <nz-switch [ngModel]="data.visible" (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.visible" 
+          [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
         </tr>
       </tbody>
@@ -299,9 +301,13 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
     columnState.forEach(function (element) {
       element['agName'] = agCustomHeaderParams['agName']
-      element['headername'] = element['headername'] = outthis.listOfData.find(
+      let findElement = element['headername'] = outthis.listOfData.find(
         (el) => element.colId == el.colId
-      ).userProvidedColDef.headerName;
+      );
+      element['headername'] = '';
+      if(findElement){
+        element['headername'] = findElement.userProvidedColDef.headerName;
+      }
       element['path'] = agCustomHeaderParams['path']
     }); 
 

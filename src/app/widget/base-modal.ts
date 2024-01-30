@@ -2,11 +2,11 @@ import { DragDrop, DragRef } from '@angular/cdk/drag-drop';
 import { Injectable, Injector, Renderer2, RendererFactory2, TemplateRef, Type } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
+
+import { fnGetUUID } from '@utils/tools';
 import * as _ from 'lodash';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { ModalButtonOptions, ModalOptions, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { v4 as uuidv4 } from 'uuid';
-
 
 interface ModalZIndex {
   zIndex: number;
@@ -54,7 +54,7 @@ export class ModalWrapService {
   }
 
   protected getRandomCls() {
-    return `NZ-MODAL-WRAP-CLS-${ uuidv4 }`;
+    return `NZ-MODAL-WRAP-CLS-${fnGetUUID()}`;
   }
 
   private cancelCallback(modalButtonOptions: ModalButtonOptions): void {

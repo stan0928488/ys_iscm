@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { Menu } from '@core/services/types';
+import { Menu } from 'src/app/pages/SYSTEM/config/types';
 
 // 菜单store service
 @Injectable({

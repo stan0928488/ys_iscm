@@ -7,10 +7,11 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
+import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams, Column } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { AppComponent } from 'src/app/app.component';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 
 
@@ -33,6 +34,23 @@ export class PPSI206RESComponent implements OnInit  {
       filter: true,
     },
     api: null,
+    onColumnMoved(e){
+      const found:Column = e.columnApi.getColumns().find(
+        (element) => element.sortIndex == e.toIndex
+      );
+      if(found){
+        found.setSortIndex(e.column.sortIndex);
+      }
+      e.column.setSortIndex(e.toIndex);
+    },
+    agCustomHeaderParams : {
+      isMenuShow: true,// true 顯示抽屜菜單
+      agName: 'AGName1' , // AG 表名
+      isSave:true , // 是否顯示保存
+      path:this.router.url,
+      is_param_flag:'1', //是則抓取DB內的參數
+      banFields:''
+    }
   };
 
   constructor(
@@ -42,7 +60,8 @@ export class PPSI206RESComponent implements OnInit  {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private appComponent: AppComponent
+    private appComponent: AppComponent,
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
   }
@@ -56,7 +75,10 @@ export class PPSI206RESComponent implements OnInit  {
       width: 130,
       headerName: '訂單編號',
       field: 'saleOrder',
-      headerComponent: AGCustomHeaderComponent
+      headerComponent: AGCustomHeaderComponent,
+      headerComponentParams: {
+        isMenuShow: true,// true 顯示抽屜菜單
+      }
     },
     {
       width: 110,

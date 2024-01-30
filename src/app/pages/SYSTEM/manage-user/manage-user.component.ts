@@ -57,7 +57,6 @@ export class ManageUserComponent implements AfterViewInit {
       sortable: false,
       resizable: true,
       filter: true,
-      suppressMovableColumns : true
     },
     api: null,
     onColumnMoved(e){
@@ -74,7 +73,7 @@ export class ManageUserComponent implements AfterViewInit {
       agName: 'AGName1' , // AG 表名
       isSave:true , // 是否顯示保存
       path:this.router.url,
-      is_param_flag:'1', //是則抓取DB內的參數
+      is_param_flag:'0', //是則抓取DB內的參數
       banFields:'id'
     }
   };
@@ -106,7 +105,10 @@ export class ManageUserComponent implements AfterViewInit {
   }
 
   colDefs: ColDef<IRow>[] = [
-    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent},
+    {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent,
+    headerComponentParams: {
+      isMenuShow: true,// true 顯示抽屜菜單
+    }},
     {headerName: '工號',field: 'userCode', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '使用者名稱',field: 'userNickName', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '職位',field: 'positionName', width:200, headerComponent : AGCustomHeaderComponent},

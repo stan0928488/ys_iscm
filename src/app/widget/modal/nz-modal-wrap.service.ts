@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { ConfirmType, ModalOptions, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 
-import { ModalDragService } from '../modal/modal-drag.service';
+import { ModalDragService } from './modal-drag.service';
 
 @Injectable()
 export class NzModalWrapService {
