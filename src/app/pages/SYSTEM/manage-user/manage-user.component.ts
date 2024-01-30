@@ -57,7 +57,6 @@ export class ManageUserComponent implements AfterViewInit {
       sortable: false,
       resizable: true,
       filter: true,
-      suppressMovableColumns : true
     },
     api: null,
     onColumnMoved(e){
