@@ -36,6 +36,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 const zorroComponent :any = [
   NzButtonModule
@@ -74,6 +75,7 @@ const zorroComponent :any = [
  ,NzBadgeModule
  ,NzTreeViewModule
  ,NzAffixModule
+ ,NzEmptyModule
 ]
 @NgModule({
   imports: [

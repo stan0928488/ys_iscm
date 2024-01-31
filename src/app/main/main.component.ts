@@ -1,7 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { normalizePassiveListenerOptions } from '@angular/cdk/platform';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
-import { Router, CanActivate, ActivatedRoute, NavigationEnd, NavigationCancel, ChildActivationEnd } from "@angular/router";
+import { Router, ActivatedRoute, NavigationEnd, ChildActivationEnd } from "@angular/router";
+import { Subscription, filter, map, mergeMap, fromEvent, of } from "rxjs";
+import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
 import * as _ from "lodash";
 import * as moment from "moment";
@@ -10,13 +13,17 @@ import { MainEventBusComponent } from "./main-event-bus.component";
 import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TabModel, TabService } from "../services/common/tab.service";
-import { Subscription, filter, map, mergeMap } from "rxjs";
+import { DestroyService } from 'src/app/services/common/destory.service';
 import * as uuid from 'uuid';
+
+
+const passiveEventListenerOptions = <AddEventListenerOptions>normalizePassiveListenerOptions({ passive: true });
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+  styleUrls: ['./main.component.css'],
+  providers: [DestroyService]
 })
 export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -32,12 +39,10 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   envMenuClass = "";
   logoImagePath = "../assets/images/headlogo.png";
   logoBackgroundColor = '#da6c72';
+
   menus: TreeNode[] = [];
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
-  @HostListener('document:keyup', ['$event'])
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:wheel', ['$event'])
   resetTimer() {
     this.authService.notifyUserLoginAction();
   }
@@ -54,16 +59,29 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
    // 路由事件監聽(哪個頁面被點擊)
    routerEventsSubscription : Subscription = null; 
    
+
+  // 菜單搜索
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+  @HostListener('document:keyup', ['$event'])
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:wheel', ['$event'])
+  isVisible = false;
+  resultListShow: ResultItem[] = [];
+  resultList: ResultItem[] = [];
+  inputValue: string | null = null;
+
   constructor(
     private cookieService: CookieService,
     public router: Router,
+    private ngZone: NgZone,
     private authService: AuthService,
     private mainEventBusComponent: MainEventBusComponent,
     private systemService : SYSTEMService,
     private nzModalService: NzModalService,
     private activatedRoute: ActivatedRoute,
     private tabService: TabService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroy$: DestroyService
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -139,6 +157,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         this.menus = [];
       }
     });
+
+    this.resultListFactory();
     
   }
 
@@ -163,8 +183,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    this.headerBarHandler();    
-    //this.router.navigateByUrl('/main/user/profile');    
+    this.headerBarHandler();
+    // this.subSearchFn();
   }
 
   // 當前正在瀏覽的分頁
@@ -517,8 +537,155 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     return '';
   }
 
+
+  // 菜單搜索
+  changeSelAnswerIndex(dir: 'up' | 'down'): number | null {
+    const index = this.resultListShow.findIndex(item => item.selItem);
+    if (index > -1) {
+      // 向上
+      if (dir === 'up') {
+        if (index === 0) {
+          return this.resultListShow.length - 1;
+        } else {
+          return index - 1;
+        }
+      } else {
+        if (index === this.resultListShow.length - 1) {
+          return 0;
+        } else {
+          return index + 1;
+        }
+      }
+    } else {
+      return null;
+    }
+  }
+
+  @HostListener('window:keyup.enter')
+  onEnterUp() {
+    const index = this.resultListShow.findIndex(item => item.selItem);
+    if (index > -1) {
+      this.resultClick(this.resultListShow[index]);
+    }
+  }
+
+  @HostListener('window:keyup.arrowUp')
+  onArrowUp() {
+    const index = this.changeSelAnswerIndex('up');
+    if (index !== null) {
+      this.mouseOverItem(this.resultListShow[index]);
+    }
+  }
+
+  @HostListener('window:keyup.arrowDown')
+  onArrowDown() {
+    const index = this.changeSelAnswerIndex('down');
+    if (index !== null) {
+      this.mouseOverItem(this.resultListShow[index]);
+    }
+  }
+
+  resultClick(resultItem: ResultItem): void {
+    this.router.navigate([resultItem.routePath]);
+    this.isVisible = true;
+  }
+
+  getResultItem(menu: TreeNode, fatherTitle: string = ''): ResultItem[] {
+    const fatherTitleTemp = fatherTitle === '' ? menu.menuName : `${fatherTitle} > ${menu.menuName}`;
+    let resultItem: ResultItem = {
+      title: fatherTitleTemp,
+      routePath: menu.path!,
+      selItem: false,
+      isAliIcon: !!menu.icon,
+      icon: menu.icon! || menu.icon!
+    };
+    if (menu.children && menu.children.length > 0) {
+      let resultArrayTemp: ResultItem[] = [];
+      menu.children.forEach(menuChild => {
+        resultArrayTemp = [...resultArrayTemp, ...this.getResultItem(menuChild, fatherTitleTemp)];
+      });
+      return resultArrayTemp;
+    } else {
+      return [resultItem];
+    }
+  }
+  
+  mouseOverItem(item: ResultItem): void {
+    this.resultListShow.forEach(resultItem => {
+      resultItem.selItem = false;
+    });
+    item.selItem = true;
+  }
+
+  resultListFactory(): void {
+    let temp: ResultItem[] = [];
+    this.menus.forEach(item => {
+      temp = [...temp, ...this.getResultItem(item)];
+    });
+    this.resultList = temp;
+  }
+
+  showSearchModal() {
+    this.isVisible = true;
+    this.subSearchFn();
+  }
+  
+  searchMenuCancel() {
+    this.isVisible = false;
+  }
+
+  
+  clearInput(): void {
+    this.inputValue = '';
+    this.resultListShow = [];
+    this.cdr.markForCheck();
+  }
+
+  subSearchFn(): void {
+    this.ngZone.runOutsideAngular(() => {
+      console.log("A----" + this.searchInput)
+      console.log("B----" + this.searchInput.nativeElement)
+      fromEvent(this.searchInput.nativeElement, 'input', passiveEventListenerOptions)
+        .pipe(
+          map(e => (e.target as HTMLInputElement).value),
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap(item => {
+            return of(item);
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe(res => {
+          this.resultListShow = [];
+          this.resultList.forEach(item => {
+            if (item.title.includes(res)) {
+              this.resultListShow.push(item);
+            }
+          });
+          if (this.resultListShow.length > 0) {
+            this.resultListShow[0].selItem = true;
+          }
+          this.resultListShow = [...this.resultListShow];
+          // 清空搜索条件时将结果集置空
+          if (!res) {
+            this.resultListShow = [];
+          }
+          this.ngZone.run(() => {
+            this.cdr.markForCheck();
+          });
+      });
+    });
+  }
+
 }
 
+interface ResultItem {
+  selItem: boolean;
+  isAliIcon: boolean;
+  title: string;
+  routePath: string;
+  icon: string;
+}
 
 interface TreeNode {
   isShow?:number;

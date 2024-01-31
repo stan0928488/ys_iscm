@@ -153,6 +153,26 @@
     text-shadow: 0 0 1px currentcolor;
   }
 
+  .footer-icon {
+    display: flex;
+    width: 20px;
+    height: 18px;
+    padding-bottom: 2px;
+    margin-right: .4em;
+    background-color: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
+    border-radius: 2px;
+    box-shadow: inset 0 -2px #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px #1e235a66;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* :host ::ng-deep .m-l-8 {
+    margin-left: 8px !important;
+  }
+
+  :host ::ng-deep .sp-12 {
+    font-size: 12px !important;
+  } */
 
   
   /* :host ::ng-deep .info-prod .infoText{
