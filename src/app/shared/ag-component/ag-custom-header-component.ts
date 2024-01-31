@@ -45,6 +45,10 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
         <tr>
           <th>狀態</th>
           <th>欄位</th>
+          <th>width</th>
+          <th>resizeable</th>
+          <th>filter</th>
+          <th>sortable</th>
         </tr>
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -53,6 +57,10 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
           [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
           (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
+          <td> <nz-input-number [(ngModel)]="data.colDef.width"></nz-input-number></td>
+          <td> <nz-switch [ngModel]="data.colDef.resizable"></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.colDef.filter"></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.colDef.sortable"></nz-switch></td>
         </tr>
       </tbody>
     </nz-table>
@@ -303,12 +311,17 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     columnState.forEach(function (element,index) {
       element['agName'] = agCustomHeaderParams['agName']
       element.sortIndex = index ;
-      let findElement = element['headername'] = outthis.listOfData.find(
+      let findElement = outthis.listOfData.find(
         (el) => element.colId == el.colId
       );
       element['headername'] = '';
       if(findElement){
+        console.log(findElement)
         element['headername'] = findElement.userProvidedColDef.headerName;
+        element['width'] = findElement.colDef.width
+        element['sortable'] = findElement.colDef.sortable
+        element['resizable'] = findElement.colDef.resizable
+        element['filter'] = findElement.colDef.filter
       }
       element['path'] = agCustomHeaderParams['path']
     }); 
