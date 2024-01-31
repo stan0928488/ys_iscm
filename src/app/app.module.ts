@@ -196,7 +196,7 @@ import { MainComponent } from './main/main.component';
 import { RecursionMenusComponent } from './main/recursion-menus.component';
 import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
 import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
-import { NzModalWrapService } from './widget/modal/nz-modal-wrap.service';
+// import { NzModalWrapService } from './widget/modal/nz-modal-wrap.service';
 
 registerLocaleData(zh);
 
@@ -365,8 +365,7 @@ registerLocaleData(zh);
     MainComponent,
     RecursionMenusComponent,
     AgHeadSeetingComponent,
-    NumberCellEditorComponent,
-    NzModalWrapService
+    NumberCellEditorComponent
   ],
   imports: [
     BrowserModule,

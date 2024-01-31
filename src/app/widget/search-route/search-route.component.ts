@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { fromEvent, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs/operators';
 
-import { DestroyService } from '@core/services/common/destory.service';
-import { Menu } from '@core/services/types';
-import { MenuStoreService } from '@store/common-store/menu-store.service';
-import { ThemeService } from '@store/common-store/theme.service';
-import { BasicConfirmModalComponent } from '@widget/base-modal';
+import { DestroyService } from 'src/app/services/common/destory.service';
+import { Menu } from 'src/app/pages/SYSTEM/config/types';
+import { MenuStoreService } from 'src/app/services/common/menu-store.service';
+// import { ThemeService } from '@store/common-store/theme.service';
+import { BasicConfirmModalComponent } from '../base-modal';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -30,7 +30,7 @@ const passiveEventListenerOptions = <AddEventListenerOptions>normalizePassiveLis
   providers: [DestroyService]
 })
 export class SearchRouteComponent extends BasicConfirmModalComponent implements OnInit, AfterViewInit {
-  isNightTheme$ = this.themesService.getIsNightTheme();
+  // isNightTheme$ = this.themesService.getIsNightTheme();
   resultListShow: ResultItem[] = [];
   resultList: ResultItem[] = [];
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -38,7 +38,7 @@ export class SearchRouteComponent extends BasicConfirmModalComponent implements 
   menuNavList: Menu[] = [];
 
   constructor(
-    private themesService: ThemeService,
+    // private themesService: ThemeService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
     private destroy$: DestroyService,

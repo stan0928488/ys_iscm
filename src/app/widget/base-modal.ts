@@ -3,7 +3,7 @@ import { Injectable, Injector, Renderer2, RendererFactory2, TemplateRef, Type } 
 import { Observable, of } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 
-import { fnGetUUID } from '@utils/tools';
+import { v4 as uuidv4 } from 'uuid';
 import * as _ from 'lodash';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { ModalButtonOptions, ModalOptions, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
@@ -54,7 +54,7 @@ export class ModalWrapService {
   }
 
   protected getRandomCls() {
-    return `NZ-MODAL-WRAP-CLS-${fnGetUUID()}`;
+    return `NZ-MODAL-WRAP-CLS-${ uuidv4 }`;
   }
 
   private cancelCallback(modalButtonOptions: ModalButtonOptions): void {
