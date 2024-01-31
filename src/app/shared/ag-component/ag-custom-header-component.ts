@@ -167,15 +167,16 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
               findcolDef.filter = (element.filter == "0" ? true : false)
             }
           });
+          colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
           this.params.api.setColumnDefs(colDefs);
 
           //move
-          columnState.forEach(function (element) {
-            if(element.sortIndex || element.sortIndex == 0){
-              console.log(element.colId+" to "+element.sortIndex)
-              outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
-            }
-          });
+          // columnState.forEach(function (element) {
+          //   if(element.sortIndex || element.sortIndex == 0){
+          //     console.log(element.colId+" to "+element.sortIndex)
+          //     outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
+          //   }
+          // });
 
         } else {
           this.message.error("load error")
@@ -299,8 +300,9 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     let outthis = this;
     let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
-    columnState.forEach(function (element) {
+    columnState.forEach(function (element,index) {
       element['agName'] = agCustomHeaderParams['agName']
+      element.sortIndex = index ;
       let findElement = element['headername'] = outthis.listOfData.find(
         (el) => element.colId == el.colId
       );

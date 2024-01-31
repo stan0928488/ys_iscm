@@ -32,6 +32,7 @@ export class PPSI206RESComponent implements OnInit  {
       sortable: false,
       resizable: true,
       filter: true,
+      suppressMovable: true
     },
     api: null,
     onColumnMoved(e){
