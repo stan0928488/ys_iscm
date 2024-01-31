@@ -20,7 +20,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-down"  [ngClass]="{ 'active': !isAscendingDown }"  (click)="toggleSortDown('desc', $event)" nzTheme="outline"></span>
       <span *ngIf='openSort' style='margin-left:5px;'   nz-icon nzType="arrow-up"   [ngClass]="{ 'active': !isAscendingUp }" (click)="toggleSortUp('asc', $event)"  nzTheme="outline"></span>
      
-      <span style='margin-left:5px;' *ngIf="isMenuShow"  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
+      <span style='margin-left:5px;' *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
       <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
@@ -31,7 +31,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       <input type="text"  nz-input  nzSize="small" style='width:100px;' [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       </nz-input-group> -->
 
-      <nz-drawer
+      <nz-drawer *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "
       [nzClosable]="false"
       [nzVisible]="visible"
       [nzFooter]="footerTpl"
@@ -45,12 +45,22 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
         <tr>
           <th>狀態</th>
           <th>欄位</th>
+          <th>width</th>
+          <th>resizeable</th>
+          <th>filter</th>
+          <th>sortable</th>
         </tr>
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
         <tr *ngFor="let data of listOfData" cdkDrag>
-          <td> <nz-switch [ngModel]="data.visible" (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.visible" 
+          [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
+          <td> <nz-input-number [(ngModel)]="data.colDef.width"></nz-input-number></td>
+          <td> <nz-switch [ngModel]="data.colDef.resizable"></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.colDef.filter"></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.colDef.sortable"></nz-switch></td>
         </tr>
       </tbody>
     </nz-table>
@@ -165,15 +175,16 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
               findcolDef.filter = (element.filter == "0" ? true : false)
             }
           });
+          colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
           this.params.api.setColumnDefs(colDefs);
 
           //move
-          columnState.forEach(function (element) {
-            if(element.sortIndex || element.sortIndex == 0){
-              console.log(element.colId+" to "+element.sortIndex)
-              outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
-            }
-          });
+          // columnState.forEach(function (element) {
+          //   if(element.sortIndex || element.sortIndex == 0){
+          //     console.log(element.colId+" to "+element.sortIndex)
+          //     outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
+          //   }
+          // });
 
         } else {
           this.message.error("load error")
@@ -297,11 +308,21 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     let outthis = this;
     let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
-    columnState.forEach(function (element) {
+    columnState.forEach(function (element,index) {
       element['agName'] = agCustomHeaderParams['agName']
-      element['headername'] = element['headername'] = outthis.listOfData.find(
+      element.sortIndex = index ;
+      let findElement = outthis.listOfData.find(
         (el) => element.colId == el.colId
-      ).userProvidedColDef.headerName;
+      );
+      element['headername'] = '';
+      if(findElement){
+        console.log(findElement)
+        element['headername'] = findElement.userProvidedColDef.headerName;
+        element['width'] = findElement.colDef.width
+        element['sortable'] = findElement.colDef.sortable
+        element['resizable'] = findElement.colDef.resizable
+        element['filter'] = findElement.colDef.filter
+      }
       element['path'] = agCustomHeaderParams['path']
     }); 
 
