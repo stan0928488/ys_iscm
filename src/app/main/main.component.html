@@ -66,10 +66,6 @@
             
           <!-- info與登出區塊 -->
           <nz-affix style="position: absolute; top: 2px; right: 10px;">
-          <!-- <div nz-col style="width: 13%; text-align:right; color: black;"> -->
-            <span (click)="showSearchModal()" style="color: aquamarine;" nz-tooltip nzTooltipTitle="選單搜索" nzTooltipPlacement="bottom">
-              <i nz-icon nzType="search" style="margin: 0 5px;" nzTheme="outline"></i>
-            </span>
             <span class="infoText">|</span>
             <span style="margin: 0 5px;" class="infoText">{{ envName }}</span>
             <span class="infoText">|</span>
@@ -81,7 +77,6 @@
             <a style="color: black" (click)="onLogout()">
               <span style="margin: 0 5px;" nz-icon nzType="logout" nzTheme="outline" ></span> 登出
             </a></nz-affix>
-          <!-- </div> -->
         </div>
       
       </nz-header>
@@ -110,80 +105,3 @@
     <i class="anticon anticon-up"></i>
   </ng-template>
     
-  
- <!---菜單搜索-->
-<nz-modal
-  [(nzVisible)]="isVisible"
-  [nzTitle]="searchMenuTitle"
-  [nzContent]="searchMenuContent"
-  [nzFooter]="searchMenuFooter"
-  [nzWidth]="800"
-  (nzOnCancel)="searchMenuCancel()"
->
-<ng-container>
-
-  <ng-template #searchMenuTitle>選單搜索</ng-template>
-  <ng-template #searchMenuContent>
-  
-    <nz-input-group [nzSuffix]="inputClearTpl" nzSize="large" [nzPrefix]="prefixTemplateUser">
-      <input #searchInput nzSize="large" [(ngModel)]="inputValue" type="text" nz-input placeholder="搜索" />
-    </nz-input-group>
-    <ng-template #inputClearTpl>
-      <i nz-icon class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="inputValue" (click)="clearInput()"></i>
-    </ng-template>
-    
-    <div style="margin-top: 15px !important;">
-      <ng-template #noResult>
-        <nz-empty [nzNotFoundContent]="contentTpl">
-          <ng-template #contentTpl>
-            <span>請輸入選單名稱進行搜索</span>
-          </ng-template>
-        </nz-empty>
-      </ng-template>
-      <ul *ngIf="resultListShow.length > 0; else noResult">
-        <li
-          *ngFor="let item of resultListShow"
-          (click)="resultClick(item)"
-          [class.result-item-bg]="item.selItem"
-          [style]="{ color: item.selItem ? 'white' : '' }"
-          (mouseover)="mouseOverItem(item)"
-          class="result-item sp-16"
-          nz-row
-        >
-          <div nz-col nzFlex="auto">
-            <i *ngIf="!item.isAliIcon; else zorroIcon" class="m-r-8" nz-icon [nzType]="item.icon!" nzTheme="outline"></i>
-            <ng-template #zorroIcon>
-              <i class="m-r-8" nz-icon [nzIconfont]="item.icon!"></i>
-            </ng-template>
-            <span>{{ item.title }}</span>
-          </div>
-          <i *ngIf="item.selItem" style="color: white" class="sp-18 m-r-8" nz-col nzFlex="30px" nz-icon nzType="enter" nzTheme="outline"></i>
-        </li>
-      </ul>
-    </div>
-  </ng-template>
-
-  <ng-template #searchMenuFooter>
-    <div nz-row>
-      <div nz-col style="display: flex;align-items: center; justify-content: flex-start;">
-        <i class="footer-icon" nz-icon nzType="enter" nzTheme="outline" ></i>
-        確認
-      </div>
-      <div nz-col style="display: flex;align-items: center; justify-content: flex-start; margin-left: 5px;">
-        <i class="footer-icon" nz-icon nzType="arrow-up" nzTheme="outline"></i>
-        <i class="footer-icon" nz-icon nzType="arrow-down" nzTheme="outline"></i>
-        切換
-      </div>
-      <div nz-col style="display: flex;align-items: center; justify-content: flex-start; margin-left: 5px;">
-        <span class="footer-icon">ESC</span>
-        關閉
-      </div>    
-    </div>
-  </ng-template>
-
-</ng-container>
-</nz-modal>
-
-
-<ng-template #prefixTemplateUser><i nz-icon nzType="search"></i></ng-template>
-<!---菜單搜索結束-->
