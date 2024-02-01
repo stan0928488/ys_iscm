@@ -14,6 +14,7 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import * as _ from "lodash";
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { Router, ActivatedRoute } from '@angular/router';
 
   interface data {
 
@@ -36,7 +37,9 @@ export class PPSR302Component implements OnInit {
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private message:NzMessageService ,
-    private modalService: NzModalService
+    private modalService: NzModalService,
+    private activatedRoute: ActivatedRoute,
+    private route: Router
   ) { }
 
   ngOnInit() {
@@ -44,12 +47,15 @@ export class PPSR302Component implements OnInit {
     this.getVerList();
     this.getAreaGroup();
     this.getWeekData();
+    this.activatedRoute.params.subscribe(params => {
+      this.ppsi220Edition = params['ppsi220Edition'];
+    })
   }
 
   isSpinning = false;
   gridApi: GridApi;
   params: GridReadyEvent;
-
+  ppsi220Edition;
 
   //补充定义
   tplModalButtonLoading = false
@@ -688,8 +694,24 @@ getVerList() {
         children.push({ label: verList[i].fcp_EDITION+"("+pointLabel+")", value: verList[i].fcp_EDITION ,pointStatus:verList[i].startpoint })
       }
       this.listOfOption = children;
-      let pointLabel = verList[0].startpoint === "A" ? 'ASAP' : verList[0].startpoint ;
-      this.selectedVer = {label:verList[0].fcp_EDITION+"("+pointLabel+")", value:verList[0].fcp_EDITION,pointStatus:verList[0].startpoint}
+      if (this.ppsi220Edition !== null && this.ppsi220Edition !== undefined){
+        const selectedItem = verList.find(item => item.fcp_EDITION === this.ppsi220Edition);
+        if (selectedItem) {
+          let pointLabel = selectedItem.startpoint === "A" ? 'ASAP' : selectedItem.startpoint ;
+          this.selectedVer = { label: selectedItem.fcp_EDITION + "(" + pointLabel + ")", value: selectedItem.fcp_EDITION, pointStatus: selectedItem.startpoint };
+        } else {
+          this.message.create("error", `該FCP版本：${this.ppsi220Edition}，已逾時，無法查看此版次結果表`);
+          this.route.navigate(['/FCPBarData/P202_TabMenu/P202'])
+        }
+      }
+      else {
+        let pointLabel = verList[0].startpoint === "A" ? 'ASAP' : verList[0].startpoint ;
+        this.selectedVer = {label:verList[0].fcp_EDITION+"("+pointLabel+")", value:verList[0].fcp_EDITION,pointStatus:verList[0].startpoint}  
+      }
+
+      // let pointLabel = verList[0].startpoint === "A" ? 'ASAP' : verList[0].startpoint ;
+      // this.selectedVer = {label:verList[0].fcp_EDITION+"("+pointLabel+")", value:verList[0].fcp_EDITION,pointStatus:verList[0].startpoint}
+
       this.initTable() ;
     } else{
       this.message.error(result.message);
