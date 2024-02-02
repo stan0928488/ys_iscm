@@ -250,6 +250,54 @@
         <tr>
           <td
             style="
+              width: 180px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;設備日產量目標下限(單位:MT)
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <nz-input-number
+              style="width: 22%"
+              nzPlaceHolder="設備日產量目標下限"
+              [(ngModel)]="produceMin"
+              [nzMin]="0"
+              [nzMax]="100000"
+              [nzStep]="1"
+            ></nz-input-number>
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              width: 180px;
+              background-color: rgb(156, 182, 206);
+              font-weight: bold;
+              border-radius: 5px;
+            "
+          >
+            &nbsp;&nbsp;設備日產量目標上限(單位:MT)
+          </td>
+          <td style="width: 600px; background-color: #eee">
+            &nbsp;
+            <nz-input-number
+              style="width: 22%"
+              nzPlaceHolder="設備日產量目標上限"
+              [(ngModel)]="produceMax"
+              [nzMin]="0"
+              [nzMax]="100000"
+              [nzStep]="1"
+            ></nz-input-number>
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
               width: 110px;
               background-color: rgb(156, 182, 206);
               font-weight: bold;

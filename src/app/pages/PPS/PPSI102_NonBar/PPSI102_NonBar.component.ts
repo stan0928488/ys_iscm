@@ -36,6 +36,8 @@ interface ItemData7 {
   valid: string;
   wtTypeName: string;
   validName: string;
+  produceMin: number;
+  produceMax: number;
 }
 
 @Component({
@@ -92,6 +94,18 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     {
       headerName: '設備庫存上限(單位:MT)',
       field: 'wipMax',
+      width: 210,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '設備日產量目標下限(單位:MT)',
+      field: 'produceMin',
+      width: 210,
+      headerComponent: AGCustomHeaderComponent,
+    },
+    {
+      headerName: '設備日產量目標上限(單位:MT)',
+      field: 'produceMax',
       width: 210,
       headerComponent: AGCustomHeaderComponent,
     },
@@ -169,18 +183,9 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   mesPublishGroup;
   wtType;
   valid = 'Y';
+  produceMin;
+  produceMax;
   isVisibleYield = false;
-  searchPlantValue = '';
-  searchShopCodeValue = '';
-  searchShopNameValue = '';
-  searchEquipCode1Value = '';
-  searchEquipNameValue = '';
-  searchEquipGroupValue = '';
-  searchMesPublishGroupValue = '';
-  searchValidValue = '';
-  searchWtTypeValue = '';
-  searchWipMinValue = '';
-  searchWipMaxValue = '';
 
   file: File;
   inputFileUseInUpload;
@@ -194,6 +199,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     '機台名稱',
     '設備庫存下限(單位:MT)',
     '設備庫存上限(單位:MT)',
+    '設備日產量目標下限(單位:MT)',
+    '設備日產量目標上限(單位:MT)',
     '機台群組',
     '發佈MES群組',
     '工時計算分類',
@@ -390,6 +397,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         wtType: this.wtType === undefined ? null : this.wtType,
         balanceRule: null,
         orderSeq: null,
+        produceMin: this.produceMin === undefined ? null : this.produceMin,
+        produceMax: this.produceMax === undefined ? null : this.produceMax,
       });
 
       myObj.PPSService.insertPPSINPTB07List('2', obj).subscribe(
@@ -406,6 +415,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             this.mesPublishGroup = undefined;
             this.valid = undefined;
             this.wtType = undefined;
+            this.produceMin = undefined;
+            this.produceMax = undefined;
             this.getPPSINP07List();
             this.sucessMSG('新增成功', ``);
           } else {
@@ -466,6 +477,10 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         wtType: rowData.wtType === undefined ? null : rowData.wtType,
         balanceRule: null,
         orderSeq: null,
+        produceMin:
+          rowData.produceMin === undefined ? null : rowData.produceMin,
+        produceMax:
+          rowData.produceMax === undefined ? null : rowData.produceMax,
       });
 
       myObj.PPSService.updatePPSINPTB07List('2', obj).subscribe(
@@ -481,6 +496,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             this.mesPublishGroup = undefined;
             this.valid = undefined;
             this.wtType = undefined;
+            this.produceMin = undefined;
+            this.produceMax = undefined;
             console.log(this.PPSINP07List);
             console.log(this.editCache7);
 
@@ -647,6 +664,12 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         wipMax: _.isNil(_data[i]['設備庫存上限(單位:MT)'])
           ? null
           : _data[i]['設備庫存上限(單位:MT)'],
+        produceMin: _.isNil(_data[i]['設備日產量目標下限(單位:MT)'])
+          ? null
+          : _data[i]['設備日產量目標下限(單位:MT)'],
+        produceMax: _.isNil(_data[i]['設備日產量目標上限(單位:MT)'])
+          ? null
+          : _data[i]['設備日產量目標上限(單位:MT)'],
         wtType:
           _data[i]['工時計算分類'] == '線速'
             ? '1'
@@ -729,9 +752,10 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         EQUIP_NAME: _.get(item, 'equipName'),
         WIP_MIN: _.get(item, 'wipMin'),
         WIP_MAX: _.get(item, 'wipMax'),
+        PRODUCE_MIN: _.get(item, 'produceMin'),
+        PRODUCE_MAX: _.get(item, 'produceMax'),
         EQUIP_GROUP: _.get(item, 'equipGroup'),
         MES_PUBLISH_GROUP: _.get(item, 'mesPublishGroup'),
-
         WT_TYPE:
           _.get(item, 'wtType') === '1'
             ? '線速'

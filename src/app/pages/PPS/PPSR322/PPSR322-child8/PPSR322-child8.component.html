@@ -4,6 +4,7 @@
     <label style="margin-left:20px;">站別</label>
     <nz-select
         [(ngModel)]="searchData.schShop"
+        (ngModelChange)="emitShop()"
         nzMode="multiple"
         style="width: 180px; margin-left:10px;"
         nzPlaceHolder="請選擇站台"

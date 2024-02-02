@@ -2541,6 +2541,18 @@ export class PPSService {
     return this.http.post(queryUrl, body, this.httpOptions);
   }
 
+  getR322MonthlyProgressReportExcel(payload) {
+    let queryUrl =  `${this.APINEWURL}/FCP/R322/exportMonthlyProgressReport`;
+    const exportFileHttpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      observe: 'response' as 'response',
+      responseType : 'blob' as 'json'
+    };
+    return this.http.post<any>(queryUrl, payload, exportFileHttpOptions);
+  }
+
   findLatestPPSR340DataList() {
     console.log('Api Service 獲取「訂單交期回覆」資料');
     const queryUrl = `${this.APINEWURL}/FCP/R340/findLatestPPSR340DataList`;

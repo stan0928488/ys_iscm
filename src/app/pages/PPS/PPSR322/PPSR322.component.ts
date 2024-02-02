@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { Subject, take, lastValueFrom, from, Subscription } from 'rxjs';
+import { Subject, take, lastValueFrom, from, Subscription, firstValueFrom } from 'rxjs';
 import { PPSR322EvnetBusComponent } from './PPSR322-evnet-bus/PPSR322-evnet-bus.component';
 import { PPSR322Child1Component } from './PPSR322-child1/PPSR322-child1.component';
 import { PPSR322Child2Component } from './PPSR322-child2/PPSR322-child2.component';
@@ -14,9 +14,13 @@ import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as moment from 'moment';
+import * as _ from 'lodash';
+import { saveAs } from 'file-saver';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { DatePipe } from '@angular/common';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-PPSR322',
@@ -71,6 +75,10 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     schShop: [],
   };
 
+  isSpinning = false;
+
+  tab8SchShop: any[] = [];
+
   constructor(
     private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private ppsr332child1: PPSR322Child1Component,
@@ -86,8 +94,16 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     private router: Router,
     private excelService: ExcelService,
     private datePipe: DatePipe,
-    private message: NzMessageService
-  ) {}
+    private message: NzMessageService,
+    private Modal : NzModalService,
+  ) {
+
+    // 訂閱獲取日推移頁面才有的「站別」參數
+    this.ppsr322EvnetBusComponent.getShop().subscribe(shop => {
+      this.tab8SchShop = shop;
+    });
+
+  }
 
   private subscription: Subscription;
   ngOnInit() {
@@ -221,10 +237,57 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     this.indexxx = index;
   }
 
+  async exportExcel(){
+
+    if(_.isEmpty(this.searchObj.verList.fcpVer)){
+      this.message.error('請選擇FCP版次')
+      return;
+    }
+    if(_.isEmpty(this.searchObj.verList.shiftVer)){
+      this.message.error('請選擇推移維護版本')
+      return;
+    }
+    this.searchObj['tabType'] = -1;
+    this.searchObj.schShop = this.tab8SchShop;
+
+    try{
+      this.isSpinning = true;
+      const resObservable$ = this.PPSService.getR322MonthlyProgressReportExcel(this.searchObj);
+      const res  = await firstValueFrom<any>(resObservable$);
+      const resBlobData : Blob = res.body;
+
+      if(!_.isEqual(resBlobData.type, 'application/octet-stream')){
+        let reader = new FileReader();
+        reader.readAsText(resBlobData, 'utf-8');
+        reader.onload = () => {
+          this.errorMSG(
+            '匯出「月推移報表」失敗',
+            `伺服器異常，請聯繫系統工程師。錯誤訊息：${reader.result}}`
+          );
+        } 
+        return;
+      }
+
+      const resHeaders : HttpHeaders = res.headers;
+      const filaeName = decodeURI(resHeaders.get('report-name'));
+      saveAs(resBlobData, filaeName);
+
+    } catch (error) {
+      this.errorMSG(
+        '匯出「月推移報表」失敗',
+        `伺服器異常，請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.isSpinning = false;
+    }
+
+
+  }
+
   listDate: string[] = [];
   dataSet: any[];
   dataSetInfo: any[];
-  exportExcel() {
+  exportExcel_old() {
     const typeArray: string[] = [
       '削皮股：',
       '冷抽一股：',
@@ -501,6 +564,20 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     const day = date.getDate().toString().padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  sucessMSG(_title, _context): void {
+    this.Modal.success({
+      nzTitle: _title,
+      nzContent: `${_context}`,
+    });
+  }
+
+  errorMSG(_title, _context): void {
+    this.Modal.error({
+      nzTitle: _title,
+      nzContent: `${_context}`,
+    });
   }
 }
 

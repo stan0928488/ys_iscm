@@ -54,7 +54,10 @@
             <td nzLeft="0px" style="text-align:center; font-size: 11px; padding: 4px;">
               <a [attr.disabled]="isRunFCP ? true : null" (click)="StrartRun(data)">啟動</a>&nbsp;&nbsp;
               <a [attr.disabled]="data.planStatu !== 'Create' ? true : null" nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="delPlanData(data.planEdition, data.planStatu)">刪除</a>
-              <p><a disabled = false>結果表</a></p>
+              <p><a *ngIf="data.planStatu === 'Plan OK' || data.planStatu == 'Publish'; else disabledLink" [routerLink]="['/FCPBarRepo/R302', {ppsi220Edition: data.fcpEdition}]">結果表</a></p>
+                  <ng-template #disabledLink>
+                    <a disabled = false>結果表</a>
+                  </ng-template>
             </td> 
             <td nzLeft="80px" style="font-size: 13px; padding: 4px;"><a (click)="updPlanData(data)">{{data.planEdition}}</a><p> {{data.planStartTypeNa}}</td>
             <td nzLeft="200px" style="font-size: 11px; padding: 4px;">
