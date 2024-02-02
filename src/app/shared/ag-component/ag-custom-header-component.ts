@@ -33,6 +33,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
       <nz-drawer  *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "
       [nzClosable]="false"
+      [nzWidth]="600"
       [nzVisible]="visible"
       nzPlacement="right"
       nzTitle="欄位設定"
@@ -40,7 +41,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
       (nzOnClose)="handleClose()"
     >
       <ng-container *nzDrawerContent>
-      <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" [nzFrontPagination]="false" [nzShowPagination]="false">
+      <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false">
       <thead>
         <tr>
           <th>狀態</th>
