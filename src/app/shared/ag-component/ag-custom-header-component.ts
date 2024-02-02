@@ -56,10 +56,14 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
         <tr *ngFor="let data of listOfData" cdkDrag>
           <td> <nz-switch [ngModel]="data.visible" [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"  (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
-          <td> <nz-input-number [(ngModel)]="data.colDef.width" (ngModelChange)='handleSatus(data.colId)'></nz-input-number></td>
-          <td> <nz-switch [(ngModel)]="data.colDef.resizable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
-          <td> <nz-switch [(ngModel)]="data.colDef.filter" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
-          <td> <nz-switch [(ngModel)]="data.colDef.sortable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-input-number [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          [(ngModel)]="data.colDef.width" (ngModelChange)='handleSatus(data.colId)'></nz-input-number></td>
+          <td> <nz-switch [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          [(ngModel)]="data.colDef.resizable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          [(ngModel)]="data.colDef.filter" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
+          [(ngModel)]="data.colDef.sortable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
         </tr>
       </tbody>
     </nz-table>
