@@ -172,4 +172,11 @@
     font-size: 14px;
     text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
   }
+    
+  .infoSearch {
+    margin: 0 2px;
+    color: rgb(12, 72, 129);
+    font-size: 16px;
+    text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
+  }
 

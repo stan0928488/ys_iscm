@@ -527,9 +527,27 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showSearchModal() {
     this.isVisible = true;
+    let newMenu = [];
+
+    const filterMenus = (menus) => {
+      return menus.filter(menu => {
+        if (menu.isShow !== "0") {
+          const filteredChildren = filterMenus(menu.children);
+          if (filteredChildren.length > 0) {
+            menu.children = filteredChildren;
+          }
+          newMenu.push(menu);
+          return true;
+        }
+        return false;
+      });
+    };
+  
+    filterMenus(this.menus);
+
     if (this.searchMenusComponent) {
       this.searchMenusComponent.isVisible = this.isVisible;
-      this.searchMenusComponent.resultListFactory(this.menus);
+      this.searchMenusComponent.resultListFactory(newMenu);
       this.searchMenusComponent.ngAfterViewInit();
     }
   }
