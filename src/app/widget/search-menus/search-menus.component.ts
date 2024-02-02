@@ -1,5 +1,5 @@
 import { normalizePassiveListenerOptions } from '@angular/cdk/platform';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input, SimpleChange } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { Router } from "@angular/router";
 import { map, fromEvent, of } from "rxjs";
@@ -21,7 +21,7 @@ const passiveEventListenerOptions = <AddEventListenerOptions>normalizePassiveLis
 
 
 export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
-  isVisible = false;
+  @Input() isVisible: boolean = false; 
   
   userName = "";
   menus: TreeNode[] = [];
@@ -34,6 +34,7 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
   @HostListener('document:keyup', ['$event'])
   @HostListener('document:click', ['$event'])
   @HostListener('document:wheel', ['$event'])
+
   resultListShow: ResultItem[] = [];
   resultList: ResultItem[] = [];
   inputValue: string | null = null;
@@ -50,7 +51,10 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userName = this.cookieService.getCookie("USERNAME");
   }
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
+    // 在這裡進行清理操作，例如取消訂閱或釋放資源
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
@@ -79,9 +83,17 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.subSearchFn();
-    });
+    if (this.isVisible) {
+      setTimeout(() => {
+        this.subSearchFn();
+      });
+    }
+    
+  }
+
+  ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
+    if (changes['isVisible']) {
+    }
   }
 
   // 菜單搜索
@@ -189,8 +201,6 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
 
   subSearchFn(): void {
     this.ngZone.runOutsideAngular(() => {
-      console.log("A----" + this.searchInput)
-      console.log("B----" + this.searchInput.nativeElement)
       fromEvent(this.searchInput.nativeElement, 'input', passiveEventListenerOptions)
         .pipe(
           map(e => (e.target as HTMLInputElement).value),

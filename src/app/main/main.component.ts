@@ -12,7 +12,7 @@ import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TabModel, TabService } from "../services/common/tab.service";
 import * as uuid from 'uuid';
-// import { SearchMenusComponent } from '../widget/search-menus/search-menus.component';
+import { SearchMenusComponent } from '../widget/search-menus/search-menus.component';
 
 
 
@@ -47,7 +47,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("menuElement") menuElement: ElementRef;
 
   // 菜單搜尋開啟
-  // @ViewChild(SearchMenusComponent) searchMenusComponent: SearchMenusComponent;
+  isVisible: boolean = false; 
+  @ViewChild(SearchMenusComponent) searchMenusComponent: SearchMenusComponent;
+
 
    // 渲染tab元件的資料
    tabsSourceData: TabModel[] = [];
@@ -521,7 +523,16 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showSearchModal() {
-    // this.searchMenusComponent.showSearchModal();
+    this.isVisible = true;
+    // if (this.searchMenusComponent) {
+    //   this.searchMenusComponent.showSearchModal(); // 假設SearchMenusComponent有一個search方法
+    // }
+
+    if (this.searchMenusComponent) {
+      this.searchMenusComponent.isVisible = this.isVisible;
+      this.searchMenusComponent.ngAfterViewInit();
+    }
+
   }
   
 
