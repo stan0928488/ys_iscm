@@ -6,7 +6,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import { BtnCellRendererType2 } from '../../RENDERER/BtnCellRendererType2.component';
 import {NzMessageService} from "ng-zorro-antd/message";
-import {AGHeaderParams} from "../../../shared/ag-component/types"
+import {AGHeaderCommonParams, AGHeaderParams} from "../../../shared/ag-component/types"
 import { Router } from '@angular/router';
 
 @Component({
@@ -48,6 +48,8 @@ export class ManageUserComponent implements AfterViewInit {
   frameworkComponents: any;
   visible = false;
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -59,23 +61,11 @@ export class ManageUserComponent implements AfterViewInit {
       filter: true,
     },
     api: null,
-    onColumnMoved(e){
-      const found:Column = e.columnApi.getColumns().find(
-        (element) => element.sortIndex == e.toIndex
-      );
-      if(found){
-        found.setSortIndex(e.column.sortIndex);
-      }
-      e.column.setSortIndex(e.toIndex);
-    },
     agCustomHeaderParams : {
-      isMenuShow: true,// true 顯示抽屜菜單
       agName: 'AGName1' , // AG 表名
-      isSave:true , // 是否顯示保存
-      path:this.router.url,
-      is_param_flag:'0', //是則抓取DB內的參數
-      banFields:'id'
-    }
+      isSave:true ,
+      path: this.router.url ,
+     },
   };
 
   constructor(
@@ -102,13 +92,40 @@ export class ManageUserComponent implements AfterViewInit {
         this.message.create("error", result.message);
       }
     });
+    this.getDbCloumn();
+  }
+
+   //調用DB欄位
+   getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.colDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.hide = it.hide ;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.colDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   colDefs: ColDef<IRow>[] = [
     {headerName: '廠區',field: 'plant', width:120, headerComponent : AGCustomHeaderComponent,
-    headerComponentParams: {
-      isMenuShow: true,// true 顯示抽屜菜單
-    }},
+    headerComponentParams:this.agCustomHeaderParams},
     {headerName: '工號',field: 'userCode', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '使用者名稱',field: 'userNickName', width:120, headerComponent : AGCustomHeaderComponent},
     {headerName: '職位',field: 'positionName', width:200, headerComponent : AGCustomHeaderComponent},
