@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Component, Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
@@ -54,4 +55,17 @@ export class PPSR322EvnetBusComponent {
     this.sharedDataSubject.next(preData);
     console.log(data);
   }
+
+  private subjectShop$ = new Subject<any[]>();
+
+  setShop(event: any) {
+    this.subjectShop$.next(event);
+  }
+
+  getShop() : Observable<any[]> {
+    return this.subjectShop$.asObservable();
+  }
+
+
+
 }

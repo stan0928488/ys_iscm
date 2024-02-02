@@ -241,6 +241,10 @@ export class PPSR322Child8Component implements OnInit {
     this.ppsr322EvnetBusComponent.updateSharedData(dataToSend);
     return Promise.resolve();
   }
+
+  emitShop(){
+    this.ppsr322EvnetBusComponent.setShop(this.searchData.schShop);
+  }
 }
 
 interface ItemData {

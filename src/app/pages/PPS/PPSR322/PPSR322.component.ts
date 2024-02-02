@@ -77,6 +77,8 @@ export class PPSR322Component implements OnInit, AfterViewInit {
 
   isSpinning = false;
 
+  tab8SchShop: any[] = [];
+
   constructor(
     private ppsr322EvnetBusComponent: PPSR322EvnetBusComponent,
     private ppsr332child1: PPSR322Child1Component,
@@ -94,7 +96,14 @@ export class PPSR322Component implements OnInit, AfterViewInit {
     private datePipe: DatePipe,
     private message: NzMessageService,
     private Modal : NzModalService,
-  ) {}
+  ) {
+
+    // 訂閱獲取日推移頁面才有的「站別」參數
+    this.ppsr322EvnetBusComponent.getShop().subscribe(shop => {
+      this.tab8SchShop = shop;
+    });
+
+  }
 
   private subscription: Subscription;
   ngOnInit() {
@@ -239,6 +248,7 @@ export class PPSR322Component implements OnInit, AfterViewInit {
       return;
     }
     this.searchObj['tabType'] = -1;
+    this.searchObj.schShop = this.tab8SchShop;
 
     try{
       this.isSpinning = true;
