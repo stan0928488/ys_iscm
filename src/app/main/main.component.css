@@ -153,36 +153,30 @@
     text-shadow: 0 0 1px currentcolor;
   }
 
-
-  
-  /* :host ::ng-deep .info-prod .infoText{
-    color: white;
+  .footer-icon {
+    display: flex;
+    width: 20px;
+    height: 18px;
+    padding-bottom: 2px;
+    margin-right: .4em;
+    background-color: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
+    border-radius: 2px;
+    box-shadow: inset 0 -2px #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px #1e235a66;
+    align-items: center;
+    justify-content: center;
   }
   
-  :host ::ng-deep .info-prod .logoutText{
-    color: white;
+  .infoText {
+    margin: 0 2px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
+  }
+    
+  .infoSearch {
+    margin: 0 2px;
+    color: rgb(12, 72, 129);
+    font-size: 16px;
+    text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
   }
 
-  :host ::ng-deep .info-local .infoText{
-    color: black;
-  }
-  
-  :host ::ng-deep .info-tst .infoText{
-    color: black;
-  }
-
-  :host ::ng-deep .menu-prod .menuItemText{
-    color: white;
-  }
-
-  :host ::ng-deep .menu-prod .ant-menu-submenu-title:hover {
-    color: white !important;
-  }
-
-  :host ::ng-deep .menu-local .menuItemText{
-    color: black;
-  }
-
-  :host ::ng-deep .menu-tst .menuItemText{
-    color: black;
-  } */

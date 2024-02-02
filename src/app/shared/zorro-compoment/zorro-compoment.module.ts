@@ -10,7 +10,6 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
@@ -22,6 +21,7 @@ import { NzListModule } from 'ng-zorro-antd/list';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
@@ -36,6 +36,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 const zorroComponent :any = [
   NzButtonModule
@@ -74,6 +75,7 @@ const zorroComponent :any = [
  ,NzBadgeModule
  ,NzTreeViewModule
  ,NzAffixModule
+ ,NzEmptyModule
 ]
 @NgModule({
   imports: [
