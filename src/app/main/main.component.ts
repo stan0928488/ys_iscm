@@ -1,7 +1,8 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
-import { Router, CanActivate, ActivatedRoute, NavigationEnd, NavigationCancel, ChildActivationEnd } from "@angular/router";
+import { Router, ActivatedRoute, NavigationEnd, ChildActivationEnd } from "@angular/router";
+import { Subscription, filter, map, mergeMap } from "rxjs";
 
 import * as _ from "lodash";
 import * as moment from "moment";
@@ -10,10 +11,9 @@ import { MainEventBusComponent } from "./main-event-bus.component";
 import { SYSTEMService } from "../services/SYSTEM/SYSTEM.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TabModel, TabService } from "../services/common/tab.service";
-import { Subscription, filter, map, mergeMap } from "rxjs";
 import * as uuid from 'uuid';
-import { ModalOptions } from 'ng-zorro-antd/modal';
-import { SearchRouteService } from 'src/app/widget/search-route/search-route.service';
+import { SearchMenusComponent } from '../widget/search-menus/search-menus.component';
+
 
 
 @Component({
@@ -35,18 +35,21 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   envMenuClass = "";
   logoImagePath = "../assets/images/headlogo.png";
   logoBackgroundColor = '#da6c72';
+
   menus: TreeNode[] = [];
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
-  @HostListener('document:keyup', ['$event'])
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:wheel', ['$event'])
   resetTimer() {
     this.authService.notifyUserLoginAction();
   }
 
   @ViewChild('headerElement', { static: true }) headerElement: NzHeaderComponent;
   @ViewChild("menuElement") menuElement: ElementRef;
+
+  // 菜單搜尋開啟
+  isVisible: boolean = false; 
+  @ViewChild(SearchMenusComponent) searchMenusComponent: SearchMenusComponent;
+
 
    // 渲染tab元件的資料
    tabsSourceData: TabModel[] = [];
@@ -57,6 +60,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
    // 路由事件監聽(哪個頁面被點擊)
    routerEventsSubscription : Subscription = null; 
    
+
   constructor(
     private cookieService: CookieService,
     public router: Router,
@@ -65,9 +69,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private systemService : SYSTEMService,
     private nzModalService: NzModalService,
     private activatedRoute: ActivatedRoute,
-    private tabService: TabService,
-    private searchRouteService: SearchRouteService,
-    private cdr: ChangeDetectorRef
+    private tabService: TabService
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -167,8 +169,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    this.headerBarHandler();    
-    //this.router.navigateByUrl('/main/user/profile');    
+    this.headerBarHandler();
   }
 
   // 當前正在瀏覽的分頁
@@ -205,7 +206,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.tabsSourceData = res.tabArray;
 
           // tab選中的效果移到最新一個開啟的tab
-          this.activeTabIndex = this.tabsSourceData.length-1;
+          if(this.tabsSourceData !== undefined) {
+            this.activeTabIndex = this.tabsSourceData.length-1;
+          }
        }
        
     });
@@ -521,19 +524,38 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     return '';
   }
 
-  
-  showSearchModal(): void {
-    const modalOptions: ModalOptions = {
-      nzClosable: false,
-      nzMaskClosable: true,
-      nzStyle: { top: '48px' },
-      nzFooter: null,
-      nzBodyStyle: { padding: '0' }
+  showSearchModal() {
+    this.isVisible = true;
+    let newMenu = [];
+
+    const filterMenus = (menus) => {
+      return menus.filter(menu => {
+        if (menu.isShow !== "0") {
+          const filteredChildren = filterMenus(menu.children);
+          if (filteredChildren.length > 0) {
+            menu.children = filteredChildren;
+          }
+          newMenu.push(menu);
+          return true;
+        }
+        return false;
+      });
     };
-    this.searchRouteService.show(modalOptions);
+  
+    filterMenus(this.menus);
+
+    if (this.searchMenusComponent) {
+      this.searchMenusComponent.isVisible = this.isVisible;
+      this.searchMenusComponent.resultListFactory(newMenu);
+      this.searchMenusComponent.ngAfterViewInit();
+    }
   }
+  
+
+
 
 }
+
 
 
 interface TreeNode {

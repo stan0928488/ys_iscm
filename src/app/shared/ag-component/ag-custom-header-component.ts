@@ -1,17 +1,17 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, Input } from '@angular/core';
+import { Component , Input} from '@angular/core';
 import { IHeaderAngularComp } from 'ag-grid-angular';
-import { ColDef, ColumnPinnedType, ColumnState, IFilterComp, IHeaderParams, TextFilterModel } from 'ag-grid-community';
+import { ColumnPinnedType, IFilter, IHeaderParams,ITextFilterParams ,IFilterComp,TextFilterModel,ColumnState} from 'ag-grid-community';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { map } from 'lodash';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
-import { LocalStorageService } from "src/app/services/config/localStorage.service";
 
 @Component({
   selector: 'custom-header',
   template: `
     <div class="custom-header">
       <span>{{ params.displayName }}</span>
-      <span style='margin-left:5px;'   [ngClass]="{ 'active': !isLock }" nz-icon nzType="lock" nzTheme="outline" (click)='handleLockClick()'   ></span>
+      <span style='margin-left:5px;' *ngIf="this.params.column.getPinned() !== 'right'"   [ngClass]="{ 'active': !isLock }" nz-icon nzType="lock" nzTheme="outline" (click)='handleLockClick()'   ></span>
       <!-- <button style='margin-left:5px;'  nz-button nzType="primary"   [nzPopoverContent]="contentTemplate" nzPopoverTrigger="click" >
       <span nz-icon nzType="filter"></span>
       </button> -->
@@ -31,28 +31,35 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
       <input type="text"  nz-input  nzSize="small" style='width:100px;' [(ngModel)]="filterValue" (input)="onFilterChanged()" />
       </nz-input-group> -->
 
-      <nz-drawer *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "
+      <nz-drawer  *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "
       [nzClosable]="false"
+      [nzWidth]="600"
       [nzVisible]="visible"
-      [nzFooter]="footerTpl"
       nzPlacement="right"
       nzTitle="欄位設定"
+      [nzFooter]="footerTpl"
       (nzOnClose)="handleClose()"
     >
       <ng-container *nzDrawerContent>
-      <nz-table [nzData]="listOfData" [nzFrontPagination]="false" [nzShowPagination]="false">
+      <nz-table [nzData]="params.columnApi.getAllDisplayedColumns()" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false">
       <thead>
         <tr>
           <th>狀態</th>
           <th>欄位</th>
+          <th>width</th>
+          <th>resizeable</th>
+          <th>filter</th>
+          <th>sortable</th>
         </tr>
       </thead>
       <tbody cdkDropList (cdkDropListDropped)="drop($event)">
         <tr *ngFor="let data of listOfData" cdkDrag>
-          <td> <nz-switch [ngModel]="data.visible" 
-          [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"
-          (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
+          <td> <nz-switch [ngModel]="data.visible" [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"  (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
+          <td> <nz-input-number [(ngModel)]="data.colDef.width" (ngModelChange)='handleSatus(data.colId)'></nz-input-number></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.resizable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.filter" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.sortable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
         </tr>
       </tbody>
     </nz-table>
@@ -67,7 +74,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
 
     <ng-template #footerTpl>
       <div style="float: left">
-        <button *ngIf="isSave" nz-button nzType="primary" (click)="save()">保存</button>
+        <button nz-button *ngIf="isSave" nzType="primary" (click)="save()">保存</button>
       </div>
     </ng-template>
 
@@ -75,7 +82,7 @@ import { LocalStorageService } from "src/app/services/config/localStorage.servic
   `,
   styles: [`
     .active {
-       background-color: #0db87a; /* Set your desired color for the active state  */
+       color: #0db87a; /* Set your desired color for the active state  */
     }
   `]
 })
@@ -94,17 +101,15 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
   openFilter = false ;
   openSort = false ;
-  isSave = false;
-  isMenuShow = false;
-  is_param_flag = '1';
+  isSave = false ;
+
+  menuOpen = false ;
 
   constructor(
     private systemService : SYSTEMService,
-    private localStorageService: LocalStorageService,
     private message: NzMessageService,
   ) {
   }
-
   agInit(params: IHeaderParams): void {
     this.params = params;
     this.column = params.column;
@@ -112,78 +117,15 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     //this.listOfData = this.params.columnApi.getAllDisplayedColumns().map(obj => obj["colDef"]) ;
     //this.params.columnApi.getColumns()  params.column.getColId()
     this.listOfData = this.params.columnApi.getColumns();
+    
     this.openFilter = this.params.column.getColDef().filter ;
-    this.openSort = this.params.column.getColDef().sortable
-    //初始化索引
-    for (let i = 0; i < this.listOfData.length; i++) {
-      this.listOfData[i].setSortIndex(this.listOfData[i].instanceId)
-    }
-
-    let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
+    this.openSort = this.params.column.getColDef().sortable ;
+    console.log(this.params.columnApi.getColumns()) ;
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
     if(agCustomHeaderParams){
       this.isSave = agCustomHeaderParams['isSave']
-      this.isMenuShow = agCustomHeaderParams['isMenuShow']
-      this.is_param_flag = agCustomHeaderParams['is_param_flag']
-      let banFields = agCustomHeaderParams['banFields']
-      if(banFields){
-        let banFieldArr = banFields.split(",");
-        this.listOfData.forEach( (item, index) => {
-          if(banFieldArr.includes(item.colId)) this.listOfData.splice(index,1);
-        });
-      }
     }
-
-    let outthis = this;
-    if('0' == this.is_param_flag && !this.localStorageService.getItem("headerComponentLock")){
-      //鎖五秒防止重複呼叫
-      this.localStorageService.setItem("headerComponentLock","lock",5000);
-      columnState.forEach(function (element) {
-        element['agName'] = agCustomHeaderParams['agName']
-        element['headername'] = ''
-        element['path'] = agCustomHeaderParams['path']
-      });
-      this.systemService.getHeaderComponentStatus(columnState[0]).subscribe(res=>{
-        let result:any = res ;
-        if(result.code === 200) {
-          let columnState:ItemData[]
-          let colDefs:ColDef[];
-          columnState = result.data;
-
-          //set status
-          outthis.params.columnApi.applyColumnState({
-            state:columnState
-          });
-
-          //set coldef
-          colDefs = this.params.api.getColumnDefs()
-          columnState.forEach(function (element) {
-            let findcolDef = colDefs.find(
-              (el) => element.colId == el.colId
-            );
-            if(findcolDef){
-              findcolDef.sortable = (element.sortable == "0" ? true : false)
-              findcolDef.resizable = (element.resizable == "0" ? true : false)
-              findcolDef.filter = (element.filter == "0" ? true : false)
-            }
-          });
-          this.params.api.setColumnDefs(colDefs);
-
-          //move
-          columnState.forEach(function (element) {
-            if(element.sortIndex || element.sortIndex == 0){
-              console.log(element.colId+" to "+element.sortIndex)
-              outthis.params.columnApi.moveColumn(element.colId,element.sortIndex)
-            }
-          });
-
-        } else {
-          this.message.error("load error")
-        }
-      });
-
-    }
-
+  
   }
 
   refresh(params: IHeaderParams) {
@@ -226,23 +168,25 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
    // console.log("pin 狀態" + this.params.column.getPinned()) ;
     const pined = this.params.column.getPinned() ;
     let setPin :ColumnPinnedType = 'left'
-    if(pined === null) {
+    if(pined === null) {  // 未锁定
       setPin = 'left'
-    } else {
+    } else {  // 锁定
       setPin = null
     }
+
     for (const column of allDisplayedColumns) {
-      if(column.getColDef().headerComponent){
-        if(setPin === null) {
-          this.params.columnApi.setColumnPinned(column, setPin);
+        if(setPin === null) { //如果当前
+          if(column.getPinned() !== 'right') {
+            this.params.columnApi.setColumnPinned(column, setPin);
+          }
         } else {
           this.params.columnApi.setColumnPinned(column, setPin);
           if (column === currentColumn) {
             this.params.columnApi.setColumnPinned(column, setPin);
             return ;
           }
-        }
       }
+     
     }
     } else {
     
@@ -270,43 +214,92 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   }
   onMenuColumClick(){
     this.handleClose();
-    // console.log(this.listOfData)
+    console.log(this.listOfData)
     // console.log(this.params.columnApi.getAllDisplayedColumns())
   }
   handleClose(){
-    this.listOfData.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+    console.log("menuOpen:"+ this.menuOpen) ;
+    if(!this.menuOpen) {
+      this.listOfData.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1)) ;
+      this.menuOpen = true ;
+    }
     this.visible = !this.visible ;
+    
   }
 
   drop(event: CdkDragDrop<string[]>): void {
-    //鎖一秒防止重複呼叫
-    this.localStorageService.setItem("headerComponentLock","lock",5000);
     const colId = this.listOfData[event.previousIndex].colId ;
     const targetIndex = event.currentIndex; // 移動到的目標索引
+
+    let currentColumn = this.params.columnApi.getColumn(colId);
+    currentColumn.setSortIndex(event.currentIndex);
+    if(targetIndex > event.previousIndex){
+      //升序
+      this.listOfData.forEach(element => {
+        
+        if(element.sortIndex <= targetIndex){
+          element.setSortIndex(element.getSortIndex() - 1)
+        }
+
+      })
+
+    }else{
+      //降序
+      this.listOfData.forEach(element => {
+        
+        if(element.sortIndex >= targetIndex){
+          element.setSortIndex(element.getSortIndex() + 1)
+        }
+
+      })
+
+    }
+
     this.params.columnApi.moveColumn(colId, targetIndex);
     moveItemInArray(this.listOfData, event.previousIndex, event.currentIndex);
     
   }
   //控制顯示
   handleVisible(colId:any){
-    //鎖一秒防止重複呼叫
-    this.localStorageService.setItem("headerComponentLock","lock",5000);
     const currentVisibility = this.params.columnApi.getColumn(colId).isVisible();
     this.params.columnApi.setColumnVisible(colId, !currentVisibility);
   }
 
-  save(){
+  handleSatus(colId:any){
+    let column = this.params.columnApi.getColumn(colId);
+    let colDef = column.getColDef();
+    let findElement = this.listOfData.find(
+      (el) => column.getColId() == el.colId
+    );
+    if(findElement){
+      let findDef = findElement.getColDef();
+      colDef.width = findDef.width;
+      colDef.sortable = findDef.sortable;
+      colDef.resizable = findDef.resizable;
+      colDef.filter = findDef.filter;
+      column.setColDef(colDef,column.getUserProvidedColDef())
+      this.params.columnApi.setColumnWidth(colId,colDef.width);
+    }
+  }
+
+  save() {
     let outthis = this;
     let columnState:ColumnState[]  = this.params.columnApi.getColumnState();
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
-    columnState.forEach(function (element) {
+    columnState.forEach(function (element,index) {
       element['agName'] = agCustomHeaderParams['agName']
-      let findElement = element['headername'] = outthis.listOfData.find(
+      element.sortIndex = index ;
+      let findElement = outthis.listOfData.find(
         (el) => element.colId == el.colId
       );
       element['headername'] = '';
       if(findElement){
+        console.log(findElement)
         element['headername'] = findElement.userProvidedColDef.headerName;
+        element['width'] = findElement.colDef.width
+        element['sortable'] = findElement.colDef.sortable
+        element['resizable'] = findElement.colDef.resizable
+        element['filter'] = findElement.colDef.filter
       }
       element['path'] = agCustomHeaderParams['path']
     }); 
@@ -319,12 +312,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
         this.message.success("更新失敗")
       }
     });
+
   }
 
-}
-
-interface ItemData extends ColumnState{
-  sortable: string;
-  resizable: string;
-  filter: string;
 }
