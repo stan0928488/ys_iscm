@@ -55,10 +55,10 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
         <tr *ngFor="let data of listOfData" cdkDrag>
           <td> <nz-switch [ngModel]="data.visible" [nzDisabled]="data.colDef.headerComponentParams !== undefined &&  data.colDef.headerComponentParams.isMenuShow === true"  (ngModelChange)='handleVisible(data.colId)' ></nz-switch></td>
           <td>{{ data.colDef.headerName }}</td>
-          <td> <nz-input-number [(ngModel)]="data.colDef.width"></nz-input-number></td>
-          <td> <nz-switch [ngModel]="data.colDef.resizable"></nz-switch></td>
-          <td> <nz-switch [ngModel]="data.colDef.filter"></nz-switch></td>
-          <td> <nz-switch [ngModel]="data.colDef.sortable"></nz-switch></td>
+          <td> <nz-input-number [(ngModel)]="data.colDef.width" (ngModelChange)='handleSatus(data.colId)'></nz-input-number></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.resizable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.filter" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
+          <td> <nz-switch [(ngModel)]="data.colDef.sortable" (ngModelChange)='handleSatus(data.colId)'></nz-switch></td>
         </tr>
       </tbody>
     </nz-table>
@@ -262,6 +262,23 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   handleVisible(colId:any){
     const currentVisibility = this.params.columnApi.getColumn(colId).isVisible();
     this.params.columnApi.setColumnVisible(colId, !currentVisibility);
+  }
+
+  handleSatus(colId:any){
+    let column = this.params.columnApi.getColumn(colId);
+    let colDef = column.getColDef();
+    let findElement = this.listOfData.find(
+      (el) => column.getColId() == el.colId
+    );
+    if(findElement){
+      let findDef = findElement.getColDef();
+      colDef.width = findDef.width;
+      colDef.sortable = findDef.sortable;
+      colDef.resizable = findDef.resizable;
+      colDef.filter = findDef.filter;
+      column.setColDef(colDef,column.getUserProvidedColDef())
+      this.params.columnApi.setColumnWidth(colId,colDef.width);
+    }
   }
 
   save() {

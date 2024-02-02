@@ -106,7 +106,9 @@ export class ManageUserComponent implements AfterViewInit {
           this.colDefs.forEach((item)=>{
             result.data.forEach((it) => {
                if(item.field === it.colId) {
+                 item.width = it.width;
                  item.hide = it.hide ;
+                 item.resizable = it.resizable;
                  item.sortable = it.sortable ;
                  item.filter = it.filter ;
                  item.sortIndex = it.sortIndex ;
