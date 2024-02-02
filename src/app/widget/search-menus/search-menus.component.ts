@@ -1,5 +1,5 @@
 import { normalizePassiveListenerOptions } from '@angular/cdk/platform';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input, SimpleChange } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input, SimpleChange } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { Router } from "@angular/router";
 import { map, fromEvent, of } from "rxjs";
@@ -16,28 +16,31 @@ const passiveEventListenerOptions = <AddEventListenerOptions>normalizePassiveLis
   selector: 'app-search-menus',
   templateUrl: './search-menus.component.html',
   styleUrls: ['./search-menus.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DestroyService]
 })
 
 
-export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SearchMenusComponent implements OnInit, AfterViewInit {
   @Input() isVisible: boolean = false; 
-  
+  @Input() menus: TreeNode[] = [];
+
   userName = "";
-  menus: TreeNode[] = [];
+  // @HostListener('document:keyup', ['$event'])
+  // @HostListener('document:click', ['$event'])
+  // @HostListener('document:wheel', ['$event'])
+  resultListShow: ResultItem[] = [];
+  resultList: ResultItem[] = [];
+  inputValue: string | null = null;
+
+  // 菜單搜索
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   @ViewChild("trigger") customTrigger: TemplateRef<void>;
   @ViewChild("menuElement") menuElement: ElementRef;
 
-  // 菜單搜索
-  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
-  @HostListener('document:keyup', ['$event'])
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:wheel', ['$event'])
 
-  resultListShow: ResultItem[] = [];
-  resultList: ResultItem[] = [];
-  inputValue: string | null = null;
+
 
   constructor(
     private cookieService: CookieService,
@@ -58,25 +61,6 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    //刷新菜單要重撈
-    if(this.userName){
-      this.systemService.getCurrentUserMenu().subscribe((res) => {
-        let result:any = res;
-        if(result.code == 200){
-          this.menus = result.data;
-          recursionSet(this.menus,1);
-        }else{
-          this.nzModalService.error({
-            nzTitle: '獲取菜單失敗',
-            nzContent: result.message,
-          });
-        }
-      });
-    }else{
-      this.menus = [];
-    }
-
-    this.resultListFactory();
     
   }
 
@@ -87,12 +71,6 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.subSearchFn();
       });
-    }
-    
-  }
-
-  ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
-    if (changes['isVisible']) {
     }
   }
 
@@ -117,7 +95,7 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       return null;
     }
-  }
+  }  
 
   @HostListener('window:keyup.enter')
   onEnterUp() {
@@ -145,7 +123,8 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
 
   resultClick(resultItem: ResultItem): void {
     this.router.navigate([resultItem.routePath]);
-    this.isVisible = true;
+    this.clearInput();
+    this.isVisible = false;
   }
 
   getResultItem(menu: TreeNode, fatherTitle: string = ''): ResultItem[] {
@@ -175,7 +154,8 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
     item.selItem = true;
   }
 
-  resultListFactory(): void {
+  resultListFactory(menus: any): void {
+    this.cdr.detectChanges(); // 手动触发变更检测
     let temp: ResultItem[] = [];
     this.menus.forEach(item => {
       temp = [...temp, ...this.getResultItem(item)];
@@ -183,13 +163,9 @@ export class SearchMenusComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resultList = temp;
   }
 
-  showSearchModal() {
-    this.isVisible = true;
-    this.subSearchFn();
-  }
-  
   searchMenuCancel() {
     this.isVisible = false;
+    this.clearInput();
   }
 
   
@@ -267,15 +243,5 @@ interface TreeNode {
   children?: TreeNode[];
 }
 
-function recursionSet(obj:TreeNode[],parentLevel:any) {
-  obj.forEach(function (item) {
-    if(item.parentId){
-      item.level = parentLevel + 1;
-    }else{
-      item.level = 1;
-    }
-    if(item.children){
-      recursionSet(item.children,item.level)
-    }
-  }); 
-}
+
+

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
 import { Router, ActivatedRoute, NavigationEnd, ChildActivationEnd } from "@angular/router";
@@ -70,6 +70,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private nzModalService: NzModalService,
     private activatedRoute: ActivatedRoute,
     private tabService: TabService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;
@@ -206,7 +207,9 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.tabsSourceData = res.tabArray;
 
           // tab選中的效果移到最新一個開啟的tab
-          this.activeTabIndex = this.tabsSourceData.length-1;
+          if(this.tabsSourceData !== undefined) {
+            this.activeTabIndex = this.tabsSourceData.length-1;
+          }
        }
        
     });
@@ -524,15 +527,11 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showSearchModal() {
     this.isVisible = true;
-    // if (this.searchMenusComponent) {
-    //   this.searchMenusComponent.showSearchModal(); // 假設SearchMenusComponent有一個search方法
-    // }
-
     if (this.searchMenusComponent) {
       this.searchMenusComponent.isVisible = this.isVisible;
+      this.searchMenusComponent.resultListFactory(this.menus);
       this.searchMenusComponent.ngAfterViewInit();
     }
-
   }
   
 
