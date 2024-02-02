@@ -28,26 +28,31 @@
           </ng-template>
         </nz-empty>
       </ng-template>
-      <ul *ngIf="resultListShow.length > 0; else noResult">
-        <li
-          *ngFor="let item of resultListShow"
-          (click)="resultClick(item)"
-          [class.result-item-bg]="item.selItem"
-          [style]="{ color: item.selItem ? 'white' : '' }"
-          (mouseover)="mouseOverItem(item)"
-          class="result-item sp-16"
-          nz-row
-        >
-          <div nz-col nzFlex="auto">
-            <i *ngIf="!item.isAliIcon; else zorroIcon" class="m-r-8" nz-icon [nzType]="item.icon!" nzTheme="outline"></i>
-            <ng-template #zorroIcon>
-              <i class="m-r-8" nz-icon [nzIconfont]="item.icon!"></i>
-            </ng-template>
-            <span>{{ item.title }}</span>
-          </div>
-          <i *ngIf="item.selItem" style="color: white" class="sp-18 m-r-8" nz-col nzFlex="30px" nz-icon nzType="enter" nzTheme="outline"></i>
-        </li>
-      </ul>
+    
+      <div style="max-height: 450px; overflow: auto;">
+        <ul *ngIf="resultListShow.length > 0; else noResult">
+          <li
+            *ngFor="let item of resultListShow"
+            (click)="resultClick(item)"
+            [class.result-item-bg]="item.selItem"
+            [style]="{ color: item.selItem ? '#0e4bff' : 'black' }"
+            (mouseover)="mouseOverItem(item)"
+            class="result-item"
+            nz-row
+          >
+            <div nz-col nzFlex="auto" style="max-height: 450px; overflow: auto;">
+              <i *ngIf="!item.isAliIcon; else zorroIcon" class="m-r-8" nz-icon [nzType]="item.icon!" nzTheme="outline"></i>
+              <ng-template #zorroIcon>
+                <i class="m-r-8" nz-icon [nzIconfont]="item.icon!"></i>
+              </ng-template>
+              <span>{{ item.title }}</span>
+            </div>
+            <i *ngIf="item.selItem" style="color: #ffffff" class="sp-18 m-r-8" nz-col nzFlex="30px" nz-icon nzType="enter" nzTheme="outline"></i>
+          </li>
+        </ul>
+      </div>
+
+
     </div>
   </ng-template>
 
