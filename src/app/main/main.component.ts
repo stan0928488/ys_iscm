@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "../services/config/cookie.service";
 import { AuthService } from "../services/auth/auth.service";
 import { Router, ActivatedRoute, NavigationEnd, ChildActivationEnd } from "@angular/router";
@@ -69,8 +69,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private systemService : SYSTEMService,
     private nzModalService: NzModalService,
     private activatedRoute: ActivatedRoute,
-    private tabService: TabService,
-    private cdr: ChangeDetectorRef,
+    private tabService: TabService
   ) {
     this.isLatestVersion();
     const hostName = window.location.hostname;

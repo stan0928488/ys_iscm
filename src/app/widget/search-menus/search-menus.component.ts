@@ -1,12 +1,10 @@
 import { normalizePassiveListenerOptions } from '@angular/cdk/platform';
-import { AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input, SimpleChange } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, NgZone, Input } from "@angular/core";
 import { CookieService } from "src/app/services/config/cookie.service";
 import { Router } from "@angular/router";
 import { map, fromEvent, of } from "rxjs";
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import * as _ from "lodash";
-import { NzModalService } from "ng-zorro-antd/modal";
-import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
 import { DestroyService } from 'src/app/services/common/destory.service';
 
 
@@ -26,9 +24,6 @@ export class SearchMenusComponent implements OnInit, AfterViewInit {
   @Input() menus: TreeNode[] = [];
 
   userName = "";
-  // @HostListener('document:keyup', ['$event'])
-  // @HostListener('document:click', ['$event'])
-  // @HostListener('document:wheel', ['$event'])
   resultListShow: ResultItem[] = [];
   resultList: ResultItem[] = [];
   inputValue: string | null = null;
@@ -44,8 +39,6 @@ export class SearchMenusComponent implements OnInit, AfterViewInit {
 
   constructor(
     private cookieService: CookieService,
-    private systemService : SYSTEMService,
-    private nzModalService: NzModalService,
     public router: Router,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
@@ -121,6 +114,7 @@ export class SearchMenusComponent implements OnInit, AfterViewInit {
     }
   }
 
+  
   resultClick(resultItem: ResultItem): void {
     this.router.navigate([resultItem.routePath]);
     this.clearInput();
