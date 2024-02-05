@@ -536,7 +536,7 @@ const routes: Routes = [
         component: ErrorPageComponent,
       },
       {
-        path: 'AccessDined',
+        path: '/main/AccessDined',
         component: AccessDinedPageComponent,
         canActivate: [AuthGuard],
       },
