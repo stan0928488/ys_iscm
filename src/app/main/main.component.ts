@@ -148,6 +148,21 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     
   }
 
+  nzOpenChange(menu:TreeNode){
+
+    let ids = [];
+    ids.push(menu.id);
+
+    let findparentId = menu.parentId;
+    while(findparentId){
+      ids.push(findparentId);
+      let findparent = recursionColletTop(menu.parentId,this.menus,ids);
+      findparentId = findparent.parentId
+    }
+    recursionToggle(this.menus,ids);
+    
+  }
+
   ngOnDestroy(): void {
     this.mainEventBusComponent.unsubscribe();
 
@@ -591,6 +606,35 @@ function recursionSet(obj:TreeNode[],parentLevel:any) {
     }
     if(item.children){
       recursionSet(item.children,item.level)
+    }
+  }); 
+}
+
+function recursionToggle(obj:TreeNode[],ids:any[]) {
+  obj.forEach(function (item) {
+    if(ids.includes(item.id)){
+      item.open = true;
+    }else{
+      item.open = false;
+    }
+    if(item.children){
+      recursionToggle(item.children,ids)
+    }
+  }); 
+}
+
+function recursionColletTop(parentId:any,obj:TreeNode[],ids:any[]) : any {
+  obj.forEach(function (item) {
+    if(parentId){
+      for(let i = 0 ; i < obj.length ; i++){
+        if(obj[i].id === parentId){
+          return obj[i];
+        }else{
+          if(obj[i].children){
+            recursionColletTop(parentId,obj[i].children,ids)
+          }
+        }
+      }
     }
   }); 
 }

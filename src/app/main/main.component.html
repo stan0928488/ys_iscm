@@ -33,11 +33,12 @@
             <li
               *ngIf="menu.isShow == 1 && menu.children && menu.children.length > 0"
               nz-submenu
-              [nzOpen]="menu.open"
+              [(nzOpen)]="menu.open"
               [nzTitle]="menu.menuName"
               [nzIcon]="menu.icon"
               [nzDisabled]="menu.disabled"
               [nzPaddingLeft]="menu.level * 24"
+              (nzOpenChange)="nzOpenChange(menu)"
             >
               <ul>
                 <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: menu.children }"></ng-container>
