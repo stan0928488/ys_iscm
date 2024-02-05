@@ -381,7 +381,7 @@ const routes: Routes = [
             data : { pageName : "月推移表-檢視" },
             children: [
               { path: '', redirectTo: '/main/FCPshiftRepo/R322/R322_1', pathMatch: 'full' },
-              { path: 'R322_1', component: PPSR322Child1Component },
+              { path: 'R322_1', component: PPSR322Child1Component, data : { pageName : "月推移表-檢視" } },
               { path: 'R322_2', component: PPSR322Child2Component },
               { path: 'R322_3', component: PPSR322Child3Component },
               { path: 'R322_4', component: PPSR322Child4Component },
