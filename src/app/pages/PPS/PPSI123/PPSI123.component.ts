@@ -14,6 +14,9 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import * as XLSX from 'xlsx';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 interface ItemData20 {
   id: string;
@@ -61,17 +64,27 @@ export class PPSI123Component implements AfterViewInit {
   isSpinning = false;
   excelImportFile: File = null;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
       sortable: false,
       resizable: true,
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs: ColDef[] = [
     {headerComponent: AGCustomHeaderComponent,headerName: '機台',field: 'EQUIP_CODE_20',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '產品種類',field: 'KIND_TYPE_20',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '產出型態',field: 'OUTPUT_SHAPE_20',filter: true,width: 120,editable: true},
@@ -83,6 +96,8 @@ export class PPSI123Component implements AfterViewInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -108,7 +123,9 @@ export class PPSI123Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -126,6 +143,7 @@ export class PPSI123Component implements AfterViewInit {
     const aI123Tab = this.elementRef.nativeElement.querySelector('#aI123') as HTMLAnchorElement;
     liI123Tab.style.backgroundColor = '#E4E3E3';
     aI123Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
 
   PPSINP20List_tmp;
@@ -157,6 +175,36 @@ export class PPSI123Component implements AfterViewInit {
       this.updateEditCache();
       myObj.loading = false;
       this.isSpinning = false;
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 

@@ -18,6 +18,10 @@ import {
 } from 'ag-grid-community';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { UntypedFormBuilder } from '@angular/forms';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface ItemData {
   idx: number;
@@ -131,6 +135,8 @@ export class PPSI110Component implements AfterViewInit {
     },
   };
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -142,6 +148,11 @@ export class PPSI110Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   columnDefs = [];
@@ -151,46 +162,56 @@ export class PPSI110Component implements AfterViewInit {
         width: 100,
         headerName: '站別',
         field: 'schShopCode',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 100,
         headerName: '機台',
         field: 'equipCode',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 100,
         headerName: '機群',
         field: 'equipGroup',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 130,
         headerName: '機群設備數量',
         field: 'groupAmount',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 110,
         headerName: '最大管數',
         field: 'equipQuanity',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 110,
         headerName: '開機管數',
         field: 'bootControl',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 110,
         headerName: '累計天數',
         field: 'accumulateDay',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 110,
         headerName: '略過天數',
         field: 'dateLimit',
+        headerComponent : AGCustomHeaderComponent
       },
       {
         width: 150,
         headerName: 'Action',
         editable: false,
+        headerComponent : AGCustomHeaderComponent,
+        headerComponentParams:this.agCustomHeaderParams,
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
           {
@@ -217,7 +238,9 @@ export class PPSI110Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
@@ -232,6 +255,7 @@ export class PPSI110Component implements AfterViewInit {
     this.getRunFCPCount();
     this.getTbppsm013List();
     this.onInit();
+    this.getDbCloumn();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
     
     const aI110Tab = this.elementRef.nativeElement.querySelector('#aI110') as HTMLAnchorElement;
@@ -303,6 +327,36 @@ export class PPSI110Component implements AfterViewInit {
       this.updateEditCache();
       console.log(this.tbppsm013List);
       myObj.loading = false;
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 
