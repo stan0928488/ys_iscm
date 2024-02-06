@@ -9,6 +9,10 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { ColDef } from "ag-grid-community";
 
 @Component({
   selector: "app-PPSI104_NonBar",
@@ -56,6 +60,8 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -65,6 +71,8 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     };
   }
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -76,9 +84,14 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs = [
+  columnDefs:ColDef[] = [
     {
       width: 100,
       headerName: '站別',
@@ -144,6 +157,8 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
       headerName: 'Action',
       editable: false,
       cellRenderer: 'buttonRenderer',
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRendererParams: [
         {
           onClick: this.onBtnClick1.bind(this),
@@ -169,6 +184,7 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
     const liI104NTab = this.elementRef.nativeElement.querySelector('#liI104N') as HTMLLIElement;
     liI104NTab.style.backgroundColor = '#E4E3E3';
     aI104NTab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
   
   onInit() {
@@ -199,6 +215,36 @@ export class PPSI104_NonBarComponent implements AfterViewInit {
   editCache: { [key: string]: { edit: boolean; data: ItemData } } = {};
   displayPPSINP03List: ItemData[] = [];
   
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
+
   getPPSINP03List() {
     this.loading = true;
     let myObj = this;

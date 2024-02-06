@@ -13,6 +13,9 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
 
 interface ItemData9 {
   id: string;
@@ -80,17 +83,27 @@ export class PPSI120Component implements AfterViewInit {
 
   excelImportFile: File;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
       sortable: false,
       resizable: true,
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs:ColDef[] = [
     {headerComponent: AGCustomHeaderComponent,headerName: '站號',field: 'SHOP_CODE',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '機台',field: 'EQUIP_CODE',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '作業代碼',field: 'OP_CODE',filter: true,width: 120,editable: true},
@@ -106,6 +119,8 @@ export class PPSI120Component implements AfterViewInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -131,7 +146,9 @@ export class PPSI120Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -144,7 +161,7 @@ export class PPSI120Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP09List();
-
+    this.getDbCloumn();
     const liI120Tab = this.elementRef.nativeElement.querySelector('#liI120') as HTMLLIElement;
     const aI120Tab = this.elementRef.nativeElement.querySelector('#aI120') as HTMLAnchorElement;
     liI120Tab.style.backgroundColor = '#E4E3E3';
@@ -199,6 +216,36 @@ export class PPSI120Component implements AfterViewInit {
         this.displayPPSINP09List = []
       }
 
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 

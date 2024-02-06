@@ -17,6 +17,9 @@ import {
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { __param } from 'tslib';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 interface ItemData7 {
   id: string;
@@ -54,6 +57,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   USERNAME;
   plantCode;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   colDefs: ColDef[] = [
     {
       headerName: '工廠別',
@@ -142,6 +146,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       width: 150,
       pinned: 'right',
       cellRenderer: 'buttonRenderer',
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRendererParams: [
         {
           onClick: this.onBtnClick1.bind(this),
@@ -158,6 +164,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       ],
     },
   ];
+  
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -169,6 +177,11 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   // 站別機台關聯表
@@ -214,7 +227,9 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -236,6 +251,37 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     ) as HTMLLIElement;
     liI102NTab.style.backgroundColor = '#E4E3E3';
     aI102NTab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.colDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.width = it.width;
+                 item.hide = it.hide ;
+                 item.resizable = it.resizable;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.colDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   PPSINP07List_tmp;
