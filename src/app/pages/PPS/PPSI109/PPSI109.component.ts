@@ -10,6 +10,10 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import {  ColDef, ColGroupDef, CellClickedEvent } from 'ag-grid-community';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 interface ItemData {
   idx: string;
@@ -86,6 +90,8 @@ export class PPSI109Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -104,6 +110,7 @@ export class PPSI109Component implements AfterViewInit {
     const liI109Tab = this.elementRef.nativeElement.querySelector('#liI109') as HTMLLIElement;
     liI109Tab.style.backgroundColor = '#E4E3E3';
     aI109Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
 
   onInit() {
@@ -128,42 +135,55 @@ export class PPSI109Component implements AfterViewInit {
 
   gridOptions = {
     defaultColDef: {
-        editable: true,
-        enableRowGroup: false,
-        enablePivot: false,
-        enableValue: false,
-        sortable: true,
-        resizable: true,
-        filter: true,
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
     },
-    api:null
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  public columnDefs: (ColDef | ColGroupDef)[] = [
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  public columnDefs: ColDef[] = [
     {
       headerName: '站別',
       field: "SCH_SHOP_CODE",
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '機群',
       field: "EQUIP_GROUP",
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '產率設定類型',
       field: "YIELD_TYPE",
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '設定值',
       field: "YIELD_VALUE",
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: 'Action',
       width: 150,
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -178,6 +198,36 @@ export class PPSI109Component implements AfterViewInit {
       ]
     }
   ]
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   dateTimeFormatter(params) {
     return moment(params.value).format('YYYY-MM-DD HH:mm:ss');

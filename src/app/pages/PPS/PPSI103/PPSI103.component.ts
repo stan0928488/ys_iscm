@@ -15,6 +15,9 @@ import {
   GridOptions,
 } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { Router } from '@angular/router';
 
 interface ItemData {
   id: string;
@@ -56,17 +59,27 @@ export class PPSI103Component implements AfterViewInit {
   userName;
   plantCode;
   customWidth;
-  gridOptions: GridOptions;
+
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
+  };
 
   //ag-grid
   rowData: ItemData[] = [];
-
-  public defaultColDef: ColDef = {
-    sortable: false,
-    resizable: true,
-    filter: true,
-    editable: true,
-  };
 
   private gridApi!: GridApi;
   public editType: 'fullRow' = 'fullRow';
@@ -74,6 +87,8 @@ export class PPSI103Component implements AfterViewInit {
     this.gridApi = params.api;
   }
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   colDefs: ColDef[] = [
     {
       headerName: '站別',
@@ -211,6 +226,8 @@ export class PPSI103Component implements AfterViewInit {
       headerName: 'Action',
       field: 'id',
       width: 165,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: (params) => {
         const container = this.renderer.createElement('div');
         this.renderer.addClass(container, 'container');
@@ -335,7 +352,9 @@ export class PPSI103Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
@@ -353,6 +372,7 @@ export class PPSI103Component implements AfterViewInit {
     ) as HTMLLIElement;
     liI103Tab.style.backgroundColor = '#E4E3E3';
     aI103Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
 
   onInit() {
@@ -383,6 +403,36 @@ export class PPSI103Component implements AfterViewInit {
   }
 
   editCache2: { [key: string]: { edit: boolean; data: ItemData } } = {};
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.colDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.width = it.width;
+                 item.hide = it.hide ;
+                 item.resizable = it.resizable;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.colDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   getDataList() {
     this.loading = true;

@@ -10,6 +10,10 @@ import * as XLSX from 'xlsx';
 import { BtnCellRenderer} from '../../RENDERER/BtnCellRenderer.component';
 import {  CellClickedEvent, ColDef, ColGroupDef} from 'ag-grid-community';
 import * as moment from 'moment';
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 
 interface ItemData {
   idx: number;
@@ -77,6 +81,8 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -99,6 +105,7 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
     const liI109NTab = this.elementRef.nativeElement.querySelector('#liI109N') as HTMLLIElement;
     liI109NTab.style.backgroundColor = '#E4E3E3';
     aI109NTab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
 
   searchData= {
@@ -112,50 +119,62 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
   gradeNoRowData: gData[] = [];
   shopCodeRowData: sData[] = [];
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
-        editable: true,
-        enableRowGroup: false,
-        enablePivot: false,
-        enableValue: false,
-        sortable: true,
-        resizable: true,
-        filter: true,
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
     },
-    api:null
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  public columnDefs: (ColDef | ColGroupDef)[] = [
+  public columnDefs: ColDef[] = [
     {
       headerName: '站別',
       field: "SCH_SHOP_CODE",
       editable: true,
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '鋼種',
       field: "GRADE_NO",
       editable: true,
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '產率設定值',
       editable: true,
       field: "YIELD_VALUE",
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '建立日期',
       field: "DATE_CREATE",
       editable: false,
       width: 200,
-      valueFormatter: this.dateTimeFormatter, 
+      valueFormatter: this.dateTimeFormatter,
+      headerComponent : AGCustomHeaderComponent 
     },
     {
       headerName: '建立者',
       field: "USER_CREATE",
       editable: false,
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '異動日期',
@@ -163,17 +182,21 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
       editable: false,
       width: 200,
       valueFormatter: this.dateTimeFormatter, 
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: '異動者',
       field: "USER_UPDATE",
       editable: false,
       width: 150,
+      headerComponent : AGCustomHeaderComponent
     },
     {
       headerName: 'Action',
       editable:false,
       width: 150,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -191,6 +214,36 @@ export class PPSI109_NonBarComponent implements AfterViewInit {
       ]
     }
   ]
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   dateTimeFormatter(params) {
     return moment(params.value).format('YYYY-MM-DD HH:mm:ss');

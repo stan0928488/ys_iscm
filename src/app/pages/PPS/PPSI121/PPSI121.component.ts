@@ -13,6 +13,9 @@ import * as XLSX from 'xlsx';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { CommonService } from './../../../services/common/common.service';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 interface ItemData13 {
   id: string;
@@ -59,17 +62,27 @@ export class PPSI121Component implements AfterViewInit {
   isSpinning = false;
   excelImportFile: File;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
       sortable: false,
       resizable: true,
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs: ColDef[] = [
     {headerComponent: AGCustomHeaderComponent,headerName: '鋼種類別',field: 'GRADE_NO_13',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '產出型態',field: 'OUT_TYPE',filter: true,width: 120,editable: true},
     {headerComponent: AGCustomHeaderComponent,headerName: '產出成品尺寸最小值',field: 'DIA_MIN',filter: true,width: 120,editable: true},
@@ -80,6 +93,8 @@ export class PPSI121Component implements AfterViewInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -105,7 +120,9 @@ export class PPSI121Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -118,7 +135,7 @@ export class PPSI121Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getPPSINP13List();
-    
+    this.getDbCloumn();
     const liI121Tab = this.elementRef.nativeElement.querySelector('#liI121') as HTMLLIElement;
     const aI121Tab = this.elementRef.nativeElement.querySelector('#aI121') as HTMLAnchorElement;
     liI121Tab.style.backgroundColor = '#E4E3E3';
@@ -156,6 +173,36 @@ export class PPSI121Component implements AfterViewInit {
       console.log(this.PPSINP13List);
       myObj.loading = false;
       myObj.isSpinning = false;
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 

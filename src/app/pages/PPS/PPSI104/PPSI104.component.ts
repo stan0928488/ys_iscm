@@ -10,6 +10,10 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from "src/app/services/common/excel.service";
 import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { ColDef } from "ag-grid-community";
 
 @Component({
   selector: "app-PPSI104",
@@ -65,6 +69,8 @@ export class PPSI104Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -82,8 +88,11 @@ export class PPSI104Component implements AfterViewInit {
     const liI104Tab = this.elementRef.nativeElement.querySelector('#liI104') as HTMLLIElement;
     liI104Tab.style.backgroundColor = '#E4E3E3';
     aI104Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
   
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -95,9 +104,14 @@ export class PPSI104Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     {
       width: 100,
       headerName: '站別',
@@ -162,6 +176,8 @@ export class PPSI104Component implements AfterViewInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -215,7 +231,35 @@ export class PPSI104Component implements AfterViewInit {
     });
   }
 
-  
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.width = it.width;
+                 item.hide = it.hide ;
+                 item.resizable = it.resizable;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   // insert
   insertTab() {

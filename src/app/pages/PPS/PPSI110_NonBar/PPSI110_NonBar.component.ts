@@ -9,6 +9,10 @@ import * as _ from "lodash";
 import * as XLSX from 'xlsx';
 import { CellClickedEvent, ColDef, ColGroupDef, GridReadyEvent, PreConstruct } from 'ag-grid-community';
 import { BtnCellRenderer } from "../../RENDERER/BtnCellRenderer.component";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
 
 
 interface ItemData {
@@ -62,49 +66,63 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
   importdata_new = [];
   errorTXT = [];
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   gridOptions = {
     defaultColDef: {
-        editable: true,
-        enableRowGroup: false,
-        enablePivot: false,
-        enableValue: false,
-        sortable: false,
-        resizable: true,
-        filter: true,
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
     },
-    api:null
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  public columnDefs: (ColDef | ColGroupDef)[] = [
+  public columnDefs: ColDef[] = [
     {
       width: 100,
       headerName: '站別',
-      field: "schShopCode"
+      field: "schShopCode",
+      headerComponent : AGCustomHeaderComponent
     },
     {
       width: 100,
       headerName: '機台',
-      field: "equipCode"
+      field: "equipCode",
+      headerComponent : AGCustomHeaderComponent
     },
     {
       width: 100,
       headerName: '機群',
-      field: "equipGroup"
+      field: "equipGroup",
+      headerComponent : AGCustomHeaderComponent
     },
     {
       width: 130,
       headerName: '機群設備數量',
-      field: "groupAmount"
+      field: "groupAmount",
+      headerComponent : AGCustomHeaderComponent
     },
     {
       width: 110,
       headerName: '最大管數',
-      field: "equipQuanity"
+      field: "equipQuanity",
+      headerComponent : AGCustomHeaderComponent
     },
     {
       width: 150,
       headerName: 'Action',
       editable:false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -190,6 +208,8 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
@@ -210,6 +230,7 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     const liI110NTab = this.elementRef.nativeElement.querySelector('#liI110N') as HTMLLIElement;
     liI110NTab.style.backgroundColor = '#E4E3E3';
     aI110NTab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
   
 
@@ -279,7 +300,35 @@ export class PPSI110_NonBarComponent implements AfterViewInit {
     
   }
 
- 
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   // insert
   insertTab() {
