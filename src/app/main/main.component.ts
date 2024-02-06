@@ -149,42 +149,44 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   nzOpenChange(menu:TreeNode){
-    let ids = [];
-    ids.push(menu.id);
-    let findparentId = menu.parentId;
-    if(findparentId){
-      ids.push(findparentId);
-    }
-    let findparent = menu;
-    if(findparent.parentId){
-      findparent = recursionColletTop(findparent.parentId,this.menus);
-      if(findparent){
-        ids.push(findparent.id);
-        ids.push(findparent.parentId);
+    if(!this.isCollapsed){
+      let ids = [];
+      ids.push(menu.id);
+      let findparentId = menu.parentId;
+      if(findparentId){
+        ids.push(findparentId);
       }
-    }
-    if(findparent.parentId){
-      findparent = recursionColletTop(findparent.parentId,this.menus);
-      if(findparent){
-        ids.push(findparent.id);
-        ids.push(findparent.parentId);
+      let findparent = menu;
+      if(findparent.parentId){
+        findparent = recursionColletTop(findparent.parentId,this.menus);
+        if(findparent){
+          ids.push(findparent.id);
+          ids.push(findparent.parentId);
+        }
       }
-    }
-    if(findparent.parentId){
-      findparent = recursionColletTop(findparent.parentId,this.menus);
-      if(findparent){
-        ids.push(findparent.id);
-        ids.push(findparent.parentId);
+      if(findparent.parentId){
+        findparent = recursionColletTop(findparent.parentId,this.menus);
+        if(findparent){
+          ids.push(findparent.id);
+          ids.push(findparent.parentId);
+        }
       }
-    }
-    if(findparent.parentId){
-      findparent = recursionColletTop(findparent.parentId,this.menus);
-      if(findparent){
-        ids.push(findparent.id);
-        ids.push(findparent.parentId);
+      if(findparent.parentId){
+        findparent = recursionColletTop(findparent.parentId,this.menus);
+        if(findparent){
+          ids.push(findparent.id);
+          ids.push(findparent.parentId);
+        }
       }
+      if(findparent.parentId){
+        findparent = recursionColletTop(findparent.parentId,this.menus);
+        if(findparent){
+          ids.push(findparent.id);
+          ids.push(findparent.parentId);
+        }
+      }
+      recursionToggle(this.menus,ids);
     }
-    recursionToggle(this.menus,ids);
     
   }
 
