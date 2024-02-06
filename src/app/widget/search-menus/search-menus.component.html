@@ -35,7 +35,7 @@
             *ngFor="let item of resultListShow"
             (click)="resultClick(item)"
             [class.result-item-bg]="item.selItem"
-            [style]="{ color: item.selItem ? '#0e4bff' : 'black' }"
+            [style]="{ color: item.selItem ? 'white' : 'black', background: item.selItem ? 'rgb(90 130 249)' : 'white'  }"
             (mouseover)="mouseOverItem(item)"
             class="result-item"
             nz-row

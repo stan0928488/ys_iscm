@@ -58,24 +58,19 @@ export class LoginComponent implements OnInit {
 
   setEnvInfo(host){
     switch (host) {
-      case "ys-pps.walsin.corp":
-        this.envName = "驗證環境";
-        this.envColor = '#da6c72'
-        this.envClass = 'tst env-name'
-        break;
       case "ys-ppsapp01.walsin.corp":
         this.envName = "正式環境";
-        this.envColor = '#0054b6';
+        this.envColor = '#e8e8e8';
         this.envClass = 'prod env-name';
         break;
       case "localhost":
         this.envName = "本機環境";
-        this.envColor = '#e8e8e8';
+        this.envColor = '#96a6b5';
         this.envClass = 'local env-name';
         break;
       default:
         this.envName = "測試環境";
-        this.envColor = '#da6c72';
+        this.envColor = '#df878c';
         this.envClass = 'tst env-name';
     }
   }
