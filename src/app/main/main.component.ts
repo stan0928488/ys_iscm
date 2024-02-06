@@ -446,7 +446,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleCollapsed(): void {
     this.isCollapsed = !this.isCollapsed;
-    this.logoImagePath = this.isCollapsed ? '../assets/images/headlogo.png' : '../assets/images/logo.png';
+    this.logoImagePath = this.isCollapsed ? 'assets/images/headlogo.png' : 'assets/images/logo.png';
   }
 
   
