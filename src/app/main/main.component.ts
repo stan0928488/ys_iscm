@@ -33,7 +33,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   envName;
   envInfoClass = "";
   envMenuClass = "";
-  logoImagePath = "../assets/images/headlogo.png";
+  logoImagePath = "assets/images/headlogo.png";
   logoBackgroundColor = '#da6c72';
 
   menus: TreeNode[] = [];
