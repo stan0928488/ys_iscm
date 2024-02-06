@@ -765,6 +765,7 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         lpstFlag : this.LPSTDATA,
 				lpstStartdate : this.startdate,
         lpstEndtdate : this.enddate,
+        planItemFlag : '0',     // 先固定寫 '0'，待精整有虛擬訂單後調整
         scheduleFlag : this.SCHEDULE_FLAG,
         scheduleTime : SCHEDULE
 			})
