@@ -34,8 +34,8 @@
             </ng-container>
 
             <ng-container *ngIf=" data.pstMachine.indexOf('合計') != -1">
-                <td style="background-color: #92D050; font-weight: bold;">{{ data.aWeight | number:'1.1-1' }}</td>
-                <td style="background-color: #92D050; font-weight: bold;">{{ data.bWeight | number:'1.1-1' }}</td>
+                <td style="background-color: #92D050; font-weight: bold;">{{ data.aWeight | number:'1.0-0' }}</td>
+                <td style="background-color: #92D050; font-weight: bold;">{{ data.bWeight | number:'1.0-0' }}</td>
             </ng-container>
             <ng-container *ngIf=" data.pstMachine.indexOf('合計') == -1">
                 <td>{{ data.gradeGroup }}</td>
