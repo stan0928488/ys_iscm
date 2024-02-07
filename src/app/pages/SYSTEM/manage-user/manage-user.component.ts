@@ -22,6 +22,8 @@ export class ManageUserComponent implements AfterViewInit {
     menuName: node.menuName,
     level,
     icon : node.icon,
+    path: node.path,
+    node : node
   });
 
   treeControl = new FlatTreeControl<FlatNode>(
@@ -93,6 +95,15 @@ export class ManageUserComponent implements AfterViewInit {
       }
     });
     this.getDbCloumn();
+  }
+
+  expend(node){
+    console.log(node)
+    if(node.node.children && node.node.children.find(x => x.menuType == 'C')){
+      this.treeControl.toggle(node)
+    }else{
+      this.router.navigateByUrl(node.path);
+    }
   }
 
    //調用DB欄位
@@ -245,5 +256,6 @@ interface FlatNode {
   menuName: string;
   level: number;
   icon: string;
+  path: string;
+  node: TreeNode;
 }
-

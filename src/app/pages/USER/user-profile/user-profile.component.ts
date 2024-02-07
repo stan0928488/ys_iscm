@@ -15,6 +15,7 @@ import { NzFormTooltipIcon } from 'ng-zorro-antd/form';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -30,6 +31,8 @@ export class UserProfileComponent implements AfterViewInit {
     menuName: node.menuName,
     level,
     icon : node.icon,
+    path: node.path,
+    node : node
   });
 
   treeControl = new FlatTreeControl<FlatNode>(
@@ -75,7 +78,11 @@ export class UserProfileComponent implements AfterViewInit {
   }
 
   expend(node){
-    this.treeControl.toggle(node)
+    if(node.node.children && node.node.children.find(x => x.menuType == 'C')){
+      this.treeControl.toggle(node)
+    }else{
+      this.router.navigateByUrl(node.path);
+    }
   }
 
   ngOnInit(): void {
@@ -138,6 +145,7 @@ export class UserProfileComponent implements AfterViewInit {
     private message: NzMessageService,
     private fb: NonNullableFormBuilder,
     private systemService: SYSTEMService,
+    private router: Router
   ) {
     this.validateForm = this.fb.group({
       email: ['', [Validators.email, Validators.required]],
@@ -225,4 +233,6 @@ interface FlatNode {
   menuName: string;
   level: number;
   icon: string;
+  path: string;
+  node: TreeNode;
 }

@@ -33,7 +33,7 @@
                 nzTheme="outline"
               ></span>
             </nz-tree-node-toggle>
-            <nz-tree-node-option>
+            <nz-tree-node-option (nzClick)="expend(node)">
               {{ node.menuName }}
             </nz-tree-node-option>
           </nz-tree-node>
@@ -46,7 +46,7 @@
                 nzTheme="outline"
               ></span>
             </nz-tree-node-toggle>
-            <nz-tree-node-option>
+            <nz-tree-node-option (nzClick)="expend(node)">
               {{ node.menuName }}
             </nz-tree-node-option>
           </nz-tree-node>
