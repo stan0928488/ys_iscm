@@ -12,6 +12,8 @@ import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-h
 import { AppComponent } from 'src/app/app.component';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 
 
@@ -27,6 +29,8 @@ export class PPSI206RESComponent implements OnInit  {
   tbppsm041 = [];
   loading = false;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       sortable: false,
@@ -35,23 +39,11 @@ export class PPSI206RESComponent implements OnInit  {
       suppressMovable: true
     },
     api: null,
-    onColumnMoved(e){
-      const found:Column = e.columnApi.getColumns().find(
-        (element) => element.sortIndex == e.toIndex
-      );
-      if(found){
-        found.setSortIndex(e.column.sortIndex);
-      }
-      e.column.setSortIndex(e.toIndex);
-    },
     agCustomHeaderParams : {
-      isMenuShow: true,// true 顯示抽屜菜單
       agName: 'AGName1' , // AG 表名
-      isSave:true , // 是否顯示保存
-      path:this.router.url,
-      is_param_flag:'1', //是則抓取DB內的參數
-      banFields:''
-    }
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   constructor(
@@ -63,23 +55,23 @@ export class PPSI206RESComponent implements OnInit  {
     private Modal: NzModalService,
     private appComponent: AppComponent,
     private router: Router,
+    private systemService : SYSTEMService,
   ) {
     this.i18n.setLocale(zh_TW);
   }
   
   ngOnInit(): void {
     this.getTbppsm041();
+    this.getDbCloumn();
   }
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs: ColDef[] = [
     {
       width: 130,
       headerName: '訂單編號',
       field: 'saleOrder',
       headerComponent: AGCustomHeaderComponent,
-      headerComponentParams: {
-        isMenuShow: true,// true 顯示抽屜菜單
-      }
+      headerComponentParams:this.agCustomHeaderParams
     },
     {
       width: 110,
@@ -609,6 +601,35 @@ export class PPSI206RESComponent implements OnInit  {
       headerComponent: AGCustomHeaderComponent
     }
   ];
+
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   excelExport() {
 

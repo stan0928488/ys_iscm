@@ -18,6 +18,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import zh from '@angular/common/locales/zh';
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
 registerLocaleData(zh);
 
 interface data {
@@ -93,12 +95,32 @@ export class PPSI205_401Component implements AfterViewInit {
     return moment(params.value).format('YYYY/MM/DD');
   }
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  gridOptions = {
+    defaultColDef: {
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
+      resizable: true,
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    }
+  };
+  columnDefs: ColDef[] = [
       { headerName:'MO 版次',
         field: 'moEdition' , 
         filter: true,
         width: 150,
-        headerComponent: AGCustomHeaderComponent
+        headerComponent : AGCustomHeaderComponent,
+        headerComponentParams:this.agCustomHeaderParams,
         },
       { headerName:'EPST',
         field: 'epst' , 
@@ -127,7 +149,8 @@ export class PPSI205_401Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
-    private Modal: NzModalService
+    private Modal: NzModalService,
+    private systemService : SYSTEMService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -137,8 +160,39 @@ export class PPSI205_401Component implements AfterViewInit {
   ngAfterViewInit() {
     this.getTbppsm119VerList();
     this.getTbppsm119ListAll();
+    this.getDbCloumn();
     // this.getRunFCPCount();
   }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }  
 
   //I205_401 DataList
   getTbppsm119ListAll() {

@@ -13,6 +13,9 @@ import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-h
 import * as XLSX from 'xlsx';
 import { PlanItemDatePickerCellEditor } from './PlanItemDatePickerCellEditor.component';
 import * as moment from 'moment';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 
 
@@ -58,6 +61,8 @@ export class PPSI206SETComponent implements OnInit {
 
   frameworkComponents;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -69,6 +74,11 @@ export class PPSI206SETComponent implements OnInit {
       PlanItemDatePickerCellEditor: PlanItemDatePickerCellEditor,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   constructor(
@@ -79,7 +89,9 @@ export class PPSI206SETComponent implements OnInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private cdRef: ChangeDetectorRef,
-    private appComponent: AppComponent
+    private appComponent: AppComponent,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
@@ -101,6 +113,7 @@ export class PPSI206SETComponent implements OnInit {
     this.isERROR = false;
     this.errorTXT = [];
     this.getTbppsm040();
+    this.getDbCloumn();
   }
 
   incomingfile(event) {
@@ -123,7 +136,37 @@ export class PPSI206SETComponent implements OnInit {
     });
   }
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
+
+  columnDefs: ColDef[] = [
     {
       width: 100,
       headerName: '序列',
@@ -224,6 +267,8 @@ export class PPSI206SETComponent implements OnInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: BtnCellRendererUpdate,
       cellRendererParams: [
         {

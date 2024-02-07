@@ -1,7 +1,7 @@
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import { AfterViewInit, Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { NzI18nService, zh_TW } from 'ng-zorro-antd/i18n';
@@ -13,6 +13,9 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import * as XLSX from 'xlsx';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { ColDef } from 'ag-grid-community';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 registerLocaleData(zh);
 
 
@@ -67,6 +70,7 @@ export class PPSI205A100Component implements AfterViewInit {
   ];
   currentDate = new Date();
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -78,14 +82,20 @@ export class PPSI205A100Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    }
   };
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     {
       width: 100,
       headerName: '站別',
       field: 'schShopCode',
-      headerComponent: AGCustomHeaderComponent
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
     },
     {
       width: 100,
@@ -168,14 +178,15 @@ export class PPSI205A100Component implements AfterViewInit {
   ];
 
   constructor(
-    private router: ActivatedRoute,
     private getPPSService: PPSService,
     private excelService: ExcelService,
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -193,6 +204,37 @@ export class PPSI205A100Component implements AfterViewInit {
     this.forTbppsm100Date = moment(this.currentDate).format(
       'YYYY-MM-DD HH:mm:ss'
     );
+    this.getDbCloumn();
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus({agName: 'AGName1' , isSave:true ,path: this.router.url  }).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   clearFile() {

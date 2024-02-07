@@ -22,6 +22,8 @@ import * as XLSX from 'xlsx';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 registerLocaleData(zh);
 
 @Component({
@@ -67,6 +69,8 @@ export class PPSI205A401Component implements AfterViewInit {
     'COMPAIGN_ID',
   ];
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -75,14 +79,20 @@ export class PPSI205A401Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    }
   };
 
   ngAfterViewInit() {
     this.getTbppsm102List();
     this.getTbppsm102ListAll();
+    this.getDbCloumn();
   }
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs: ColDef[] = [
     {
       headerName: '優先順序',
       field: 'ORDER_ID',
@@ -195,6 +205,8 @@ export class PPSI205A401Component implements AfterViewInit {
       headerName: 'Action',
       editable: false,
       width: 170,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: BtnCellRendererUpdate,
       cellRendererParams: [
         {
@@ -218,6 +230,7 @@ export class PPSI205A401Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private router: Router,
+    private systemService : SYSTEMService
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -253,6 +266,36 @@ export class PPSI205A401Component implements AfterViewInit {
       console.log('getRunFCPCount success');
       console.log(res);
       if (res > 0) this.isRunFCP = true;
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 
