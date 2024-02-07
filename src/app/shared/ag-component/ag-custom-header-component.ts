@@ -22,7 +22,7 @@ import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
      
       <span style='margin-left:5px;' *ngIf="this.params.column.getColDef().headerComponentParams !== undefined && this.params.column.getColDef().headerComponentParams.isMenuShow === true "  nz-icon nzType="menu" nzTheme="outline" (click)='onMenuColumClick()' ></span>
       <br>
-      <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" />
+      <input type="text"  nz-input   *ngIf='isFilter' nzSize="small"  [(ngModel)]="filterValue" (input)="onFilterChanged()" (compositionend)="onCompositionEnd($event)" />
       <!-- <nz-input-group   *ngIf='isFilter' nzCompact>
       <nz-select [ngModel]="'equals'">
         <nz-option [nzLabel]="'包含'" [nzValue]="'contains'"></nz-option>
@@ -216,11 +216,19 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
    }
      
   }
+
+  onCompositionEnd(event: CompositionEvent) {
+    // 处理输入法输入完成
+    console.log(this.filterValue) ;
+    this.onFilterChanged() ;
+  }
+
   onMenuColumClick(){
     this.handleClose();
     console.log(this.listOfData)
     // console.log(this.params.columnApi.getAllDisplayedColumns())
   }
+
   handleClose(){
     console.log("menuOpen:"+ this.menuOpen) ;
     if(!this.menuOpen) {
