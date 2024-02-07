@@ -151,38 +151,19 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   nzOpenChange(menu:TreeNode){
     if(!this.isCollapsed){
       let ids = [];
-      ids.push(menu.id);
       let findparentId = menu.parentId;
       if(findparentId){
+        ids.push(menu.id);
         ids.push(findparentId);
       }
       let findparent = menu;
-      if(findparent.parentId){
-        findparent = recursionColletTop(findparent.parentId,this.menus);
-        if(findparent){
-          ids.push(findparent.id);
-          ids.push(findparent.parentId);
-        }
-      }
-      if(findparent.parentId){
-        findparent = recursionColletTop(findparent.parentId,this.menus);
-        if(findparent){
-          ids.push(findparent.id);
-          ids.push(findparent.parentId);
-        }
-      }
-      if(findparent.parentId){
-        findparent = recursionColletTop(findparent.parentId,this.menus);
-        if(findparent){
-          ids.push(findparent.id);
-          ids.push(findparent.parentId);
-        }
-      }
-      if(findparent.parentId){
-        findparent = recursionColletTop(findparent.parentId,this.menus);
-        if(findparent){
-          ids.push(findparent.id);
-          ids.push(findparent.parentId);
+      for(let i = 0 ; i <= 4 ; i++){
+        if(findparent && findparent.parentId){
+          findparent = recursionColletTop(this.menus,findparent.parentId);
+          if(findparent){
+            ids.push(findparent.id);
+            ids.push(findparent.parentId);
+          }
         }
       }
       recursionToggle(this.menus,ids);
@@ -651,19 +632,14 @@ function recursionToggle(obj:TreeNode[],ids:any[]) {
   }); 
 }
 
-function recursionColletTop(parentId:any,obj:TreeNode[]) : TreeNode {
-
-  if(parentId && obj){
-    let find = obj.find(x => x.id == parentId);
-    if(find){
-      return find;
-    }else{
-      obj.forEach(x => {
-        recursionColletTop(parentId,x.children)
-      })
-    }
-  }else{
-    return null;
+function recursionColletTop (obj:TreeNode[], parentId) {
+  if (obj) {
+      for (var i = 0; i < obj.length; i++) {
+          if (obj[i].id == parentId) {
+              return obj[i];
+          }
+          var found = recursionColletTop(obj[i].children, parentId);
+          if (found) return found;
+      }
   }
-
-}
+};
