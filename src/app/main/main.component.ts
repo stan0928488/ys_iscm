@@ -152,8 +152,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     if(!this.isCollapsed){
       let ids = [];
       let findparentId = menu.parentId;
+      ids.push(menu.id);
       if(findparentId){
-        ids.push(menu.id);
         ids.push(findparentId);
       }
       let findparent = menu;
