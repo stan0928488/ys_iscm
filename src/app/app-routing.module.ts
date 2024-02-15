@@ -461,7 +461,13 @@ const routes: Routes = [
         path: 'ORPInput',
         children: [
           { path: '', redirectTo: '/main/ORPInput/I001', pathMatch: 'full' },
-          { path: 'I001', component: ORPI001Component },
+          { 
+            path: 'I001', 
+            component: ORPI001Component,
+            data : {
+              pageName:"料號客戶需求碼對照表"
+            }
+          }
         ],
         canActivate: [AuthGuard]
       },
