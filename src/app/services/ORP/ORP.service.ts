@@ -44,7 +44,7 @@ export class ORPService {
 
   deleteI001Data(id : string) {
     let queryUrl = `${this.APINEWURL}/ORP/I001/deleteData/${id}`;
-    return this.http.get(queryUrl);
+    return this.http.get(queryUrl, this.httpOptions);
   }
 
   batchImportDataList(payload : any) {
