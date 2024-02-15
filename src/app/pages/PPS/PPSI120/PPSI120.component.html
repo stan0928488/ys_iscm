@@ -2,62 +2,72 @@
   <app-non-ppsi [childrenTabName]="thisTabName"></app-non-ppsi>
 
   <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="isSpinning">
-    <div>
-      <div>
-        <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-          nzType="primary"
-          [nzSize]="'large'"
-          (click)="openStoveInput()"
-        >
-          <span nz-icon nzType="plus" nzTheme="outline"></span>
-          新增
-        </button>
-        &nbsp;&nbsp;
-        <!-- 匯入EXCEL功能 -->
-        <input
-          style="display: inline; width: 180px"
-          type="file"
-          name="file"
-          id="importExcel"
-          required
-          (change)="incomingFile($event)"
-          accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-        />
-        <button
-          id="bacthAdd"
-          nz-button
-          nzType="primary"
-          [nzSize]="'large'"
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-          "
-          (click)="handleImport()"
-        >
-          <span nz-icon nzType="upload" nzTheme="outline"></span>
-          E X C E L 匯入
-        </button>
-        <!-- 匯出EXCEL功能 -->
-        <button
-          id="download"
-          nz-button
-          nzType="primary"
-          [nzSize]="'large'"
-          style="
-            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-            background-color: #4caf50;
-            border: 2px blue none;
-            margin-left: 5px;
-          "
-          (click)="exportToExcel()"
-        >
-          <span nz-icon nzType="download" nzTheme="outline"></span>
-          E X C E L 匯出
-        </button>
-      </div>
+    <div style="background: rgb(255, 255, 255);">
+      <table>
+        <tr>
+          <td style="text-align: left; width: 73%">
+            <button
+              nz-button
+              style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+              nzType="primary"
+              (click)="openStoveInput()"
+            >
+              <span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增
+            </button>
+          </td>
+
+          <td style="padding-bottom: 20px">
+            <!-- 匯入EXCEL功能 -->
+            <input
+              style="display: inline; width: 180px"
+              type="file"
+              name="file"
+              id="importExcel"
+              required
+              (change)="incomingFile($event)"
+              accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            />
+          </td>
+
+          <td>
+            <button
+              id="bacthAdd"
+              nz-button
+              nzType="primary"
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+              "
+              (click)="handleImport()"
+            >
+              <span nz-icon nzType="upload" nzTheme="outline"></span>
+              E X C E L 匯入
+            </button>
+          </td>
+
+          <td>
+            <!-- 匯出EXCEL功能 -->
+            <button
+              id="download"
+              nz-button
+              nzType="primary"
+              style="
+                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                background-color: #4caf50;
+                border: 2px blue none;
+                margin-left: 5px;
+              "
+              (click)="exportToExcel()"
+            >
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+              E X C E L 匯出
+            </button>
+          </td>
+        </tr>
+      </table>
+
       <div nz-col [nzSpan]="90" style="padding-top: 10px">
 
         <ag-grid-angular

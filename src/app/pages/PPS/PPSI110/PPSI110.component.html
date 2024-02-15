@@ -6,22 +6,22 @@
     <nz-breadcrumb-item>
       <tr id="tab-1" style="height: 30px; width: 1000px; overflow-x: auto">
         <ul>
-          <li><a href="#/commonData/I101">鋼種分類</a></li>
-          <li><a href="#/commonData/I102">站別機台關聯表</a></li>
-          <li><a href="#/commonData/I103">設備能力</a></li>
-          <li><a href="#/commonData/I104">整備時間</a></li>
-          <li><a href="#/commonData/I105">大調機</a></li>
-          <li><a href="#/commonData/I106">小調機</a></li>
-          <li><a href="#/commonData/I107">線速工時</a></li>
-          <li><a href="#/commonData/I108">非線速工時</a></li>
-          <li><a href="#/commonData/I109">產率設定</a></li>
+          <li><a href="#/main/commonData/I101">鋼種分類</a></li>
+          <li><a href="#/main/commonData/I102">站別機台關聯表</a></li>
+          <li><a href="#/main/commonData/I103">設備能力</a></li>
+          <li><a href="#/main/commonData/I104">整備時間</a></li>
+          <li><a href="#/main/commonData/I105">大調機</a></li>
+          <li><a href="#/main/commonData/I106">小調機</a></li>
+          <li><a href="#/main/commonData/I107">線速工時</a></li>
+          <li><a href="#/main/commonData/I108">非線速工時</a></li>
+          <li><a href="#/main/commonData/I109">產率設定</a></li>
           <li class="active">
-            <a href="#/commonData/I110"
+            <a href="#/main/commonData/I110"
               ><label style="color: blue">產能維護</label></a
             >
           </li>
-          <li><a href="#/commonData/I111">combine資料設定</a></li>
-          <li><a href="#/commonData/I200">系統設定</a></li>
+          <li><a href="#/main/commonData/I111">combine資料設定</a></li>
+          <li><a href="#/main/commonData/I200">系統設定</a></li>
         </ul>
       </tr>
     </nz-breadcrumb-item>
@@ -95,7 +95,7 @@
   </td>
   <p><p><p>
 
-  <ag-grid-angular style="width: 100%; overflow: scroll;" class="ag-theme-alpine" 
+  <ag-grid-angular style="width: 100%; height: calc(100vh - 280px); overflow: scroll;" class="ag-theme-alpine" 
   [ngStyle]="{height:tableHeight}"
   [rowData]="displayTbppsm013List"
   [columnDefs]="columnDefs"

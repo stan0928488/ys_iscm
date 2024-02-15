@@ -2,6 +2,9 @@ import { Component,OnDestroy, OnInit } from '@angular/core';
 import { Subject, timer, Subscription,interval } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth/auth.service';
+import { CookieService } from '../services/config/cookie.service';
+import { MainEventBusComponent } from '../main/main-event-bus.component';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-inactivity-timer',
@@ -12,7 +15,12 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
   endTime = 120;
   isVisible = false ;
   message = ""
-  constructor(private authService:AuthService) { }
+  constructor(
+    private authService:AuthService,
+    private cookieService: CookieService,
+    private appEventBusComponent: MainEventBusComponent,
+    private router: Router,
+  ) { }
   unsubscribe$: Subject<void> = new Subject();
   timerSubscription: Subscription;
   ngOnInit() {
@@ -39,6 +47,25 @@ export class InactivityTimerComponent implements  OnDestroy, OnInit {
     const duration = endTime * 60;
     const pseudoSubscriber = {
       next: (value: number) => {
+        //登出菜單要清空
+        let userName = this.cookieService.getCookie("USERNAME");
+        if(!userName){
+          this.appEventBusComponent.emit({
+            name: 'logingSuccess',
+            data: {
+              logingSuccess:false,
+            },
+          });
+        }else{
+          this.router.events.subscribe(
+            (event:any)=>{
+              if(event instanceof NavigationEnd){
+                if(!event.url.includes('login') && this.appEventBusComponent.hasPermission(event.url) == false){
+                  this.router.navigate(['/AccessDined']);
+                }
+              }
+          })
+        }
         this.render((duration - +value)*interval,value,duration)
       },
       error: (error: any) => {},

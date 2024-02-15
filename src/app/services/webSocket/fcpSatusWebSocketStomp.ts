@@ -11,12 +11,10 @@ export class FcpStatusWebSocketStomp
     private stompClient :  Stomp.Client;;
     private subject$: Subject<any> = new Subject<any>();
     APINEWURL : string = null;
-    router : Router = null;
-    jwtToken : string = null;
     originalXMLHttpRequestOpen : any = null;
     originalXMLHttpRequestSetHeader : any = null;
     currentXMLHttpRequestInstancing : any = null;
-
+    
     webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint-ef356691-27e5-49c1-8245-9f028f882886';
     plantType : string = null;
     myTopic : string = null;
@@ -39,13 +37,6 @@ export class FcpStatusWebSocketStomp
       this.APINEWURL = this.configService.getAPIURL('1');
       this.plantType = _plantType;
       this.myTopic = this.plantType === '直棒' ? 'barFcpStatus' : 'refiningFcpStatus';
-      this.router = this._router;
-      this.jwtToken = localStorage.getItem('jwtToken');
-      this.header = {
-        Authorization: `Bearer ${this.jwtToken}`,
-        CurrentRoute : this.router.url
-      }
-
     }
 
     // 處理連線到一半處於不是成功也不是失敗但未連上的問題
@@ -85,7 +76,11 @@ export class FcpStatusWebSocketStomp
         }
       };
 
-      this.stompClient.connect(this.header, async (frame) => {
+      let header = {
+        Authorization: localStorage.getItem(this.configService.LOCAL_PREFIX),
+        CurrentRoute : this._router.url
+      }
+      this.stompClient.connect(header, async (frame) => {
         this.stompClient.subscribe(`/topic/${this.myTopic}`, (message) => {
           this.subject$.next(message);
         });
@@ -190,6 +185,8 @@ export class FcpStatusWebSocketStomp
     
     addHeaderForStompHttpRequest(){
       const originalOpen = XMLHttpRequest.prototype.open;
+      
+      const LOCAL_PREFIX = this.configService.LOCAL_PREFIX;
       this.originalXMLHttpRequestOpen = originalOpen;
       this.originalXMLHttpRequestSetHeader = XMLHttpRequest.prototype.setRequestHeader;
       const regex = new RegExp(`\\S+?\\/${this.webSocketEndpointPrefix}\\/\\S+`);
@@ -200,8 +197,12 @@ export class FcpStatusWebSocketStomp
           // 紀錄將當前的的XMLHttpRequest實例
           // 以便於socket連線完畢後，恢復setRequestHeader函數
           _this.currentXMLHttpRequestInstancing = this;
-          this.setRequestHeader('Authorization', `Bearer ${_this.jwtToken}`);
-          this.setRequestHeader('CurrentRoute', _this.router.url);
+
+          // 重拿token
+          let jwtToken = localStorage.getItem('jwtToken');
+
+          this.setRequestHeader('Authorization', jwtToken);
+          this.setRequestHeader('CurrentRoute', _this._router.url);
           // 已有header已完成設定關閉Header的設定
           // 避免web socket自己發的請求的XMLHttpRequest實例重複添加Authorization的值
           // 會導致後端驗證token失敗

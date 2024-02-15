@@ -22,6 +22,10 @@ import {
 import { TBPPSM107 } from './TBPPSM107.model';
 import { GridOptions } from 'ag-grid-community';
 import { BtnCellRenderer } from 'src/app/pages/RENDERER/BtnCellRenderer.component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
+import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface ItemData {
   id: number;
@@ -80,13 +84,24 @@ export class PPSI112Component implements AfterViewInit {
 
   frameworkComponents;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
       sortable: false,
       resizable: true,
+      filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   constructor(
@@ -96,7 +111,9 @@ export class PPSI112Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie('USERNAME');
@@ -110,6 +127,7 @@ export class PPSI112Component implements AfterViewInit {
     this.getRunFCPCount();
     await this.getTBPPSM107();
     this.onInit();
+    this.getDbCloumn();
   }
 
   // 取得是否有正在執行的FCP
@@ -149,17 +167,20 @@ export class PPSI112Component implements AfterViewInit {
         field: 'schShopCode',
         width: 65,
         editable: false,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: '機台',
         field: 'equipCode',
-        width: 75,
+        width: 90,
         editable: false,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: '累積單位',
         field: 'cumsumType',
         width: 90,
+        headerComponent : AGCustomHeaderComponent,
         cellEditor: 'agSelectCellEditor',
         cellEditorParams: {
           values: ['day', 'hour'],
@@ -171,16 +192,19 @@ export class PPSI112Component implements AfterViewInit {
         headerName: '累積值',
         field: 'accumulation',
         width: 75,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: '強制投產',
         field: 'dateLimit',
         width: 90,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: '是否使用',
         field: 'useFlag',
         width: 90,
+        headerComponent : AGCustomHeaderComponent,
         cellEditor: 'agSelectCellEditor',
         cellEditorParams: {
           values: ['Y', 'N'],
@@ -191,17 +215,21 @@ export class PPSI112Component implements AfterViewInit {
         field: 'dateUpdate',
         width: 180,
         editable: false,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: '更新者',
         field: 'userUpdate',
         width: 100,
         editable: false,
+        headerComponent : AGCustomHeaderComponent
       },
       {
         headerName: 'Action',
         editable: false,
         width: 150,
+        headerComponent : AGCustomHeaderComponent,
+        headerComponentParams:this.agCustomHeaderParams,
         cellRenderer: 'buttonRenderer',
         cellRendererParams: [
           {
@@ -251,6 +279,36 @@ export class PPSI112Component implements AfterViewInit {
     .catch(error=>{
       this.errorMSG('獲取資料失敗', `後台獲取資料發生錯誤：${error.message}，請聯繫系統工程師`);
       this.loading = false;
+    });
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
     });
   }
 

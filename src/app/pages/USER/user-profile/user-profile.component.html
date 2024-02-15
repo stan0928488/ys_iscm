@@ -1,0 +1,98 @@
+<nz-content style="margin: 20px 20px">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>我的</nz-breadcrumb-item>
+        <nz-breadcrumb-item>個人資料</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <div style="height:calc(100vh - 110px);overflow-y: scroll; background: #ECECEC;padding:30px;">
+        <div nz-row [nzGutter]="8">
+            <div nz-col [nzSpan]="12">
+                <nz-card nzTitle="基本資料">
+                    <form nz-form [formGroup]="validateForm">
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email">所屬廠區</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+                                <span *ngIf="user">{{user.plant}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname">
+                                <span>工號</span>
+                            </nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input your nickname!">
+                                <span *ngIf="user">{{user.userName}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="website">姓名</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <span *ngIf="user">{{user.userNickName}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="a">職位</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <span *ngIf="user">{{user.positionName}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="b">職務代碼</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <span *ngIf="user">{{user.positionCode}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="c">E-mail</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <span *ngIf="user">{{user.email}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="d">分機</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <span *ngIf="user">{{user.phone}}</span>
+                            </nz-form-control>
+                        </nz-form-item>
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="e">華新/外包</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+                                <div *ngIf="user && user.platform == '1'">華新人員</div>
+                                <div *ngIf="user && user.platform == '2'">外包人員</div>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </form>
+                </nz-card>
+            </div>
+            <div nz-col [nzSpan]="12">
+                <nz-card nzTitle="個人權限">
+                    <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+                        <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span
+                                  nz-icon
+                                  [nzType]="node.icon"
+                                  nzTheme="outline"
+                                ></span>
+                              </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+
+                        <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span
+                                  nz-icon
+                                  [nzType]="node.icon"
+                                  nzTheme="outline"
+                                ></span>
+                              </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+                    </nz-tree-view>
+                </nz-card>
+            </div>
+        </div>
+    </div>
+</nz-content>

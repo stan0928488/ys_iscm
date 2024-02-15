@@ -4,10 +4,11 @@
 
 export interface Menu {
   id: number | string;
-  fatherId: number | string;
+  fatherId?: number | string;
   path: string;
   menuName: string;
   menuType: 'C' | 'F' | 'A'; // F:權限API，C:菜單，A:不需權限通用API
+  isShow?: string;
   icon?: string; // 如果showIcon为false，设置这个为搜索窗口时，最左侧的icon
   alIcon?: string; // 如果showIcon为false，设置这个为搜索窗口时，最左侧的icon
   open?: boolean;

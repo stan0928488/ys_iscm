@@ -174,6 +174,12 @@ import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_Tab
 import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
 import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
+import { ManageRoleActionCellComponent } from './pages/SYSTEM/manage-role/manage-role-action-cell-component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
+import { BtnCellRendererType2 } from './pages/RENDERER/BtnCellRendererType2.component';
+import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
+import { CommonApiEditComponent } from './pages/SYSTEM/manage-menu/common-api-edit-component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI111EditShopCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditShopCellEditorComponent';
@@ -191,6 +197,11 @@ import { CustomerNoAndNameDropdownComponent } from './shared/custom-component/cu
 import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-max-cell-editor.component';
 import { ORPI001DiaMinCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-min-cell-editor.component';
 import { ORPI001CustomerNameCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-customer-name-cell-editor.component';
+import { MainComponent } from './main/main.component';
+import { RecursionMenusComponent } from './main/recursion-menus.component';
+import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
+import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
+import { SearchMenusComponent } from '../app/widget/search-menus/search-menus.component';
 
 registerLocaleData(zh);
 
@@ -336,6 +347,12 @@ registerLocaleData(zh);
     AGCustomHeaderComponent,
     ManageMenuComponent,
     AGCustomActionCellComponent,
+    ManageRoleComponent,
+    ManageRoleActionCellComponent,
+    ManageUserComponent,
+    BtnCellRendererType2,
+    UserProfileComponent,
+    CommonApiEditComponent,
     PPSI205A100Component,
     PPSI205A401Component,
     PPSI111EditShopCellEditorComponent,
@@ -354,7 +371,12 @@ registerLocaleData(zh);
     CustomerNoAndNameDropdownComponent,
     ORPI001DiaMinCellEditorComponent,
     ORPI001DiaMaxCellEditorComponent,
-    ORPI001CustomerNameCellEditorComponent
+    ORPI001CustomerNameCellEditorComponent,
+    MainComponent,
+    RecursionMenusComponent,
+    AgHeadSeetingComponent,
+    NumberCellEditorComponent,
+    SearchMenusComponent
   ],
   imports: [
     BrowserModule,

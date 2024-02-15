@@ -11,11 +11,11 @@
             <ng-container *ngIf=" data.kindType.indexOf('小計') == -1">
                 <td [rowSpan]="data.rowspanSize" *ngIf="data.rowspanSize > 0" >{{data.kindType}}</td>
                 <td>{{ data.process }}</td>
-                <td>{{ data.planWeightI | number:'1.1-1' }}</td>
+                <td>{{ data.planWeightI | number:'1.0-0' }}</td>
             </ng-container>
             <ng-container *ngIf=" data.kindType.indexOf('小計') != -1">
                 <td [colSpan]="2" style="background-color: #92D050; font-weight: bold;">{{ data.kindType }}</td>
-                <td style="background-color: #92D050; font-weight: bold;">{{ data.planWeightI | number:'1.1-1' }}</td>
+                <td style="background-color: #92D050; font-weight: bold;">{{ data.planWeightI | number:'1.0-0' }}</td>
             </ng-container>
         </tr>
     </tbody>

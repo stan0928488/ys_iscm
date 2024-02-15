@@ -174,3 +174,96 @@
     --ag-background-color: white; 
     --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);    
 }
+
+  /*
+.ag-theme-alpine .ag-body-horizontal-scroll {
+	overflow-y: hidden !important;
+	overflow-x: auto !important;
+	width:5px; 
+	height:3px;
+	border-radius: 10px;
+	background-color: transparent;
+  }
+
+.ag-root ::-webkit-scrollbar {
+    width: 2em;
+    height: 2em
+}
+.ag-root ::-webkit-scrollbar-button {
+    background: rgb(163, 16, 16)
+}
+.ag-root ::-webkit-scrollbar-track-piece {
+    background: rgb(63, 6, 117)
+}
+.ag-root ::-webkit-scrollbar-thumb {
+    background: rgb(53, 189, 35)
+}​
+*/
+
+
+/*
+@mixin scrollbar($size: 6px, $color: $xl-cool-grey-4-40) {
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: $size * 2;
+    }
+
+    &::-webkit-scrollbar-track,
+    &::-webkit-scrollbar-thumb {
+        border-radius: $size;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-clip: padding-box;
+        background-color: $color;
+        border: $size / 2 solid transparent;
+        min-height: 50px;
+    }
+
+    &::-webkit-scrollbar:horizontal {
+        height: $size * 2;
+    }
+}
+*/
+
+
+  :host ::ng-deep .ng-star-inserted::-webkit-scrollbar{
+	width:5px; 
+	height:3px;
+	border-radius: 10px;
+	background-color: transparent;
+  }
+   
+  :host ::ng-deep .nz-table-hide-scrollbar::-webkit-scrollbar {
+	width: 5px; 
+	background: transparent;
+  }
+   
+  :host ::ng-deep .ng-star-inserted::-webkit-scrollbar-thumb {
+	/*滚动条里面小方块*/
+	border-radius: 10px;
+	background-color: #b1d2e2;
+  }
+   
+  :host ::ng-deep .ng-star-inserted::-webkit-scrollbar-track {
+	/*滚动条里面轨道*/
+	/*border-radius: 10px;*/
+	background: transparent;
+  }
+
+  /*
+  :host::ng-deep .ant-table-body::-webkit-scrollbar {
+	width: 10px;
+	height: 5px;
+	background-color: #b1d2e2;
+  }
+
+	:host::ng-deep .ant-table-body::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	:host::ng-deep .ant-table-body::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		background-color: #b1d2e2;
+	}
+	*/

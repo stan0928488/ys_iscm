@@ -34,59 +34,50 @@
             class="Tab5-a"
             style="background-color: #ffffff; color: dodgerblue"
             >
-            <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_a100']">
+            <a *nzTabLink nz-tab-link [routerLink]="['/main/PlanSet/I205_a100']">
                 公版維護表</a
             >
-            <nz-collapse>
-                <nz-collapse-panel
-                  *ngFor="let panel of panels"
-                  [nzHeader]="panel.name"
-                  [nzActive]="panel.active"
-                  [nzDisabled]="panel.disabled"
+              <td style="text-align: right; width: 42%">
+                &nbsp;&nbsp;
+                <input
+                  type="file"
+                  id="fileupload"
+                  style="display: inline-block"
+                  (change)="incomingfile($event)"
+                  placeholder="Upload file"
+                  accept=".xlsx, .xls, .csv"
+                />
+                <button
+                  nz-button
+                  [ngClass]="{
+                    FCPdisable: isRunFCP,
+                    FCPenable: !isRunFCP
+                  }"
+                  nzType="primary"
+                  [disabled]="isRunFCP"
+                  (click)="Upload('5')"
                 >
-                  <td style="text-align: right; width: 42%">
-                    &nbsp;&nbsp;
-                    <input
-                      type="file"
-                      id="fileupload"
-                      style="display: inline-block"
-                      (change)="incomingfile($event)"
-                      placeholder="Upload file"
-                      accept=".xlsx, .xls, .csv"
-                    />
-                    <button
-                      nz-button
-                      [ngClass]="{
-                        FCPdisable: isRunFCP,
-                        FCPenable: !isRunFCP
-                      }"
-                      nzType="primary"
-                      [disabled]="isRunFCP"
-                      (click)="Upload('5')"
-                    >
-                      <span nz-icon nzType="upload" nzTheme="outline"></span>
-                      E X C E L 匯入
-                    </button>
-                    &nbsp;&nbsp;
-                    <button
-                      nz-button
-                      style="
-                        box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                        background-color: #4caf50;
-                        border: 2px blue none;
-                      "
-                      nzType="primary"
-                      (click)="convertToExcel('5')"
-                    >
-                      <span nz-icon nzType="download" nzTheme="outline"></span>
-                      E X C E L 匯出
-                    </button>
-                  </td>
-                </nz-collapse-panel>
-              </nz-collapse>
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  E X C E L 匯入
+                </button>
+                &nbsp;&nbsp;
+                <button
+                  nz-button
+                  style="
+                    box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+                    background-color: #4caf50;
+                    border: 2px blue none;
+                  "
+                  nzType="primary"
+                  (click)="convertToExcel('5')"
+                >
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                  E X C E L 匯出
+                </button>
+              </td>
     
               <p></p>
-              <ag-grid-angular  style="width: 100%; height: calc(100vh - 220px); overflow: scroll;" class="ag-theme-alpine" 
+              <ag-grid-angular  style="width: 100%; height: calc(100vh - 230px); overflow: scroll;" class="ag-theme-alpine" 
               [rowData]="tbppsm100List"
               [columnDefs]="columnDefs"
               [pagination]="true"
@@ -102,7 +93,7 @@
             <a
               *nzTabLink
               nz-tab-link
-              [routerLink]="['/PlanSet/I205_100']"
+              [routerLink]="['/main/PlanSet/I205_100']"
               style="color: black"
             >
             工廠排程公版匯入

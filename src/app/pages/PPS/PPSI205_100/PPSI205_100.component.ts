@@ -9,6 +9,9 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 import zh from '@angular/common/locales/zh';
 import * as _ from 'lodash';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
 registerLocaleData(zh);
 
 @Component({
@@ -43,8 +46,14 @@ export class PPSI205_100Component implements AfterViewInit {
     },
   ];
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
-    {headerName: 'FCP版本',field: 'fcpEdition',width: 100,headerComponent: AGCustomHeaderComponent},
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  columnDefs: ColDef[] = [
+    {
+      headerName: 'FCP版本',field: 'fcpEdition',width: 150,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams
+    },
     {headerName: '站別',field: 'schShopCode',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '投產機台',field: 'pstMachine',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '製程碼',field: 'processCode',width: 100,headerComponent: AGCustomHeaderComponent},
@@ -57,9 +66,9 @@ export class PPSI205_100Component implements AfterViewInit {
     {headerName: '鋼種群組',field: 'gradeGroup',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '自訂月份',field: 'newEpstYymm',width: 100,headerComponent: AGCustomHeaderComponent},
     {headerName: '寫入排序',field: 'campaignSort',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '開始時間',field: 'planStartTime',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '結束時間',field: 'planEndTime',width: 100,headerComponent: AGCustomHeaderComponent},
-    {headerName: '創建時間',field: 'dateCreate',width: 100,headerComponent: AGCustomHeaderComponent},
+    {headerName: '開始時間',field: 'planStartTime',width: 120,headerComponent: AGCustomHeaderComponent},
+    {headerName: '結束時間',field: 'planEndTime',width: 120,headerComponent: AGCustomHeaderComponent},
+    {headerName: '創建時間',field: 'dateCreate',width: 120,headerComponent: AGCustomHeaderComponent},
     {headerName: '創建者',field: 'userCreate',width: 100,headerComponent: AGCustomHeaderComponent}
   ];
 
@@ -74,6 +83,11 @@ export class PPSI205_100Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    }
   };
 
   constructor(
@@ -81,6 +95,8 @@ export class PPSI205_100Component implements AfterViewInit {
     private i18n: NzI18nService,
     private cookieService: CookieService,
     private message: NzMessageService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -104,7 +120,38 @@ export class PPSI205_100Component implements AfterViewInit {
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
     this.getRunFCPCount();
+    this.getDbCloumn();
   }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  } 
 
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
@@ -222,11 +269,11 @@ export class PPSI205_100Component implements AfterViewInit {
     } else if (tab === 2) {
       window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
     } else */if (tab === 3) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
     } else if (tab === 4) {
-      window.location.href = '#/PlanSet/I205_a401';
+      window.location.href = '#/main/PlanSet/I205_a401';
     } else if (tab === 5) {
-      window.location.href = '#/PlanSet/I205_a100';
+      window.location.href = '#/main/PlanSet/I205_a100';
     }
   }
 

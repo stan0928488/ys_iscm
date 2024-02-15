@@ -1,0 +1,152 @@
+<nz-content style="margin: 20px 20px">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>系統管理</nz-breadcrumb-item>
+        <nz-breadcrumb-item>ag表頭設定管理</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <div style="height:calc(100vh - 260px);padding:5px;">
+        <div nz-row>
+            <div nz-col [nzSpan]="6">
+                <nz-card>
+                    <button style="margin-right: 10px;" nz-button nzType="default" (click)="expandAll()"> 菜單收合
+                        <span nz-icon nzType="fullscreen" nzTheme="outline"></span>
+                    </button>
+                    <br><br>
+                    <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource">
+                        <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+
+                        <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                            <nz-tree-node-toggle>
+                                <span nz-icon [nzType]="node.icon" nzTheme="outline"></span>
+                            </nz-tree-node-toggle>
+                            <nz-tree-node-option (nzClick)="expend(node)">
+                                {{ node.menuName }}
+                            </nz-tree-node-option>
+                        </nz-tree-node>
+                    </nz-tree-view>
+                </nz-card>
+            </div>
+            <div nz-col [nzSpan]="18">
+                <nz-card style="margin-left: 20px" [nzTitle]="currentNode ? currentNode.menuName : ''">
+                    <div style="margin-bottom: 5px; min-height: 30px;">
+                        <div nz-row>
+                            <div nz-col [nzSpan]="2">
+                                <button nz-button [nzType]="'primary'" (click)="showModal()"><span>新增</span></button>
+                            </div>
+                            <div nz-col [nzSpan]="2">
+                                <button nz-button (click)="save()" nzType="primary">儲存</button>
+                            </div>
+                            <div nz-col [nzSpan]="2">
+                                <nz-switch [(ngModel)]="switchValue" (ngModelChange)="onswitch()" nzCheckedChildren="開" nzUnCheckedChildren="關"></nz-switch>
+                            </div>
+                            <div nz-col [nzSpan]="18"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <ag-grid-angular style="width: 100%; height: calc(100vh - 280px); overflow: scroll;" class="ag-theme-alpine" [rowData]="rowData"
+                        [columnDefs]="columnDefs" [frameworkComponents]="frameworkComponents" [pagination]="true" class="ag-theme-alpine"
+                        [gridOptions]="gridOptions" [defaultColDef]="gridOptions.defaultColDef" (gridReady)="onGridReady($event)">
+                    </ag-grid-angular>
+                </nz-card>
+            </div>
+        </div>
+    </div>
+</nz-content>
+
+<nz-modal 
+[nzFooter]="null"
+[(nzVisible)]="isVisible" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+        <form nz-form (ngSubmit)="submitForm()">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="agName">ag表格名稱</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input [(ngModel)]="insertObj.agName" name="agName" type="agName" id="agName">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="field">key欄位</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input [(ngModel)]="insertObj.field" name="field" type="field" id="field">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="headername">中文名稱</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input [(ngModel)]="insertObj.headername" name="headername" type="headername" id="headername">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="remark">備註</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input [(ngModel)]="insertObj.remark" name="remark" type="remark" id="remark">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="sortIndex">顯示順位</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-input-number [(ngModel)]="insertObj.sortIndex" [nzStep]="1"></nz-input-number>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="width">ag默認欄寬</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-input-number [(ngModel)]="insertObj.width" [nzStep]="5"></nz-input-number>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="sortable">ag排序是否啟用</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select [(ngModel)]="insertObj.sortable" >
+                        <nz-option nzValue="0" nzLabel="啟用"></nz-option>
+                        <nz-option nzValue="1" nzLabel="不啟用"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="resizable">ag寬度是否可調</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select [(ngModel)]="insertObj.resizable" >
+                        <nz-option nzValue="0" nzLabel="可"></nz-option>
+                        <nz-option nzValue="1" nzLabel="不可"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="filter">ag過濾器是否啟用</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select [(ngModel)]="insertObj.filter" >
+                        <nz-option nzValue="0" nzLabel="啟用"></nz-option>
+                        <nz-option nzValue="1" nzLabel="不啟用"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="hide">欄位是否隱藏</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select [(ngModel)]="insertObj.hide" >
+                        <nz-option nzValue="0" nzLabel="隱藏"></nz-option>
+                        <nz-option nzValue="1" nzLabel="顯示"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="is_param_flag">是否啟用參數</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select [(ngModel)]="insertObj.isParamFlag" >
+                        <nz-option nzValue="0" nzLabel="啟用"></nz-option>
+                        <nz-option nzValue="1" nzLabel="不啟用"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <button nz-button class="login-form-button login-form-margin" [nzType]="'primary'">儲存</button>
+        </form>
+    </ng-container>
+</nz-modal>
