@@ -674,12 +674,44 @@ export class ORPI001Component implements OnInit, AfterViewInit {
       return;
     } 
 
+    // 尺寸欄位必須填寫數字
+    if(!this.checkSizeDataType()){
+      this.renderer.setProperty(this.inputExcelFile, 'value', '');
+      this.isSpinning = false;
+      return;
+    }
+
     // 將jsonData轉成英文的key
     this.convertJsonToEnglishkey();
 
     // 發送資料進行驗證與儲存
     this.batchImportDataList();
     this.renderer.setProperty(this.inputExcelFile, 'value', '');
+
+  }
+
+  checkSizeDataType(){
+
+    for (let i = 0; i < this.jsonExcelData.length; i++) {
+      let rowNumberInExcel = i + 2;
+      let item = this.jsonExcelData[i];
+
+      if(!_.isNil(item.saleOrderDiaMin) && Number.isNaN(parseFloat(item.saleOrderDiaMin))){
+        this.errorMSG(
+          '資料型態錯誤', 
+          `Excel中第${rowNumberInExcel}行的「尺寸min」必須為數字`);
+          return false;
+      }
+
+      if(!_.isNil(item.saleOrderDiaMax) && Number.isNaN(parseFloat(item.saleOrderDiaMax))){
+        this.errorMSG(
+          '資料型態錯誤', 
+          `Excel中第${rowNumberInExcel}行的「尺寸max」必須為數字`);
+          return false;
+      }
+    }
+
+    return true;
 
   }
 
