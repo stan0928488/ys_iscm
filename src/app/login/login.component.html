@@ -1,5 +1,5 @@
 <div class="login-container">
-  <nz-tag [class]="envClass" [nzColor]="envColor">{{ envName }}_Ver.240206</nz-tag>
+  <nz-tag *ngIf="envName!='正式環境'" [class]="envClass" [nzColor]="envColor">{{ envName }}_Ver.240215</nz-tag>
 
   <div class = "login-background">
     <div class="login-content-layout">
