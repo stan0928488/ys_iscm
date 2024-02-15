@@ -11,6 +11,7 @@ import { AuthService } from '../services/auth/auth.service';
 import { CookieService } from '../services/config/cookie.service';
 import { MainEventBusComponent } from '../main/main-event-bus.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ConfigService } from '../services/config/config.service';
 //import * as base64 from "base64-encode-decode";
 
 @Component({
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private router: Router,
     private cookieService: CookieService,
+    private configService: ConfigService,
     private authService: AuthService,
     private commonService: CommonService,
     private appEventBusComponent: MainEventBusComponent,
@@ -170,7 +172,9 @@ export class LoginComponent implements OnInit {
 
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
-   const  _param = {userName:username,password:password,saveLogin:true}
+    
+    const LOCAL_PREFIX = this.configService.LOCAL_PREFIX;
+    const _param = {userName:username,password:password,saveLogin:true}
     this.commonService.casLogin(_param).subscribe(
       (res) => {
         console.log("登录结果") ;
@@ -186,8 +190,8 @@ export class LoginComponent implements OnInit {
           this.authService.emitAuthState();
           let jwtTokenTemp = result.data.jwtToken ;
           // 儲存 JWT token 到 localStorage
-          localStorage.setItem('jwtToken',jwtTokenTemp);
-          let jwtToken = localStorage.getItem('jwtToken');
+          localStorage.setItem(LOCAL_PREFIX, jwtTokenTemp);
+          let jwtToken = localStorage.getItem(LOCAL_PREFIX);
           console.log("jwtToken:" + jwtToken);
           
           this.authFail = false;

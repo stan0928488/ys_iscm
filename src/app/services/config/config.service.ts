@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 export class ConfigService {
   APIURL: string = '';
   CONTEXT_PATH = '/ys-iscm';
+  LOCAL_PREFIX = 'ysiscm_jwtToken';
 
   constructor(private http: HttpClient) {
     //this.setAPIURL();

@@ -4,14 +4,17 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { ConfigService } from "../config/config.service";
+
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+              private configService: ConfigService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // add authorization header with jwt token if available
-    let jwtToken = localStorage.getItem('jwtToken');
+    let jwtToken = localStorage.getItem(this.configService.LOCAL_PREFIX);
     let currentRoute = this.router.url; // 獲取當前路由
 
     console.log(jwtToken)

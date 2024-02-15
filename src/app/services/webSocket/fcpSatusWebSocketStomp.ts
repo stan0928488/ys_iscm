@@ -14,7 +14,7 @@ export class FcpStatusWebSocketStomp
     originalXMLHttpRequestOpen : any = null;
     originalXMLHttpRequestSetHeader : any = null;
     currentXMLHttpRequestInstancing : any = null;
-
+    
     webSocketEndpointPrefix = 'iscmFcpStatusWebSocketEndpoint-ef356691-27e5-49c1-8245-9f028f882886';
     plantType : string = null;
     myTopic : string = null;
@@ -77,7 +77,7 @@ export class FcpStatusWebSocketStomp
       };
 
       let header = {
-        Authorization: localStorage.getItem('jwtToken'),
+        Authorization: localStorage.getItem(this.configService.LOCAL_PREFIX),
         CurrentRoute : this._router.url
       }
       this.stompClient.connect(header, async (frame) => {
@@ -185,6 +185,8 @@ export class FcpStatusWebSocketStomp
     
     addHeaderForStompHttpRequest(){
       const originalOpen = XMLHttpRequest.prototype.open;
+      
+      const LOCAL_PREFIX = this.configService.LOCAL_PREFIX;
       this.originalXMLHttpRequestOpen = originalOpen;
       this.originalXMLHttpRequestSetHeader = XMLHttpRequest.prototype.setRequestHeader;
       const regex = new RegExp(`\\S+?\\/${this.webSocketEndpointPrefix}\\/\\S+`);
