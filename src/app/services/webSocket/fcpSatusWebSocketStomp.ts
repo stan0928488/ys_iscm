@@ -34,7 +34,7 @@ export class FcpStatusWebSocketStomp
       private _router : Router,
       _plantType:string,
     ) {
-      this.APINEWURL = this.configService.getAPIURL('1');
+      this.APINEWURL = this.configService.CONTEXT_PATH
       this.plantType = _plantType;
       this.myTopic = this.plantType === '直棒' ? 'barFcpStatus' : 'refiningFcpStatus';
     }
@@ -199,7 +199,7 @@ export class FcpStatusWebSocketStomp
           _this.currentXMLHttpRequestInstancing = this;
 
           // 重拿token
-          let jwtToken = localStorage.getItem('jwtToken');
+          let jwtToken = localStorage.getItem(_this.configService.LOCAL_PREFIX);
 
           this.setRequestHeader('Authorization', jwtToken);
           this.setRequestHeader('CurrentRoute', _this._router.url);
