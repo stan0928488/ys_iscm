@@ -1,0 +1,39 @@
+.breadcrumbContainer{
+	color: #000;
+	font-size: 24px;
+	font-style: normal;
+	font-weight: 700;
+}
+
+:host ::ng-deep .ag-pinned-right-header{
+	background-color: #CED7DE;
+}
+
+:host ::ng-deep .ag-header-container{
+	background-color:#CED7DE;
+}
+
+:host ::ng-deep .ag-root-wrapper.ag-layout-normal{
+	border-radius: 7px;
+}
+
+:host ::ng-deep .ant-btn-primary{
+	box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+	text-shadow:none;
+	font-size: 14px;
+	border-radius: 3px;
+	font-weight: bold;
+	padding:0px 10px 0px 10px;
+	border-color: #2998FF;
+	background: #2998FF;
+}
+
+.operate-container{
+    display: flex;
+    margin-top: 50px;
+    align-items: center;
+}
+
+.excel{
+    margin-left: auto;
+}

@@ -121,6 +121,7 @@ import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPag
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
+import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
 
 const routes: Routes = [
   {
@@ -139,6 +140,14 @@ const routes: Routes = [
   },
 
   /* ORP & OIP & TRA */
+  {
+    path: 'orders',
+    children: [
+      { path: '', redirectTo: '/orders/O001', pathMatch: 'full' },
+      { path: 'O001', component: ORPI001Component },
+    ],
+    canActivate: [AuthGuard]
+  },
 
   /* PPS & MSH */
   {

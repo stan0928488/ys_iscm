@@ -26,6 +26,13 @@ export class CommonService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
+  // 獲取客戶清單
+  getCustomerList(){
+    const queryUrl = `${this.APINEWURL}/common/customers`;
+    console.log(`獲取客戶清單 -> ${queryUrl}`);
+    return this.http.get(queryUrl);
+  }
+
   //getRunFCPCount 取得目前正在執行的FCP (所有靜態資料、執行策略皆共用)
   getRunFCPCount() {
     let queryUrl = this.APIURL + '/FCP/I210/getRunFCPCount';
