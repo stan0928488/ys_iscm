@@ -24,7 +24,6 @@ import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { ClipboardService } from 'ngx-clipboard'
 import { PPSCustomHeaderComponent } from './ppscustom-header.component';
 import { AgCustomHeaderParams } from 'src/app/shared/ag-component/custom-header-params';
-import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 @Component({
   selector: 'app-MSHP001',
@@ -1244,7 +1243,7 @@ this.handleSelectCarModal() ;
         checkboxSelection: true }
         this.columnDefs.push(checkRow);
 
-        let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50 }
+        let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50,sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:false} }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
         this.outsideColumnDefs.push(index1);
@@ -1257,15 +1256,15 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:80 ,headerClass: 'custom-header',sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header',sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent}
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:100 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:true}}
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:true}}
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);
         //数据类型
         this.columKeyType["START_DATE_C"] = 0 ;
 
-        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header',filter:true,headerComponentFramework: PPSCustomHeaderComponent }
+        let index4 = {headerName:'結束',field:'END_DATE_C',rowDrag: false,resizable:true,width:80,headerClass: 'custom-header',filter:false,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("結束")
         this.columnDefs.push(index4);
         this.outsideColumnDefs.push(index4);
@@ -1273,7 +1272,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["END_DATE_C"] = 0 ;
         if(this.selectEquipCode === 'RF' || this.selectEquipCode === 'BA1' ) {
         // 411 CARID
-        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
+        let index5 = {headerName:'CARID',field:'CAR_ID_ADD',rowDrag: false,resizable:true,width:80,sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("CAR_ID_ADD")
         this.columnDefs.push(index5);
         this.outsideColumnDefs.push(index5);
@@ -1281,7 +1280,7 @@ this.handleSelectCarModal() ;
         this.columKeyType["CAR_ID_ADD"] = 0 ;
 
         // 411 CAREPST
-        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80,sortable: true ,filter:true,headerComponentFramework: PPSCustomHeaderComponent }
+        let index6 = {headerName:'CAREPST',field:'CAR_EPST_ADD',rowDrag: false,resizable:true,width:80,sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("CAREPST")
         this.columnDefs.push(index6);
         this.outsideColumnDefs.push(index6);
@@ -1425,7 +1424,7 @@ this.handleSelectCarModal() ;
             widthTemp = 130 ;
           }
           if(index == 0) {
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent}
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: PPSCustomHeaderComponent}
             //let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:130 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
@@ -1433,7 +1432,7 @@ this.handleSelectCarModal() ;
             }
             
           } else { 
-            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: AGCustomHeaderComponent }
+            let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width: widthTemp ,sortable: false ,filter:true, headerComponentFramework: PPSCustomHeaderComponent }
            // let itemTemp = {headerName:item.columLabel,field:item.columValue,resizable:true,width:120 }
             this.columnDefs.push(itemTemp);
             if(item.isOutside === 1) {
