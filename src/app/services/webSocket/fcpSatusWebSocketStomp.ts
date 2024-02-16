@@ -34,7 +34,7 @@ export class FcpStatusWebSocketStomp
       private _router : Router,
       _plantType:string,
     ) {
-      this.APINEWURL = this.configService.CONTEXT_PATH
+      this.APINEWURL = this.configService.getAPIURL("1");
       this.plantType = _plantType;
       this.myTopic = this.plantType === '直棒' ? 'barFcpStatus' : 'refiningFcpStatus';
     }
