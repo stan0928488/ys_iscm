@@ -14,6 +14,8 @@ import { ORPI001DiaMinCellEditorComponent } from './ORPI001-dia-min-cell-editor.
 import { ORPI001CustomerNameCellEditorComponent } from './ORPI001-customer-name-cell-editor.component';
 import { CommonService } from 'src/app/services/common/common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
 
 @Component({
   selector: 'app-orpi001',
@@ -78,10 +80,13 @@ export class ORPI001Component implements OnInit, AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   columnDefs: ColDef[] = [
     { 
       headerName:'客戶名稱', 
       field:'customerName',
+      width: 150,
       cellEditor : ORPI001CustomerNameCellEditorComponent,
       cellEditorParams : {
         customerList : (async() => { 
@@ -98,11 +103,13 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     { 
       headerName:'客戶鋼種', 
       field:'custGradeNo',
+      width: 150,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'尺寸min', 
       field:'saleOrderDiaMin',
+      width: 150,
       valueFormatter : (params: ValueFormatterParams) => {
         if(_.isNil(params.value)){
           return '-';
@@ -115,6 +122,7 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     { 
       headerName:'尺寸max', 
       field:'saleOrderDiaMax',
+      width: 150,
       valueFormatter : (params: ValueFormatterParams) => {
         if(_.isNil(params.value)){
           return '-';
@@ -127,11 +135,13 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     { 
       headerName:'華新鋼種', 
       field:'gradeNo',
+      width: 150,
       headerComponent : AGCustomHeaderComponent
     },
     { 
       headerName:'規範碼', 
       field:'ruleCode',
+      width: 150,
       cellEditor: 'agTextCellEditor',
       cellEditorParams: {
           maxLength: 1
@@ -141,6 +151,7 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     { 
       headerName:'品質碼', 
       field:'qualityCode',
+      width: 150,
       cellEditor: 'agTextCellEditor',
       cellEditorParams: {
           maxLength: 1
@@ -150,6 +161,7 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     { 
       headerName:'機械性質碼', 
       field:'mechanicalPropertiesCode',
+      width: 150,
       cellEditor: 'agTextCellEditor',
       cellEditorParams: {
           maxLength: 1
@@ -160,9 +172,9 @@ export class ORPI001Component implements OnInit, AfterViewInit {
       headerName:'Action',
       field:'action',
       editable: false,
-      pinned: 'right',
       headerComponent : AGCustomHeaderComponent,
       cellRenderer: AGCustomActionCellComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRendererParams:{
         edit : this.rowEditHandler.bind(this),
         cancelEdit: this.rowCancalEditHandler.bind(this),
@@ -178,6 +190,15 @@ export class ORPI001Component implements OnInit, AfterViewInit {
       sortable: false,
       editable: true,
       resizable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
     }
   };
 
@@ -195,7 +216,8 @@ export class ORPI001Component implements OnInit, AfterViewInit {
               private orpService: ORPService,
               private commonService:CommonService,
               private message: NzMessageService,
-              private renderer: Renderer2) { }
+              private renderer: Renderer2,
+              private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     await this.findAllData();
