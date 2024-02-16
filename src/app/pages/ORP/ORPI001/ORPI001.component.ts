@@ -16,6 +16,7 @@ import { CommonService } from 'src/app/services/common/common.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Router } from '@angular/router';
 import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 @Component({
   selector: 'app-orpi001',
@@ -80,8 +81,26 @@ export class ORPI001Component implements OnInit, AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
 
-  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
-  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }   // 從db撈的參數
+  agCustomHeaderParams : AGHeaderParams = { isMenuShow: true }
+  gridOptions = {
+    defaultColDef: {
+      filter: true,
+      editable: true,
+      resizable: true,
+      sortable: false,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1',      // agName自訂義，程式內如果有多個要配置，就AGName2...等等接續編號
+      isSave:true ,          // 是否要有保存功能，可自行定義要不要保存目前ag欄位
+      path: this.router.url , // 抓router
+    }
+  };
+
   columnDefs: ColDef[] = [
     { 
       headerName:'客戶名稱', 
@@ -184,23 +203,33 @@ export class ORPI001Component implements OnInit, AfterViewInit {
     }
   ];
 
-  gridOptions = {
-    defaultColDef: {
-      filter: true,
-      sortable: false,
-      editable: true,
-      resizable: true,
-      enableRowGroup: false,
-      enablePivot: false,
-      enableValue: false,
-    },
-    api: null,
-    agCustomHeaderParams : {
-      agName: 'AGName1' , // AG 表名
-      isSave:true ,
-      path: this.router.url ,
-    }
-  };
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
+
 
    // 使用者匯入的Excel檔案
    excelImportFile: File;
@@ -217,10 +246,12 @@ export class ORPI001Component implements OnInit, AfterViewInit {
               private commonService:CommonService,
               private message: NzMessageService,
               private renderer: Renderer2,
-              private router: Router) { }
+              private router: Router,
+              private systemService : SYSTEMService) { }
 
   async ngOnInit(): Promise<void> {
     await this.findAllData();
+    this.getDbCloumn();
   }
 
   ngAfterViewInit(): void {

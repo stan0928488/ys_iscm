@@ -164,7 +164,6 @@ import { PPSR345AVERAGEComponent } from './pages/PPS/PPSR345AVERAGE/PPSR345AVERA
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import { AGCustomHeaderComponent } from './shared/ag-component/ag-custom-header-component';
 import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
-import { ACCP100component } from './pages/ACC/ACCP100component';
 import { JwtInterceptor } from './services/config/jwt.interceptor';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
@@ -211,7 +210,6 @@ registerLocaleData(zh);
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
-    ACCP100component,
 
     PPSI101Component,
     PPSI102Component,

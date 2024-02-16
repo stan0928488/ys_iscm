@@ -65,8 +65,8 @@ export class PPSI101Component implements AfterViewInit {
   pageIndex = 1;
   pageSize = 20;
 
-  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
-  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }   // 從db撈的參數
+  agCustomHeaderParams : AGHeaderParams = { isMenuShow: true }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -79,10 +79,10 @@ export class PPSI101Component implements AfterViewInit {
     },
     api: null,
     agCustomHeaderParams : {
-      agName: 'AGName1' , // AG 表名
-      isSave:true ,
-      path: this.router.url ,
-    },
+      agName: 'AGName1',      // agName自訂義，程式內如果有多個要配置，就AGName2...等等接續編號
+      isSave:true ,          // 是否要有保存功能，可自行定義要不要保存目前ag欄位
+      path: this.router.url , // 抓router
+    }
   };
 
   columnDefs: ColDef[] = [
@@ -169,7 +169,6 @@ export class PPSI101Component implements AfterViewInit {
     this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
       let result:any = res ;
       if(result.code === 200) {
-        console.log(result) ;
         if (result.data.length > 0) {
           //拿到DB數據 ，複製到靜態數據
           this.columnDefs.forEach((item)=>{
@@ -185,7 +184,6 @@ export class PPSI101Component implements AfterViewInit {
             })
           })
           this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
-          console.log()
           this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
         }
       } else {

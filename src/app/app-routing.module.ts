@@ -116,7 +116,6 @@ import { LABP100Component } from './pages/LAB/LABP100/LABP100.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuardService as AuthGuard } from './services/auth/auth-guard.service';
 import { ErrorPageComponent } from './pages/errorPage/ErrorPage.component';
-import { ACCP100component } from './pages/ACC/ACCP100component';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
 import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
@@ -486,13 +485,6 @@ const routes: Routes = [
         path: 'system',
         children: [
           { path: '', redirectTo: '/main/system/ACCSetting', pathMatch: 'full' },
-          {
-            path: 'ACCSetting',
-            component: ACCP100component,
-            data : {
-              pageName:"權限設定"
-            },
-          },
           {
             path: "manageMenu",
             data : {

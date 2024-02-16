@@ -5,7 +5,6 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import * as _ from "lodash";
 import { Observable, Subject } from "rxjs";
 import { CookieService } from "../config/cookie.service";
-import { ACCService } from "src/app/services/ACC/ACC.service";
 import { MainEventBusComponent } from "src/app/main/main-event-bus.component";
 
 @Injectable({
@@ -20,7 +19,6 @@ export class AuthService {
   checkTime: string;
   CAS_URL = "https://cas.walsin.com:8889/";
   constructor(
-    private ACCService: ACCService,
     private cookieService: CookieService,
     private router: Router,
     private http: HttpClient,

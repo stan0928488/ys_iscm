@@ -129,7 +129,7 @@ export class PPSI102Component implements OnInit {
     },
   ];
 
-  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
