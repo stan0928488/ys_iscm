@@ -1243,7 +1243,7 @@ this.handleSelectCarModal() ;
         checkboxSelection: true }
         this.columnDefs.push(checkRow);
 
-        let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50,sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:false} }
+        let index1 = {headerName:'編號',field:'sortId',rowDrag: true,resizable:true,width:50,sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent }
         exportHeader.push("編號")
         this.columnDefs.push(index1);
         this.outsideColumnDefs.push(index1);
@@ -1256,8 +1256,8 @@ this.handleSelectCarModal() ;
         //数据类型
         this.columKeyType["ID"] = 0 ;
 
-        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:100 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:true}}
-        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent,headerComponentParams:{isMenuShow:true}}
+        let index3_1 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:100 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent}
+        let index3_2 = {headerName:'開始',field:'START_DATE_C',rowDrag: false,resizable:true,width:160 ,headerClass: 'custom-header',sortable: false ,filter:false,headerComponentFramework: PPSCustomHeaderComponent}
         exportHeader.push("開始")
         this.columnDefs.push(index3_2);
         this.outsideColumnDefs.push(index3_1);
