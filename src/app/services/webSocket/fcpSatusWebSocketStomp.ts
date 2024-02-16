@@ -186,7 +186,6 @@ export class FcpStatusWebSocketStomp
     addHeaderForStompHttpRequest(){
       const originalOpen = XMLHttpRequest.prototype.open;
       
-      const LOCAL_PREFIX = this.configService.LOCAL_PREFIX;
       this.originalXMLHttpRequestOpen = originalOpen;
       this.originalXMLHttpRequestSetHeader = XMLHttpRequest.prototype.setRequestHeader;
       const regex = new RegExp(`\\S+?\\/${this.webSocketEndpointPrefix}\\/\\S+`);
