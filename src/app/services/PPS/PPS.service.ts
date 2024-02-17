@@ -1445,8 +1445,8 @@ export class PPSService {
   publishDataToMsh(_result, _code) {
     let hostName = window.location.hostname;
     const body = JSON.stringify('');
-    // let queryUrl = `http://${hostName}:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&shopRouting=${_code}`;
-    let queryUrl = `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&shopRouting=${_code}`;
+    let queryUrl = `http://${hostName}:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&shopRouting=${_code}`;
+    // let queryUrl = `http://ys-ppsapt01.walsin.corp:8080/pps_FCP/rest/toMES/?FCP_Version=${_result}&shopRouting=${_code}`;
     return this.http.post(queryUrl, body, {});
   }
 
