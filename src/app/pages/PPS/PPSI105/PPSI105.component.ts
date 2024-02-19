@@ -11,6 +11,10 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
+import { ColDef } from "ag-grid-community";
 
 @Component({
   selector: "app-PPSI105",
@@ -37,6 +41,8 @@ export class PPSI105Component implements OnInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -86,6 +92,8 @@ export class PPSI105Component implements OnInit {
   titleArray = ["機台","產出尺寸最小值","產出尺寸最大值","產出型態","大調機代碼","小調機公差標準","爐批數量"];
   importdata_repeat = [];
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -97,9 +105,14 @@ export class PPSI105Component implements OnInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     {
       width: 100,
       headerName: '機台',
@@ -146,6 +159,8 @@ export class PPSI105Component implements OnInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -177,8 +192,39 @@ export class PPSI105Component implements OnInit {
     console.log("ngAfterViewChecked");
     this.getPPSINP04List();
     this.tableHeight = (window.innerHeight - 250).toString() + "px";
+    this.getDbCloumn();
   }
   
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
+
   getPPSINP04List() {
     this.loading = true;
     let myObj = this;

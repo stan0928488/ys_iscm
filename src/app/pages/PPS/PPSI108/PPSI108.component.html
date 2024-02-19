@@ -7,7 +7,7 @@
         <a *nzTabLink nz-tab-link [routerLink]="['.']" style="color: dodgerblue">
           直棒
         </a>
-        <div style="min-height: 1200px">
+        <div style="height: 100%">
           <div>
             <button
               nz-button
@@ -57,7 +57,7 @@
           </div>
           <div nz-col [nzSpan]="90" style="padding-top: 10px">
             <ag-grid-angular
-              style="width:1100px; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+              style="width:1100px; height:calc(100vh - 280px); overflow: scroll; margin-top: 10px"
               class="ag-theme-alpine"
               [rowData]="displayPPSINP08List"
               [columnDefs]="ppsinp08ColumnDefs"

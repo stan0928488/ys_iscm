@@ -1,0 +1,182 @@
+@font-face {
+    font-family: "anticon";
+    font-display: fallback;
+    src: url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.eot");
+    /* IE9*/
+    src: url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.woff")
+        format("woff"),
+      /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+        url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.ttf")
+        format("truetype"),
+      /* iOS 4.1- */
+        url("../../assets/iconfonts/font_148784_v4ggb6wrjmkotj4i.svg#iconfont")
+        format("svg");
+  }
+  
+
+  nz-sider {
+    /* overflow: auto; */
+    height: 100vh;
+    /* position: fixed;
+    left: 0; */
+  }
+
+  nz-content {
+    margin-bottom: 1px;
+    max-height: calc(100vh - 100px);
+    overflow: scroll;
+
+  }
+  
+  
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-button {
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid slategrey;
+  }
+
+  ::-webkit-scrollbar-track {
+    box-shadow: transparent;
+  }
+
+
+
+  /* muli-regular - latin */
+  
+  :host ::ng-deep .trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  :host ::ng-deep .trigger:hover {
+    color: #1890ff;
+  }
+  
+  :host ::ng-deep .logoUl {
+    height: 50px;
+    width: 100%;
+    /* background-color: #e8e8e8; */
+  }
+  
+  :host ::ng-deep .logo {
+    height: 30px;
+    margin: 5px;
+  }
+  
+  .navBar {
+    display: flex;
+    height: 30px;
+    justify-content: space-between;
+    align-items: center;
+    /* img {
+      width: 150px;
+      height: 30px;
+      margin-right: 16px;
+      margin-top: -8px;
+    } */
+  }
+  .navBar  img {
+    width: 0px;
+    height: 0px;
+    margin-right: 16px;
+    margin-top: -8px;
+  }
+  
+  .nav-bar-prod {
+    background: #0054b6;
+    padding: 0;
+  }
+  
+  .nav-bar-tst {
+    background: #da6c72;
+    padding: 0;
+  }
+  
+  .nav-bar-local {
+    background: #e8e8e8;
+    padding: 0;
+  }
+
+  :host ::ng-deep .content-area{ 
+    height: calc(100vh - 68px);
+    z-index: 0;
+    margin-top: 3vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+  }
+  
+  :host ::ng-deep .logo{
+    float: left;
+  }
+  
+  :host ::ng-deep .info{
+    padding: 0 20px 0 0;
+    float: right;
+  }
+  
+  :host ::ng-deep .header-tab > .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap,
+    .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
+    background-color: var(--logo-background-color, #6c9dd5);
+  }
+  
+  :host ::ng-deep .header-tab > .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab,
+    .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab {
+    border-radius: 2px 2px 0 0;
+    background-color: var(--logo-background-color, #6c9dd5);
+    border: none;
+    color: rgb(88, 88, 88);
+    font-size: 15px;
+    font-weight: 500;
+    text-shadow: 0 0 0.5px currentcolor;
+  }
+  
+  :host ::ng-deep .header-tab .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    /* color: #1f3b86; */
+    color: #ffffff;
+    font-size: 16px;
+    text-shadow: 0 0 1px currentcolor;
+  }
+
+  .footer-icon {
+    display: flex;
+    width: 20px;
+    height: 18px;
+    padding-bottom: 2px;
+    margin-right: .4em;
+    background-color: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
+    border-radius: 2px;
+    box-shadow: inset 0 -2px #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px #1e235a66;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .infoText {
+    margin: 0 2px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
+  }
+    
+  .infoSearch {
+    margin: 0 2px;
+    color: rgb(0 27 133);
+    font-size: 16px;
+    text-shadow: rgb(0 0 0 / 42%) 0.05em 0.05em 0.2em;
+  }
+

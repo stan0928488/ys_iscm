@@ -29,7 +29,7 @@
       <a
         *nzTabLink
         nz-tab-link
-        [routerLink]="['/PlanSet/I205_a401']"
+        [routerLink]="['/main/PlanSet/I205_a401']"
         style="color: black"
       >
       Auto campaign表
@@ -39,46 +39,39 @@
       class="Tab5-a"
       style="background-color: #ffffff; color: dodgerblue"
     >
-      <a *nzTabLink nz-tab-link [routerLink]="['/PlanSet/I205_401']">
+      <a *nzTabLink nz-tab-link [routerLink]="['/main/PlanSet/I205_401']">
         彙整資料</a
       >
-      <nz-collapse>
-        <nz-collapse-panel 
-        nzHeader="資料結轉與EXCEL匯出" 
-        nzActive="true">
-
-        <button nz-button 
-                nzType="primary"
-                (click)="convertTBPPSM102AutoCampaign()"
-        ><span nz-icon nzType="import" nzTheme="outline"></span>
-        轉入 401 Auto Campaign
-        </button>
-          <button nz-button nzType="primary" 
-            style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
-            (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
-            資料結轉
-          </button>
-          <button
-              nz-button
-              style="
-                box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
-                background-color: #4caf50;
-                border: 2px blue none;
-                margin-left:25px; 
-              "
+      <button nz-button 
               nzType="primary"
-              (click)="excelExport()">
-              <span nz-icon nzType="download" nzTheme="outline"></span>
-              E X C E L 匯出
-            </button>
-
-        </nz-collapse-panel>
-      </nz-collapse>
-
+              (click)="convertTBPPSM102AutoCampaign()"
+      ><span nz-icon nzType="import" nzTheme="outline"></span>
+      轉入 401 Auto Campaign
+      </button>
+        <button nz-button nzType="primary" 
+          style="background-color: #4034eb; border: 3px solid; border-color: #4b48db; font-weight: bold; margin-left:300px; "
+          (click)="converTBPPSM119Data()"><span nzTheme="outline"></span>
+          資料結轉
+        </button>
+        <button
+            nz-button
+            style="
+              box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+              background-color: #4caf50;
+              border: 2px blue none;
+              margin-left:25px; 
+            "
+            nzType="primary"
+            (click)="excelExport()">
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            E X C E L 匯出
+          </button>
+      <p><p><p>
       <ag-grid-angular
       style="width: 100%; height: calc(100vh - 220px); overflow: scroll; "
       class="ag-theme-alpine"
       [rowData]="rowData"
+      [gridOptions]="gridOptions"
       [columnDefs]="columnDefs"
       [pagination]="true"
       [defaultColDef]="ColGroupDef" 

@@ -10,6 +10,9 @@ import * as XLSX from 'xlsx';
 import { CellEditingStoppedEvent, ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams } from "ag-grid-community";
 import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-custom-action-cell-component";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
 
 
 interface ItemData {
@@ -86,7 +89,9 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.userName = this.cookieService.getCookie("USERNAME");
@@ -107,8 +112,38 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     const liI108NTab = this.elementRef.nativeElement.querySelector('#liI108N') as HTMLLIElement;
     liI108NTab.style.backgroundColor = '#E4E3E3';
     aI108NTab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
   
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.ppsinp08ColumnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.ppsinp08ColumnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.ppsinp08ColumnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   // 取得是否有正在執行的FCP
   getRunFCPCount() {
@@ -150,15 +185,26 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
     this.errorTXT = [];
   }
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
-      filter: true,
-      sortable: false,
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
       resizable: true,
-    }
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   ppsinp08ColumnDefs : ColDef[] = [
     { 
       headerName:'站別', 
@@ -219,6 +265,7 @@ export class PPSI108_NonBarComponent implements AfterViewInit {
       width: 180,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: AGCustomActionCellComponent,
       cellRendererParams:{
         edit : this.rowEditHandler.bind(this),

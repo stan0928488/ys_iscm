@@ -26,6 +26,13 @@ export class CommonService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
+  // 獲取客戶清單
+  getCustomerList(){
+    const queryUrl = `${this.APINEWURL}/common/customers`;
+    console.log(`獲取客戶清單 -> ${queryUrl}`);
+    return this.http.get(queryUrl);
+  }
+
   //getRunFCPCount 取得目前正在執行的FCP (所有靜態資料、執行策略皆共用)
   getRunFCPCount() {
     let queryUrl = this.APIURL + '/FCP/I210/getRunFCPCount';
@@ -79,11 +86,18 @@ export class CommonService {
   //   );
   //   return this.http.get(queryUrl);
   // }
+  /** 
   casLogin(_username, _password, _env) {
     _password = encodeURIComponent(_password);
     let queryUrl = `${this.APINEWURL}/cas/login?_username=${_username}&_password=${_password}&_env=${_env}`;
     return this.http.get(queryUrl);
   }
+  */
+  casLogin(_param) { //http://localhost:8080/ys-iscm
+    let queryUrl = `${this.APINEWURL}`+"/any/user/login";
+    return this.http.post(queryUrl,_param,this.httpOptions);
+  }
+
 
   casLoginWithPost(_result) {
     const body = JSON.stringify(_result);

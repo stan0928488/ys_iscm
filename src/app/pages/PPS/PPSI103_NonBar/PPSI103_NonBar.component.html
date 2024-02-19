@@ -69,11 +69,11 @@
   </div>
 
   <ag-grid-angular
-    style="width: auto; height: calc(100vh - 230px)"
+    style="width: auto; height: calc(100vh - 280px)"
     class="ag-theme-alpine"
+    [gridOptions]="gridOptions"
     [rowData]="rowData"
     [columnDefs]="colDefs"
-    [defaultColDef]="defaultColDef"
     [editType]="editType"
     (gridReady)="onGridReady($event)"
     [suppressClickEdit]="true"

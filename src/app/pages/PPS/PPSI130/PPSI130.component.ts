@@ -14,6 +14,9 @@ import { firstValueFrom } from 'rxjs';
 import { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 class Tbppsm014 {
   id: number;
@@ -171,13 +174,24 @@ export class PPSI130Component implements AfterViewInit {
   gridApi : GridApi;
   gridColumnApi : ColumnApi;
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
-      filter: true,
-      sortable: false,
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
       resizable: true,
-    }
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   tbppsm014ColumnDefs : ColDef[] = [
@@ -231,6 +245,7 @@ export class PPSI130Component implements AfterViewInit {
       field:'action',
       editable: false,
       headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: AGCustomActionCellComponent,
       cellRendererParams:{
         edit : this.rowEditHandler.bind(this),
@@ -252,6 +267,8 @@ export class PPSI130Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private changeDetectorRef: ChangeDetectorRef,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -261,11 +278,41 @@ export class PPSI130Component implements AfterViewInit {
   async ngAfterViewInit() {
     await this.getPPSI130List();
     //this.setupTableAndEditCache(p);
-    
+    this.getDbCloumn();
     const liI130Tab = this.elementRef.nativeElement.querySelector('#liI130') as HTMLLIElement;
     const aI130Tab = this.elementRef.nativeElement.querySelector('#aI130') as HTMLAnchorElement;
     liI130Tab.style.backgroundColor = '#E4E3E3';
     aI130Tab.style.cssText = 'color: blue; font-weight:bold;';
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.tbppsm014ColumnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.tbppsm014ColumnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.tbppsm014ColumnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   cellEditingStoppedHandler(event: CellEditingStoppedEvent<any, any>) {

@@ -7,7 +7,7 @@
         直棒
       </a>
       <nz-spin nzTip="執行中..." [nzSize]="'large'" [nzSpinning]="loading">
-        <div style="min-height: 1200px">
+        <div style="height: 100%">
           <div>
             <button
               nz-button
@@ -58,7 +58,7 @@
           <div nz-col [nzSpan]="25" style="padding-top: 10px">
 
             <ag-grid-angular
-              style="width:100%; height:calc(100vh - 210px); overflow: scroll; margin-top: 10px"
+              style="width:100%; height:calc(100vh - 280px); overflow: scroll; margin-top: 10px"
               class="ag-theme-alpine"
               [rowData]="displayPPSINP05List"
               [columnDefs]="ppsinp05ColumnDefs"

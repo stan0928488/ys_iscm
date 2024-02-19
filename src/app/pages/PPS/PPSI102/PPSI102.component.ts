@@ -11,6 +11,9 @@ import * as moment from 'moment';
 import { ColDef, GridReadyEvent } from 'ag-grid-community';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
 
 interface row {
   id: string;
@@ -36,6 +39,8 @@ export class PPSI102Component implements OnInit {
   thisTabName = '站別機台關聯表(PPSI102)';
   USERNAME: string;
   plantCode: any;
+
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
 
   rowData: row[] = [];
   colDefs: ColDef[] = [
@@ -104,6 +109,8 @@ export class PPSI102Component implements OnInit {
       editable: false,
       filter: false,
       width: 150,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -122,6 +129,7 @@ export class PPSI102Component implements OnInit {
     },
   ];
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -133,6 +141,11 @@ export class PPSI102Component implements OnInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   editCache: { [key: string]: { edit: boolean; data: row } } = {};
@@ -175,7 +188,9 @@ export class PPSI102Component implements OnInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -187,6 +202,7 @@ export class PPSI102Component implements OnInit {
 
   ngOnInit(): void {
     this.getDataList();
+    this.getDbCloumn();
   }
 
   ngAfterViewInit() {
@@ -198,6 +214,36 @@ export class PPSI102Component implements OnInit {
     ) as HTMLLIElement;
     liI102Tab.style.backgroundColor = '#E4E3E3';
     aI102Tab.style.cssText = 'color: blue; font-weight:bold;';
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.colDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.width = it.width;
+                 item.hide = it.hide ;
+                 item.resizable = it.resizable;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.colDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   getDataList() {

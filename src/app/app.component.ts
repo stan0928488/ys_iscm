@@ -1,10 +1,15 @@
-import { Component, HostListener, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { CookieService } from "./services/config/cookie.service";
 import { AuthService } from "./services/auth/auth.service";
-import { Router, CanActivate } from "@angular/router";
-
+import { Router, ActivatedRoute, NavigationEnd, NavigationStart, ResolveStart, ResolveEnd, GuardsCheckEnd, NavigationCancel } from "@angular/router";
 import * as _ from "lodash";
 import * as moment from "moment";
+import { MainEventBusComponent } from "./main/main-event-bus.component";
+import { SYSTEMService } from "./services/SYSTEM/SYSTEM.service";
+import { NzModalService } from "ng-zorro-antd/modal";
+import { TabModel, TabService } from "./services/common/tab.service";
+import { filter, map, mergeMap } from "rxjs";
+import * as uuid from 'uuid';
 
 @Component({
   selector: "app-root",
@@ -12,125 +17,10 @@ import * as moment from "moment";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent {
+
   title = "YS_iSCM";
-  isCollapsed = true;
-  triggerTemplate = null;
 
-  navClass = "";
-  userName;
-  plantCode;
-  envName;
-
-  @ViewChild("trigger") customTrigger: TemplateRef<void>;
-  @HostListener('document:keyup', ['$event'])
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:wheel', ['$event'])
-  resetTimer() {
-    this.authService.notifyUserLoginAction();
-  }
-
-  constructor(
-    private cookieService: CookieService,
-    public router: Router,
-    private authService: AuthService
-  ) {
-    this.isLatestVersion();
-    const hostName = window.location.hostname;
-    if (_.startsWith(hostName, "ys-webapp")) {
-      if (window.location.protocol != "https:") {
-        location.href = location.href.replace("http://", "https://");
-      }
-    }
-    console.log("=====>");
-    this.getEnvClass();
-    this.userName = this.cookieService.getCookie("USERNAME");
-    this.plantCode = this.cookieService.getCookie("plantCode");
-    this.envName = this.getEnvName(hostName);
-  }
-
-  /** custom trigger can be TemplateRef **/
-  changeTrigger(): void {
-    console.log("==>changeTrigger");
-    this.triggerTemplate = this.customTrigger;
-  }
-
-  //檢查是否是最新版本
-  isLatestVersion() {
-    const dateID = "check_YS_iSCM_Date";
-    const checkDate = localStorage.getItem(dateID);
-    console.log("checkDate");
-    console.log(checkDate);
-    if (
-      checkDate === undefined ||
-      checkDate !== moment().format("YYYY.MM.DD")
-    ) {
-      localStorage.setItem(dateID, moment().format("YYYY.MM.DD"));
-      console.log("hard reload to update");
-      // window.location.reload(true);
-    } else {
-      //good to go
-      console.log("good to go");
-    }
-  }
-
-  getEnvClass() {
-    const hostName = window.location.hostname;
-    let className = "navBar ";
-
-    switch (hostName) {
-      case "ys-ppsapp01.walsin.corp":
-        className += " nav-bar-prod";
-        break;
-      case "localhost":
-        className += " nav-bar-local";
-        break;
-      default:
-        className += " nav-bar-tst";
-    }
-
-    this.navClass = className;
-  }
-
-  onLogout() {
-    console.log("onLogout");
-    this.cookieService.setCookie("USERNAME", "", 1);
-    this.cookieService.setCookie("plantCode", "", 1);
-    this.userName = "";
-    this.plantCode = "";
-
-    this.router.navigate(["login"]);
-  }
-
-  componentAdded(_event) {}
-
-  componentRemoved(_event) {
-    this.userName = this.cookieService.getCookie("USERNAME");
-    this.plantCode = this.cookieService.getCookie("plantCode");
-  }
-
-  toggleCollapsed(): void {
-    this.isCollapsed = !this.isCollapsed;
-  }
-
-  
-  getEnvName(_name){
-    let env;
-    switch (_name) {
-      case "ys-pps.walsin.corp":
-        env = " 驗證環境 ";
-        break;
-      case "ys-ppsapp01.walsin.corp":
-        env = " 正式環境 ";
-        break;
-      case "localhost":
-        env = "_本機環境";
-        break;
-      default:
-        env = "_測試環境";
-    }
-
-    return env;
-  }
+  constructor(){}
 
   // 日期相差
   dayDiff(d1:Date, d2:Date) {
@@ -228,5 +118,4 @@ export class AppComponent {
     }
     return '';
   }
-
 }

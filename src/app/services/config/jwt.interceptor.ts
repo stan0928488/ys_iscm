@@ -4,14 +4,17 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { ConfigService } from "../config/config.service";
+
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+              private configService: ConfigService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // add authorization header with jwt token if available
-    let jwtToken = localStorage.getItem('jwtToken');
+    let jwtToken = localStorage.getItem(this.configService.LOCAL_PREFIX);
     let currentRoute = this.router.url; // 獲取當前路由
 
     console.log(jwtToken)
@@ -20,7 +23,8 @@ export class JwtInterceptor implements HttpInterceptor {
     if (jwtToken) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${jwtToken}`,
+         // Authorization: `Bearer ${jwtToken}`,
+         Authorization:jwtToken,
           CurrentRoute: currentRoute // 放入當前路由
         }
       });
@@ -39,7 +43,7 @@ export class JwtInterceptor implements HttpInterceptor {
           console.log('拒絕此使用者訪問');
           // 使用 UserStatusService 或其他方式處理錯誤訊息
           // 導航到 '/AccessDined' 網頁
-          // this.router.navigate(['/AccessDined']);   // 先關閉
+          //this.router.navigate(['/AccessDined']);
         }
 
         return throwError(error);

@@ -20,13 +20,13 @@
                 </ng-container>
                 <ng-container *ngSwitchDefault>
                     <td *ngIf="data.steelType != '合計' " [rowSpan]="data.rowspanSize">{{data.rollDateStr}}</td>
-                    <td *ngIf="data.steelType == '合計' " style="background-color: #00DB00;" [rowSpan]="data.rowspanSize"
+                    <td *ngIf="data.steelType == '合計' " style="background-color: #92D050;" [rowSpan]="data.rowspanSize"
                         [colSpan]="4">{{ data.steelType }}</td>
                 </ng-container>
             </ng-container>
             <ng-container [ngSwitch]="data.steelType">
                 <ng-container *ngSwitchCase="'合計'">
-                    <td style="background-color: #00DB00;">{{ data.weight | number:'1.1-1'  }}</td>
+                    <td style="background-color: #92D050;">{{ data.weight | number:'1.0-0'  }}</td>
                 </ng-container>
                 <ng-container *ngSwitchDefault>
                     <td>{{ data.dateDeliveryPpStr }}</td>

@@ -637,7 +637,7 @@
       
       <p></p>
 
-      <ag-grid-angular  style="width: 100%; height: calc(100vh - 220px); overflow: scroll;" class="ag-theme-alpine" 
+      <ag-grid-angular  style="width: 100%; height: calc(100vh - 230px); overflow: scroll;" class="ag-theme-alpine" 
       [rowData]="tbppsm113List"
       [columnDefs]="columnDefs"
       [pagination]="true"
@@ -669,7 +669,7 @@
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/PlanSet/I205_a401']"
+            [routerLink]="['/main/PlanSet/I205_a401']"
             [queryParams]="{ selectedTabIndex: 1, innerSelect: 0 }"
           >
           Auto campaign表
@@ -679,7 +679,7 @@
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/PlanSet/I205_401']"
+            [routerLink]="['/main/PlanSet/I205_401']"
             style="color: black"
           >
           彙整表資料
@@ -710,7 +710,7 @@
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/PlanSet/I205_a100']"
+            [routerLink]="['/main/PlanSet/I205_a100']"
           >
             公版維護表
           </a>
@@ -719,7 +719,7 @@
           <a
             *nzTabLink
             nz-tab-link
-            [routerLink]="['/PlanSet/I205_100']"
+            [routerLink]="['/main/PlanSet/I205_100']"
             style="color: black"
           >
             工廠排程公版匯入

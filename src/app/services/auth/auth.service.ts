@@ -1,11 +1,11 @@
 import { Injectable, EventEmitter, Output } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import * as moment from "moment";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import * as _ from "lodash";
 import { Observable, Subject } from "rxjs";
 import { CookieService } from "../config/cookie.service";
-import { ACCService } from "src/app/services/ACC/ACC.service";
+import { MainEventBusComponent } from "src/app/main/main-event-bus.component";
 
 @Injectable({
   providedIn: "root"
@@ -19,10 +19,10 @@ export class AuthService {
   checkTime: string;
   CAS_URL = "https://cas.walsin.com:8889/";
   constructor(
-    private ACCService: ACCService,
     private cookieService: CookieService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private appEventBusComponent: MainEventBusComponent,
   ) {}
 
   isAuthenticated(): boolean {
@@ -34,9 +34,6 @@ export class AuthService {
     } else {
       this.isAuth = false;
       this.USERNAME = "";
-    }
-    if(this.isAuth){
-      this.ACCService.getplantACC100List().subscribe();
     }
     return this.isAuth;
   }

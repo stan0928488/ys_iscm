@@ -10,6 +10,10 @@ import * as XLSX from 'xlsx';
 import { ExcelService } from 'src/app/services/common/excel.service';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { Router } from '@angular/router';
+import { ColDef } from 'ag-grid-community';
 interface ItemData1 {
   id: string;
   tab1ID: number;
@@ -61,6 +65,8 @@ export class PPSI101Component implements AfterViewInit {
   pageIndex = 1;
   pageSize = 20;
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }   // 從db撈的參數
+  agCustomHeaderParams : AGHeaderParams = { isMenuShow: true }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -72,9 +78,14 @@ export class PPSI101Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1',      // agName自訂義，程式內如果有多個要配置，就AGName2...等等接續編號
+      isSave:true ,          // 是否要有保存功能，可自行定義要不要保存目前ag欄位
+      path: this.router.url , // 抓router
+    }
   };
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     {
       width: 150,
       headerName: '鋼種',
@@ -103,6 +114,8 @@ export class PPSI101Component implements AfterViewInit {
       width: 150,
       headerName: 'Action',
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -128,7 +141,9 @@ export class PPSI101Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private systemService : SYSTEMService,
+    private router: Router,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -146,6 +161,35 @@ export class PPSI101Component implements AfterViewInit {
     const liI101Tab = this.elementRef.nativeElement.querySelector('#liI101') as HTMLLIElement;
     liI101Tab.style.backgroundColor = '#E4E3E3';
     aI101Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+               if(item.field === it.colId) {
+                 item.width = it.width;
+                 item.hide = it.hide ;
+                 item.resizable = it.resizable;
+                 item.sortable = it.sortable ;
+                 item.filter = it.filter ;
+                 item.sortIndex = it.sortIndex ;
+               }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   //tab1_select

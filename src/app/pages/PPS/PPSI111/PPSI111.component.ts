@@ -15,6 +15,9 @@ import { AGCustomActionCellComponent } from "src/app/shared/ag-component/ag-cust
 import { PPSI111EditShopCellEditorComponent } from "./PPSI111_EditShopCellEditorComponent";
 import { PPSI111EditMachineCellEditorComponent } from "./PPSI111_EditMachineCellEditorComponent";
 import { PPSI111EditCombinCellEditorComponent } from "./PPSI111_EditCombinCellEditorComponent";
+import { AGHeaderCommonParams, AGHeaderParams } from "src/app/shared/ag-component/types";
+import { SYSTEMService } from "src/app/services/SYSTEM/SYSTEM.service";
+import { Router } from "@angular/router";
 
 
 interface ItemData1 {
@@ -76,13 +79,24 @@ export class PPSI111Component implements AfterViewInit {
   //類型
   PLANT = '直棒';
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
-      filter: true,
-      sortable: false,
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
       resizable: true,
-    }
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   fcptb26ColumnDefs : ColDef[] = [
@@ -118,6 +132,7 @@ export class PPSI111Component implements AfterViewInit {
       field:'action',
       editable: false,
       headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: AGCustomActionCellComponent,
       cellRendererParams:{
         edit : this.rowEditHandler.bind(this),
@@ -148,6 +163,8 @@ export class PPSI111Component implements AfterViewInit {
     private Modal: NzModalService,
     private excelService: ExcelService,
     private changeDetectorRef: ChangeDetectorRef,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -168,8 +185,38 @@ export class PPSI111Component implements AfterViewInit {
     const liI111Tab = this.elementRef.nativeElement.querySelector('#liI111') as HTMLLIElement;
     liI111Tab.style.backgroundColor = '#E4E3E3';
     aI111Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
   
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.fcptb26ColumnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.fcptb26ColumnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.fcptb26ColumnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   // 取得是否有正在執行的FCP
   getRunFCPCount() {

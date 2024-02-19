@@ -7,10 +7,13 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import * as _ from 'lodash';
 import * as XLSX from 'xlsx';
-import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams } from 'ag-grid-community';
+import { ColGroupDef, ColDef, ColumnApi, GridApi, GridReadyEvent, ICellEditorParams, ICellRendererParams, ValueFormatterParams, ValueParserParams, Column } from 'ag-grid-community';
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
 import { AppComponent } from 'src/app/app.component';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 
 
@@ -26,13 +29,24 @@ export class PPSI206RESComponent implements OnInit  {
   tbppsm041 = [];
   loading = false;
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = { agName: 'AGName1' , isSave:true ,path: this.router.url  }   // 從db撈的參數
+  agCustomHeaderParams : AGHeaderParams = { isMenuShow: true }
   gridOptions = {
     defaultColDef: {
-      sortable: false,
-      resizable: true,
       filter: true,
+      editable: true,
+      resizable: true,
+      sortable: false,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1',  // agName自訂義，程式內如果有多個要配置，就AGName2...等等接續編號
+      isSave:true ,     // 是否要有保存功能，可自行定義要不要保存目前ag欄位
+      path: this.router.url , // 抓router
+    },
   };
 
   constructor(
@@ -42,21 +56,25 @@ export class PPSI206RESComponent implements OnInit  {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private appComponent: AppComponent
+    private appComponent: AppComponent,
+    private router: Router,
+    private systemService : SYSTEMService,
   ) {
     this.i18n.setLocale(zh_TW);
   }
   
   ngOnInit(): void {
     this.getTbppsm041();
+    this.getDbCloumn();
   }
 
-  columnDefs: (ColDef | ColGroupDef)[] = [
+  columnDefs: ColDef[] = [
     {
       width: 130,
       headerName: '訂單編號',
       field: 'saleOrder',
-      headerComponent: AGCustomHeaderComponent
+      headerComponent: AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams
     },
     {
       width: 110,
@@ -586,6 +604,33 @@ export class PPSI206RESComponent implements OnInit  {
       headerComponent: AGCustomHeaderComponent
     }
   ];
+
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   excelExport() {
 

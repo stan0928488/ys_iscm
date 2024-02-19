@@ -14,6 +14,9 @@ import * as XLSX from 'xlsx';
 import { BtnCellRendererUpdate } from '../../RENDERER/BtnCellRendererUpdate.component';
 import { DatePickerCellEditor } from '../../RENDERER/DatePickerCellEditor.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { ColDef } from 'ag-grid-community';
 registerLocaleData(zh);
 
 interface data {}
@@ -96,6 +99,8 @@ export class PPSI205Component implements AfterViewInit {
   forTbppsm100Date;
   currentDate = new Date();
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
       editable: true,
@@ -107,9 +112,14 @@ export class PPSI205Component implements AfterViewInit {
       filter: true,
     },
     api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    }
   };
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     {
       headerComponent: AGCustomHeaderComponent,
       width: 150,
@@ -166,8 +176,10 @@ export class PPSI205Component implements AfterViewInit {
     },
     {
       headerName: 'Action',
-      width: 200,
+      width: 150,
       editable: false,
+      headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: 'buttonRenderer',
       cellRendererParams: [
         {
@@ -203,7 +215,8 @@ export class PPSI205Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private systemService : SYSTEMService,
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -222,6 +235,7 @@ export class PPSI205Component implements AfterViewInit {
       this.innerSelect = +params['innerSelect'] || 0;
       
     });
+    this.getDbCloumn();
   }
 
   ngAfterViewInit() {
@@ -232,6 +246,36 @@ export class PPSI205Component implements AfterViewInit {
       'YYYY-MM-DD HH:mm:ss'
     );
     this.getTbppsm113List();
+  }
+
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.columnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.columnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.columnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
   }
 
   // 取得是否有正在執行的FCP
@@ -318,18 +362,18 @@ export class PPSI205Component implements AfterViewInit {
   changeTab(tab): void {
     // this.isTabVisible = false;
     /*if (tab === 1) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm101List();
     } else if (tab === 2) {
-      window.location.href = '#/PlanSet/I205?selectedTabIndex=0';
+      window.location.href = '#/main/PlanSet/I205?selectedTabIndex=0';
       this.getTbppsm102List();
     } else*/ if (tab === 3) {
-      this.router.navigateByUrl('/PlanSet/I205?selectedTabIndex=0');
+      this.router.navigateByUrl('/main/PlanSet/I205?selectedTabIndex=0');
       this.getTbppsm113List();
     } else if (tab === 4) {
-      this.router.navigateByUrl('/PlanSet/I205_a401');
+      this.router.navigateByUrl('/main/PlanSet/I205_a401');
     } else if (tab === 5) {
-      this.router.navigateByUrl('/PlanSet/I205_a100');
+      this.router.navigateByUrl('/main/PlanSet/I205_a100');
     }
   }
 

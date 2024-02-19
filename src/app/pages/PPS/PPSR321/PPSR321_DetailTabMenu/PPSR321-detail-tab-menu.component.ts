@@ -11,7 +11,7 @@ export class PPSR321DetailTabMenuComponent implements OnInit, AfterViewInit {
 
 
   constructor(private router: Router) {
-    this.router.navigateByUrl("/FCPshiftRepo/R321/detail01");
+    this.router.navigateByUrl("/main/FCPshiftRepo/R321/detail01");
    }
 
   ngAfterViewInit(): void {

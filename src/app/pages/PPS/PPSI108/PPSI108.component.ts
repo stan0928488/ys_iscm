@@ -12,6 +12,9 @@ import { ExcelService } from "src/app/services/common/excel.service";
 import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
 import { number } from 'echarts';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
+import { Router } from '@angular/router';
 
 
 interface ItemData8 {
@@ -78,7 +81,9 @@ export class PPSI108Component implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private systemService : SYSTEMService,
+    private router: Router
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -97,17 +102,29 @@ export class PPSI108Component implements AfterViewInit {
     const liI108Tab = this.elementRef.nativeElement.querySelector('#liI108') as HTMLLIElement;
     liI108Tab.style.backgroundColor = '#E4E3E3';
     aI108Tab.style.cssText = 'color: blue; font-weight:bold;';
+    this.getDbCloumn();
   }
 
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
   gridOptions = {
     defaultColDef: {
-      filter: true,
-      sortable: false,
       editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
+      sortable: false,
       resizable: true,
-    }
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
   ppsinp08ColumnDefs : ColDef[] = [
     { 
       headerName:'站號', 
@@ -150,6 +167,7 @@ export class PPSI108Component implements AfterViewInit {
       width: 180,
       editable: false,
       headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: AGCustomActionCellComponent,
       cellRendererParams:{
         edit : this.rowEditHandler.bind(this),
@@ -160,7 +178,35 @@ export class PPSI108Component implements AfterViewInit {
     }
   ];
 
-  
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.ppsinp08ColumnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.ppsinp08ColumnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.ppsinp08ColumnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
 
   // 首次渲染資料完畢後被調用
   onFirstDataRendered(event : FirstDataRenderedEvent<any>){

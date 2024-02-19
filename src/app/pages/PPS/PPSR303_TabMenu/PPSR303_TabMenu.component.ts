@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export class PPSR303TabMenuComponent implements OnInit {
 
   constructor(private router: Router) {
-    this.router.navigateByUrl("/FCPBarRepo/R303_TabMenu/R303");
+    this.router.navigateByUrl("/main/FCPBarRepo/R303_TabMenu/R303");
    }
 
   ngOnInit(): void {

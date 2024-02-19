@@ -17,6 +17,8 @@ import * as moment from 'moment';
 import * as _ from "lodash";
 import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AGCustomHeaderComponent } from "src/app/shared/ag-component/ag-custom-header-component";
+import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 
 interface ItemData {
   id: string;
@@ -162,14 +164,25 @@ export class PPSI203Component implements AfterViewInit {
     console.log("steelTypeChange:"+value) ;
   }
 
-   // ag-grid共有設定定義
-   gridOptions = {
+  // ag-grid共有設定定義
+  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+  gridOptions = {
     defaultColDef: {
-      filter: true,
+      editable: true,
+      enableRowGroup: false,
+      enablePivot: false,
+      enableValue: false,
       sortable: false,
       resizable: true,
-      editable: false
-    }
+      filter: true,
+    },
+    api: null,
+    agCustomHeaderParams : {
+      agName: 'AGName1' , // AG 表名
+      isSave:true ,
+      path: this.router.url ,
+    },
   };
 
   ppsi203ColumnDefs : ColDef[] = [
@@ -207,6 +220,7 @@ export class PPSI203Component implements AfterViewInit {
       headerName:'Action',
       field:'action',
       headerComponent : AGCustomHeaderComponent,
+      headerComponentParams:this.agCustomHeaderParams,
       cellRenderer: PPSI203ActionCellComponent
     }
   ]
@@ -220,7 +234,8 @@ export class PPSI203Component implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private upload : NzUploadModule
+    private upload : NzUploadModule,
+    private systemService : SYSTEMService
   ) { 
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -229,6 +244,35 @@ export class PPSI203Component implements AfterViewInit {
     };
   }
 
+  //調用DB欄位
+  getDbCloumn(){
+    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
+      let result:any = res ;
+      if(result.code === 200) {
+        console.log(result) ;
+        if (result.data.length > 0) {
+          //拿到DB數據 ，複製到靜態數據
+          this.ppsi203ColumnDefs.forEach((item)=>{
+            result.data.forEach((it) => {
+              if(item.field === it.colId) {
+                item.width = it.width;
+                item.hide = it.hide ;
+                item.resizable = it.resizable;
+                item.sortable = it.sortable ;
+                item.filter = it.filter ;
+                item.sortIndex = it.sortIndex ;
+              }
+            })
+          })
+          this.ppsi203ColumnDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+          console.log()
+          this.gridOptions.api.setColumnDefs(this.ppsi203ColumnDefs) ;   
+        }
+      } else {
+        this.message.error("load error")
+      }
+    });
+  }
  
   // 獲取ag-grid的Api物件
   onGridReady(params: GridReadyEvent<any>) {
@@ -280,6 +324,7 @@ export class PPSI203Component implements AfterViewInit {
     this.getSTEELTYPEList();
     this.getPPSI203DataList();
     this.getRunFCPCount();
+    this.getDbCloumn();
   }
   // ----下拉清單 function begin---------------
   // 取得客戶清單

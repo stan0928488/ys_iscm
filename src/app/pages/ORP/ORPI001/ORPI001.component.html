@@ -1,0 +1,140 @@
+<nz-content style="margin:20px 50px;">
+  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+      <nz-breadcrumb-item>訂單即時回應</nz-breadcrumb-item>
+      <nz-breadcrumb-item>基本資料</nz-breadcrumb-item>
+      <nz-breadcrumb-item>料號客戶需求碼對照表(ORPI001)</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    
+    <div class="operate-container">
+      
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer"
+        nzType="primary"
+        (click)="addData()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        新增
+      </button>
+
+      <div class="excel">
+        <input
+          style="width: 180px"
+          type="file"
+          name="file"
+          id="importExcelFile"
+          required
+          (change)="incomingFile($event)"
+          accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+
+          <!-- 匯入EXCEL功能 -->
+          <button
+          id="bacthAdd"
+          nz-button
+          nzType="primary"
+          style="
+            background-color: #4caf50;
+            border: 2px none;
+            margin-right: 10px;
+          "
+          (click)="readExcelToJson()"
+        >
+          <span nz-icon nzType="upload" nzTheme="outline"></span>
+          E X C E L 匯入
+        </button>
+
+        <!-- 匯出EXCEL功能 -->
+        <button
+        id="download"
+        nz-button
+        nzType="primary"
+        style="
+          background-color: #4caf50;
+          border: 2px none;
+        "
+        (click)="exportToExcel()"
+        role="button"
+      >
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        E X C E L 匯出
+      </button>
+      
+      </div>
+    </div>
+
+    <ag-grid-angular
+      style="margin-top: 20px; width:100%; height:calc(100vh - 220px); overflow: scroll; margin-top: 10px"
+      class="ag-theme-alpine"
+      [rowData]="tborpm001List"
+      [columnDefs]="columnDefs"
+      [gridOptions]="gridOptions"
+      [pagination]="true"
+      [suppressClickEdit]="true"
+      [editType]="'fullRow'"
+      (cellEditingStopped)="cellEditingStoppedHandler($event)"
+      (firstDataRendered)="onFirstDataRendered($event)"
+      (gridReady)="onGridReady($event)"
+      [paginationPageSize]="20">
+    </ag-grid-angular>
+  </nz-spin>
+</nz-content>
+
+
+<nz-modal
+    [(nzVisible)]="isVisibleAddData"
+    [nzWidth]="700"
+    [nzTitle]="title" 
+    [nzContent]="content" 
+    [nzCancelText]="'取消'"
+    [nzOkText]="'新增'"
+    [nzOkLoading]="submitOkLoading"
+    (nzOnOk)="submit()"
+    (nzOnCancel)="addCancel()"
+    [nzCancelDisabled]="isDisableCancel"
+    [nzMaskClosable]="isDisableCancel"
+    [nzClosable]="isClosable">
+
+
+    <ng-template #title>新增「料號客戶需求碼對照」資料</ng-template>
+    <ng-template #content>
+      <nz-spin  nzTip="新增中..." [nzSize]="'large'" [nzSpinning] = "isSpinningModal">
+         <div style="display: flex; flex-direction: column; justify-content: center; align-items: start;">
+          
+          <app-customerNoAndName-dropdown
+            (emitCustomerNo)="setCustomerNo($event)"
+            (emitCustomerName)="setCustomerName($event)">
+          </app-customerNoAndName-dropdown>
+
+          <div style="display: flex; margin-top: 20px">
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">客戶鋼種</span>
+            <input nz-input placeholder="請輸入客戶鋼種" [(ngModel)]="custGradeNo" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">華新鋼種</span>
+            <input nz-input placeholder="請輸入華新鋼種" [(ngModel)]="gradeNo" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+          </div>
+
+          <div style="display: flex; margin-top: 20px">
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">尺寸min</span>
+            <nz-input-number [(ngModel)]="saleOrderDiaMin" [nzPrecision]="2" [nzMin]="0.01" [nzMax]="9999.99" [nzStep]="1" style="width:100px; height:29px; margin-left:5px; margin-right:20px"></nz-input-number> 
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">尺寸max</span>
+            <nz-input-number [(ngModel)]="saleOrderDiaMax" [nzPrecision]="2" [nzMin]="0.01" [nzMax]="9999.99" [nzStep]="1" style="width:100px; height:29px; margin-left:5px; margin-right:20px"></nz-input-number> 
+          </div>
+
+          <div style="display: flex; margin-top: 20px">
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">規範碼</span>
+            <input nz-input [(ngModel)]="ruleCode" type="text" maxlength="1"style="width:50px; height:29px; margin-left:5px;"/>
+          </div>
+
+          <div style="display: flex; margin-top: 20px">
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">品質碼</span>
+            <input nz-input [(ngModel)]="qualityCode" type="text" maxlength="1"style="width:50px; height:29px; margin-left:5px;"/>
+          </div>
+
+          <div style="display: flex; margin-top: 20px">
+            <span style ="line-height: normal; font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; ">機械性質碼</span>
+            <input nz-input [(ngModel)]="mechanicalPropertiesCode" type="text" maxlength="1"style="width:50px; height:29px; margin-left:5px;"/>
+          </div>
+
+         </div>
+      </nz-spin>
+    </ng-template>
+  </nz-modal>

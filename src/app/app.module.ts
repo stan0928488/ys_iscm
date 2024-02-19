@@ -164,7 +164,6 @@ import { PPSR345AVERAGEComponent } from './pages/PPS/PPSR345AVERAGE/PPSR345AVERA
 import { PPSCustomHeaderComponent } from './pages/MSH/MSHP001/ppscustom-header.component';
 import { AGCustomHeaderComponent } from './shared/ag-component/ag-custom-header-component';
 import { AGCustomActionCellComponent } from 'src/app/shared/ag-component/ag-custom-action-cell-component';
-import { ACCP100component } from './pages/ACC/ACCP100component';
 import { JwtInterceptor } from './services/config/jwt.interceptor';
 import { AccessDinedPageComponent } from './pages/AccessDinedPage/AccessDinedPage.component';
 import { PPSI112TabMenuComponent } from './pages/PPS/PPSI112_TabMenu/PPSI112_TabMenu.component';
@@ -174,6 +173,12 @@ import { PPSI206TabMenuComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_Tab
 import { PPSI206SETComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_SET/PPSI206_SET.component';
 import { PPSI206RESComponent } from './pages/PPS/PPSI206_TabMenu/PPSI206_RES/PPSI206_RES.component';
 import { ManageMenuComponent } from './pages/SYSTEM/manage-menu/manage-menu.component';
+import { ManageRoleComponent } from './pages/SYSTEM/manage-role/manage-role.component';
+import { ManageRoleActionCellComponent } from './pages/SYSTEM/manage-role/manage-role-action-cell-component';
+import { ManageUserComponent } from './pages/SYSTEM/manage-user/manage-user.component';
+import { BtnCellRendererType2 } from './pages/RENDERER/BtnCellRendererType2.component';
+import { UserProfileComponent } from './pages/USER/user-profile/user-profile.component';
+import { CommonApiEditComponent } from './pages/SYSTEM/manage-menu/common-api-edit-component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI111EditShopCellEditorComponent } from './pages/PPS/PPSI111/PPSI111_EditShopCellEditorComponent';
@@ -186,6 +191,16 @@ import { PPSI202EditShopCellEditorComponent } from './pages/PPS/PPSI202/PPSI202E
 import { PPSI202EditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShutdownTypeCellEditorComponent';
 import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditStartTimeCellEditorComponent';
 import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-cell-component';
+import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
+import { CustomerNoAndNameDropdownComponent } from './shared/custom-component/customerNoAndName-dropdown-component';
+import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-max-cell-editor.component';
+import { ORPI001DiaMinCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-min-cell-editor.component';
+import { ORPI001CustomerNameCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-customer-name-cell-editor.component';
+import { MainComponent } from './main/main.component';
+import { RecursionMenusComponent } from './main/recursion-menus.component';
+import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
+import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
+import { SearchMenusComponent } from '../app/widget/search-menus/search-menus.component';
 
 registerLocaleData(zh);
 
@@ -195,7 +210,6 @@ registerLocaleData(zh);
     AppComponent,
     LoginComponent,
     ErrorPageComponent,
-    ACCP100component,
 
     PPSI101Component,
     PPSI102Component,
@@ -331,6 +345,12 @@ registerLocaleData(zh);
     AGCustomHeaderComponent,
     ManageMenuComponent,
     AGCustomActionCellComponent,
+    ManageRoleComponent,
+    ManageRoleActionCellComponent,
+    ManageUserComponent,
+    BtnCellRendererType2,
+    UserProfileComponent,
+    CommonApiEditComponent,
     PPSI205A100Component,
     PPSI205A401Component,
     PPSI111EditShopCellEditorComponent,
@@ -345,6 +365,16 @@ registerLocaleData(zh);
     PPSI203ActionCellComponent,
     PPSR345Component,
     PPSR345AVERAGEComponent,
+    ORPI001Component,
+    CustomerNoAndNameDropdownComponent,
+    ORPI001DiaMinCellEditorComponent,
+    ORPI001DiaMaxCellEditorComponent,
+    ORPI001CustomerNameCellEditorComponent,
+    MainComponent,
+    RecursionMenusComponent,
+    AgHeadSeetingComponent,
+    NumberCellEditorComponent,
+    SearchMenusComponent
   ],
   imports: [
     BrowserModule,

@@ -1,88 +1,49 @@
-<div class="all">
-  <!-- Left -->
-  <div class="loginForm">
-    <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="form">
-      <span class="spanTitle">鹽水數位供應鏈管理系統</span>
+<div class="login-container">
+  <nz-tag *ngIf="envName!='正式環境'" [class]="envClass" [nzColor]="envColor">{{ envName }}_Ver.240215</nz-tag>
 
-      <div class="test">
-        <span class="spanInput">帳號</span
-        ><nz-input-group
-          [nzSuffix]="suffixTemplate"
-          nzPrefixIcon="anticon anticon-user"
-        >
-          <input
-            type="text"
-            nz-input
-            placeholder="輸入工號"
-            nzSize="large"
-            id="username"
-            name="username"
-            ngModel
-            #VendorID="ngModel"
-            required
-            (blur)="showPlantCode(f)"
-          />
-        </nz-input-group>
+  <div class = "login-background">
+    <div class="login-content-layout">
+      
+      <span class="login-title"><img class="logo" alt="" src="assets/images/walsiniSCM-login-logo.svg"/></span>
+      
+      <div class="login-desc">鹽水數位供應鏈管理系統</div>
+      
+      <div class="login-form-wrap">
+        <form [formGroup]="validateForm" nz-form (ngSubmit)="onSubmit()">
+          <nz-form-item>
+            <nz-form-control nzErrorTip="帳號不能為空">
+              <nz-input-group nzPrefixIcon="user" [nzSize]="'large'">
+                <input type="text" formControlName="username" nz-input placeholder="請輸入工號"/>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control nzErrorTip="密碼不能為空">
+              <nz-input-group nzPrefixIcon="lock" [nzSize]="'large'">
+                <input type="password" autocomplete="on" formControlName="password" nz-input placeholder="請輸入密碼"/>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+
+          <button 
+            class="login-form-button" 
+            nz-button nzSize="large"
+            [nzLoading]="isLogining" 
+            [nzType]="'primary'">登 入
+          </button>
+        </form>
+
+          <!-- 登入錯誤提示 -->
+        <div class="login-error" *ngIf="authFail">
+          <p>工號 or 密碼 錯誤</p>
+        </div>
+
       </div>
-
-      <div class="test">
-        <span class="spanInput">密碼</span
-        ><nz-input-group
-          [nzSuffix]="suffixTemplate"
-          nzPrefixIcon="anticon anticon-lock"
-        >
-          <input
-            type="password"
-            nz-input
-            placeholder="輸入AD密碼"
-            nzSize="large"
-            id="password"
-            name="password"
-            ngModel
-            #password="ngModel"
-            required
-          />
-        </nz-input-group>
-      </div>
-
-      <!-- <div class="plantArea">
-        <nz-select
-          [disabled]="noShow"
-          [nzSize]="'large'"
-          placeholder="廠區別"
-          [(ngModel)]="PLANT_CODE"
-        >
-          <nz-option nzValue="YS" nzLabel="鹽水廠"></nz-option>
-          <nz-option nzValue="TC" nzLabel="台中廠"></nz-option>
-          <nz-option nzValue="YT" nzLabel="煙台廠"></nz-option>
-          <nz-option nzValue="AM" nzLabel="江陰廠"></nz-option>
-        </nz-select>
-      </div> -->
-
-      <!-- 登入錯誤提示 -->
-      <div class="Error" *ngIf="authFail">
-        <p>工號 or 密碼 錯誤</p>
-      </div>
-
-      <!-- Button Area -->
-      <div class="btnArea">
-        <button
-          nz-button
-          nzType="primary"
-          type="submit"
-          [disabled]="!f.valid"
-          [nzLoading]="isLogining"
-        >
-          登入
-        </button>
-        <!-- <button nz-button nzType="primary">修改密碼</button> -->
-      </div>
-    </form>
+    </div>
   </div>
 
-  <!-- Right -->
-  <!-- <div class="rightArea">
-    <h5>華新麗華</h5>
-    <h3>iSCM</h3>
-  </div> -->
+  <!-- 頁尾 -->
+  <div class="login-footer-content"><img class="logo" alt="" src="assets/images/walsin-logo.svg"/></div>
+
 </div>
