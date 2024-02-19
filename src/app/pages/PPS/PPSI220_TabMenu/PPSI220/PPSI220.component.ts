@@ -1356,8 +1356,8 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
             editionArray.push(data.planEdition);
             scheduleArray.push(data.scheduleFlag);
             _.extend(obj, {
-              planEditionArray: editionArray,
-              scheduleFlagArray: scheduleArray,
+              planEdition: data.planEdition,
+              scheduleFlag: data.scheduleFlag,
               createUser: this.USERNAME,
               type: 'A',
               plant: this.PLANT,

@@ -18,7 +18,10 @@ import {
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { __param } from 'tslib';
-import { AGHeaderCommonParams, AGHeaderParams } from 'src/app/shared/ag-component/types';
+import {
+  AGHeaderCommonParams,
+  AGHeaderParams,
+} from 'src/app/shared/ag-component/types';
 import { SYSTEMService } from 'src/app/services/SYSTEM/SYSTEM.service';
 import { Router } from '@angular/router';
 
@@ -58,7 +61,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   USERNAME;
   plantCode;
 
-  agCustomHeaderParams : AGHeaderParams = {isMenuShow: true,}
+  agCustomHeaderParams: AGHeaderParams = { isMenuShow: true };
   colDefs: ColDef[] = [
     {
       headerName: '工廠別',
@@ -199,43 +202,30 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
       },
       editable: false,
       pinned: 'right',
-      cellRenderer: 'buttonRenderer',
-      headerComponent : AGCustomHeaderComponent,
-      headerComponentParams:this.agCustomHeaderParams,
-      cellRendererParams: [
-        {
-          onClick: this.onBtnClick1.bind(this),
-        },
-        {
-          onClick: this.onBtnClick2.bind(this),
-        },
-        {
-          onClick: this.onBtnClick3.bind(this),
-        },
-        {
-          onClick: this.onBtnClick4.bind(this),
-        },
-      ],
+      headerComponent: AGCustomHeaderComponent,
+      headerComponentParams: this.agCustomHeaderParams,
     },
   ];
-  
-  agCustomHeaderCommonParams : AGHeaderCommonParams = {agName: 'AGName1' , isSave:true ,path: this.router.url  }
+
+  agCustomHeaderCommonParams: AGHeaderCommonParams = {
+    agName: 'AGName1',
+    isSave: true,
+    path: this.router.url,
+  };
   gridOptions = {
-    defaultColDef: {
-      editable: true,
-      enableRowGroup: false,
-      enablePivot: false,
-      enableValue: false,
-      sortable: false,
-      resizable: true,
-      filter: true,
-    },
     api: null,
-    agCustomHeaderParams : {
-      agName: 'AGName1' , // AG 表名
-      isSave:true ,
-      path: this.router.url ,
+    agCustomHeaderParams: {
+      agName: 'AGName1', // AG 表名
+      isSave: true,
+      path: this.router.url,
     },
+  };
+
+  public defaultColDef: ColDef = {
+    sortable: false,
+    resizable: true,
+    filter: true,
+    editable: true,
   };
 
   private gridApi!: GridApi;
@@ -288,8 +278,9 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     private message: NzMessageService,
     private Modal: NzModalService,
     private excelService: ExcelService,
-    private systemService : SYSTEMService,
-    private router: Router
+    private systemService: SYSTEMService,
+    private router: Router,
+    private renderer: Renderer2
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -315,33 +306,35 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
   }
 
   //調用DB欄位
-  getDbCloumn(){
-    this.systemService.getHeaderComponentStatus(this.agCustomHeaderCommonParams).subscribe(res=>{
-      let result:any = res ;
-      if(result.code === 200) {
-        console.log(result) ;
-        if (result.data.length > 0) {
-          //拿到DB數據 ，複製到靜態數據
-          this.colDefs.forEach((item)=>{
-            result.data.forEach((it) => {
-               if(item.field === it.colId) {
-                 item.width = it.width;
-                 item.hide = it.hide ;
-                 item.resizable = it.resizable;
-                 item.sortable = it.sortable ;
-                 item.filter = it.filter ;
-                 item.sortIndex = it.sortIndex ;
-               }
-            })
-          })
-          this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
-          console.log()
-          this.gridOptions.api.setColumnDefs(this.colDefs) ;   
+  getDbCloumn() {
+    this.systemService
+      .getHeaderComponentStatus(this.agCustomHeaderCommonParams)
+      .subscribe((res) => {
+        let result: any = res;
+        if (result.code === 200) {
+          console.log(result);
+          if (result.data.length > 0) {
+            //拿到DB數據 ，複製到靜態數據
+            this.colDefs.forEach((item) => {
+              result.data.forEach((it) => {
+                if (item.field === it.colId) {
+                  item.width = it.width;
+                  item.hide = it.hide;
+                  item.resizable = it.resizable;
+                  item.sortable = it.sortable;
+                  item.filter = it.filter;
+                  item.sortIndex = it.sortIndex;
+                }
+              });
+            });
+            this.colDefs.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1));
+            console.log();
+            this.gridOptions.api.setColumnDefs(this.colDefs);
+          }
+        } else {
+          this.message.error('load error');
         }
-      } else {
-        this.message.error("load error")
-      }
-    });
+      });
   }
 
   rowData: entity[] = [];
