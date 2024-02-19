@@ -749,17 +749,17 @@ export class ORPI001Component implements OnInit, AfterViewInit {
       let rowNumberInExcel = i + 2;
       let item = this.jsonExcelData[i];
 
-      if(!_.isNil(item.saleOrderDiaMin) && Number.isNaN(parseFloat(item.saleOrderDiaMin))){
+      if(!_.isNil(item.尺寸min) && Number.isNaN(parseFloat(item.尺寸min))){
         this.errorMSG(
           '資料型態錯誤', 
-          `Excel中第${rowNumberInExcel}行的「尺寸min」必須為數字`);
+          `Excel中第 ${rowNumberInExcel} 行的「尺寸min」必須為數字或為空`);
           return false;
       }
 
-      if(!_.isNil(item.saleOrderDiaMax) && Number.isNaN(parseFloat(item.saleOrderDiaMax))){
+      if(!_.isNil(item.尺寸max) && Number.isNaN(parseFloat(item.尺寸max))){
         this.errorMSG(
           '資料型態錯誤', 
-          `Excel中第${rowNumberInExcel}行的「尺寸max」必須為數字`);
+          `Excel中第 ${rowNumberInExcel} 行的「尺寸max」必須為數字或為空`);
           return false;
       }
     }
