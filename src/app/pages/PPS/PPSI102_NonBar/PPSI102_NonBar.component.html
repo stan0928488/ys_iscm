@@ -70,12 +70,13 @@
   <ag-grid-angular
     style="width: auto; height: calc(100vh - 230px)"
     class="ag-theme-alpine"
-    [rowData]="PPSINP07List"
+    [rowData]="rowData"
     [columnDefs]="colDefs"
     [frameworkComponents]="frameworkComponents"
-    [gridOptions]="gridOptions"
     editType="fullRow"
+    (gridReady)="onGridReady($event)"
     [suppressClickEdit]="true"
+    [defaultColDef]="defaultColDef"
   >
   </ag-grid-angular>
 </nz-content>

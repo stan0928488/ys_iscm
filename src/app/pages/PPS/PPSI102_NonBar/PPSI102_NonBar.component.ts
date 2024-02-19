@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
 import { CookieService } from 'src/app/services/config/cookie.service';
 import { PPSService } from 'src/app/services/PPS/PPS.service';
 import { zh_TW, NzI18nService } from 'ng-zorro-antd/i18n';
@@ -10,15 +10,16 @@ import { ExcelService } from 'src/app/services/common/excel.service';
 import * as moment from 'moment';
 import { BtnCellRenderer } from '../../RENDERER/BtnCellRenderer.component';
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
-
 import {
   ColDef,
+  GridApi,
   GridReadyEvent,
+  GridOptions,
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { __param } from 'tslib';
 
-interface ItemData7 {
+interface entity {
   id: string;
   plantCode: string;
   plant: string;
@@ -26,8 +27,8 @@ interface ItemData7 {
   shopName: string;
   equipCode: string;
   equipName: string;
-  wipMin: number;
-  wipMax: number;
+  wipMin: any;
+  wipMax: any;
   equipGroup: string;
   mesPublishGroup: string;
   balanceRule: string;
@@ -36,8 +37,8 @@ interface ItemData7 {
   valid: string;
   wtTypeName: string;
   validName: string;
-  produceMin: number;
-  produceMax: number;
+  produceMin: any;
+  produceMax: any;
 }
 
 @Component({
@@ -137,39 +138,79 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     },
     {
       headerName: 'Action',
+      field: 'id',
+      width: 165,
+      cellRenderer: (params) => {
+        const container = this.renderer.createElement('div');
+        this.renderer.addClass(container, 'container');
+
+        let updateButton = this.renderer.createElement('button');
+        const updateText = this.renderer.createText('修改');
+        let check: number = null;
+        this.renderer.appendChild(updateButton, updateText);
+        this.renderer.addClass(updateButton, 'updateButton');
+
+        let deleteButton = this.renderer.createElement('button');
+        const deleteText = this.renderer.createText('刪除');
+        this.renderer.appendChild(deleteButton, deleteText);
+        this.renderer.addClass(deleteButton, 'deleteButton');
+        this.renderer.listen(deleteButton, 'click', () => {
+          this.deleteData(params.data);
+        });
+
+        updateButton.addEventListener('click', () => {
+          check = this.updateCheck(params);
+          if (check === 1) {
+            const confirmButton = this.renderer.createElement('button');
+            const confirmText = this.renderer.createText('確認');
+            this.renderer.appendChild(confirmButton, confirmText);
+            this.renderer.addClass(confirmButton, 'updateButton');
+            confirmButton.addEventListener('click', () => {
+              this.updateById(params);
+            });
+            const parent = updateButton.parentNode;
+            parent.replaceChild(confirmButton, updateButton);
+            updateButton = confirmButton;
+
+            const cancelButton = this.renderer.createElement('button');
+            const cancelText = this.renderer.createText('取消');
+            this.renderer.appendChild(cancelButton, cancelText);
+            this.renderer.addClass(cancelButton, 'deleteButton');
+
+            cancelButton.addEventListener('click', () => {
+              // this.updateById(params);
+              console.log('cancel');
+              this.cancelUpdate();
+            });
+
+            const parent2 = deleteButton.parentNode;
+            parent2.replaceChild(cancelButton, deleteButton);
+            deleteButton = cancelButton;
+          }
+        });
+
+        this.renderer.appendChild(container, updateButton);
+        this.renderer.appendChild(container, deleteButton);
+        return container;
+      },
       editable: false,
-      filter: false,
-      width: 150,
       pinned: 'right',
-      cellRenderer: 'buttonRenderer',
-      cellRendererParams: [
-        {
-          onClick: this.onBtnClick1.bind(this),
-        },
-        {
-          onClick: this.onBtnClick2.bind(this),
-        },
-        {
-          onClick: this.onBtnClick3.bind(this),
-        },
-        {
-          onClick: this.onBtnClick4.bind(this),
-        },
-      ],
+      filter: false,
     },
   ];
-  gridOptions = {
-    defaultColDef: {
-      editable: true,
-      enableRowGroup: false,
-      enablePivot: false,
-      enableValue: false,
-      sortable: false,
-      resizable: true,
-      filter: true,
-    },
-    api: null,
+
+  public defaultColDef: ColDef = {
+    sortable: false,
+    resizable: true,
+    filter: true,
+    editable: true,
   };
+
+  private gridApi!: GridApi;
+  public editType: 'fullRow' = 'fullRow';
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
+  }
 
   // 站別機台關聯表
   plant = '精整';
@@ -214,7 +255,8 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     private cookieService: CookieService,
     private message: NzMessageService,
     private Modal: NzModalService,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private renderer: Renderer2
   ) {
     this.i18n.setLocale(zh_TW);
     this.USERNAME = this.cookieService.getCookie('USERNAME');
@@ -226,7 +268,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     console.log('ngAfterViewChecked');
-    this.getPPSINP07List();
+    this.getDataList();
 
     const aI102NTab = this.elementRef.nativeElement.querySelector(
       '#aI102N'
@@ -238,51 +280,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     aI102NTab.style.cssText = 'color: blue; font-weight:bold;';
   }
 
-  PPSINP07List_tmp;
-  editCache7: { [key: string]: { edit: boolean; data: ItemData7 } } = {};
-  PPSINP07List: ItemData7[] = [];
-  getPPSINP07List() {
+  rowData: entity[] = [];
+  getDataList() {
     this.loading = true;
-    let myObj = this;
     this.PPSService.getPPSINPTB07List('2').subscribe((res: any) => {
       const { code, data } = res;
-      this.PPSINP07List = data;
-      console.log(this.PPSINP07List);
-
-      // console.log('getPPSINP07List success');
-      // this.PPSINP07List_tmp = res;
-      // console.log(res);
-      // console.log('%%%%%%%%%%%%%%%%');
-      // const data = [];
-      // for (let i = 0; i < this.PPSINP07List_tmp.length; i++) {
-      //   data.push({
-      //     id: `${i}`,
-      //     tab1ID: this.PPSINP07List_tmp[i].ID,
-      //     PLANT_CODE: this.PPSINP07List_tmp[i].PLANT_CODE,
-      //     PLANT: this.PPSINP07List_tmp[i].PLANT,
-      //     SHOP_CODE: this.PPSINP07List_tmp[i].SHOP_CODE,
-      //     SHOP_NAME: this.PPSINP07List_tmp[i].SHOP_NAME,
-      //     EQUIP_CODE: this.PPSINP07List_tmp[i].EQUIP_CODE,
-      //     EQUIP_NAME: this.PPSINP07List_tmp[i].EQUIP_NAME,
-      //     WIP_MIN: this.PPSINP07List_tmp[i].WIP_MIN,
-      //     WIP_MAX: this.PPSINP07List_tmp[i].WIP_MAX,
-      //     EQUIP_GROUP: this.PPSINP07List_tmp[i].EQUIP_GROUP,
-      //     MES_PUBLISH_GROUP: this.PPSINP07List_tmp[i].MES_PUBLISH_GROUP,
-      //     BALANCE_RULE: this.PPSINP07List_tmp[i].BALANCE_RULE,
-      //     ORDER_SEQ: this.PPSINP07List_tmp[i].ORDER_SEQ,
-      //     WT_TYPE: this.PPSINP07List_tmp[i].WT_TYPE,
-      //     VALID: this.PPSINP07List_tmp[i].VALID,
-      //     wtTypeName: this.PPSINP07List_tmp[i].wtTypeName,
-      //     validName: this.PPSINP07List_tmp[i].validName,
-      //   });
-      // }
-      // this.PPSINP07List = data;
-      // console.log(data);
-      // console.log('======================');
-      // this.displayPPSINP07List = this.PPSINP07List;
-      this.updateEditCache();
-      // console.log(this.PPSINP07List);
-      myObj.loading = false;
+      this.rowData = data;
+      console.log(this.rowData);
+      this.loading = false;
     });
   }
 
@@ -311,67 +316,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         nzOnCancel: () => console.log('cancel'),
       });
     }
-  }
-
-  // update
-  editRow(id: string): void {
-    this.editCache7[id].edit = true;
-  }
-
-  // delete
-  deleteRow(id: string): void {
-    this.Modal.confirm({
-      nzTitle: '是否確定刪除',
-      nzOnOk: () => {
-        this.delID(id);
-      },
-      nzOnCancel: () => console.log('cancel'),
-    });
-  }
-
-  // cancel
-  cancelEdit(id: string): void {
-    const index = this.PPSINP07List.findIndex((item) => item.id === id);
-    this.editCache7[id] = {
-      data: { ...this.PPSINP07List[index] },
-      edit: false,
-    };
-  }
-
-  // update Save
-  saveEdit(rowData: any, id: string): void {
-    let myObj = this;
-    if (rowData.plant === undefined) {
-      myObj.message.create('error', '「工廠別」不可為空');
-      return;
-    } else if (rowData.shopCode === undefined) {
-      myObj.message.create('error', '「站別代碼」不可為空');
-      return;
-    } else if (rowData.equipCode === undefined) {
-      myObj.message.create('error', '「機台」不可為空');
-      return;
-    } else if (rowData.valid === undefined) {
-      myObj.message.create('error', '「有效碼」不可為空');
-      return;
-    } else {
-      this.Modal.confirm({
-        nzTitle: '是否確定修改',
-        nzOnOk: () => {
-          this.updateSave(rowData, id);
-        },
-        nzOnCancel: () => console.log('cancel'),
-      });
-    }
-  }
-
-  // update
-  updateEditCache(): void {
-    this.PPSINP07List.forEach((item) => {
-      this.editCache7[item.id] = {
-        edit: false,
-        data: { ...item },
-      };
-    });
   }
 
   // 新增資料
@@ -417,7 +361,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             this.wtType = undefined;
             this.produceMin = undefined;
             this.produceMax = undefined;
-            this.getPPSINP07List();
+            this.getDataList();
             this.sucessMSG('新增成功', ``);
           } else {
             this.errorMSG('新增失敗', res['message']);
@@ -426,116 +370,6 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         (err) => {
           reject('upload fail');
           this.errorMSG('新增失敗', '後台新增錯誤，請聯繫系統工程師');
-          this.LoadingPage = false;
-        }
-      );
-    });
-  }
-
-  wttypeChange(_id) {
-    let newType = this.editCache7[_id].data.wtType;
-    if (newType === '1') {
-      this.editCache7[_id].data.wtTypeName = '線速';
-    } else if (newType === '2') {
-      this.editCache7[_id].data.wtTypeName = '非線速';
-    } else {
-      this.editCache7[_id].data.wtTypeName = '-';
-    }
-  }
-  validChange(_id) {
-    let newType = this.editCache7[_id].data.valid;
-    if (newType === 'Y') {
-      this.editCache7[_id].data.validName = '有效';
-    } else {
-      this.editCache7[_id].data.validName = '無效';
-    }
-  }
-
-  // 修改資料
-  updateSave(rowData, _id) {
-    let myObj = this;
-    this.LoadingPage = true;
-    return new Promise((resolve, reject) => {
-      let obj = {};
-      _.extend(obj, {
-        id: rowData.id,
-        plantCode: rowData.plantCode,
-        plant: rowData.plant,
-        shopCode: rowData.shopCode,
-        shopName: rowData.shopName === undefined ? null : rowData.shopName,
-        equipCode: rowData.equipCode,
-        equipName: rowData.equipName === undefined ? null : rowData.equipName,
-        wipMin: rowData.wipMin === undefined ? null : rowData.wipMin,
-        wipMax: rowData.wipMax === undefined ? null : rowData.wipMax,
-        equipGroup:
-          rowData.equipGroup === undefined ? null : rowData.equipGroup,
-        mesPublishGroup:
-          rowData.mesPublishGroup === undefined
-            ? null
-            : rowData.mesPublishGroup,
-        valid: rowData.valid,
-        wtType: rowData.wtType === undefined ? null : rowData.wtType,
-        balanceRule: null,
-        orderSeq: null,
-        produceMin:
-          rowData.produceMin === undefined ? null : rowData.produceMin,
-        produceMax:
-          rowData.produceMax === undefined ? null : rowData.produceMax,
-      });
-
-      myObj.PPSService.updatePPSINPTB07List('2', obj).subscribe(
-        (res) => {
-          if (res['message'] === 'Y') {
-            this.shopCode = undefined;
-            this.shopName = undefined;
-            this.equipCode = undefined;
-            this.equipName = undefined;
-            this.wipMin = undefined;
-            this.wipMax = undefined;
-            this.equipGroup = undefined;
-            this.mesPublishGroup = undefined;
-            this.valid = undefined;
-            this.wtType = undefined;
-            this.produceMin = undefined;
-            this.produceMax = undefined;
-            console.log(this.PPSINP07List);
-            console.log(this.editCache7);
-
-            this.sucessMSG('修改成功', ``);
-            const index = this.PPSINP07List.findIndex(
-              (item) => item.id === _id
-            );
-            Object.assign(this.PPSINP07List[index], rowData);
-            this.editCache7[_id].edit = false;
-          } else {
-            this.errorMSG('修改失敗', res['message']);
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
-          this.LoadingPage = false;
-        }
-      );
-    });
-  }
-
-  // 刪除資料
-  delID(_id) {
-    let myObj = this;
-    return new Promise((resolve, reject) => {
-      myObj.PPSService.deletePPSINPTB07('2', _id).subscribe(
-        (res) => {
-          if (res['message'] === 'Y') {
-            this.sucessMSG('刪除成功', ``);
-            this.getPPSINP07List();
-          } else {
-            this.errorMSG('修改失敗', res['message']);
-          }
-        },
-        (err) => {
-          reject('upload fail');
-          this.errorMSG('刪除失敗', '後台刪除錯誤，請聯繫系統工程師');
           this.LoadingPage = false;
         }
       );
@@ -709,7 +543,7 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
             console.log(obj);
             this.sucessMSG('EXCCEL上傳成功', '');
             this.clearFile();
-            this.getPPSINP07List();
+            this.getDataList();
           } else {
             this.errorMSG('匯入錯誤', res['message']);
             this.clearFile();
@@ -729,14 +563,14 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
         }
       );
     });
-    this.getPPSINP07List();
+    this.getDataList();
   }
 
   convertToExcel() {
     console.log('convertToExcel');
     let data;
     let fileName = `站別機台關聯表_非直棒`;
-    data = this.formatDataForExcel(this.PPSINP07List);
+    data = this.formatDataForExcel(this.rowData);
     this.excelService.exportAsExcelFile(data, fileName, this.titleArray);
   }
 
@@ -791,26 +625,90 @@ export class PPSI102_NonBarComponent implements AfterViewInit {
     }
   }
 
-  onBtnClick1(e) {
-    e.params.api.setFocusedCell(e.params.node.rowIndex, 'equipCode');
-    e.params.api.startEditingCell({
-      rowIndex: e.params.node.id,
-      colKey: 'equipCode',
+  updateCheck(params: any) {
+    console.log('updateCheck');
+    this.gridApi.startEditingCell({
+      rowIndex: params.rowIndex,
+      colKey: 'id',
     });
+    return 1;
   }
 
-  onBtnClick2(e) {
-    this.saveEdit(e.rowData, e.rowData.id);
-    console.log(e.rowData);
-    console.log(e.rowData.id);
+  // 修改資料
+  updateById(params: any) {
+    this.loading = true;
+    this.gridApi.stopEditing();
+    let preUpdateData = {
+      id: this.rowData[params.rowIndex].id,
+      plant: this.rowData[params.rowIndex].plant,
+      shopCode: this.rowData[params.rowIndex].shopCode,
+      shopName: this.rowData[params.rowIndex].shopName,
+      equipCode: this.rowData[params.rowIndex].equipCode,
+      equipName: this.rowData[params.rowIndex].equipName,
+      wipMin:
+        this.rowData[params.rowIndex].wipMin === ''
+          ? undefined
+          : this.rowData[params.rowIndex].wipMin,
+      wipMax:
+        this.rowData[params.rowIndex].wipMax === ''
+          ? undefined
+          : this.rowData[params.rowIndex].wipMax,
+      produceMin:
+        this.rowData[params.rowIndex].produceMin === ''
+          ? undefined
+          : this.rowData[params.rowIndex].produceMin,
+      produceMax:
+        this.rowData[params.rowIndex].produceMax === ''
+          ? undefined
+          : this.rowData[params.rowIndex].produceMax,
+      equipGroup: this.rowData[params.rowIndex].equipGroup,
+      mesPublishGroup: this.rowData[params.rowIndex].mesPublishGroup,
+      wtType: this.rowData[params.rowIndex].wtTypeName,
+      valid: this.rowData[params.rowIndex].validName,
+    };
+    this.PPSService.updatePPSINPTB07List('2', preUpdateData).subscribe(
+      (res) => {
+        console.log(preUpdateData);
+        if (res['message'] === 'Y') {
+          this.sucessMSG('修改成功', ``);
+          this.getDataList();
+        } else {
+          this.errorMSG('修改失敗', res['message']);
+          this.loading = false;
+        }
+      },
+      (err) => {
+        this.errorMSG('修改失敗', '後台修改錯誤，請聯繫系統工程師');
+        this.loading = false;
+      }
+    );
   }
 
-  onBtnClick3(e) {
-    this.cancelEdit(e.rowData.id);
-    this.getPPSINP07List();
+  cancelUpdate() {
+    this.gridApi.stopEditing(true);
+    this.gridApi.refreshCells({ force: true });
   }
-
-  onBtnClick4(e) {
-    this.deleteRow(e.rowData.id);
+  // 刪除資料
+  deleteData(params: any) {
+    let myObj = this;
+    return new Promise((resolve, reject) => {
+      myObj.PPSService.deletePPSINPTB07('2', params.id).subscribe(
+        (res) => {
+          console.log(res);
+          if (res['message'] === 'Y') {
+            this.sucessMSG('刪除成功', ``);
+            this.getDataList();
+          }
+        },
+        (err) => {
+          reject('upload fail');
+          this.errorMSG(
+            '刪除失敗',
+            '後台刪除錯誤，請聯繫系統工程師' + err.message
+          );
+          this.loading = false;
+        }
+      );
+    });
   }
 }
