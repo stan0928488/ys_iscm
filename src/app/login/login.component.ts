@@ -18,7 +18,7 @@ import { ConfigService } from '../services/config/config.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  providers:[NzMessageService]
+  providers: [NzMessageService],
 })
 export class LoginComponent implements OnInit {
   authFail: boolean = false;
@@ -50,36 +50,37 @@ export class LoginComponent implements OnInit {
     private commonService: CommonService,
     private appEventBusComponent: MainEventBusComponent,
     private formBuilder: FormBuilder,
-    private nzMessage: NzMessageService,
+    private nzMessage: NzMessageService
   ) {
-
     let hostName = window.location.hostname;
     this.setEnvInfo(hostName);
-
   }
 
-  setEnvInfo(host){
+  setEnvInfo(host) {
     switch (host) {
-      case "ys-ppsapp01.walsin.corp":
-        this.envName = "正式環境";
+      case 'ys-ppsapp01.walsin.corp':
+        this.envName = '正式環境';
         this.envColor = '#e8e8e8';
         this.envClass = 'prod env-name';
         break;
-      case "localhost":
-        this.envName = "本機環境";
+      case 'ys-webapp.walsin.com':
+        this.envName = '正式環境';
+        this.envColor = '#e8e8e8';
+        this.envClass = 'prod env-name';
+        break;
+      case 'localhost':
+        this.envName = '本機環境';
         this.envColor = '#96a6b5';
         this.envClass = 'local env-name';
         break;
       default:
-        this.envName = "測試環境";
+        this.envName = '測試環境';
         this.envColor = '#df878c';
         this.envClass = 'tst env-name';
     }
   }
 
-
   ngOnInit() {
-
     this.validateForm = this.formBuilder.group({
       username: [null, [Validators.required]],
       password: [null, [Validators.required]],
@@ -147,7 +148,7 @@ export class LoginComponent implements OnInit {
   //Form Submit Event
   onSubmit() {
     const validStatus = this.validateForm.status;
-    if(_.isEqual('INVALID', validStatus)){
+    if (_.isEqual('INVALID', validStatus)) {
       this.nzMessage.error('帳號與密碼不能為空');
       return;
     }
@@ -172,35 +173,35 @@ export class LoginComponent implements OnInit {
 
     //this.commonService.casLoginWithPost(casObj).subscribe(
     // const env = "prod";
-    
+
     const LOCAL_PREFIX = this.configService.LOCAL_PREFIX;
-    const _param = {userName:username,password:password,saveLogin:true}
+    const _param = { userName: username, password: password, saveLogin: true };
     this.commonService.casLogin(_param).subscribe(
       (res) => {
-        console.log("登录结果") ;
-        console.log(res)
-        let result:any = res ;
+        console.log('登录结果');
+        console.log(res);
+        let result: any = res;
 
         // if (_.get(res, 'isAuth')) {
-          if (result.code === 200 && result.data.auth === true) {
-          console.log("login success");
-          
-          this.cookieService.setCookie("USERNAME", username, 2);
-          this.cookieService.setCookie("plantCode", plantCode, 2);
+        if (result.code === 200 && result.data.auth === true) {
+          console.log('login success');
+
+          this.cookieService.setCookie('USERNAME', username, 2);
+          this.cookieService.setCookie('plantCode', plantCode, 2);
           this.authService.emitAuthState();
-          let jwtTokenTemp = result.data.jwtToken ;
+          let jwtTokenTemp = result.data.jwtToken;
           // 儲存 JWT token 到 localStorage
           localStorage.setItem(LOCAL_PREFIX, jwtTokenTemp);
           let jwtToken = localStorage.getItem(LOCAL_PREFIX);
-          console.log("jwtToken:" + jwtToken);
-          
+          console.log('jwtToken:' + jwtToken);
+
           this.authFail = false;
           this.isLogining = false;
-          
+
           this.appEventBusComponent.emit({
             name: 'logingSuccess',
             data: {
-              logingSuccess:true,
+              logingSuccess: true,
             },
           });
 

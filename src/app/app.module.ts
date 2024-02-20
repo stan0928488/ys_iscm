@@ -191,16 +191,18 @@ import { PPSI202EditShopCellEditorComponent } from './pages/PPS/PPSI202/PPSI202E
 import { PPSI202EditShutdownTypeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditShutdownTypeCellEditorComponent';
 import { PPSI202EditStartTimeCellEditorComponent } from './pages/PPS/PPSI202/PPSI202EditStartTimeCellEditorComponent';
 import { PPSI203ActionCellComponent } from './pages/PPS/PPSI203/PPSI203-action-cell-component';
-import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
 import { CustomerNoAndNameDropdownComponent } from './shared/custom-component/customerNoAndName-dropdown-component';
-import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-max-cell-editor.component';
-import { ORPI001DiaMinCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-min-cell-editor.component';
-import { ORPI001CustomerNameCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-customer-name-cell-editor.component';
 import { MainComponent } from './main/main.component';
 import { RecursionMenusComponent } from './main/recursion-menus.component';
 import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
 import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
 import { SearchMenusComponent } from '../app/widget/search-menus/search-menus.component';
+
+import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
+import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-max-cell-editor.component';
+import { ORPI001DiaMinCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-min-cell-editor.component';
+import { ORPI001CustomerNameCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-customer-name-cell-editor.component';
+import { ORPI999Component } from './pages/ORP/ORPI999/ORPI999.component';
 
 registerLocaleData(zh);
 
@@ -365,16 +367,17 @@ registerLocaleData(zh);
     PPSI203ActionCellComponent,
     PPSR345Component,
     PPSR345AVERAGEComponent,
-    ORPI001Component,
     CustomerNoAndNameDropdownComponent,
-    ORPI001DiaMinCellEditorComponent,
-    ORPI001DiaMaxCellEditorComponent,
-    ORPI001CustomerNameCellEditorComponent,
     MainComponent,
     RecursionMenusComponent,
     AgHeadSeetingComponent,
     NumberCellEditorComponent,
-    SearchMenusComponent
+    SearchMenusComponent,
+    ORPI001Component,
+    ORPI001DiaMinCellEditorComponent,
+    ORPI001DiaMaxCellEditorComponent,
+    ORPI001CustomerNameCellEditorComponent,
+    ORPI999Component
   ],
   imports: [
     BrowserModule,
