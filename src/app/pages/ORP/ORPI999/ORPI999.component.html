@@ -1,0 +1,69 @@
+
+<nz-content style="margin:5px 10px;">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+        <nz-breadcrumb-item>訂單即時回應</nz-breadcrumb-item>
+        <nz-breadcrumb-item>需求執行</nz-breadcrumb-item>
+        <nz-breadcrumb-item>表格讀取(ORPI999)</nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <!-- <h2>Single File Upload</h2> -->
+
+    <input type="file" class="file-input" (change)="onChange($event)" #fileUpload />
+
+    <div style="margin-top:20px;" *ngIf="file">
+        <section class="file-info">
+            File details:
+            <ul>
+                <li>Name: {{file.name}}</li>
+                <li>Type: {{file.type}}</li>
+                <li>Size: {{file.size}} bytes</li>
+            </ul>
+        </section>
+
+        <nz-row>
+            <nz-col >
+                <button nz-button nzType="primary" nzShape="circle" (click)="onUpload()"><span nz-icon nzType="upload" nzTheme="outline"></span></button>
+            </nz-col>
+            <nz-col>
+                <section [ngSwitch]="status">
+                    <p style="color: #d3c82f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'uploading'">⏳ 解析中...</p>
+                    <p style="color: #4fd32f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'success'">✅ 上傳結束 </p>
+                    <p style="color: #d84747; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'fail'">❌ 上傳失敗 </p>
+                    <p style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchDefault> 👈 等待上傳，請點選左邊按鈕</p>
+                </section>
+            </nz-col>
+        </nz-row>
+    </div>
+
+    <nz-table style="margin-top:20px;"  #basicTable>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of dataSet">
+                <td>{{data[0]}}</td>
+                <td>{{data[1]}}</td>
+                <td>{{data[2]}}</td>
+                <td>{{data[3]}}</td>
+                <td>{{data[4]}}</td>
+                <td>{{data[5]}}</td>
+                <td>{{data[6]}}</td>
+                <td>{{data[7]}}</td>
+                <td>{{data[8]}}</td>
+                <td>{{data[9]}}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+
+</nz-content>

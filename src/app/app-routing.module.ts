@@ -124,9 +124,11 @@ import { UserProfileComponent } from './pages/USER/user-profile/user-profile.com
 
 import { PPSI205A401Component } from './pages/PPS/ppsi205-a401/ppsi205-a401.component';
 import { PPSI205A100Component } from './pages/PPS/ppsi205-a100/ppsi205-a100.component';
-import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
 import { MainComponent } from './main/main.component';
 import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
+
+import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
+import { ORPI999Component } from './pages/ORP/ORPI999/ORPI999.component';
 
 
 const routes: Routes = [
@@ -466,10 +468,26 @@ const routes: Routes = [
             data : {
               pageName:"料號客戶需求碼對照表"
             }
+          },
+          { 
+            path: 'I999', 
+            component: ORPI999Component,
+            data : {
+              pageName:"表格讀取"
+            }
           }
         ],
         canActivate: [AuthGuard]
       },
+      {
+        path: 'ORPExe',
+        children: [
+          { path: '', redirectTo: '/main/ORPExe/P001', pathMatch: 'full' },
+          
+        ],
+        canActivate: [AuthGuard]
+      },
+
       /* RMP & PAS & DCM */
 
       /* DCM */

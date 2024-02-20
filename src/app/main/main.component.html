@@ -28,7 +28,7 @@
               [nzPaddingLeft]="menu.level * 24"
             >
               <span nz-icon [nzType]="menu.icon" *ngIf="menu.icon"></span>
-              <a [routerLink]="[menu.path]"> {{menu.menuName}} </a>
+              <a style="margin-left: 5px;" [routerLink]="[menu.path]"> {{menu.menuName}} </a>
             </li>
             <li
               *ngIf="menu.isShow == 1 && menu.children && menu.children.length > 0"
