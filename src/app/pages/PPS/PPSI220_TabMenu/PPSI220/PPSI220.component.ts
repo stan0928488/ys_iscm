@@ -2053,27 +2053,31 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
   planEditionArray = [];
   newArray = [];
   test(data: any, event: any) {
+    console.log(data.isSelected);
     if (this.switchValue === false) {
       this.planEditionArray = [];
       this.newArray = [];
     }
-    const index = this.planEditionArray.findIndex(
-      (item) => item == data.planEdition
-    );
-    const newIndex = this.newArray.findIndex(
-      (item) => item == data.scheduleFlag
-    );
-    if (this.planEditionArray.length < 3) {
-      if (event === false) {
+    if (data.isSelected === true) {
+      this.planEditionArray.push(data.planEdition);
+      this.newArray.push(data.scheduleFlag);
+    } else {
+      const index = this.planEditionArray.findIndex(
+        (item) => item == data.planEdition
+      );
+      if (index !== -1) {
         this.planEditionArray.splice(index, 1);
         this.newArray.splice(index, 1);
-      } else {
-        this.planEditionArray.push(data.planEdition);
-        this.newArray.push(data.scheduleFlag);
       }
-    } else {
-      this.message.create('error', '只能選擇3個版本');
     }
+
+    console.log(this.planEditionArray);
+  }
+
+  shouldDisableCheckbox(data: any): boolean {
+    // 如果 planEditionArray.length 大於 2 且 data.isSelected 為 false，返回 true（禁用）
+    // this.message.create('info', '最多只能選擇3個版本');
+    return this.planEditionArray.length >= 3 && !data.isSelected;
   }
 
   readyStartMulti() {

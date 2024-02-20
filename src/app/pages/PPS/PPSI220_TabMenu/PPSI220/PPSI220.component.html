@@ -283,6 +283,7 @@
                       nzValue="{{ data.planEdition }}"
                       [(ngModel)]="data.isSelected"
                       (ngModelChange)="test(data, $event)"
+                      [nzDisabled]="shouldDisableCheckbox(data)"
                     ></label>
                   </nz-checkbox-wrapper>
                 </ng-container>
