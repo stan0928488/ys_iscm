@@ -124,7 +124,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
     
     this.openFilter = this.params.column.getColDef().filter ;
     this.openSort = this.params.column.getColDef().sortable ;
-    console.log(this.params.columnApi.getColumns()) ;
+    // console.log(this.params.columnApi.getColumns()) ;
     let agCustomHeaderParams = this.column.gridOptionsService.gridOptions['agCustomHeaderParams'];
     if(agCustomHeaderParams){
       this.isSave = agCustomHeaderParams['isSave']
@@ -204,7 +204,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
   }
 
   onFilterChanged(){
-    console.log("filter:" + this.filterValue)
+    // console.log("filter:" + this.filterValue)
     const colId = this.params.column.getColId();
     const filterComponent = this.params.api.getFilterInstance(colId) as IFilterComp ;
     // 處理過濾邏輯
@@ -219,18 +219,18 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
 
   onCompositionEnd(event: CompositionEvent) {
     // 处理输入法输入完成
-    console.log(this.filterValue) ;
+    // console.log(this.filterValue) ;
     this.onFilterChanged() ;
   }
 
   onMenuColumClick(){
     this.handleClose();
-    console.log(this.listOfData)
+    // console.log(this.listOfData)
     // console.log(this.params.columnApi.getAllDisplayedColumns())
   }
 
   handleClose(){
-    console.log("menuOpen:"+ this.menuOpen) ;
+    // console.log("menuOpen:"+ this.menuOpen) ;
     if(!this.menuOpen) {
       this.listOfData.sort((a, b) => (a.sortIndex < b.sortIndex ? -1 : 1)) ;
       this.menuOpen = true ;
@@ -306,7 +306,7 @@ export class AGCustomHeaderComponent implements IHeaderAngularComp  {
       );
       element['headername'] = '';
       if(findElement){
-        console.log(findElement)
+        // console.log(findElement)
         element['headername'] = findElement.userProvidedColDef.headerName;
         element['width'] = findElement.colDef.width
         element['sortable'] = findElement.colDef.sortable

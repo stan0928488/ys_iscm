@@ -11,7 +11,6 @@ import { Observable, of } from 'rxjs';
 })
 export class SYSTEMService {
   APIURL: string = '';
-  APINEWURL: string = '';
   CONTEXT_PATH = '';
   httpOptions = {
     headers: new HttpHeaders({
@@ -27,7 +26,6 @@ export class SYSTEMService {
     private cookieService: CookieService
   ) {
     this.APIURL = this.configService.getAPIURL();
-    this.APINEWURL = this.configService.getAPIURL('1');
     this.CONTEXT_PATH = this.configService.CONTEXT_PATH;
   }
 
