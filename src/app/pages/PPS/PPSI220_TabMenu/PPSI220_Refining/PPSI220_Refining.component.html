@@ -81,7 +81,7 @@
                 <span nz-icon nzType="cloud" nzTheme="outline"></span>  Publish</a>
               &nbsp;&nbsp;
               <label *ngIf="data.fcpEdition === null"></label>
-              <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="exportExcel(data.fcpEdition)">
+              <a *ngIf="data.fcpEdition !== null" style="font-weight: bolder; color: rgb(230, 130, 188); border-width:2px;border-style:inherit;border-color:rgb(128, 128, 128);padding: 3px;" (click)="preExportExcel(data.fcpEdition)">
                 <span nz-icon nzType="download" nzTheme="outline"></span>  {{ data.fcpEdition }}</a> &nbsp;&nbsp;
 
               <label style="color: darkslateblue; font-weight: bolder; border-width:2px;border-style:inherit;border-color:gray;padding: 3px;" (click)="RunList(data.planEdition)">
@@ -107,7 +107,31 @@
 
 </nz-content>
 
-
+<nz-modal 
+nzCancelText="取消"
+nzOkText="匯出"
+nzTitle="排程站別"
+(nzOnCancel)="handleCancel_A()" 
+(nzOnOk)="handleOk_A()"
+[(nzVisible)]="isVisible">
+  <ng-container *nzModalContent>
+    <div style="border-bottom: 1px solid rgb(233, 233, 233);">
+      <label
+        nz-checkbox
+        [(ngModel)]="allChecked"
+        (ngModelChange)="updateAllChecked()"
+      >
+        Check all
+      </label>
+    </div>
+    <br />
+    <nz-checkbox-wrapper style="width: 100%;">
+      <div nz-row>
+        <div nz-col  nzSpan="8" *ngFor="let item2 of shopCodeList ; let i = index"><label nz-checkbox [nzValue]="item2.value" [(ngModel)]="item2.checked" >{{item2.label}}</label></div>
+      </div>
+    </nz-checkbox-wrapper>
+  </ng-container>
+</nz-modal>
 
 <nz-spin nzTip="Loading..." [nzSpinning]="LoadingPage">
   <nz-modal
