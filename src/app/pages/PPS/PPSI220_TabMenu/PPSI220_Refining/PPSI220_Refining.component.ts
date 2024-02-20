@@ -1464,7 +1464,11 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
             header: firstRow,
             skipHeader: true,
           });
-          XLSX.utils.book_append_sheet(workBook, workSheet,key);
+          if(key == null || key == undefined || key == '' || key == 'null'){
+            XLSX.utils.book_append_sheet(workBook, workSheet,'最佳機台為空值');
+          }else{
+            XLSX.utils.book_append_sheet(workBook, workSheet,key);
+          }
           sheetCount++;
         });
 
