@@ -17,6 +17,7 @@ import { ColDef, ColumnApi, FirstDataRenderedEvent, GridApi, GridReadyEvent, Val
 import { OpenMachineRendererComponent } from "../../PPSI210_TabMenu/PPSI210/open-machine-renderer-component";
 import { FcpStatusWebSocketStomp } from "src/app/services/webSocket/FcpSatusWebSocketStomp";
 import { ConfigService } from "src/app/services/config/config.service";
+import * as FileSaver from 'file-saver';
 registerLocaleData(zh);
 
 
@@ -29,7 +30,13 @@ registerLocaleData(zh);
 
 
 export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestroy {
-	loading = false; //loaging data flag
+	
+  allChecked = false;
+  currentFcpEdition:string;
+  shopCodeList:ItemData[];
+  isVisible = false;
+  
+  loading = false; //loaging data flag
   spinningTip = 'Loading...';
   isRunFCP = false; // 如為true則不可異動
   moSortList : any[] = []; // 平衡設定選項選項
@@ -1276,8 +1283,32 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
     })
   }
 
-  async exportExcel(fcpEdition : string){
+  preExportExcel(fcpEdition : string){
+    this.currentFcpEdition = fcpEdition;
+    let postData = {fcpEdition:fcpEdition};
+    this.getPPSService.getRoutingShopCode(postData).subscribe(res => {
+      let result:any = res;
+      if(result.code == 200) {
+        let tempShopCodeList:ItemData[] = [];
+        for (let i = 0; i < result.data.length ; i++) {
+          let temp:ItemData = {
+            value:result.data[i],
+            label:result.data[i],
+            checked:false
+          } 
+          tempShopCodeList.push(temp);
+        }
+        this.shopCodeList = tempShopCodeList;        
+        this.isVisible = true;
+      }
+    },err => {
+      this.errorMSG("錯誤", "後台停止錯誤，請聯繫系統工程師");
+    })
 
+  }
+
+  async exportExcelMultiSheet(fcpEdition : string,checkRes : ItemData[]){
+    
     this.spinningTip = '資料量大，請稍待幾分鐘..';
     this.LoadingPage = true;
 
@@ -1287,7 +1318,10 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
 
       if(!_.isEmpty(editionExistRes.data)) {
         // 根據版次獲取該表的資料
-        const fcpResObservable$ = this.getPPSService.getRefiningFcpResult(fcpEdition);
+        let queryString = {};
+        queryString['fcpEdition'] = fcpEdition;
+        queryString['shops'] = checkRes.map( x => x.value);
+        const fcpResObservable$ = this.getPPSService.getRefiningFcpResult2(queryString);
         let fcpRes = await firstValueFrom<any>(fcpResObservable$);
         const decoder = new TextDecoder('utf-8');
         fcpRes = decoder.decode(fcpRes);
@@ -1337,6 +1371,100 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         });
         const workBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
+        XLSX.writeFileXLSX(
+          workBook,
+          `${this.PLANT}_FCP結果表_${moment().format('YYYYMMDDHHmmss')}.xlsx`
+        );
+        
+        // 刪除在後端產生的檔案避免佔用容量
+        const deleteFileObservable$ = this.getPPSService.deleteFcp16File(fileName);
+        firstValueFrom<any>(deleteFileObservable$);
+      }
+
+    }catch (error) {
+        this.errorMSG('獲取檔案發生異常', `請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`);
+    }
+    finally{
+      this.spinningTip = 'Loading...';
+      this.LoadingPage = false;
+    }
+
+  }
+
+  async exportExcel(fcpEdition : string,checkRes? : ItemData[]){
+
+
+    this.spinningTip = '資料量大，請稍待幾分鐘..';
+    this.LoadingPage = true;
+
+    try{
+      const editionExistObservable$ = this.getPPSService.getRefiningFcpEdition(fcpEdition);
+      const editionExistRes = await firstValueFrom<any>(editionExistObservable$);
+
+      if(!_.isEmpty(editionExistRes.data)) {
+        // 根據版次獲取該表的資料
+        let queryString = {};
+        queryString['fcpEdition'] = fcpEdition;
+        queryString['shops'] = checkRes.map( x => x.value);
+        const fcpResObservable$ = this.getPPSService.getRefiningFcpResult(queryString);
+        let fcpRes = await firstValueFrom<any>(fcpResObservable$);
+        const decoder = new TextDecoder('utf-8');
+        fcpRes = decoder.decode(fcpRes);
+
+        fcpRes = fcpRes.split(/\r\n|\n/g);
+        
+        // 取出檔案名稱(在倒數第二行)
+        // 最後要請求後端刪除該檔案用
+        const fileName = fcpRes[fcpRes.length - 2];
+        // 移除空白的最後一行
+        fcpRes.pop(); 
+        // 移除檔案名稱
+        fcpRes.pop();
+
+        fcpRes = fcpRes.join('');
+
+        let regex = /\[|\]/g;
+        fcpRes = fcpRes.replace(regex, '');
+
+        regex = /\}\{/g;
+        fcpRes = fcpRes.replace(regex, '},{');
+
+        fcpRes = `[${fcpRes}]`;
+
+        fcpRes = JSON.parse(fcpRes);
+
+        if(fcpRes.length <= 0){
+          this.message.create("error", `該FCP版本：${fcpEdition}，無資料，不可轉出excel`);
+          this.LoadingPage = false;
+          return;
+        }
+
+        // 獲取該表中英文屬性名稱(key-value)
+        const excelTitleObservable$ =  this.getPPSService.getTbppsm112ColumnName();
+        const excelTitleRes = await firstValueFrom<any>(excelTitleObservable$);
+
+        // 擷取出英文的屬性名稱放到firstRow
+        const firstRow = _.keys(excelTitleRes.data);
+
+        // 哪個英文title名稱要轉成哪個中文的title
+        const firstRowDisplay = excelTitleRes.data;
+
+        let exportDataGroup = _.mapValues(_.groupBy(fcpRes, 'OPTIMAL_EQUIP_CODE'),
+                          clist => clist.map(car => _.omit(car, 'OPTIMAL_EQUIP_CODE')));
+        
+        const workBook = XLSX.utils.book_new();
+
+        let sheetCount = 1;
+        Object.keys(exportDataGroup).forEach((key) => {
+          let tempSheetData = [firstRowDisplay, ...exportDataGroup[key]]
+          let workSheet = XLSX.utils.json_to_sheet(tempSheetData, {
+            header: firstRow,
+            skipHeader: true,
+          });
+          XLSX.utils.book_append_sheet(workBook, workSheet,key);
+          sheetCount++;
+        });
+
         XLSX.writeFileXLSX(
           workBook,
           `${this.PLANT}_FCP結果表_${moment().format('YYYYMMDDHHmmss')}.xlsx`
@@ -1828,6 +1956,30 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
 		});
 	}
 
+  handleOk_A(): void {
+    let checkRes = this.shopCodeList.filter(x => x.checked == true)
+    if(checkRes){
+      if(checkRes.length > 1){
+        this.exportExcelMultiSheet(this.currentFcpEdition,checkRes);
+      }else{
+        this.exportExcel(this.currentFcpEdition,checkRes);
+      }
+    }
+    this.isVisible = false;
+  }
+
+  handleCancel_A(): void {
+    this.isVisible = false;
+  }
+
+  updateAllChecked(): void {
+    if (this.allChecked) {
+      this.shopCodeList.forEach( x => x.checked = true);
+    } else {
+      this.shopCodeList.forEach( x => x.checked = false);
+    }
+  }
+    
 
 
 
@@ -1837,9 +1989,10 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
 
 
 
+}
 
-
-
-
-
+interface ItemData {
+  label:string;
+  value:string;
+  checked: boolean;
 }

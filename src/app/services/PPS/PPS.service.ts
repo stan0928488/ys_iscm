@@ -30,6 +30,14 @@ export class PPSService {
     this.APINEWURL = this.configService.getAPIURL('1');
   }
 
+  getRoutingShopCode(_data) {
+    const body = JSON.stringify(_data);
+    let queryUrl = this.APINEWURL + `/FCP/I220/getRoutingShopCode`;
+    console.log(queryUrl);
+    console.log(body);
+    return this.http.post(queryUrl, body, this.httpOptions);
+  }
+
   //Get getPPSINP13List
   getPPSINP13List() {
     console.log('api service getPPSINP13List');
@@ -1355,11 +1363,14 @@ export class PPSService {
   }
 
   // 根據fcpEdition取得精整FCP執行結果資料
-  getRefiningFcpResult(fcpEdition: string, batchSize: number = 3000) {
-    let queryUrl =
-      this.APINEWURL +
-      `/FCP/I112/getRefiningFcpResult/${batchSize}/${fcpEdition}`;
-    return this.http.get(queryUrl, { responseType: 'arraybuffer' });
+  getRefiningFcpResult(body) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpResult`;
+    return this.http.get(queryUrl, { params: body,responseType: 'arraybuffer' });
+  }
+
+  getRefiningFcpResult2(body) {
+    let queryUrl = this.APINEWURL + `/FCP/I112/getRefiningFcpResult`;
+    return this.http.get(queryUrl, { params: body,responseType: 'arraybuffer' });
   }
 
   // 刪除在後端產生的檔案避免佔用容量
