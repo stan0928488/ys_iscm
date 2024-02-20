@@ -4,3 +4,9 @@
 	font-style: normal;
 	font-weight: 700;
 }
+
+.cancelBtn{
+	position: absolute;
+    top: 5px;
+    left: 7px;
+}
