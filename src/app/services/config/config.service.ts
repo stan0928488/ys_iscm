@@ -43,6 +43,10 @@ export class ConfigService {
       case 'ys-pps.walsin.corp':
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
         break;
+      case 'ys-webapp.walsin.com':
+        // https://ys-webapp.walsin.com/iscm/ nginx 轉址 到 http://ys-ppsapp01.walsin.corp:8080/ 備援到 http://ys-ppsapp02.walsin.corp:8080/
+        this.APIURL = `https://${hostName}/iscm/${APIBODY}`;
+        break;
       default:
         this.APIURL = `http://${hostName}:8080${APIBODY}`;
     }
