@@ -8,7 +8,8 @@
 
     <!-- <h2>Single File Upload</h2> -->
 
-    <input type="file" class="file-input" (change)="onChange($event)" #fileUpload />
+    <input type="file" id="importFile" class="file-input" (change)="onChange($event)" #fileUpload />
+    <button *ngIf="status != ''" nz-button  nzType="default" nzDanger (click)="ngOnInit()"><span nz-icon nzType="clear" nzTheme="outline"> 清除 </span></button>
 
     <div style="margin-top:20px;" *ngIf="file">
         <section class="file-info">
@@ -29,9 +30,11 @@
                     <p style="color: #d3c82f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'uploading'">⏳ 解析中...</p>
                     <p style="color: #4fd32f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'success'">✅ 上傳結束 </p>
                     <p style="color: #d84747; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'fail'">❌ 上傳失敗 </p>
-                    <p style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchDefault> 👈 等待上傳，請點選左邊按鈕</p>
+                    <p style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'initial'"> 👈 等待上傳，請點選左邊按鈕</p>
+                    <p style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchDefault></p>
                 </section>
             </nz-col>
+            
         </nz-row>
     </div>
 
