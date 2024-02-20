@@ -1449,9 +1449,12 @@ export class PPSI220RefiningComponent implements OnInit, AfterViewInit, OnDestro
         // 哪個英文title名稱要轉成哪個中文的title
         const firstRowDisplay = excelTitleRes.data;
 
-        let exportDataGroup = _.mapValues(_.groupBy(fcpRes, 'OPTIMAL_EQUIP_CODE'),
-                          clist => clist.map(car => _.omit(car, 'OPTIMAL_EQUIP_CODE')));
-        
+        let exportDataGroup = fcpRes.reduce(function (r, a) {
+          r[a.OPTIMAL_EQUIP_CODE] = r[a.OPTIMAL_EQUIP_CODE] || [];
+          r[a.OPTIMAL_EQUIP_CODE].push(a);
+          return r;
+        }, Object.create(null));
+                          
         const workBook = XLSX.utils.book_new();
 
         let sheetCount = 1;
