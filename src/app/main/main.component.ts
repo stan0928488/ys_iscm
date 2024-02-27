@@ -120,10 +120,12 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
             nzTitle: '獲取菜單失敗',
             nzContent: result.message,
           });
+          this.authService.authLogOut();
         }
       });
     }else{
       this.menus = [];
+      this.authService.authLogOut();
     }
 
     this.mainEventBusComponent.on('logingSuccess', (data: any) => {
@@ -139,10 +141,12 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
               nzTitle: '獲取菜單失敗',
               nzContent: result.message,
             });
+            this.authService.authLogOut();
           }
         });
       }else{
         this.menus = [];
+        this.authService.authLogOut();
       }
     });
     

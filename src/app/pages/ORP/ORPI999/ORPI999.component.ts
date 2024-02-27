@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ORPService } from 'src/app/services/ORP/ORP.service';
 import { CookieService } from 'src/app/services/config/cookie.service';
 
@@ -10,14 +10,16 @@ import { CookieService } from 'src/app/services/config/cookie.service';
 })
 export class ORPI999Component implements OnInit {
   isSpinning = false;
-  status: "initial" | "uploading" | "success" | "fail" = "initial"; // Variable to store file status
+  status: "initial" | "uploading" | "success" | "fail" | "" = "initial"; // Variable to store file status
   file: File | null = null; // Variable to store file
   dataSet: string[][] = [];
+  inputFile : any;
   USERNAME;
 
   constructor(
     private orpService: ORPService,
     private cookieService: CookieService,
+    private renderer: Renderer2,
   ) {
     this.USERNAME = this.cookieService.getCookie("USERNAME");
   }
@@ -25,28 +27,31 @@ export class ORPI999Component implements OnInit {
 
 
   ngOnInit(): void {
-    console.log('ngOnInit');
+    this.dataSet = [];
+    this.status = "";
+    this.file = null;
+    this.renderer.setProperty(this.inputFile, 'value', '');
+  }
 
+  
+  ngAfterViewInit(): void {
+    this.inputFile = this.renderer.selectRootElement('#importFile');
   }
 
   // On file Select
   onChange(event: any) {
     const file: File = event.target.files[0];
+    this.dataSet = [];
 
     if (file) {
       this.status = "initial";
       this.file = file;
-      console.log(this.file.type);
     }
   }
 
   onUpload() {
     if (this.file) {
-
-    
       const formData = new FormData();
-
-
       // 上傳word
       if (this.file.type === 'application/msword') {
         formData.append('file', this.file, this.file.name);
@@ -69,7 +74,6 @@ export class ORPI999Component implements OnInit {
           },
         });
       } 
-
 
       // 上傳pdf
       else if (this.file.type === 'application/pdf') {
