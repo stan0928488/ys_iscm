@@ -1351,10 +1351,6 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
           // "sortBy":`[${SORT}]`,
           return new Promise((resolve, reject) => {
             let obj = {};
-            let editionArray = [];
-            let scheduleArray = [];
-            editionArray.push(data.planEdition);
-            scheduleArray.push(data.scheduleFlag);
             _.extend(obj, {
               planEdition: data.planEdition,
               scheduleFlag: data.scheduleFlag,
@@ -2142,7 +2138,7 @@ export class PPSI220Component implements OnInit, AfterViewInit, OnDestroy {
         let obj = {};
         _.extend(obj, {
           planEditionArray: this.planEditionArray,
-          scheduleFlagArray: this.newArray,
+          scheduleFlag: '3',
           createUser: this.USERNAME,
           type: 'A',
           plant: this.PLANT,
