@@ -48,7 +48,7 @@ export class ORPI999Component implements OnInit {
     }
   }
 
-  onUpload() {
+  onUpload() { 
     if (this.file) {
       const formData = new FormData();
       // 上傳word
