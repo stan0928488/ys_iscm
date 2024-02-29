@@ -30,7 +30,6 @@ export class ORPI999Component implements OnInit {
     this.dataSet = [];
     this.status = "";
     this.file = null;
-    this.renderer.setProperty(this.inputFile, 'value', '');
   }
 
   
