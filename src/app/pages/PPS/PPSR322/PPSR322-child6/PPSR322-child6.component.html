@@ -17,15 +17,15 @@
             <ng-container *ngIf="data.kindTypeColSpanSize > 0">
                 <ng-container *ngIf="data.kindType.indexOf('合計') == -1">
                     <td style="background-color: #92D050; font-weight: bold;" [colSpan]="data.kindTypeColSpanSize" *ngIf="data.kindTypeColSpanSize != 0" >{{data.kindType}}</td>
-                    <td style="background-color: #92D050; font-weight: bold;">{{data.passWeight | number:'1.0-0'}}</td>
+                    <td style="background-color: #92D050; font-weight: bold;">{{data.passWeight | number:'1.1-1'}}</td>
                     <td style="background-color: #92D050; font-weight: bold;">{{data.outputShape}}</td>
-                    <td style="background-color: #92D050; font-weight: bold;">{{data.avgPassWeight | number:'1.0-0'}}</td>
+                    <td style="background-color: #92D050; font-weight: bold;">{{data.avgPassWeight | number:'1.1-1'}}</td>
                 </ng-container>
                 <ng-container *ngIf="data.kindType.indexOf('合計') != -1">
                     <td style="background-color: #FFC000; font-weight: bold;" [colSpan]="data.kindTypeColSpanSize" *ngIf="data.kindTypeColSpanSize != 0" >{{data.kindType}}</td>
-                    <td style="background-color: #FFC000; font-weight: bold;">{{data.passWeight | number:'1.0-0'}}</td>
+                    <td style="background-color: #FFC000; font-weight: bold;">{{data.passWeight | number:'1.1-1'}}</td>
                     <td style="background-color: #FFC000; font-weight: bold;">{{data.outputShape}}</td>
-                    <td style="background-color: #FFC000; font-weight: bold;">{{data.avgPassWeight | number:'1.0-0'}}</td>
+                    <td style="background-color: #FFC000; font-weight: bold;">{{data.avgPassWeight | number:'1.1-1'}}</td>
                 </ng-container>
             </ng-container>
             <ng-container *ngIf="data.kindTypeColSpanSize <= 0">
