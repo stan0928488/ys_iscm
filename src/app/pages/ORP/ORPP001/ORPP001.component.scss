@@ -1,0 +1,22 @@
+.breadcrumbContainer{
+	color: #000;
+	font-size: 24px;
+	font-style: normal;
+	font-weight: 700;
+	
+}
+
+:host ::ng-deep .ant-btn-primary {
+  border-radius: 5px;
+}
+
+.excel{
+	margin-left: auto;
+}
+
+.operate-container{
+	display: flex;
+	margin-top: 10px;
+	align-items: center;
+	padding-bottom: 5px;
+}
