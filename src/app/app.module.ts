@@ -197,7 +197,6 @@ import { RecursionMenusComponent } from './main/recursion-menus.component';
 import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-seeting.component';
 import { NumberCellEditorComponent } from './pages/RENDERER/number-cell-editor.component';
 import { SearchMenusComponent } from '../app/widget/search-menus/search-menus.component';
-import { ORPP001Component } from './pages/ORP/ORPP001/ORPP001.component';
 
 import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
 import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-max-cell-editor.component';
@@ -294,10 +293,12 @@ registerLocaleData(zh);
     PPSI112Component,
     PPSI112RefinIngComponent,
     BtnCellRendererUpdate,
+    PlanItemDatePickerCellEditor,
     PPSR310Component,
     AutoCampaignUpdateSaveCellRenderer,
     SummaryDatePickerCellEditorComponent,
     PlanItemUpdateSaveCellRenderer,
+    PlanItemDatePickerCellEditor,
     ListPpsBarComponent,
     ListPpsNonbarComponent,
     PPSI201NonBarComponent,
@@ -376,8 +377,7 @@ registerLocaleData(zh);
     ORPI001DiaMinCellEditorComponent,
     ORPI001DiaMaxCellEditorComponent,
     ORPI001CustomerNameCellEditorComponent,
-    ORPI999Component,
-    ORPP001Component
+    ORPI999Component
   ],
   imports: [
     BrowserModule,
