@@ -1,0 +1,193 @@
+<nz-content style="margin:20px 50px;">
+  <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
+    <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
+      <nz-breadcrumb-item>訂單即時回應</nz-breadcrumb-item>
+      <nz-breadcrumb-item>訂單</nz-breadcrumb-item>
+      <nz-breadcrumb-item>進單作業(ORPI002)</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <div class="operate-container">
+      <button
+        nz-button
+        style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer"
+        nzType="primary"
+        (click)="addData()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        新增
+      </button>
+      <div class="excel">
+        <!-- 匯出EXCEL功能 -->
+        <button
+        id="download"
+        nz-button
+        nzType="primary"
+        style="
+          background-color: #4caf50;
+          border: 2px none;
+          box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)
+        "
+        (click)="exportToExcel()"
+        role="button"
+        >
+          <span nz-icon nzType="download" nzTheme="outline"></span>
+          E X C E L 匯出
+        </button>
+      </div>
+    </div>
+    <div style ="margin-bottom: 10px;">
+      <nz-collapse>
+        <nz-collapse-panel [nzHeader]="'查詢條件'" [nzActive]="queryBarActive">
+          <table  class="query" style="text-align:left;">
+            <tr>             
+              <app-customerNoAndName-dropdown
+                (emitCustomerNo)="setCustomerNo($event,'Q')"
+                (emitCustomerName)="setCustomerName($event,'Q')">
+              </app-customerNoAndName-dropdown>
+              <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">進單時間</span>
+                <nz-range-picker style="margin-left:5px;" [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)"></nz-range-picker>
+            </tr>
+            <br>
+            <tr>
+              <button
+                nz-button
+                style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);"
+                nzType="primary"
+                (click)="onQuery()"
+              >
+              <span nz-icon nzType="search" nzTheme="outline"></span>
+                查詢
+              </button>
+            </tr>
+          </table>        
+        </nz-collapse-panel>
+      </nz-collapse>
+    </div>
+    <ag-grid-angular
+      style="margin-top: 20px; width:100%; height:calc(100vh - 280px); overflow: scroll; margin-top: 10px"
+      class="ag-theme-alpine"
+      [rowData]="queryDataList"
+      [columnDefs]="columnDefs"
+      [gridOptions]="gridOptions"
+      [pagination]="true"
+      (firstDataRendered)="onFirstDataRendered($event)"
+      (gridReady)="onGridReady($event)"
+      [paginationPageSize]="20">
+    </ag-grid-angular>
+  </nz-spin>
+</nz-content>
+
+<nz-modal
+    [(nzVisible)]="isVisibleAddData"
+    [nzWidth]="1500"
+    [nzTitle]="title" 
+    [nzContent]="content" 
+    [nzCancelText]="'取消'"
+    [nzOkText]="'確定'"
+    [nzOkLoading]="submitOkLoading"
+    (nzOnOk)="submit()"
+    (nzOnCancel)="addCancel()"
+>
+
+    <ng-template #title>單筆新增</ng-template>
+    <ng-template #content>
+      <nz-spin  nzTip="新增中..." [nzSize]="'large'" [nzSpinning] = "isSpinningModal">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: start;">
+          <div style="display: flex;">
+            <app-customerNoAndName-dropdown
+              (emitCustomerNo)="setCustomerNo($event,'A')"
+              (emitCustomerName)="setCustomerName($event,'A')">
+            </app-customerNoAndName-dropdown>
+            <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">收貨人</span>
+            <input nz-input placeholder="請輸入收貨人" [(ngModel)]="consignee" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+          </div>
+			  <div style="display: flex; margin-top: 20px">
+				<span style ="line-height: normal; font-size: 16px; background-color:rgb(131, 184, 138); font-weight:bold; border-radius:5px; padding: 5px 5px; ">訂單類型</span>
+				  <nz-select nzPlaceHolder="請選擇訂單類型" [(ngModel)]="soType" style="width:150px; margin-left:5px; ">
+            <nz-option nzValue="OR" nzLabel="OR"></nz-option>
+            <nz-option nzValue="ZFT" nzLabel="ZFT"></nz-option>
+            <nz-option nzValue="ZFD" nzLabel="ZFD"></nz-option>
+            <nz-option nzValue="ZCM" nzLabel="ZCM"></nz-option>
+				  </nz-select>
+			  </div>
+			  <div style="display: flex; margin-top: 20px">
+          <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">合約號</span>
+          <nz-select nzPlaceHolder="請選擇合約號" style="width:150px; margin-left:5px;margin-right:20px" [(ngModel)]="contractNo" (ngModelChange)="getContractInfo($event)" nzAllowClear nzShowSearch>
+            <nz-option *ngFor="let data of contractNoList" [nzLabel]="data.contractNo" [nzValue]="data.contractNo"></nz-option>
+            <nz-option *ngIf="isContractNoListLoading" nzDisabled nzCustomContent>
+              <span nz-icon nzType="loading" class="loading-icon"></span>
+              合約號載入中..
+          </nz-option>
+          </nz-select>
+          <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">幣別</span>
+            <input nz-input placeholder="請輸入幣別" [(ngModel)]="saleOrderCurrency" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+          <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">合約餘量</span>
+            <input nz-input placeholder="請輸入合約餘量" [(ngModel)]="contractBalance" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+          <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">業務員</span>
+          <nz-select nzPlaceHolder="請選擇業務員" style="width:150px; margin-left:5px;margin-right:20px" [(ngModel)]="sales" nzAllowClear nzShowSearch>
+            <nz-option *ngFor="let data of salesList" [nzLabel]="data" [nzValue]="data"></nz-option>
+          </nz-select>
+          <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">採購單號</span>
+            <input nz-input placeholder="請輸入採購單號" [(ngModel)]="custPurchaseOrder" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
+         </div>
+         </div>
+         <div style="margin-top: 10px">
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer;border-radius: 5px;"
+            nzType="primary"
+            (click)="addRow()">
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+              新增行
+          </button>
+          &nbsp;
+          <button
+            nz-button
+            style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24); cursor: pointer;border-radius: 5px;"
+            nzType="primary"
+            (click)="onRemoveSelected()">
+            <span nz-icon nzType="minus" nzTheme="outline"></span>
+              刪除行
+          </button>
+          <input style="padding-left: 5px;" type="file" id="importFile" class="file-input" (change)="incomingFile($event)" #fileUpload />     
+          <!-- 匯入功能 -->
+          <button
+          id="bacthAdd"
+          nz-button
+          nzType="primary"
+          style="
+            background-color: #4caf50;
+            border: 2px none;
+            margin-right: 10px;
+            box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24);
+            border-radius: 5px;"
+          (click)="import()"
+        >
+          <span nz-icon nzType="upload" nzTheme="outline"></span>
+          上傳檔案
+        </button>
+          <span [ngSwitch]="status">
+            <span style="color: #d3c82f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'uploading'">⏳ 解析中...</span>
+            <span style="color: #4fd32f; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'success'">✅ 上傳結束 </span>
+            <span style="color: #d84747; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'fail'">❌ 上傳失敗 </span>
+            <span style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchCase="'initial'"> 👈 等待上傳，請點選左邊按鈕</span>
+            <span style="color: #7a93ff; margin-left: 15px; font-size: 1.5em; font-weight: bold;" *ngSwitchDefault></span>
+          </span>
+        
+          </div>
+         <ag-grid-angular
+            style="margin-top: 20px; width:100%; height:calc(100vh - 280px); overflow: scroll; margin-top: 10px"
+            class="ag-theme-alpine"
+            [rowData]="addDataList"
+            [columnDefs]="addColumnDefs"
+            [gridOptions]="addGridOptions"
+            [pagination]="true"
+            (firstDataRendered)="onFirstDataRendered($event)"
+            (gridReady)="onGridReadyByAdd($event)"
+            [rowSelection]="rowSelection"
+            [enableCellChangeFlash]="true"
+            [paginationPageSize]="20">
+          </ag-grid-angular>
+      </nz-spin>
+    </ng-template>
+  </nz-modal>
+
+
