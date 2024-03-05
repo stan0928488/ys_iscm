@@ -12,7 +12,9 @@ import { firstValueFrom } from 'rxjs';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { SummaryDatePickerCellEditorComponent } from './SummaryDatePickerCellEditor.Component';
 import { CookieService } from 'src/app/services/config/cookie.service';
-
+import { CommonService } from 'src/app/services/common/common.service';
+import * as XLSX from 'xlsx';
+import { NzMessageService } from 'ng-zorro-antd/message';
 @Component({
   selector: 'app-ORPP001',
   templateUrl: './ORPP001.component.html',
@@ -36,10 +38,18 @@ export class ORPP001Component implements AfterViewInit {
   // 資料內容
   queryDataList : any[] = [];
   //////////////////////////////
+  isCustomerListLoading = false;
   // 客戶清單
   customerList : any[] = [];
   // 客戶名稱清單
   customerNameList : any[] = [];
+  //客戶代號
+  customerNoList : any[] = [];
+  // 使用者選中的客戶代號
+  customerNoInput = '';
+
+  // 使用者選中的客戶名稱
+    customerNameInput = '';
   /////////////新增/////////////
   //獲取新增資料載入中提示元件是否顯示
   isSpinningModal = false;
@@ -62,7 +72,7 @@ export class ORPP001Component implements AfterViewInit {
   //合約餘量
   contractBalance;
   //業務員
-  sales;
+  salesId;
   //業務員選單
   salesList : any[] = [];
   //採購單號
@@ -85,6 +95,10 @@ export class ORPP001Component implements AfterViewInit {
   maxWeightOfEachProd;
   //單重下限
    minWeightOfEachProd;
+  // 用於匯出之Excel與中文名稱對照的英文名稱
+  fieldNameList : string[] = [];
+  // 用於匯出之Excel與英文名稱與中文名稱的對照
+  englishChineseTitleMapping = {}; 
 
 
 
@@ -101,6 +115,8 @@ export class ORPP001Component implements AfterViewInit {
     private router: Router,
     private systemService : SYSTEMService,
     private cookieService: CookieService,
+    private commonService:CommonService,
+    private message: NzMessageService,
   ) 
   { 
     this.USERNAME = this.cookieService.getCookie("USERNAME");
@@ -244,31 +260,8 @@ export class ORPP001Component implements AfterViewInit {
     console.log("ngAfterViewChecked");
   }
 
-  async querySales(){
-    try{
-      const resObservable$ = this.orpService.querySales();
-      const res = await firstValueFrom<any>(resObservable$);
-       
-      if(res.code !== 200){
-        this.errorMSG(
-          '獲取業務員下拉選單失敗',
-          `錯誤訊息 : ${res.message}`
-        );
-        return;
-      }
-
-      this.salesList = res.data;
-
-    } catch (error) {
-      this.errorMSG(
-        '獲取業務員下拉選單失敗',
-        `伺服器異常，請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
-      );
-    }
-  }
-
   async ngOnInit(): Promise<void> {
-    await this.querySales();
+    await this.getCustomerList();
   }
 
   setCustomerNo(_customerNo:string, _type:string){
@@ -276,12 +269,13 @@ export class ORPP001Component implements AfterViewInit {
       this.queryCustomerNo = _customerNo;
     }else{
       this.addCustomerNo = _customerNo;
-      this.consignee = _customerNo;
+      
       this.queryContractNoByCustNo();
 
     }
     
   }
+
   setCustomerName(_customerName:string, _type:string){
     if(_type === 'Q'){
       this.queryCustomerName = _customerName;
@@ -307,7 +301,10 @@ export class ORPP001Component implements AfterViewInit {
         this.queryDataList = res.data;
 
         this.queryDataList.forEach(item => {
-          item.dateDeliveryPp = moment(item.dateDeliveryPp).month(moment(item.dateDeliveryPp).month() - 1).format("YYYY-MM-DD");
+          if(!_.isEmpty(item.dateDeliveryPp)){
+            item.dateDeliveryPp = moment(item.dateDeliveryPp).month(moment(item.dateDeliveryPp).month() - 1).format("YYYY-MM-DD");
+          }
+          
         })
   
         if(res.code !== 200){
@@ -402,7 +399,66 @@ export class ORPP001Component implements AfterViewInit {
   }
 
   exportToExcel(){
+    this.isSpinning = true;
+    this.getFieldNameList();
+    this.getEnglishChineseTitleMapping();
 
+    if(_.isEmpty(this.queryDataList)){
+      this.errorMSG(
+        '匯出失敗',
+        `請先做查詢再匯出`
+      );
+      return;
+    }
+
+    const dataList = this.queryDataList.map(item => {
+      const data = _.omit(item, ['dateCreate', 'userCreate', 'enquiryItem', 'docStatus', 'saleItem', 'userUpdate', 'dateUpdate','saleOrder', ,'DateDeliveryPp']) as any;
+      return data
+  });
+
+    const exportData = [this.englishChineseTitleMapping, ...dataList];
+
+    const workSheet = XLSX.utils.json_to_sheet(exportData, {
+      header: this.fieldNameList,
+      skipHeader: true,
+    });
+    const workBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workBook, workSheet, 'Sheet1');
+    XLSX.writeFileXLSX(
+      workBook,
+      `進單作業表_${moment().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`
+    );
+
+    this.isSpinning = false;
+    this.message.success('匯出成功');
+  }
+
+  getFieldNameList(){
+    if(_.isEmpty(this.fieldNameList)){
+      this.fieldNameList = this.columnDefs.map(item => {
+        if(!_.isEqual('action', item.field)){
+          return item.field;
+        }
+        else{
+          return null;
+        }
+      }).filter(item => !_.isNil(item));
+    }
+  }
+
+  getEnglishChineseTitleMapping(){
+
+    if(_.isEmpty(this.englishChineseTitleMapping)){
+      this.englishChineseTitleMapping = {};
+      this.columnDefs.forEach(item => {
+        if(!_.isEqual('action', item.field)){
+          let enChMapping = {
+            [item.field] : item.headerName
+          }
+          _.merge(this.englishChineseTitleMapping, enChMapping);
+        }
+      });
+    }
   }
 
   import(){
@@ -535,15 +591,18 @@ export class ORPP001Component implements AfterViewInit {
     try{
       this.isSpinningModal = true;
       this.addDataList.forEach(item => {
-        item.dateDeliveryPp =  moment(item.dateDeliveryPp);
+        if(!_.isEmpty(item.dateDeliveryPp)){
+          item.dateDeliveryPp =  moment(item.dateDeliveryPp);
+        }       
       });
       let obj = {};
       _.extend(obj, {
         custNo : this.addCustomerNo,
+        custName : this.addCustomerName,
         saleOrderCurrency :this.saleOrderCurrency,
         soType : this.soType,
         custPurchaseOrder : this.custPurchaseOrder,
-        sales : this.sales,
+        salesId : this.salesId,
         consignee : this.consignee,
         contractNo : this.contractNo,
         userCreate : this.USERNAME,
@@ -579,7 +638,7 @@ export class ORPP001Component implements AfterViewInit {
     this.isVisibleAddData = false;
     this.consignee = '';
     this.saleOrderCurrency = '';
-    this.sales = '';
+    this.salesId = '';
     this.contractNo = '';
     this.contractBalance = '';
     this.custPurchaseOrder = '';
@@ -681,25 +740,41 @@ export class ORPP001Component implements AfterViewInit {
   async getContractInfo(contractNo:String){
     this.saleOrderCurrency = this.contractInfoMap.get(contractNo).saleOrderCurrency;
     this.custPurchaseOrder = this.contractInfoMap.get(contractNo).custPurchaseOrder;
+    const salesId =  this.contractInfoMap.get(contractNo).salesId;
     try{
       this.isContractNoListLoading = true;
       let obj = {};
       _.extend(obj, {
         custNo : this.addCustomerNo,
-        contractNo : contractNo
+        contractNo : contractNo,
+        salesId :salesId
       })
       const resObservable$ = this.orpService.queryContractTotalWeightLeft(obj);
-      const res = await firstValueFrom<any>(resObservable$); 
-     
+      const res = await firstValueFrom<any>(resObservable$);
+      const resObservable1$ = this.orpService.querySales(obj);
+      const res1 = await firstValueFrom<any>(resObservable1$);
+
       if(res.code !== 200){
         this.errorMSG(
-          '查詢合約號資料失敗',
+          '查詢合約餘量失敗',
           `錯誤訊息 : ${res.message}`
         );
         return;
       }else if(null != res.data){
         this.contractBalance = res.data.contractBalance;
       }
+
+      if(res1.code !== 200){
+        this.errorMSG(
+          '查詢業務員失敗',
+          `錯誤訊息 : ${res1.message}`
+        );
+        return;
+      }else if(null != res1.data){
+        this.salesId = res1.data.salesId;
+      }
+
+
 
       this.contractInfoMap = this.contractNoList.reduce((map, item) => {
         map.set(item.contractNo, item);
@@ -812,6 +887,92 @@ export class ORPP001Component implements AfterViewInit {
     }
   }
 
+  index = 0;
+  addItem(input: HTMLInputElement): void {
+    const value = input.value;
+    if (this.salesList.indexOf(value) === -1) {
+      this.salesList = [...this.salesList, input.value || `New item ${this.index++}`];
+    }
+  }
+
+    async getCustomerList(){
+
+    if(!_.isEmpty(this.customerList)){
+      return;
+    }
+
+    try{
+      this.isCustomerListLoading = true;
+      const resObservable$ = this.commonService.getCustomerList();
+      const res = await firstValueFrom<any>(resObservable$);
+      this.customerList = res.data;
+     
+      if(res.code !== 200){
+        this.errorMSG(
+          '查詢客戶資料失敗',
+          `錯誤訊息 : ${res.message}`
+        );
+        return;
+      }
+
+      this.customerNoList = res.data.map(item => item.custNo);
+      this.customerNameList = res.data.map(item => item.custAbbreviations);
+
+    } catch (error) {
+      this.errorMSG(
+        '查詢客戶資料失敗',
+        `伺服器異常，請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.isCustomerListLoading = false;
+    }
+  }
+
+  customerChange(type:string , queryAdd:string){
+      
+      // 選中某一個客戶代號則帶出對應的客戶名稱
+      if(_.isEqual(type, 'no')){
+        if(_.isNil(this.customerNoInput)){
+          if('add' === queryAdd){
+            this.addCustomerName = null;
+          }else{
+            this.queryCustomerName = null;
+          }
+         
+        }
+        else{
+          if('add' === queryAdd){
+            this.consignee = this.addCustomerNo;
+            this.addCustomerName = this.customerList.find(item => item.custNo === this.addCustomerNo).custAbbreviations;
+            this.queryContractNoByCustNo();
+          }else{
+            this.queryCustomerName = this.customerList.find(item => item.custNo === this.queryCustomerNo).custAbbreviations;
+          }
+          
+        }
+      }
+        // 選中某一個客戶名稱則帶出對應的客戶代號
+      else{
+        if(_.isNil(this.customerNameInput)){
+          if('add' === queryAdd){
+            this.addCustomerNo = null;
+          }else{
+            this.queryCustomerNo = null;
+          }
+        }
+        else{
+          if('add' === queryAdd){
+            this.consignee = this.addCustomerNo;
+            this.addCustomerNo = this.customerList.find(item => item.custAbbreviations === this.addCustomerName).custNo;
+            this.queryContractNoByCustNo();
+          }else{
+            this.queryCustomerNo = this.customerList.find(item => item.custAbbreviations === this.queryCustomerNo).custNo;
+          }
+          
+        }
+      }
+
+  }
 
 
 }

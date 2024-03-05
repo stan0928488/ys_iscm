@@ -115,9 +115,9 @@ export class ORPService {
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
 
-  querySales(){
+  querySales(payload : any){
     let queryUrl = `${this.CONTEXT_PATH}/ORPExe/P001/querySales`;
-    return this.http.post(queryUrl,null,this.httpOptions);
+    return this.http.post(queryUrl,payload,this.httpOptions);
   }
 
   querySSM407MST01(payload : any) {

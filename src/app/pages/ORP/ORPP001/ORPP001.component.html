@@ -1,4 +1,4 @@
-<nz-content style="margin:20px 50px;">
+<nz-content style="margin:5px 10px;">
   <nz-spin  nzTip="Loading..." [nzSize]="'large'" [nzSpinning] = "isSpinning">
     <nz-breadcrumb class="breadcrumbContainer" nzSeparator=">">
       <nz-breadcrumb-item>訂單即時回應</nz-breadcrumb-item>
@@ -38,10 +38,24 @@
         <nz-collapse-panel [nzHeader]="'查詢條件'" [nzActive]="queryBarActive">
           <table  class="query" style="text-align:left;">
             <tr>             
-              <app-customerNoAndName-dropdown
-                (emitCustomerNo)="setCustomerNo($event,'Q')"
-                (emitCustomerName)="setCustomerName($event,'Q')">
-              </app-customerNoAndName-dropdown>
+              <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px;">客戶代號</span>
+            <input nz-input id="type" type="text"  placeholder="請選擇客戶代號" list="customerNoList" [(ngModel)]="queryCustomerNo" style="width:200px; height:29px; margin-left:5px; margin-right:20px" (ngModelChange)="customerChange('no','query')">
+            <datalist id="customerNoList">
+              <option *ngFor="let customerNo of customerNoList" [label]="customerNo" [value]="customerNo"></option>
+              <option *ngIf="isCustomerListLoading" nzDisabled nzCustomContent>
+                <span nz-icon nzType="loading" class="loading-icon"></span>
+                客戶代號載入中..
+              </option>
+            </datalist>
+            <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">客戶名稱</span>
+            <input nz-input id="type" type="text"  placeholder="請選擇客戶名稱" list="customerNameList" [(ngModel)]="queryCustomerName" style="width:200px; height:29px; margin-left:5px; margin-right:20px" (ngModelChange)="customerChange('no','query')">
+            <datalist id="customerNameList">
+              <option *ngFor="let customerName of customerNameList" [label]="customerName" [value]="customerName"></option>
+              <option *ngIf="isCustomerListLoading" nzDisabled nzCustomContent>
+                <span nz-icon nzType="loading" class="loading-icon"></span>
+                客戶名稱載入中..
+              </option>
+            </datalist>
               <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">進單時間</span>
                 <nz-range-picker style="margin-left:5px;" [(ngModel)]="dateRange"  [nzFormat]='"yyyy-MM-dd"' (ngModelChange)="onDateChange($event)"></nz-range-picker>
             </tr>
@@ -92,10 +106,24 @@
       <nz-spin  nzTip="新增中..." [nzSize]="'large'" [nzSpinning] = "isSpinningModal">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: start;">
           <div style="display: flex;">
-            <app-customerNoAndName-dropdown
-              (emitCustomerNo)="setCustomerNo($event,'A')"
-              (emitCustomerName)="setCustomerName($event,'A')">
-            </app-customerNoAndName-dropdown>
+            <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px;">客戶代號</span>
+            <input nz-input id="type" type="text"  placeholder="請選擇客戶代號" list="customerNoList" [(ngModel)]="addCustomerNo" style="width:200px; height:29px; margin-left:5px; margin-right:20px" (ngModelChange)="customerChange('no','add')">
+            <datalist id="customerNoList">
+              <option *ngFor="let customerNo of customerNoList" [label]="customerNo" [value]="customerNo"></option>
+              <option *ngIf="isCustomerListLoading" nzDisabled nzCustomContent>
+                <span nz-icon nzType="loading" class="loading-icon"></span>
+                客戶代號載入中..
+              </option>
+            </datalist>
+            <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">客戶名稱</span>
+            <input nz-input id="type" type="text"  placeholder="請選擇客戶名稱" list="customerNameList" [(ngModel)]="addCustomerName" style="width:200px; height:29px; margin-left:5px; margin-right:20px" (ngModelChange)="customerChange('no','add')">
+            <datalist id="customerNameList">
+              <option *ngFor="let customerName of customerNameList" [label]="customerName" [value]="customerName"></option>
+              <option *ngIf="isCustomerListLoading" nzDisabled nzCustomContent>
+                <span nz-icon nzType="loading" class="loading-icon"></span>
+                客戶名稱載入中..
+              </option>
+            </datalist>
             <span style ="font-size: 16px; background-color:rgb(156, 182, 206); font-weight:bold; border-radius:5px; padding: 5px 5px; margin-left: 20px;">收貨人</span>
             <input nz-input placeholder="請輸入收貨人" [(ngModel)]="consignee" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
           </div>
@@ -122,9 +150,7 @@
           <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">合約餘量</span>
             <input nz-input placeholder="請輸入合約餘量" [(ngModel)]="contractBalance" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
           <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">業務員</span>
-          <nz-select nzPlaceHolder="請選擇業務員" style="width:150px; margin-left:5px;margin-right:20px" [(ngModel)]="sales" nzAllowClear nzShowSearch>
-            <nz-option *ngFor="let data of salesList" [nzLabel]="data" [nzValue]="data"></nz-option>
-          </nz-select>
+          <input nz-input placeholder="請輸入業務員" [(ngModel)]="salesId" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
           <span style ="line-height: normal; font-size: 16px; background-color:rgb(235, 223, 121); font-weight:bold; border-radius:5px; padding: 5px 5px; ">採購單號</span>
             <input nz-input placeholder="請輸入採購單號" [(ngModel)]="custPurchaseOrder" type="text" style="width:200px; height:29px; margin-left:5px; margin-right:20px" />
          </div>
