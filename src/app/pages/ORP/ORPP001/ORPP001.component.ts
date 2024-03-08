@@ -603,7 +603,7 @@ export class ORPP001Component implements AfterViewInit {
         soType : this.soType,
         custPurchaseOrder : this.custPurchaseOrder,
         salesId : this.salesId,
-        consignee : this.consignee,
+        consigneeSaleOrder : this.consignee,
         contractNo : this.contractNo,
         userCreate : this.USERNAME,
         dataList : this.addDataList
@@ -646,6 +646,9 @@ export class ORPP001Component implements AfterViewInit {
     this.contractNoList = [];
     this.addDataList = [];
     this.status='';
+    this.addCustomerNo = null;
+    this.addCustomerName = null;
+
   }
 
   requiredField(){
