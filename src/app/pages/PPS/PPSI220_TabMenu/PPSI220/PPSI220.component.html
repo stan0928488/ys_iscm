@@ -1,5 +1,5 @@
 <nz-content style="margin: 0 16px">
-  <div style="margin-top: 15px; min-height: 600px; background-color: #f7fafd">
+  <div style="margin-top: 10px; min-height: 600px; background-color: #f7fafd">
     <div
       style="
         display: flex;
@@ -8,55 +8,58 @@
         margin: 5px 0px 5px 0px;
       "
     >
-      <div>
-        <button
-          nz-button
-          style="box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
-          nzType="primary"
-          [nzSize]="'large'"
-          (click)="openChkStrart()"
-          [disabled]="switchValue"
-          [ngClass]="{ 'disabled-button': switchValue }"
-        >
-          <span nz-icon nzType="plus" nzTheme="outline"></span>
-          新增規劃案
-        </button>
-        &nbsp;&nbsp;
+      <div nz-row>
+        <div nz-col style="text-align:center;">
+          <nz-switch nzCheckedChildren="開啟多版本" nzUnCheckedChildren="關閉多版本"
+            [(ngModel)]="switchValue"
+            [nzSize]="'default'"
+          ></nz-switch>
+          <button
+            nz-button
+            style="margin: 0px 5px"
+            nzType="primary"
+            [nzSize]="'large'"
+            [hidden]="!switchValue"
+            [ngClass]="{ 'disabled-button': !switchValue }"
+            (click)="readyStartMulti()"
+          >
+            多版本啟動
+          </button>
+        </div>
+        <div nz-col>
+          <button
+            nz-button
+            style="margin-left: 5px; box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.24)"
+            nzType="primary"
+            [nzSize]="'large'"
+            (click)="openChkStrart()"
+            [disabled]="switchValue"
+            [ngClass]="{ 'disabled-button': switchValue }"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            新增規劃案
+          </button>
+          &nbsp;&nbsp;
 
-        <button
-          nz-button
-          class="openPlanCommonButton"
-          nzType="primary"
-          [nzSize]="'large'"
-          (click)="openPlanCommon()"
-          [disabled]="switchValue"
-          [ngClass]="{ 'disabled-button': switchValue }"
-        >
-          <span nz-icon nzType="setting" nzTheme="outline"></span>
-          設定規劃案公版
-        </button>
-        <label
-          style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
-          *ngIf="isRunFCP"
-        >
-          ※ 目前 FCP 執行中，不可再次啟動！
-        </label>
-      </div>
-      <div>
-        <nz-switch
-          [(ngModel)]="switchValue"
-          [nzDisabled]="isRunFCP"
-        ></nz-switch>
-        <button
-          nz-button
-          style="margin: 0px 7px"
-          nzType="primary"
-          [disabled]="!switchValue"
-          [ngClass]="{ 'disabled-button': !switchValue }"
-          (click)="readyStartMulti()"
-        >
-          多版本啟動
-        </button>
+          <button
+            nz-button
+            class="openPlanCommonButton"
+            nzType="primary"
+            [nzSize]="'large'"
+            (click)="openPlanCommon()"
+            [disabled]="switchValue"
+            [ngClass]="{ 'disabled-button': switchValue }"
+          >
+            <span nz-icon nzType="setting" nzTheme="outline"></span>
+            設定規劃案公版
+          </button>
+          <label
+            style="font-weight: bold; font-size: large; color: rgb(214, 63, 63)"
+            *ngIf="isRunFCP"
+          >
+            ※ 目前 FCP 執行中，不可再次啟動！
+          </label>
+        </div>
       </div>
     </div>
 
@@ -279,7 +282,7 @@
                 <ng-container *ngIf="switchValue; else noCheckbox">
                   <nz-checkbox-wrapper>
                     <label
-                      nz-checkbox
+                      nz-checkbox style="margin-right: 5px;"
                       nzValue="{{ data.planEdition }}"
                       [(ngModel)]="data.isSelected"
                       (ngModelChange)="test(data, $event)"
