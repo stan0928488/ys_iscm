@@ -540,7 +540,7 @@ export class ORPI001Component implements OnInit, AfterViewInit {
           '新增「料號客戶需求碼對照表」資料失敗',
           `${res.message}`
         );
-        this.isSpinningModal = false;
+        this.finishSubmitUIHandler();
         return;
       }
 

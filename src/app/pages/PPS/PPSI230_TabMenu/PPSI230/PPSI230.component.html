@@ -7,7 +7,18 @@
     <table width="100%">
       <tr style="height: 30px;">
         <td style="width: 50px; text-align:right; background-color: #3689c0; border-bottom: 1px #3689c0 ridge; font-size: 14px;" colspan="2">資料與策略</td>
-        <td style="width: 120px; text-align:center; background-color: #3689c0;" rowspan = "2">規劃案版本：{{PLAN_EDITION}}</td>
+        <td style="width: 200px; background-color: #3689c0;" rowspan = "2">
+          <div style="position: relative; margin-left:25%">
+          規劃案版本：
+          <nz-select nzPlaceHolder="規劃案版本" style="width:160px; position: absolute; top: 50%; transform: translate(0%, -50%);" [(ngModel)]="planEditionInput" (nzOpenChange)="getOptions()" (ngModelChange)="planEditionChange()">
+            <nz-option *ngFor="let planEdition of planEditionList" [nzLabel]="planEdition" [nzValue]="planEdition"></nz-option>
+            <nz-option *ngIf="planEditionLoading" nzDisabled nzCustomContent>
+                <span nz-icon nzType="loading" class="loading-icon"></span>
+                站別清單載入中...
+            </nz-option>
+          </nz-select>
+          </div>
+        </td>
         <td style="width: 250px; text-align:center; background-color: #3689c0;" rowspan = "2">執行狀態</td>
       </tr>
 
@@ -20,7 +31,16 @@
         <td style="width: 120px;">&nbsp;&nbsp;{{PLAN_STATU_NA}}</td>
         <td style="width: 250px; vertical-align:text-top; font-size: 18px;" rowspan = "12">
           <p></p>
-          <p style="font-size: 16px; color:#394d72;">&nbsp;&nbsp;生產規劃啟動： {{ PLANSTARTVER }}</p>
+          <p style="font-size: 16px; color:#394d72; position: relative;">
+            &nbsp;&nbsp;生產規劃啟動：
+            <nz-select nzPlaceHolder="執行時間" style="width:160px; position: absolute; top: 50%;  transform: translate(0%, -50%);" [(ngModel)]="startRunTimeInput" (nzOpenChange)="getOptions()" (ngModelChange)="startRunTimeChange()">
+              <nz-option *ngFor="let startRunTime of startRunTimeList" [nzLabel]="startRunTime" [nzValue]="startRunTime"></nz-option>
+              <nz-option *ngIf="startRunTimeLoading" nzDisabled nzCustomContent>
+                  <span nz-icon nzType="loading" class="loading-icon"></span>
+                  站別清單載入中...
+              </nz-option>
+            </nz-select>
+          </p>
           <p *ngIf = "RES_S != 'OK' && RES_S != ''">&nbsp;&nbsp;失敗：{{ RES_S }}<p>
           <nz-progress [nzPercent]="S_PENT"></nz-progress>
 
