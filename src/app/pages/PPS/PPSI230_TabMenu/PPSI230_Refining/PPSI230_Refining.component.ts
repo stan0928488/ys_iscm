@@ -69,6 +69,23 @@ export class PPSI230RefiningComponent implements AfterViewInit {
   startrun;
   timer;
 
+  // 第一次初始化獲取選項
+  isFirstGetoptions = true;
+  // 輸入選項，規劃案版本與執行時間
+  options : any = null;
+  // 規劃案版本List
+  planEditionList : any[] = [];
+  // 執行時間List
+  startRunTimeList : any[] = [];
+  // 規劃案版本選項載入中
+  planEditionLoading = false;
+  // 使用者選中的規劃案版本
+  planEditionInput : string = null;
+  // 執行時間選項載入中
+  startRunTimeLoading = false;
+  // 使用者選中的執行時間
+  startRunTimeInput : string = null;
+
   nzPagination:any ;
 
   gridApi : GridApi;
@@ -261,25 +278,75 @@ export class PPSI230RefiningComponent implements AfterViewInit {
 
     //设置定时刷新事件，每隔1分鐘刷新
     this.timer = setInterval(() => {
-      this.getLogPlanData();
+      this.getLogPlanData(this.planEditionInput, this.startRunTimeInput);
     }, 30000)
   }
 
   async ngAfterViewInit() {
     console.log("ngAfterViewChecked");
-    this.getLogPlanData();
+    await this.getOptions();
+    this.isFirstGetoptions = false;
     await this.getMoSortList();
   }
 
+  async getOptions(){
+
+    try{
+      this.isSpinning = true;
+      this.planEditionLoading = true;
+      const resObservable$ = this.getPPSService.getI230Options(this.PLANT);
+      const res = await firstValueFrom<any>(resObservable$);
+
+      if(res.code !== 200){
+        this.errorMSG(
+          '獲取「規劃案版本」選項失敗',
+          `錯誤訊息 : ${res.message}`
+        );
+        this.planEditionLoading = false;
+        return;
+      }
+
+      this.options = res.data;
+      this.planEditionList = _.keys(this.options);
+      // 第一筆最新的規劃案版本為預設輸入參數
+      if(this.isFirstGetoptions){
+        this.planEditionInput = this.planEditionList[0];
+      }
+      this.startRunTimeList = this.options[this.planEditionInput].map(item => String(item.startRunTime));
+      if(this.isFirstGetoptions){
+        this.startRunTimeInput = this.startRunTimeList[0];
+        this.getLogPlanData(this.planEditionInput, this.startRunTimeInput);
+      }
+
+    } catch (error) {
+      this.errorMSG(
+        '獲取「規劃案版本」選項失敗',
+        `伺服器異常，請聯繫系統工程師。錯誤訊息 : ${JSON.stringify(error.message)}`
+      );
+    } finally {
+      this.planEditionLoading = false;
+      this.isSpinning = false;
+    }
+  }
+
+  planEditionChange(){
+    this.startRunTimeList = this.options[this.planEditionInput].map(item => String(item.startRunTime));
+    this.startRunTimeInput = this.startRunTimeList[0];
+    this.getLogPlanData(this.planEditionInput, this.startRunTimeInput);
+  }
+
+  startRunTimeChange(){
+    this.getLogPlanData(this.planEditionInput, this.startRunTimeInput);
+  }
 
   //Get Data
-  getLogPlanData() {
+  getLogPlanData(planEdition : string, startRunTime : string) {
     this.loading = true;
     this.isSpinning = true;
     console.log("getLogPlanData...");
 
     let myObj = this;
-    this.getPPSService.getLogPlanData("N", "N", this.PLANT).subscribe(res => {
+    this.getPPSService.getLogPlanData(planEdition, startRunTime, this.PLANT).subscribe(res => {
       console.log("getLogPlanData success");
 
       if(_.isNull(res.data)){

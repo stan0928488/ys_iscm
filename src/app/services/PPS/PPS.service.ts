@@ -1463,12 +1463,18 @@ export class PPSService {
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
+ //獲取查詢規劃案歷程所需要的輸入參數
+  getI230Options(plantType) {
+    const queryUrl = `${this.APINEWURL}/FCP/I230/getOptions/${plantType}`;
+    return this.http.get<any>(queryUrl);
+  }
+
   //Get getNewPlanData 啟動規劃案歷程
-  getLogPlanData(_startrun, _plan, plantType) {
+  getLogPlanData(planEdition, startRunTime, plantType) {
     console.log('api service getLogPlanData');
     let queryUrl =
       this.APINEWURL +
-      `/FCP/I230/getLogPlanData/${_startrun}/${_plan}/${plantType}`;
+      `/FCP/I230/getLogPlanData/${planEdition}/${startRunTime}/${plantType}`;
     console.log(queryUrl);
     return this.http.get<any>(queryUrl);
   }
