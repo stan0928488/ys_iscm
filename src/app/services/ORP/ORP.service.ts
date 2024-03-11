@@ -54,7 +54,7 @@ export class ORPService {
 
   
   readWordFile(_data:object){//讀取word檔案
-    let queryUrl = this.CONTEXT_PATH + `/ORP/I999/readWord`;
+    let queryUrl = this.CONTEXT_PATH + `/ORP/I999/readWordOrder`;
     return this.http.post(queryUrl, _data,{
       responseType:"text",
       reportProgress: false,
@@ -63,7 +63,7 @@ export class ORPService {
   }
 
   readPdfFile(_data:object){//讀取pdf檔案
-    let queryUrl = this.CONTEXT_PATH + `/ORP/I999/readPdf`;
+    let queryUrl = this.CONTEXT_PATH + `/ORP/I999/readOrder`;
     return this.http.post(queryUrl, _data,{
       responseType:"text",
       reportProgress: false,
