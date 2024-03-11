@@ -467,6 +467,7 @@ export class ORPP001Component implements AfterViewInit {
       // 上傳word
       if (this.file.type === 'application/msword') {
         formData.append('file', this.file, this.file.name);
+        formData.append('contractNo', this.contractNo);
         console.log('上傳word');
         const upload$ = this.orpService.readWordFileByOrder(formData);
         this.status = 'uploading';
@@ -506,7 +507,8 @@ export class ORPP001Component implements AfterViewInit {
                 item.maxWeightOfEachProd = this.maxWeightOfEachProd,
                 item.minWeightOfEachProd = this.minWeightOfEachProd,
                 item.maxOfTotalWeight = this.maxOfTotalWeight,
-                item.minOfTotalWeight = this.minOfTotalWeight  
+                item.minOfTotalWeight = this.minOfTotalWeight
+                item.dateDeliveryPp = moment(new Date()).format("YYYY-MM-DD")
               });
 
               this.addGridOptions.api.setRowData(this.addDataList);
@@ -527,6 +529,7 @@ export class ORPP001Component implements AfterViewInit {
       // 上傳pdf
       else if (this.file.type === 'application/pdf') {
         formData.append('upload', this.file, this.file.name);
+        formData.append('contractNo', this.contractNo);
         console.log('上傳pdf');
         const upload$ = this.orpService.readPdfFileByOrder(formData);
         this.status = 'uploading';
@@ -566,7 +569,8 @@ export class ORPP001Component implements AfterViewInit {
                 item.maxWeightOfEachProd = this.maxWeightOfEachProd,
                 item.minWeightOfEachProd = this.minWeightOfEachProd,
                 item.maxOfTotalWeight = this.maxOfTotalWeight,
-                item.minOfTotalWeight = this.minOfTotalWeight  
+                item.minOfTotalWeight = this.minOfTotalWeight,
+                item.dateDeliveryPp = moment(new Date()).format("YYYY-MM-DD")  
               });
 
               this.addGridOptions.api.setRowData(this.addDataList);
@@ -587,7 +591,63 @@ export class ORPP001Component implements AfterViewInit {
     }
   }
 
+  required(){
+    this.addDataList.forEach((item) => {
+      if(_.isEmpty(item.gradeNoCust)){
+        this.errorMSG(
+          '客戶鋼種不可為空',
+          `請先填寫客戶鋼種`
+        );
+        return;
+      }else if(_.isEmpty(item.saleOrderDia)){
+        this.errorMSG(
+          '尺寸不可為空',
+          `請先填寫尺寸`
+        );
+        return;
+      }else if(_.isEmpty(item.saleOrderWeight)){
+        this.errorMSG(
+          '重量(MT)不可為空',
+          `請先填寫重量(MT)`
+        );
+        return;
+
+      }else if(_.isEmpty(item.mtrlNo)){
+        this.errorMSG(
+          '華新料號不可為空',
+          `請先填寫華新料號`
+        );
+        return;
+
+      }else if(_.isEmpty(item.saleOrderUnitPrice)){
+        this.errorMSG(
+          '單價不可為空',
+          `請先填寫單價`
+        );
+        return;
+
+      }else if(_.isEmpty(item.dateDeliveryPp)){
+        this.errorMSG(
+          '生計交期不可為空',
+          `請先填寫生計交期`
+        );
+        return;
+
+      }else if(_.isEmpty(item.saleItemt)){
+        this.errorMSG(
+          'ITCA不可為空',
+          `請先填寫ITCA`
+        );
+        return;
+      }else{
+         this.submit();
+      }
+
+    });
+  }
+
   async submit(){
+
     try{
       this.isSpinningModal = true;
       this.addDataList.forEach(item => {
@@ -631,6 +691,8 @@ export class ORPP001Component implements AfterViewInit {
       );
       this.isSpinningModal = false;
     }
+
+    
     
   }
 
@@ -675,7 +737,7 @@ export class ORPP001Component implements AfterViewInit {
         this.minWeightOfEachProd = res.data.minWeightOfEachProd;
         this.maxOfTotalWeight = res.data.maxOfTotalWeight;
         this.minOfTotalWeight = res.data.minOfTotalWeight;
-  
+       
         if(res.code !== 200){
           this.errorMSG(
             '查詢單總上下限資料失敗',
@@ -689,7 +751,9 @@ export class ORPP001Component implements AfterViewInit {
           maxWeightOfEachProd : this.maxWeightOfEachProd,
           minWeightOfEachProd : this.minWeightOfEachProd,
           maxOfTotalWeight : this.maxOfTotalWeight,
-          minOfTotalWeight : this.minOfTotalWeight  
+          minOfTotalWeight : this.minOfTotalWeight,
+          dateDeliveryPp : moment(new Date()).format("YYYY-MM-DD")
+    
         });
         //添加新的行
         this.addGridOptions.api.setRowData(this.addDataList);
