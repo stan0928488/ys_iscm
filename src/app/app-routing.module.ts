@@ -129,6 +129,7 @@ import { AgHeadSeetingComponent } from './pages/SYSTEM/ag-head-seeting/ag-head-s
 
 import { ORPI001Component } from './pages/ORP/ORPI001/ORPI001.component';
 import { ORPI999Component } from './pages/ORP/ORPI999/ORPI999.component';
+import { ORPP001Component } from './pages/ORP/ORPP001/ORPP001.component';
 
 
 const routes: Routes = [
@@ -483,7 +484,13 @@ const routes: Routes = [
         path: 'ORPExe',
         children: [
           { path: '', redirectTo: '/main/ORPExe/P001', pathMatch: 'full' },
-          
+          { 
+            path: 'P001', 
+            component: ORPP001Component,
+            data : {
+              pageName:"進單作業"
+            }
+          }
         ],
         canActivate: [AuthGuard]
       },

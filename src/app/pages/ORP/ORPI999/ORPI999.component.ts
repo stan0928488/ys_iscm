@@ -30,7 +30,6 @@ export class ORPI999Component implements OnInit {
     this.dataSet = [];
     this.status = "";
     this.file = null;
-    this.renderer.setProperty(this.inputFile, 'value', '');
   }
 
   
@@ -49,7 +48,7 @@ export class ORPI999Component implements OnInit {
     }
   }
 
-  onUpload() {
+  onUpload() { 
     if (this.file) {
       const formData = new FormData();
       // 上傳word

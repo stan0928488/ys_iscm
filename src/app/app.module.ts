@@ -203,6 +203,7 @@ import { ORPI001DiaMaxCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-di
 import { ORPI001DiaMinCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-dia-min-cell-editor.component';
 import { ORPI001CustomerNameCellEditorComponent } from './pages/ORP/ORPI001/ORPI001-customer-name-cell-editor.component';
 import { ORPI999Component } from './pages/ORP/ORPI999/ORPI999.component';
+import { ORPP001Component } from './pages/ORP/ORPP001/ORPP001.component';
 
 registerLocaleData(zh);
 
@@ -377,7 +378,8 @@ registerLocaleData(zh);
     ORPI001DiaMinCellEditorComponent,
     ORPI001DiaMaxCellEditorComponent,
     ORPI001CustomerNameCellEditorComponent,
-    ORPI999Component
+    ORPI999Component,
+    ORPP001Component
   ],
   imports: [
     BrowserModule,
