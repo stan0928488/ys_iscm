@@ -531,6 +531,8 @@ export class ORPP001Component implements AfterViewInit {
         formData.append('upload', this.file, this.file.name);
         formData.append('contractNo', this.contractNo);
         console.log('上傳pdf');
+        let contractNo = this.contractNo;
+        console.log(contractNo);
         const upload$ = this.orpService.readPdfFileByOrder(formData);
         this.status = 'uploading';
 
