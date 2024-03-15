@@ -23,6 +23,9 @@ import * as _ from "lodash";
 import { AGCustomHeaderComponent } from 'src/app/shared/ag-component/ag-custom-header-component';
 
 interface data {
+  wipSpread:String,
+  pst:String,
+  rollDate:String,
   fcpEdition: String,
   schShopCode: String,
   sfcShopCode: String,
@@ -741,11 +744,20 @@ export class PPSR301Component implements OnInit {
 
   
   columnDefs: ColDef<data>[] = [
+    { headerName: '庫存分佈' ,field: 'wipSpread' ,filter:true, width: 100 , headerComponent: AGCustomHeaderComponent },
     { headerName: '站別' ,field: 'schShopCode' ,filter:true, width: 100 , headerComponent: AGCustomHeaderComponent },
     { headerName: '現況站別',field: 'sfcShopCode' ,filter:true, width: 100 , headerComponent: AGCustomHeaderComponent},
     { headerName: '銷售區別' ,field: 'saleAreaGroup' ,filter:true, width: 120 , headerComponent: AGCustomHeaderComponent},
     { headerName: '客戶名稱',field: 'custAbbreviations' ,filter:true, width: 120, headerComponent: AGCustomHeaderComponent},
     { headerName: 'MO',field: 'idNo' , width: 120,filter:true, headerComponent: AGCustomHeaderComponent },
+    { headerName: 'PST',field: 'pst' , width: 120,filter:true, headerComponent: AGCustomHeaderComponent,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
+    }},
     { headerName: '訂單號碼' ,field: 'saleOrder' ,filter:true,width: 100, headerComponent: AGCustomHeaderComponent },
     { headerName: '訂單項次' ,field: 'saleItem' , filter:true,width: 100 , headerComponent: AGCustomHeaderComponent},
     { headerName: '交期',field: 'dateDeliveryPP' ,filter:true, width: 120 , headerComponent: AGCustomHeaderComponent},
@@ -757,6 +769,14 @@ export class PPSR301Component implements OnInit {
     { headerName: '訂單長度' ,field: 'saleItemLength' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
     { headerName: '實際長度' ,field: 'actualLength' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
     { headerName: 'CYCLE_NO',field: 'cycleNo' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
+    { headerName: '軋延計劃日',field: 'rollDate' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent,
+      cellRenderer: (data) => {
+        if(data.value){
+          return moment(data.value).format('YYYY-MM-DD')
+        }else{
+          return data.value;
+        }
+    }},
     { headerName: '合併單號',field: 'mergeNo' , filter: true,width: 120 , headerComponent: AGCustomHeaderComponent},
     { headerName: '投入尺寸' ,field: 'inputDia' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
     { headerName: '產出尺寸',field: 'outDia' , filter: true,width: 100 , headerComponent: AGCustomHeaderComponent},
@@ -1020,7 +1040,7 @@ export class PPSR301Component implements OnInit {
       this.errorMSG("EXCEL 匯出失敗", "請先查詢後再匯出");
       return;
     }
-    let header = [['FCP版次', '站別', '現況站別', '銷售區別', '客戶名稱', 'MO','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類', 'LOCK值']];
+    let header = [['FCP版次','庫存分佈', '站別', '現況站別', '銷售區別', '客戶名稱', 'MO', 'PST','訂單號碼', '訂單項次', '交期', '鋼種', '現況流程', 'FINAL_生產流程', '抽數別', '計畫重量', '訂單長度', '實際長度', 'CYCLE_NO','軋延計劃日', '合併單號', '投入尺寸', '產出尺寸', '允收截止日', '入庫日的備註', '產品種類', 'LOCK值']];
     var dataLoadMachineDtl = {
       data : []
     };
@@ -1029,11 +1049,13 @@ export class PPSR301Component implements OnInit {
         var item = this.rowData[i];
         dataLoadMachineDtl.data.push({
             "fcpEdition" : item.fcpEdition,
+            "wipSpread" : item.wipSpread,
             "schShopCode" : item.schShopCode,
             "sfcShopCode" : item.sfcShopCode,
             "saleAreaGroup" : item.saleAreaGroup,
             "custAbbreviations" : item.custAbbreviations,
             "idNo" : item.idNo,
+            "pst" : item.pst,
             "saleOrder" : item.saleOrder,
             "saleItem" : item.saleItem,
             "dateDeliveryPP" : item.dateDeliveryPP,
@@ -1045,6 +1067,7 @@ export class PPSR301Component implements OnInit {
             "saleItemLength" : item.saleItemLength,
             "actualLength" : item.actualLength,
             "cycleNo" : item.cycleNo,
+            "rollDate" : item.rollDate,
             "mergeNo" : item.mergeNo,
             "inputDia" : item.inputDia,
             "outDia" : item.outDia,

@@ -94,11 +94,8 @@
     [nzWidth]="1500"
     [nzTitle]="title" 
     [nzContent]="content" 
-    [nzCancelText]="'取消'"
-    [nzOkText]="'確定'"
-    [nzOkLoading]="submitOkLoading"
-    (nzOnOk)="required()"
     (nzOnCancel)="addCancel()"
+    [nzFooter]="Footer"
 >
 
     <ng-template #title>單筆新增</ng-template>
@@ -213,6 +210,10 @@
             [paginationPageSize]="20">
           </ag-grid-angular>
       </nz-spin>
+    </ng-template>
+    <ng-template #Footer style="text-align: center;">
+      <button nz-button style="cursor: pointer;border-radius: 5px;"  (click)="addCancel()">取消</button>
+      <button nz-button style="cursor: pointer;border-radius: 5px;" nzType="primary"  (click)="required()">確認</button>
     </ng-template>
   </nz-modal>
 

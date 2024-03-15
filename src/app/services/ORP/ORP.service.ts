@@ -87,8 +87,8 @@ export class ORPService {
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
 
-  queryMtrl(payload : any){
-    let queryUrl = `${this.CONTEXT_PATH}/ORPExe/P001/queryMtrl`;
+  queryMtrlAndUnitPrice(payload : any){
+    let queryUrl = `${this.CONTEXT_PATH}/ORPExe/P001/queryMtrlAndUnitPrice`;
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
 
@@ -129,6 +129,7 @@ export class ORPService {
     let queryUrl = `${this.CONTEXT_PATH}/ORPExe/P001/queryPackCodeCertificateCodeByCustNo`;
     return this.http.post(queryUrl, payload, this.httpOptions);
   }
+
   
 }
 

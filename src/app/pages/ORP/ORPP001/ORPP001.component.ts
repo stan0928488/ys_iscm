@@ -167,6 +167,19 @@ export class ORPP001Component implements AfterViewInit {
 
   addColumnDefs : ColDef[]   = [
     { 
+      headerName: '是否存在於合約', 
+      field: 'isContract', 
+      width: 100, 
+      filter:false,
+      cellStyle: params => {
+        if (params.value == 'N') {
+            return {background: 'red'};
+        }else{
+          return { background: '' };
+        }
+      },
+    },
+    { 
       headerName: '客戶鋼種', 
       field: 'gradeNoCust', 
       width: 100, 
@@ -174,7 +187,7 @@ export class ORPP001Component implements AfterViewInit {
       editable: true,
       onCellValueChanged: (event) => {
         if(!_.isEmpty(event.data.gradeNoCust)&&!_.isEmpty(event.data.saleOrderDia)&&!_.isEmpty(event.data.saleOrderWeight)){
-          this.queryMtrl(event);
+          this.queryMtrlAndUnitPrice(event);
         }
       }
     },
@@ -186,7 +199,7 @@ export class ORPP001Component implements AfterViewInit {
       editable: true,
       onCellValueChanged: (event) => {
         if(!_.isEmpty(event.data.gradeNoCust)&&!_.isEmpty(event.data.saleOrderDia)&&!_.isEmpty(event.data.saleOrderWeight)){
-          this.queryMtrl(event);
+          this.queryMtrlAndUnitPrice(event);
         }
       }
     },
@@ -198,7 +211,7 @@ export class ORPP001Component implements AfterViewInit {
       editable: true,
       onCellValueChanged: (event) => {
         if(!_.isEmpty(event.data.gradeNoCust)&&!_.isEmpty(event.data.saleOrderDia)&&!_.isEmpty(event.data.saleOrderWeight)){
-          this.queryMtrl(event);
+          this.queryMtrlAndUnitPrice(event);
         }
       }
     },
@@ -467,7 +480,7 @@ export class ORPP001Component implements AfterViewInit {
       // 上傳word
       if (this.file.type === 'application/msword') {
         formData.append('file', this.file, this.file.name);
-        formData.append('contractNo', this.contractNo);
+        formData.append('contractNO', this.contractNo);
         console.log('上傳word');
         const upload$ = this.orpService.readWordFileByOrder(formData);
         this.status = 'uploading';
@@ -481,10 +494,12 @@ export class ORPP001Component implements AfterViewInit {
               item.saleOrderDia = item.dia;
               item.mtrlNo = item.mtrl;
               item.saleOrderWeight = item.weightMt;
+              item.saleOrderUnitPrice = item.contractPrice
               delete item.gradeNo; // 删除原始的属性
               delete item.dia; // 删除原始的属性
               delete item.mtrl; // 删除原始的属性
               delete item.weightMt; // 删除原始的属性
+              delete item.weightcontractPriceMt; // 删除原始的属性
             });
             console.log(myArray);
 
@@ -545,10 +560,17 @@ export class ORPP001Component implements AfterViewInit {
               item.saleOrderDia = item.dia;
               item.mtrlNo = item.mtrl;
               item.saleOrderWeight = item.weightMt;
+              item.saleOrderUnitPrice = item.contractPrice
               delete item.gradeNo; // 删除原始的属性
               delete item.dia; // 删除原始的属性
               delete item.mtrl; // 删除原始的属性
               delete item.weightMt; // 删除原始的属性
+              delete item.weightcontractPriceMt; // 删除原始的属性
+              if(null == item.saleOrderUnitPrice){
+                item.isContract = 'N'
+              }else{
+                item.isContract = 'Y'
+              }
             });
             console.log(myArray);
 
@@ -594,8 +616,16 @@ export class ORPP001Component implements AfterViewInit {
   }
 
   required(){
-    this.addDataList.forEach((item) => {
-      if(_.isEmpty(item.gradeNoCust)){
+    let flag = '';
+    for(let i=0 ; i < this.addDataList.length ; i++) {
+      let item = this.addDataList[i];
+      if('N' === item.isContract){
+        this.errorMSG(
+          '尚有紅底未消除',
+          `請先確認鋼種、尺寸是否存在於合約`
+        );
+        return;
+      }else if(_.isEmpty(item.gradeNoCust)){
         this.errorMSG(
           '客戶鋼種不可為空',
           `請先填寫客戶鋼種`
@@ -621,7 +651,7 @@ export class ORPP001Component implements AfterViewInit {
         );
         return;
 
-      }else if(_.isEmpty(item.saleOrderUnitPrice)){
+      }else if(null == item.saleOrderUnitPrice){
         this.errorMSG(
           '單價不可為空',
           `請先填寫單價`
@@ -642,10 +672,13 @@ export class ORPP001Component implements AfterViewInit {
         );
         return;
       }else{
-         this.submit();
+         flag = 'Y'
       }
+    }
 
-    });
+    if('Y' === flag){
+      this.submit();
+    }
   }
 
   async submit(){
@@ -654,7 +687,7 @@ export class ORPP001Component implements AfterViewInit {
       this.isSpinningModal = true;
       this.addDataList.forEach(item => {
         if(!_.isEmpty(item.dateDeliveryPp)){
-          item.dateDeliveryPp =  moment(item.dateDeliveryPp);
+          item.dateDeliveryPp =  new Date(item.dateDeliveryPp);
         }       
       });
       let obj = {};
@@ -807,6 +840,7 @@ export class ORPP001Component implements AfterViewInit {
   }
 
   async getContractInfo(contractNo:String){
+    this.addDataList = [];
     this.saleOrderCurrency = this.contractInfoMap.get(contractNo).saleOrderCurrency;
     this.custPurchaseOrder = this.contractInfoMap.get(contractNo).custPurchaseOrder;
     const salesId =  this.contractInfoMap.get(contractNo).salesId;
@@ -892,7 +926,7 @@ export class ORPP001Component implements AfterViewInit {
     }
   }
 
-  async queryMtrl(event){
+  async queryMtrlAndUnitPrice(event){
     try{
 
       let obj = {};
@@ -900,11 +934,19 @@ export class ORPP001Component implements AfterViewInit {
         custName : this.addCustomerName,
         gradeNoCust : event.data.gradeNoCust,
         saleOrderWeight : event.data.saleOrderWeight,
-        saleOrderDia : event.data.saleOrderDia
+        saleOrderDia : event.data.saleOrderDia,
+        contractNo : this.contractNo
       })
-      const resObservable$ = this.orpService.queryMtrl(obj);
+      const resObservable$ = this.orpService.queryMtrlAndUnitPrice(obj);
       const res = await firstValueFrom<any>(resObservable$);
       event.data.mtrlNo = res.data.mtrlNo
+      event.data.saleOrderUnitPrice = res.data.saleOrderUnitPrice
+
+      if(null == event.data.saleOrderUnitPrice){
+        event.data.isContract = 'N';
+      }else{
+        event.data.isContract = 'Y';
+      }
 
       this.gridApiByAdd.applyTransaction({ update: [event.data] });
       this.queryPackCodeCertificateCodeByCustNo(event);
